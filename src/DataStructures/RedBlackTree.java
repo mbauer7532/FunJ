@@ -12,6 +12,7 @@ package DataStructures;
  * @param <T>
  */
 public class RedBlackTree<T extends Comparable<T>> {
+  @SuppressWarnings("unchecked")
   static public <P extends Comparable<P>> RedBlackTree<P> empty() {
     return (RedBlackTree<P>) EMPTY;
   }

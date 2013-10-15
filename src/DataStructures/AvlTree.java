@@ -6,17 +6,16 @@
 
 package DataStructures;
 
+import Utils.Numeric;
 import java.util.Objects;
 import org.graphstream.graph.*;
-import org.graphstream.graph.implementations.*;
-import org.graphstream.stream.file.FileSourceGEXF.GEXFConstants.EdgeType;
 
 
 /**
  *
  * @author Neo
- * @param <>> Key
- * @param <>> Value
+ * @param <K>
+ * @param <V>
  */
 public class AvlTree<K extends Comparable<K>, V> {
 
@@ -30,6 +29,7 @@ public class AvlTree<K extends Comparable<K>, V> {
     public abstract V get(final K key);
     public abstract Tree<K, V> put(final K key, final V value);
     public abstract int size();
+    public abstract int depth();
 
     public abstract String graph(Graph g);
   }
@@ -49,7 +49,7 @@ public class AvlTree<K extends Comparable<K>, V> {
 
     @Override
     public Tree<K, V> put(final K key, final V value) {
-      return new Node(this, this, key, value, 1);
+      return new Node<K,V>(this, this, key, value, 1);
     }
 
     @Override
@@ -60,6 +60,11 @@ public class AvlTree<K extends Comparable<K>, V> {
     @Override
     public String graph(Graph g) {
       return null;
+    }
+
+    @Override
+    public int depth() {
+      return 0;
     }
   }
 
@@ -210,6 +215,11 @@ public class AvlTree<K extends Comparable<K>, V> {
 
       return nodeName;
     }
+
+    @Override
+    public int depth() {
+      return Math.max(mLeft.depth(), mRight.depth()) + 1;
+    }
   }
 
   private static final EmptyNode<? extends Comparable<?>, ?> sEmptyNode = new EmptyNode<>();
@@ -220,7 +230,7 @@ public class AvlTree<K extends Comparable<K>, V> {
           final K key,
           final V value,
           final int height) {
-    return new Node(left, right, key, value, height);
+    return new Node<K, V>(left, right, key, value, height);
   }
 
   private static <K extends Comparable<K>, V> Node<K, V> createNode(
@@ -232,6 +242,7 @@ public class AvlTree<K extends Comparable<K>, V> {
   }
 
   // Public interface
+  @SuppressWarnings("unchecked")
   public static <K extends Comparable<K>, V> Tree<K, V> empty() {
     return (EmptyNode<K, V>) sEmptyNode;
   }
@@ -240,4 +251,11 @@ public class AvlTree<K extends Comparable<K>, V> {
     final Tree<K, V> e = empty();
     return createNode(e, e, key, value, 1);
   }
+
+  public static double expectedDepth(final int n) {
+    return sDepthCoefficient * Numeric.log(sSqrtOf5 * (double)(n + 2), 2.0) - 2.0;
+  }
+
+  private static final double sSqrtOf5 = Math.sqrt(5.0);
+  private static final double sDepthCoefficient = Numeric.log(2.0, Numeric.goldenRatio);
 }

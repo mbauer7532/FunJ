@@ -7,6 +7,7 @@
 package DataStructures;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,7 +48,7 @@ public class AvlTreeTest {
 
     t.graph(graph);
     graph.display();
-    final int sleepSeconds = 100;
+    final int sleepSeconds = 1;
     try {
       Thread.sleep(sleepSeconds * 1000);
     } catch (InterruptedException ex) {
@@ -60,7 +61,8 @@ public class AvlTreeTest {
    */
   @Test
   public void testEmpty() {
-    System.out.println("empty");
+    System.out.println("Empty");
+
     final int N = 5;
 
     List<AvlTree.Tree<Integer, String>> at = new ArrayList<>();
@@ -83,17 +85,49 @@ public class AvlTreeTest {
    * Test of singleton method, of class AvlTree.
    */
   @Test
-  public void testSingleton() {
-    /*
-    System.out.println("singleton");
-    Object key = null;
-    Object value = null;
-    AvlTree.NodeBase expTree null;
-    AvlTree.NodeBase result Treee.singleton(key, value);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
-    */
-  }
+  public void testRandomTreeDepth() {
+    System.out.println("RandomTreeDepth");
 
+    final int m = -1000;
+    final int n = 1000;
+    final int Experiments = 500;
+    final int N = 400;
+
+    for (int i = 0; i != Experiments; ++i) {
+      final int[] data = Utils.Numeric.randomArray(m, n, N);
+      final AvlTree.Tree<Integer, Integer> t0 = AvlTree.empty();
+/*
+      AvlTree.Tree<Integer, Integer> t1 = Arrays.stream(data)
+                                          .boxed()
+                                          .reduce(t0, ((AvlTree.Tree<Integer, Integer> tree, Integer x) -> tree.put(x, x)));
+*/
+      AvlTree.Tree<Integer, Integer> t2 = Arrays.stream(data)
+                                          .boxed()
+                                          .reduce(t0,
+                                                  ((AvlTree.Tree<Integer, Integer> tx, Integer x) -> tx.put(x, x)),
+                                                  ((z1, z2) -> z1));
+/*
+      for (int j = 0; j != N; ++j) {
+        final int r = Utils.Numeric.randomInt(m, n);
+        t = t.put(r, r);
+      }
+*/
+
+      final int expectedSize = N;
+      final double expectedDepth = AvlTree.expectedDepth(N);
+
+      final int avlTreeSize = t2.size();
+      final int avlTreeDepth = t2.depth();
+
+      System.out.println("Hi there.");
+      System.out.println(expectedSize);
+      System.out.println(avlTreeSize);
+      System.out.println();
+      System.out.println(avlTreeDepth);
+      System.out.println(expectedDepth);
+
+      assertEquals(expectedSize, avlTreeSize);
+      assertTrue((double) avlTreeDepth < expectedDepth);
+    }
+  }
 }
