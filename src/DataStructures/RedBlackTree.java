@@ -30,12 +30,12 @@ public class RedBlackTree<T extends Comparable<T>> {
 
   public RedBlackTree<T> insert(final T elem) {
     assert elem != null;
-
+    return null;
   }
 
   public RedBlackTree<T> delete(final T elem) {
     assert elem != null;
-
+    return null;
   }
 
   private enum Color {

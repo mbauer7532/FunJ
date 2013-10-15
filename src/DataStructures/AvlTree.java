@@ -7,27 +7,34 @@
 package DataStructures;
 
 import java.util.Objects;
+import org.graphstream.graph.*;
+import org.graphstream.graph.implementations.*;
+import org.graphstream.stream.file.FileSourceGEXF.GEXFConstants.EdgeType;
+
 
 /**
  *
  * @author Neo
- * @param <K> Key
- * @param <V> Value
+ * @param <>> Key
+ * @param <>> Value
  */
 public class AvlTree<K extends Comparable<K>, V> {
 
-  public static abstract class NodeBase<K, V> {
-    private NodeBase(final int height) {
+  public static abstract class Tree<K, V> {
+    private Tree(final int height) {
       mHeight = height;
     }
     protected final int mHeight;
 
     public abstract boolean isEmpty();
     public abstract V get(final K key);
-    public abstract NodeBase<K, V> put(final K key, final V value);
+    public abstract Tree<K, V> put(final K key, final V value);
+    public abstract int size();
+
+    public abstract String graph(Graph g);
   }
 
-  private final static class EmptyNode<K extends Comparable<K>, V> extends NodeBase<K, V> {
+  private final static class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
     private EmptyNode() {
       super(0);
     }
@@ -41,19 +48,29 @@ public class AvlTree<K extends Comparable<K>, V> {
     }
 
     @Override
-    public NodeBase<K, V> put(final K key, final V value) {
+    public Tree<K, V> put(final K key, final V value) {
       return new Node(this, this, key, value, 1);
+    }
+
+    @Override
+    public int size() {
+      return 0;
+    }
+
+    @Override
+    public String graph(Graph g) {
+      return null;
     }
   }
 
-  private final static class Node<K extends Comparable<K>, V> extends NodeBase<K, V> {
-    private final NodeBase<K, V> mLeft;
-    private final NodeBase<K, V> mRight;
+  private final static class Node<K extends Comparable<K>, V> extends Tree<K, V> {
+    private final Tree<K, V> mLeft;
+    private final Tree<K, V> mRight;
     private final K mKey;
     private final V mValue;
 
-    private Node(final NodeBase<K, V> left,
-                 final NodeBase<K, V> right,
+    private Node(final Tree<K, V> left,
+                 final Tree<K, V> right,
                  final K key,
                  final V value,
                  final int height) {
@@ -72,19 +89,11 @@ public class AvlTree<K extends Comparable<K>, V> {
       Objects.requireNonNull(key, "Key cannot be null.");
 
       final int res = mKey.compareTo(key);
-      if (res < 0) {
-        return mLeft.get(key);
-      }
-      else if (res > 0) {
-        return mRight.get(key);
-      }
-      else {
-        return mValue;
-      }
+      return res < 0 ? mLeft.get(key) : (res > 0 ? mRight.get(key) : mValue);
     }
 
     @Override
-    public NodeBase<K, V> put(final K key, final V value) {
+    public Tree<K, V> put(final K key, final V value) {
       Objects.requireNonNull(key, "Key cannot be null.");
       Objects.requireNonNull(value, "Value cannot be null.");
 
@@ -104,9 +113,9 @@ public class AvlTree<K extends Comparable<K>, V> {
             final K key,
             final V value,
             final Node<K, V> r,
-            final NodeBase<K, V> l,
-            final NodeBase<K, V> rr,
-            final NodeBase<K, V> rl) {
+            final Tree<K, V> l,
+            final Tree<K, V> rr,
+            final Tree<K, V> rl) {
       return createNode(rr, createNode(rl, l, key, value), r.mKey, r.mValue);
     }
 
@@ -114,15 +123,15 @@ public class AvlTree<K extends Comparable<K>, V> {
             final K key,
             final V value,
             final Node<K, V> l,
-            final NodeBase<K, V> r,
-            final NodeBase<K, V> ll,
-            final NodeBase<K, V> lr) {
+            final Tree<K, V> r,
+            final Tree<K, V> ll,
+            final Tree<K, V> lr) {
       return createNode(ll, createNode(lr, r, key, value), l.mKey, l.mValue);
     }
 
-    private static <K extends Comparable<K>, V> NodeBase<K, V> rebalance(
-            final NodeBase<K, V> left,
-            final NodeBase<K, V> right,
+    private static <K extends Comparable<K>, V> Tree<K, V> rebalance(
+            final Tree<K, V> left,
+            final Tree<K, V> right,
             final K key,
             final V value) {
       final int leftHeight = left.mHeight;
@@ -130,14 +139,23 @@ public class AvlTree<K extends Comparable<K>, V> {
 
       if (leftHeight > rightHeight + 1) {
         final Node<K, V> l = (Node<K, V>) left;      // Cannot fail!
-        final NodeBase<K, V> r = right; // Alias
-        final NodeBase<K, V> ll = l.mLeft;
-        final NodeBase<K, V> lr = l.mRight;
+        final Tree<K, V> r = right; // Alias
+        final Tree<K, V> ll = l.mLeft;
+        final Tree<K, V> lr = l.mRight;
 
         if (ll.mHeight < lr.mHeight) {
           final Node<K, V> lrAsNode = (Node<K,V>) lr; // Cannot fail!
-          final Node<K, V> newLeft = rotateLeft(l.mKey, l.mValue, lrAsNode, ll, lrAsNode.mRight, lrAsNode.mLeft);
-          return rotateRight(key, value, newLeft, r, newLeft.mLeft, newLeft.mRight);
+
+          // This is equivalalent to:
+          //   final Node<K, V> newLeft = rotateLeft(l.mKey, l.mValue, lrAsNode, ll, lrAsNode.mRight, lrAsNode.mLeft);
+          //   return rotateRight(key, value, newLeft, r, newLeft.mLeft, newLeft.mRight);
+          // but creates one less node.
+
+          return createNode(
+                  createNode(ll, lrAsNode.mLeft, l.mKey, l.mValue),
+                  createNode(lrAsNode.mRight, r, key, value),
+                  lrAsNode.mKey,
+                  lrAsNode.mValue);
         }
         else {
           return rotateRight(key, value, l, r, ll, lr);
@@ -145,14 +163,23 @@ public class AvlTree<K extends Comparable<K>, V> {
       }
       else if (leftHeight + 1 < rightHeight) {
         final Node<K, V> r = (Node<K, V>) right;    // Cannot fail!
-        final NodeBase<K, V> l = left;              // Alias
-        final NodeBase<K, V> rl = r.mLeft;
-        final NodeBase<K, V> rr = r.mRight;
+        final Tree<K, V> l = left;              // Alias
+        final Tree<K, V> rl = r.mLeft;
+        final Tree<K, V> rr = r.mRight;
 
         if (rr.mHeight < rl.mHeight) {
           final Node<K, V> rlAsNode = (Node<K,V>) rl; // Cannot fail!
-          final Node<K, V> newRight = rotateRight(r.mKey, r.mValue, rlAsNode, rr, rlAsNode.mLeft, rlAsNode.mRight);
-          return rotateLeft(key, value, newRight, l, newRight.mRight, newRight.mLeft);
+
+          // This is equivalalent to:
+          //   final Node<K, V> newRight = rotateRight(r.mKey, r.mValue, rlAsNode, rr, rlAsNode.mLeft, rlAsNode.mRight);
+          //   return rotateLeft(key, value, newRight, l, newRight.mRight, newRight.mLeft);
+          // but creates one less node.
+
+          return createNode(
+                  createNode(l, rlAsNode.mLeft, key, value),
+                  createNode(rlAsNode.mRight, rr, r.mKey, r.mValue),
+                  rlAsNode.mKey,
+                  rlAsNode.mValue);
         }
         else {
           return rotateLeft(key, value, r, l, rr, rl);
@@ -162,13 +189,34 @@ public class AvlTree<K extends Comparable<K>, V> {
         return createNode(left, right, key, value);
       }
     }
+
+    @Override
+    public int size() {
+      return mLeft.size() + mRight.size() + 1;
+    }
+
+    @Override
+    public String graph(Graph g) {
+      final String nodeName = mKey.toString() + " : " + Integer.toString(mHeight);
+      g.addNode(nodeName).addAttribute("ui.label", nodeName);
+
+      final String leftName = mLeft.graph(g);
+      final String rightName = mRight.graph(g);
+
+      if (leftName != null)
+        g.addEdge(nodeName + "->" + leftName, nodeName, leftName, true);
+      if (rightName != null)
+        g.addEdge(nodeName + "->" + rightName, nodeName, rightName, true);
+
+      return nodeName;
+    }
   }
 
   private static final EmptyNode<? extends Comparable<?>, ?> sEmptyNode = new EmptyNode<>();
 
   private static <K extends Comparable<K>, V> Node<K, V> createNode(
-          final NodeBase<K, V> left,
-          final NodeBase<K, V> right,
+          final Tree<K, V> left,
+          final Tree<K, V> right,
           final K key,
           final V value,
           final int height) {
@@ -176,20 +224,20 @@ public class AvlTree<K extends Comparable<K>, V> {
   }
 
   private static <K extends Comparable<K>, V> Node<K, V> createNode(
-          final NodeBase<K, V> left,
-          final NodeBase<K, V> right,
+          final Tree<K, V> left,
+          final Tree<K, V> right,
           final K key,
           final V value) {
     return createNode(left, right, key, value, Math.max(left.mHeight, right.mHeight) + 1);
   }
 
   // Public interface
-  public static <K extends Comparable<K>, V> NodeBase<K, V> empty() {
+  public static <K extends Comparable<K>, V> Tree<K, V> empty() {
     return (EmptyNode<K, V>) sEmptyNode;
   }
 
-  public static <K extends Comparable<K>, V> NodeBase<K, V> singleton(final K key, final V value) {
-    final NodeBase<K, V> e = empty();
+  public static <K extends Comparable<K>, V> Tree<K, V> singleton(final K key, final V value) {
+    final Tree<K, V> e = empty();
     return createNode(e, e, key, value, 1);
   }
 }
