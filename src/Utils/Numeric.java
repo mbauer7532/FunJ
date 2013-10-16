@@ -48,13 +48,13 @@ public class Numeric {
       final int h = j + i;
       final int r = randomInt(low, h);
 
-      final boolean added = hset.add(r);
-      if (added) {
+      final boolean found = ! hset.add(r);
+      if (! found) {
         arr[i] = r;
       }
       else {
-        hset.add(h);
         arr[i] = h;
+        hset.add(h);
       }
     }
 

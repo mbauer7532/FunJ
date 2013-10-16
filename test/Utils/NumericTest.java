@@ -6,6 +6,22 @@
 
 package Utils;
 
+import DataStructures.AvlTreeModuleTest;
+import java.awt.Dimension;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartFrame;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.ui.ApplicationFrame;
+import org.jfree.ui.RefineryUtilities;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -90,4 +106,53 @@ public class NumericTest {
 */
   }
 
+ @Test
+  public void testJFreeChart() {
+    final int low = 1;
+    final int high = 4;
+    final int size = 2;
+    final int N = 18000;
+
+    final Map<Integer, Integer> m = new TreeMap<>();
+    for (int i = 0; i != N; ++i) {
+      final int[] a = Numeric.randomArray(low, high, size);
+      int r = Arrays.stream(a).reduce(0, (n, x) -> n * 10 + x);
+      Integer ii = m.get(r);
+      m.put(r, ii == null ? 1 : ii + 1);
+    }
+
+    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+    m.keySet().stream().forEach((i) -> {
+      Integer freq = m.get(i);
+      double dfreq = freq == null ? 0.0 : freq.doubleValue();
+      dataset.addValue(dfreq, "R", Integer.toString(i));
+    });
+
+    JFreeChart chart = ChartFactory.createBarChart(
+            "Bar Chart Demo", // chart title
+            "Category", // domain axis label
+            "Value", // range axis label
+            dataset, // data
+            PlotOrientation.VERTICAL, // orientation
+            true, // include legend
+            true, // tooltips?
+            false // URLs?
+    );
+    ChartPanel chartPanel = new ChartPanel(chart, false);
+    chartPanel.setPreferredSize(new Dimension(500, 270));
+
+    ApplicationFrame demo = new ApplicationFrame("Bar Demo 1");
+    demo.setContentPane(chartPanel);
+
+    demo.pack();
+    RefineryUtilities.centerFrameOnScreen(demo);
+    demo.setVisible(true);
+
+    final int secs = 100;
+    try {
+      Thread.sleep(secs * 1000);
+    } catch (InterruptedException ex) {
+      Logger.getLAvlTreeModuleTesteeTest.class.getName()).log(Level.SEVERE, null, ex);
+    }
+  }
 }

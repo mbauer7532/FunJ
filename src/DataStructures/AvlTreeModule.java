@@ -11,14 +11,7 @@ import java.util.Objects;
 import org.graphstream.graph.*;
 
 
-/**
- *
- * @author Neo
- * @param <K>
- * @param <V>
- */
-public class AvlTree<K extends Comparable<K>, V> {
-
+public class AvlTreeModule {
   public static abstract class Tree<K, V> {
     private Tree(final int height) {
       mHeight = height;
@@ -30,6 +23,7 @@ public class AvlTree<K extends Comparable<K>, V> {
     public abstract Tree<K, V> put(final K key, final V value);
     public abstract int size();
     public abstract int depth();
+    public abstract K findMin();
 
     public abstract String graph(Graph g);
   }
@@ -65,6 +59,11 @@ public class AvlTree<K extends Comparable<K>, V> {
     @Override
     public int depth() {
       return 0;
+    }
+
+    @Override
+    public K findMin() {
+      throw new RuntimeException("An empty tree does not have a minimum.");
     }
   }
 
@@ -220,6 +219,16 @@ public class AvlTree<K extends Comparable<K>, V> {
     public int depth() {
       return Math.max(mLeft.depth(), mRight.depth()) + 1;
     }
+
+    @Override
+    public K findMin() {
+      if (mLeft == sEmptyNode) {
+        return mKey;
+      }
+      else {
+        return mLeft.findMin();
+      }
+    }
   }
 
   private static final EmptyNode<? extends Comparable<?>, ?> sEmptyNode = new EmptyNode<>();
@@ -230,7 +239,7 @@ public class AvlTree<K extends Comparable<K>, V> {
           final K key,
           final V value,
           final int height) {
-    return new Node<K, V>(left, right, key, value, height);
+    return new Node<>(left, right, key, value, height);
   }
 
   private static <K extends Comparable<K>, V> Node<K, V> createNode(

@@ -25,7 +25,7 @@ import org.graphstream.graph.implementations.*;
  *
  * @author Neo
  */
-public class AvlTreeTest {
+public class AvlTreeModuleTest {
   @BeforeClass
   public static void setUpClass() {
   }
@@ -42,7 +42,7 @@ public class AvlTreeTest {
   public void tearDown() {
   }
 
-  public void graphTree(AvlTree.Tree<Integer, String> t) {
+  public void graphTree(AvlTreeModule.Tree<Integer, String> t) {
     Graph graph = new SingleGraph("Graph");
     graph.addAttribute("ui.stylesheet", "url('file:///D:\\Users\\Neo\\Documents\\NetBeansProjects\\FunJ\\src\\DataStructures\\graphNode.stylesheet')");
 
@@ -52,22 +52,20 @@ public class AvlTreeTest {
     try {
       Thread.sleep(sleepSeconds * 1000);
     } catch (InterruptedException ex) {
-      Logger.getLogger(AvlTreeTest.class.getName()).log(Level.SEVERE, null, ex);
+      LoggeAvlTreeModuleTest(AvlTreeTest.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 
   /**
-   * Test of empty method, of class AvlTree.
+   * Test of empty method, of AvlTreeModulevlTree.
    */
   @Test
   public void testEmpty() {
     System.out.println("Empty");
 
-    final int N = 5;
+    final int N = 5AvlTreeModuleList<AvlTree.Tree<Integer, String>> at = new ArAvlTreeModule<>();
 
-    List<AvlTree.Tree<Integer, String>> at = new ArrayList<>();
-
-    AvlTree.Tree<Integer, String> t = AvlTree.empty();
+    AvlTree.TrAvlTreeModuleger, String> t = AvlTree.empty();
     at.add(t);
     for (int i = 0; i != N; ++i) {
       t = t.put(i * 10, "hi");
@@ -82,7 +80,7 @@ public class AvlTreeTest {
     }
   }
   /**
-   * Test of singleton method, of class AvlTree.
+   * Test AvlTreeModuleleton method, of class AvlTree.
    */
   @Test
   public void testRandomTreeDepth() {
@@ -94,16 +92,16 @@ public class AvlTreeTest {
     final int N = 400;
 
     for (int i = 0; i != Experiments; ++i) {
-      final int[] data = Utils.Numeric.randomArray(m, n, N);
-      final AvlTree.Tree<Integer, Integer> t0 = AvlTree.empty();
+      final int[] data = Utils.NumeriAvlTreeModulemArray(m, n, N);
+      AvlTreeModulevlTree.Tree<IAvlTreeModule Integer> t0 = AvlTree.empty();
 /*
       AvlTree.Tree<Integer, Integer> t1 = Arrays.stream(data)
                                           .boxed()
-                                          .reduce(t0, ((AvlTree.Tree<Integer, Integer> tree, Integer x) -> tree.put(x, x)));
+  AvlTreeModule                                 .reduce(t0, ((AvlTree.Tree<IntegAvlTreeModuleeger> tree, Integer x) -> tree.put(x, x)));
 */
       AvlTree.Tree<Integer, Integer> t2 = Arrays.stream(data)
                                           .boxed()
-                                          .reduce(t0,
+                                        AvlTreeModulece(t0,
                                                   ((AvlTree.Tree<Integer, Integer> tx, Integer x) -> tx.put(x, x)),
                                                   ((z1, z2) -> z1));
 /*
@@ -111,9 +109,7 @@ public class AvlTreeTest {
         final int r = Utils.Numeric.randomInt(m, n);
         t = t.put(r, r);
       }
-*/
-
-      final int expectedSize = N;
+*AvlTreeModule  final int expectedSize = N;
       final double expectedDepth = AvlTree.expectedDepth(N);
 
       final int avlTreeSize = t2.size();
