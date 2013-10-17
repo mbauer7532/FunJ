@@ -8,24 +8,28 @@ package DataStructures;
 
 import Utils.Numeric;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import org.graphstream.graph.*;
-
 
 public class AvlTreeModule {
   public static abstract class Tree<K, V> {
     private Tree(final int height) {
       mHeight = height;
     }
+
     protected final int mHeight;
 
     public abstract boolean isEmpty();
     public abstract V get(final K key);
     public abstract Tree<K, V> put(final K key, final V value);
+    public abstract boolean member(final K key);
     public abstract int size();
     public abstract int depth();
     public abstract K findMin();
+    public abstract K findMax();
+    public abstract <U> U fold(BiFunction<V, U, U> f, U acc);
 
-    public abstract String graph(Graph g);
+    public abstract String graph(final Graph g);
   }
 
   private final static class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -47,13 +51,15 @@ public class AvlTreeModule {
     }
 
     @Override
-    public int size() {
-      return 0;
+    public boolean member(final K key) {
+      Objects.requireNonNull(key, "Key cannot be null.");
+
+      return false;
     }
 
     @Override
-    public String graph(Graph g) {
-      return null;
+    public int size() {
+      return 0;
     }
 
     @Override
@@ -64,6 +70,21 @@ public class AvlTreeModule {
     @Override
     public K findMin() {
       throw new RuntimeException("An empty tree does not have a minimum.");
+    }
+
+    @Override
+    public K findMax() {
+      throw new RuntimeException("An empty tree does not have a maximum.");
+    }
+
+    @Override
+    public String graph(final Graph g) {
+      return null;
+    }
+
+    @Override
+    public <U> U fold(BiFunction<V, U, U> f, U acc) {
+      return acc;
     }
   }
 
@@ -113,6 +134,22 @@ public class AvlTreeModule {
       }
     }
 
+    @Override
+    public boolean member(final K key) {
+      Objects.requireNonNull(key, "Key cannot be null.");
+
+      final int res = mKey.compareTo(key);
+      if (res < 0) {
+        return mLeft.member(key);
+      }
+      else if (res > 0) {
+        return mRight.member(key);
+      }
+      else {
+        return true;
+      }
+    }
+
     private static <K extends Comparable<K>, V> Node<K, V> rotateLeft(
             final K key,
             final V value,
@@ -142,8 +179,8 @@ public class AvlTreeModule {
       final int rightHeight = right.mHeight;
 
       if (leftHeight > rightHeight + 1) {
-        final Node<K, V> l = (Node<K, V>) left;      // Cannot fail!
-        final Tree<K, V> r = right; // Alias
+        final Node<K, V> l = (Node<K, V>) left; // Cannot fail!
+        final Tree<K, V> r = right;             // Alias
         final Tree<K, V> ll = l.mLeft;
         final Tree<K, V> lr = l.mRight;
 
@@ -166,8 +203,8 @@ public class AvlTreeModule {
         }
       }
       else if (leftHeight + 1 < rightHeight) {
-        final Node<K, V> r = (Node<K, V>) right;    // Cannot fail!
-        final Tree<K, V> l = left;              // Alias
+        final Node<K, V> r = (Node<K, V>) right;  // Cannot fail!
+        final Tree<K, V> l = left;                // Alias
         final Tree<K, V> rl = r.mLeft;
         final Tree<K, V> rr = r.mRight;
 
@@ -200,8 +237,8 @@ public class AvlTreeModule {
     }
 
     @Override
-    public String graph(Graph g) {
-      final String nodeName = mKey.toString() + " : " + Integer.toString(mHeight);
+    public String graph(final Graph g) {
+      final String nodeName = String.format("%s : %s", mKey.toString(), Integer.toString(mHeight));
       g.addNode(nodeName).addAttribute("ui.label", nodeName);
 
       final String leftName = mLeft.graph(g);
@@ -222,12 +259,17 @@ public class AvlTreeModule {
 
     @Override
     public K findMin() {
-      if (mLeft == sEmptyNode) {
-        return mKey;
-      }
-      else {
-        return mLeft.findMin();
-      }
+      return mLeft == sEmptyNode ? mKey : mLeft.findMin();
+    }
+
+    @Override
+    public K findMax() {
+      return mRight == sEmptyNode ? mKey : mRight.findMax();
+    }
+
+    @Override
+    public <U> U fold(BiFunction<V, U, U> f, U acc) {
+      return mLeft.fold(f, f.apply(mValue, mRight.fold(f, acc)));
     }
   }
 
