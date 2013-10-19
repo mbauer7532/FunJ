@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.StructureGraphic.v1.DSutils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -52,7 +53,7 @@ public class AvlTreeModuleTest {
     try {
       Thread.sleep(sleepSeconds * 1000);
     } catch (InterruptedException ex) {
-      LoggeAvlTreeModuleTest(AvlTreeTest.class.getName()).log(Level.SEVERE, null, ex);
+      Logger.getLogger(AvlTreeModuleTest.class.getName()).log(Level.SEVERE, null, ex);
     }
   }
 
@@ -63,9 +64,10 @@ public class AvlTreeModuleTest {
   public void testEmpty() {
     System.out.println("Empty");
 
-    final int N = 5AvlTreeModuleList<AvlTree.Tree<Integer, String>> at = new ArAvlTreeModule<>();
+    final int N = 10;
+    final List<AvlTreeModule.Tree<Integer, String>> at = new ArrayList<>();
 
-    AvlTree.TrAvlTreeModuleger, String> t = AvlTree.empty();
+    AvlTreeModule.Tree<Integer, String> t = AvlTreeModule.empty();
     at.add(t);
     for (int i = 0; i != N; ++i) {
       t = t.put(i * 10, "hi");
@@ -73,12 +75,20 @@ public class AvlTreeModuleTest {
     }
 
     for (int i = 0, cnt = at.size(); i != cnt; ++i) {
-      System.out.printf("i = %d\n", i);
-      if (i == at.size()-1)
-        graphTree(at.get(i));
       assertEquals(at.get(i).size(), i);
     }
+
+    graphTree(t);
+    DSutils.show(t, 80, 60);
+    DSutils.show(at.get(N-1), 80, 60);
+    final int sleepSeconds = 1;
+    try {
+      Thread.sleep(sleepSeconds * 1000);
+    } catch (InterruptedException ex) {
+      Logger.getLogger(AvlTreeModuleTest.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
+
   /**
    * Test AvlTreeModuleleton method, of class AvlTree.
    */
@@ -92,28 +102,21 @@ public class AvlTreeModuleTest {
     final int N = 400;
 
     for (int i = 0; i != Experiments; ++i) {
-      final int[] data = Utils.NumeriAvlTreeModulemArray(m, n, N);
-      AvlTreeModulevlTree.Tree<IAvlTreeModule Integer> t0 = AvlTree.empty();
-/*
-      AvlTree.Tree<Integer, Integer> t1 = Arrays.stream(data)
-                                          .boxed()
-  AvlTreeModule                                 .reduce(t0, ((AvlTree.Tree<IntegAvlTreeModuleeger> tree, Integer x) -> tree.put(x, x)));
-*/
-      AvlTree.Tree<Integer, Integer> t2 = Arrays.stream(data)
-                                          .boxed()
-                                        AvlTreeModulece(t0,
-                                                  ((AvlTree.Tree<Integer, Integer> tx, Integer x) -> tx.put(x, x)),
-                                                  ((z1, z2) -> z1));
-/*
-      for (int j = 0; j != N; ++j) {
-        final int r = Utils.Numeric.randomInt(m, n);
-        t = t.put(r, r);
-      }
-*AvlTreeModule  final int expectedSize = N;
-      final double expectedDepth = AvlTree.expectedDepth(N);
+      final int[] data = Utils.Numeric.randomPermuation(m, n, N);
+      AvlTreeModule.Tree<Integer, Integer> t0 = AvlTreeModule.empty();
 
-      final int avlTreeSize = t2.size();
-      final int avlTreeDepth = t2.depth();
+      AvlTreeModule.Tree<Integer, Integer> t
+              = Arrays.stream(data)
+                      .mapToObj(j -> j)
+                      .reduce(t0,
+                              ((AvlTreeModule.Tree<Integer, Integer> tx, Integer x) -> tx.put(x, x)),
+                              ((z1, z2) -> null));
+
+      final int expectedSize = N;
+      final double expectedDepth = AvlTreeModule.expectedDepth(N);
+
+      final int avlTreeSize = t.size();
+      final int avlTreeDepth = t.depth();
 
       System.out.println("Hi there.");
       System.out.println(expectedSize);

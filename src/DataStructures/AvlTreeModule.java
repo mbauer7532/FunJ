@@ -7,12 +7,15 @@
 package DataStructures;
 
 import Utils.Numeric;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import org.StructureGraphic.v1.DSTreeNode;
 import org.graphstream.graph.*;
 
 public class AvlTreeModule {
-  public static abstract class Tree<K, V> {
+  public static abstract class Tree<K, V> implements DSTreeNode {
     private Tree(final int height) {
       mHeight = height;
     }
@@ -47,7 +50,7 @@ public class AvlTreeModule {
 
     @Override
     public Tree<K, V> put(final K key, final V value) {
-      return new Node<K,V>(this, this, key, value, 1);
+      return new Node<>(this, this, key, value, 1);
     }
 
     @Override
@@ -85,6 +88,21 @@ public class AvlTreeModule {
     @Override
     public <U> U fold(BiFunction<V, U, U> f, U acc) {
       return acc;
+    }
+
+    @Override
+    public DSTreeNode[] DSgetChildren() {
+      return new DSTreeNode[0];
+    }
+
+    @Override
+    public Object DSgetValue() {
+      return "null";
+    }
+
+    @Override
+    public Color DSgetColor() {
+      return Color.GREEN;
     }
   }
 
@@ -270,6 +288,21 @@ public class AvlTreeModule {
     @Override
     public <U> U fold(BiFunction<V, U, U> f, U acc) {
       return mLeft.fold(f, f.apply(mValue, mRight.fold(f, acc)));
+    }
+
+    @Override
+    public DSTreeNode[] DSgetChildren() {
+      return new DSTreeNode[] { mLeft, mRight };
+    }
+
+    @Override
+    public Object DSgetValue() {
+      return mKey;
+    }
+
+    @Override
+    public Color DSgetColor() {
+      return Color.BLUE;
     }
   }
 

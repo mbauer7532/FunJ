@@ -6,9 +6,9 @@
 
 package Utils;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.stream.Stream;
+import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -28,7 +28,10 @@ public class Numeric {
     return low + (int)(Math.random() * (double) (high - low + 1));
   }
 
-  public static int[] randomArray(final int low, final int high, final int size) {
+  public static Set<Integer> randomSet(
+          final int low,
+          final int high,
+          final int size) {
     if (low > high) {
       throw new RuntimeException("Low must be less than or equal to high.");
     }
@@ -41,22 +44,34 @@ public class Numeric {
 
     // Floyd's algorithm.
     final int j = high - size + 1;
-    final HashSet<Integer> hset = new HashSet<>();
-    final int[] arr = new int[size];
+    final Set<Integer> hset = new HashSet<>();
 
     for (int i = 0; i != size; ++i) {
       final int h = j + i;
       final int r = randomInt(low, h);
 
-      final boolean found = ! hset.add(r);
-      if (! found) {
-        arr[i] = r;
-      }
-      else {
-        arr[i] = h;
+      final boolean alreadyThere = ! hset.add(r);
+      if (alreadyThere) {
         hset.add(h);
       }
     }
+
+    return hset;
+  }
+
+  public static void swap(final int[] arr, final int i, final int j) {
+    final int t = arr[i];
+    arr[i] = arr[j];
+    arr[j] = t;
+  }
+
+  public static int[] randomPermuation(
+          final int low,
+          final int high,
+          final int size) {
+    final int lastIdx = size - 1;
+    final int[] arr = randomSet(low, high, size).stream().mapToInt((Integer n) -> n.intValue()).toArray();
+    IntStream.range(0, size).forEach(n -> { swap(arr, n, randomInt(n, lastIdx)); });
 
     return arr;
   }
@@ -65,5 +80,21 @@ public class Numeric {
 
   public static double log(final double x, final double base) {
     return Math.log(x) / Math.log(base);
+  }
+
+  public static boolean isEqWithinTolerance(
+          final double d1,
+          final double d2,
+          final double tol) {
+    final double absError = Math.abs(d1 - d2);
+    return absError < tol;
+  }
+
+  public static boolean isRelativeEqWithinTolerance(
+          final double d1,
+          final double d2,
+          final double tol) {
+    final double relError = Math.abs((d1 - d2) / d2);
+    return relError < tol;
   }
 }
