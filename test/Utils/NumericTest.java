@@ -255,4 +255,49 @@ public class NumericTest {
       assertEquals(arr[2], 0);
    }
   }
+
+  /**
+   * Test of isEqWithinTolerance method, of class Numeric.
+   */
+  @Test
+  public void testIsEqWithinTolerance() {
+    System.out.println("isEqWithinTolerance");
+
+  }
+
+  /**
+   * Test of isRelativeEqWithinTolerance method, of class Numeric.
+   */
+  @Test
+  public void testIsRelativeEqWithinTolerance() {
+    System.out.println("isRelativeEqWithinTolerance");
+
+  }
+
+  private static int nlz(int n) {
+    if (n == 0) {
+      return 32;
+    }
+
+    int res = 0;
+    while (n > 0) {
+      n = n << 1;
+      ++res;
+    }
+
+    return res;
+  }
+  /**
+   * Test of nlz method, of class Numeric.
+   */
+  @Test
+  public void testNlz() {
+    System.out.println("nlz");
+
+    int[] xs = new int[]
+      {-1, 0, 1, 2, 3, 4,
+       Integer.MAX_VALUE - 1, Integer.MAX_VALUE, Integer.MAX_VALUE + 1};
+
+    Arrays.stream(xs).forEach(x -> { assertEquals(nlz(x), Numeric.nlz(x)); });
+  }
 }

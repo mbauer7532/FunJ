@@ -97,4 +97,23 @@ public class Numeric {
     final double relError = Math.abs((d1 - d2) / d2);
     return relError < tol;
   }
+
+  // Hacker's delight 2nd edition
+  private static final int u = 42; // This quantity is not used.
+  private static final int[] nlzTab = new int[]
+    {32, 31, u, 16, u, 30, 3, u, 15, u, u, u, 29, 10, 2, u,
+     u, u, 12, 14, 21, u, 19, u, u, 28, u, 25, u, 9, 1, u,
+     17, u, 4, u, u, u, 11, u, 13, 22, 20, u, 26, u, u, 18,
+     5, u, u, 23, u, 27, u, 6, u, 24, 7, u, 8, u, 0, u};
+
+  public static int nlz(int x) {
+    x |= x >>> 1; // Propagate leftmost
+    x |= x >>> 2; // 1-bit to the right.
+    x |= x >>> 4;
+    x |= x >>> 8;
+    x |= x >>> 16;
+    x *= 0x06EB14F9; // Multiplier is 7*255**3.
+
+    return nlzTab[x >>> 26];
+  }
 }

@@ -14,7 +14,7 @@ import java.util.function.BiFunction;
 import org.StructureGraphic.v1.DSTreeNode;
 import org.graphstream.graph.*;
 
-public class AvlTreeModule {
+public final class AvlTreeModule {
   public static abstract class Tree<K, V> implements DSTreeNode {
     private Tree(final int height) {
       mHeight = height;

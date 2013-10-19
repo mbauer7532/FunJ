@@ -110,7 +110,7 @@ public class AvlTreeModuleTest {
                       .mapToObj(j -> j)
                       .reduce(t0,
                               ((AvlTreeModule.Tree<Integer, Integer> tx, Integer x) -> tx.put(x, x)),
-                              ((z1, z2) -> null));
+                              ((AvlTreeModule.Tree<Integer, Integer> z1, AvlTreeModule.Tree<Integer, Integer> z2) -> null));
 
       final int expectedSize = N;
       final double expectedDepth = AvlTreeModule.expectedDepth(N);
