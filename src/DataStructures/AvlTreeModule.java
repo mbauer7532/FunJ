@@ -72,12 +72,12 @@ public final class AvlTreeModule {
 
     @Override
     public K findMin() {
-      throw new RuntimeException("An empty tree does not have a minimum.");
+      throw new AssertionError("An empty tree does not have a minimum.");
     }
 
     @Override
     public K findMax() {
-      throw new RuntimeException("An empty tree does not have a maximum.");
+      throw new AssertionError("An empty tree does not have a maximum.");
     }
 
     @Override

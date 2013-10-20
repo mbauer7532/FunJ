@@ -27,7 +27,7 @@ public class Numeric {
    */
   public static int randomInt(final int low, final int high) {
     if (low > high)
-      throw new RuntimeException("Low must be less than or equal to high.");
+      throw new AssertionError("Low must be less than or equal to high.");
     return low + (int)(Math.random() * (double) (high - low + 1));
   }
 
@@ -36,13 +36,13 @@ public class Numeric {
           final int high,
           final int size) {
     if (low > high) {
-      throw new RuntimeException("Low must be less than or equal to high.");
+      throw new AssertionError("Low must be less than or equal to high.");
     }
     if (size <= 0) {
-      throw new RuntimeException("Size must be greater than zero.");
+      throw new AssertionError("Size must be greater than zero.");
     }
     if (high - low + 1 < size) {
-      throw new RuntimeException("Not enough unique elements in range.");
+      throw new AssertionError("Not enough unique elements in range.");
     }
 
     // Floyd's algorithm.
