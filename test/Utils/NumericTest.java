@@ -291,7 +291,8 @@ public class NumericTest {
     assertFalse(Numeric.isRelativeEqWithinTolerance(x2, x1, 1.0 / 6.0 - epsilon));
   }
 
-  private static int nlz(int n) {
+  private static int nlz(final int m) {
+    int n = m;
     if (n == 0) {
       return 32;
     }

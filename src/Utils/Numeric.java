@@ -106,7 +106,8 @@ public class Numeric {
      17, u, 4, u, u, u, 11, u, 13, 22, 20, u, 26, u, u, 18,
      5, u, u, 23, u, 27, u, 6, u, 24, 7, u, 8, u, 0, u};
 
-  public static int nlz(int x) {
+  public static int nlz(final int y) {
+    int x = y;
     x |= x >>> 1; // Propagate leftmost
     x |= x >>> 2; // 1-bit to the right.
     x |= x >>> 4;
