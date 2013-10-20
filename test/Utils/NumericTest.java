@@ -263,6 +263,15 @@ public class NumericTest {
   public void testIsEqWithinTolerance() {
     System.out.println("isEqWithinTolerance");
 
+    final double tol = 1.0;
+    final double epsilon = 1.0e-6;
+    final double x1 = 5.0;
+    final double x2 = 6.0;
+
+    assertTrue(Numeric.isEqWithinTolerance(x1, x2, tol));
+    assertTrue(Numeric.isEqWithinTolerance(x2, x1, tol));
+    assertFalse(Numeric.isEqWithinTolerance(x1, x2, tol - epsilon));
+    assertFalse(Numeric.isEqWithinTolerance(x2, x1, tol - epsilon));
   }
 
   /**
@@ -272,20 +281,29 @@ public class NumericTest {
   public void testIsRelativeEqWithinTolerance() {
     System.out.println("isRelativeEqWithinTolerance");
 
+    final double epsilon = 1.0e-10;
+    final double x1 = 6.0;
+    final double x2 = 5.0;
+
+    assertTrue(Numeric.isRelativeEqWithinTolerance(x1, x2, 1.0 / 5.0 + epsilon));
+    assertTrue(Numeric.isRelativeEqWithinTolerance(x2, x1, 1.0 / 6.0 + epsilon));
+    assertFalse(Numeric.isRelativeEqWithinTolerance(x1, x2, 1.0 / 5.0 - epsilon));
+    assertFalse(Numeric.isRelativeEqWithinTolerance(x2, x1, 1.0 / 6.0 - epsilon));
   }
 
   private static int nlz(int n) {
     if (n == 0) {
       return 32;
     }
+    else {
+      int res = 0;
+      while (n > 0) {
+        n = n << 1;
+        ++res;
+      }
 
-    int res = 0;
-    while (n > 0) {
-      n = n << 1;
-      ++res;
+      return res;
     }
-
-    return res;
   }
   /**
    * Test of nlz method, of class Numeric.

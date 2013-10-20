@@ -12,7 +12,7 @@ package DataStructures;
  */
 public final class IntMapModule {
   public static class Tree<V> {
-    
+
   }
 
   private static final class EmptyNode<V> extends Tree<V> {
@@ -49,6 +49,7 @@ public final class IntMapModule {
 
   private static final EmptyNode<?> sEmptyNode = new EmptyNode<>();
 
+  @SuppressWarnings("unchecked")
   public static <V> Tree<V> empty() {
     return (Tree<V>) sEmptyNode;
   }

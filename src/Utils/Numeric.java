@@ -87,7 +87,7 @@ public class Numeric {
           final double d2,
           final double tol) {
     final double absError = Math.abs(d1 - d2);
-    return absError < tol;
+    return absError <= tol;
   }
 
   public static boolean isRelativeEqWithinTolerance(
@@ -95,7 +95,7 @@ public class Numeric {
           final double d2,
           final double tol) {
     final double relError = Math.abs((d1 - d2) / d2);
-    return relError < tol;
+    return relError <= tol;
   }
 
   // Hacker's delight 2nd edition
