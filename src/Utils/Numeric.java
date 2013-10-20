@@ -6,9 +6,12 @@
 
 package Utils;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  *
@@ -69,11 +72,24 @@ public class Numeric {
           final int low,
           final int high,
           final int size) {
-    final int lastIdx = size - 1;
-    final int[] arr = randomSet(low, high, size).stream().mapToInt((Integer n) -> n.intValue()).toArray();
-    IntStream.range(0, size).forEach(n -> { swap(arr, n, randomInt(n, lastIdx)); });
+    final int[] array = new int[size];
+    randomPermutation(low, high, array);
 
-    return arr;
+    return array;
+  }
+
+  public static void randomPermutation(
+          final int low,
+          final int high,
+          final int[] array) {
+    final int size = array.length;
+    final int lastIdx = size - 1;
+    final Iterator<Integer> it = randomSet(low, high, size).stream().iterator();
+
+    IntStream.range(0, size).forEach(i -> { array[i] = it.next(); });
+    IntStream.range(0, lastIdx).forEach(n -> { swap(array, n, randomInt(n, lastIdx)); });
+
+    return;
   }
 
   public static double goldenRatio = (Math.sqrt(5.0) + 1.0) / 2.0;

@@ -129,7 +129,7 @@ public class NumericTest {
       dataset.addValue(e.getValue().doubleValue(), "R", e.getKey().toString());
     });
 
-    JFreeChart chart = ChartFactory.createBarChart(
+    final JFreeChart chart = ChartFactory.createBarChart(
             "Bar Chart Demo", // chart title
             "Category", // domain axis label
             "Value", // range axis label
@@ -139,7 +139,7 @@ public class NumericTest {
             true, // tooltips?
             false // URLs?
     );
-    ChartPanel chartPanel = new ChartPanel(chart, false);
+    final ChartPanel chartPanel = new ChartPanel(chart, false);
     chartPanel.setPreferredSize(new Dimension(500, 270));
 
     ApplicationFrame demo = new ApplicationFrame("Bar Demo 1");

@@ -118,15 +118,8 @@ public class AvlTreeModuleTest {
       final int avlTreeSize = t.size();
       final int avlTreeDepth = t.depth();
 
-      System.out.println("Hi there.");
-      System.out.println(expectedSize);
-      System.out.println(avlTreeSize);
-      System.out.println();
-      System.out.println(avlTreeDepth);
-      System.out.println(expectedDepth);
-
       assertEquals(expectedSize, avlTreeSize);
-      assertTrue((double) avlTreeDepth < expectedDepth);
+      assertTrue(((double) avlTreeDepth) < expectedDepth);
     }
   }
 }
