@@ -84,7 +84,7 @@ public class Numeric {
           final int[] array) {
     final int size = array.length;
     final int lastIdx = size - 1;
-    final Iterator<Integer> it = randomSet(low, high, size).stream().iterator();
+    final Iterator<Integer> it = randomSet(low, high, size).iterator();
 
     IntStream.range(0, size).forEach(i -> { array[i] = it.next(); });
     IntStream.range(0, lastIdx).forEach(n -> { swap(array, n, randomInt(n, lastIdx)); });
