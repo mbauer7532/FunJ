@@ -25,6 +25,7 @@ import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -318,5 +319,28 @@ public class NumericTest {
        Integer.MAX_VALUE - 1, Integer.MAX_VALUE, Integer.MAX_VALUE + 1};
 
     Arrays.stream(xs).forEach(x -> { assertEquals(nlz(x), Numeric.nlz(x)); });
+
+    assertEquals(31, Numeric.nlz(1));
+    
+    return;
+  }
+
+  /**
+   * Test of highestBit method, of class Numeric.
+   */
+  @Test
+  public void testHighestBit() {
+    System.out.println("highestBit");
+    final int[] expected 
+            = {1,
+              2, 2,
+              4, 4, 4, 4,
+              8, 8, 8, 8, 8, 8, 8, 8,
+              16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+              32};
+    final int[] res = IntStream.rangeClosed(1, 32).map(n -> Numeric.highestBit(n)).toArray();
+    assertArrayEquals(expected, res);
+    
+    return;
   }
 }

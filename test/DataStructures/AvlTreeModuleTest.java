@@ -107,7 +107,7 @@ public class AvlTreeModuleTest {
 
       AvlTreeModule.Tree<Integer, Integer> t
               = Arrays.stream(data)
-                      .mapToObj(j -> j)
+                      .boxed()
                       .reduce(t0,
                               ((AvlTreeModule.Tree<Integer, Integer> tx, Integer x) -> tx.put(x, x)),
                               ((AvlTreeModule.Tree<Integer, Integer> z1, AvlTreeModule.Tree<Integer, Integer> z2) -> null));

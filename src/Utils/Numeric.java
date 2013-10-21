@@ -133,4 +133,11 @@ public class Numeric {
 
     return nlzTab[x >>> 26];
   }
+
+  public static int highestBit(final int y) {
+    if (y == 0) {
+      throw new AssertionError("The input to highestBit() cannot be zero.");
+    }
+    return 1 << (31 - nlz(y));
+  }
 }
