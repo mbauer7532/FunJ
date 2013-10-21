@@ -97,7 +97,6 @@ public final class IntMapModule {
     }
 
     @Override
-    @SuppressWarnings("UnnecessaryReturnStatement")
     public void appi(final BiConsumer<Integer, V> f) {
       Objects.requireNonNull(f);
 
