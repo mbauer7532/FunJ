@@ -8,6 +8,7 @@ package DataStructures;
 
 import Utils.Functionals.TriFunction;
 import Utils.Numeric;
+import java.awt.Color;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -16,13 +17,14 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.StructureGraphic.v1.DSTreeNode;
 
 /**
  *
  * @author Neo
  */
 public final class IntMapModule {
-  public static abstract class Tree<V> {
+  public static abstract class Tree<V> implements DSTreeNode {
     public abstract boolean isEmpty();
     public abstract boolean contains(final int key);
     public abstract Tree<V> insert(final BiFunction<V, V, V> f, final int key, final V value);
@@ -178,6 +180,21 @@ public final class IntMapModule {
      Objects.requireNonNull(t);
 
       return t;
+    }
+    
+    @Override
+    public DSTreeNode[] DSgetChildren() {
+      return new DSTreeNode[0];
+    }
+
+    @Override
+    public Object DSgetValue() {
+      return "E";
+    }
+
+    @Override
+    public Color DSgetColor() {
+      return Color.GREEN;
     }
   }
 
@@ -339,6 +356,21 @@ public final class IntMapModule {
         return empty();
       }
     }
+    
+    @Override
+    public DSTreeNode[] DSgetChildren() {
+      return new DSTreeNode[0];
+    }
+
+    @Override
+    public Object DSgetValue() {
+      return String.format("(%d -> %s)", mKey, mVal.toString());
+    }
+
+    @Override
+    public Color DSgetColor() {
+      return Color.BLUE;
+    }
   }
 
   private static final class BranchNode<V> extends Tree<V> {
@@ -483,6 +515,21 @@ public final class IntMapModule {
       mBranchingBit = branchingBit;
       mLeft = left;
       mRight = right;
+    }
+
+    @Override
+    public DSTreeNode[] DSgetChildren() {
+      return new DSTreeNode[] {mLeft, mRight};
+    }
+
+    @Override
+    public Object DSgetValue() {
+      return String.format("(%d, %d)", mPrefix, mBranchingBit);
+    }
+
+    @Override
+    public Color DSgetColor() {
+      return Color.MAGENTA;
     }
 
     private final int mPrefix;

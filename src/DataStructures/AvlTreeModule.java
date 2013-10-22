@@ -97,7 +97,7 @@ public final class AvlTreeModule {
 
     @Override
     public Object DSgetValue() {
-      return "null";
+      return "E";
     }
 
     @Override

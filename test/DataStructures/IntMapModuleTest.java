@@ -7,7 +7,11 @@
 package DataStructures;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.stream.IntStream;
+import org.StructureGraphic.v1.DSutils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -78,13 +82,34 @@ public class IntMapModuleTest {
   public void testInsert() {
     System.out.println("insert");
     
-    final IntMapModule.Tree<Integer> t0 = IntMapModule.empty();
+    final int low = 0;
+    final int high = 16;
     
-    IntMapModule.Tree<Integer> t1
-            = IntStream.rangeClosed(0, 255)
+    final IntMapModule.Tree<Integer> t0 = IntMapModule.empty();
+
+    final IntMapModule.Tree<Integer> t1
+            = IntStream.rangeClosed(low, high)
                        .boxed()
                        .reduce(t0,
-                               ((IntMapModule.Tree<Integer> t, Integer ii) -> t.insert((z1,z2) -> z1, ii.intValue(), ii)),
+                               ((t, ii) -> t.insert((z1, z2) -> z1, ii, ii)),
                                (tt1, tt2) -> null);
+
+    AtomicReference<IntMapModule.Tree<Integer>> refToTree = new AtomicReference<>(t0);
+    IntStream.rangeClosed(low, high)
+             .collect((() -> null),
+                     (IntMapModule.Tree<Integer> tree, int i) -> { refToTree.set(refToTree.get().insert((z1, z2) -> z1, i, i)); },
+                     (tt1, tt2) -> {});
+    final IntMapModule.Tree<Integer> t2 = refToTree.get();
+
+    final int length = 44;
+    final int width = 20;
+    DSutils.show(t1, length, width);
+    DSutils.show(t2, length, width);
+    final int sleepSeconds = 1009;
+    try {
+      Thread.sleep(sleepSeconds * 1000);
+    } catch (InterruptedException ex) {
+      Logger.getLogger(IntMapModuleTest.class.getName()).log(Level.SEVERE, null, ex);
+    }
   }
 }
