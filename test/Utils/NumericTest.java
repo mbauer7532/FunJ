@@ -126,7 +126,7 @@ public class NumericTest {
     }
 
     DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-    m.entrySet().stream().forEach(e -> {
+    m.entrySet().forEach(e -> {
       dataset.addValue(e.getValue().doubleValue(), "R", e.getKey().toString());
     });
 
@@ -197,7 +197,7 @@ public class NumericTest {
     }
 
     DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-    m.entrySet().stream().forEach(e -> {
+    m.entrySet().forEach(e -> {
       dataset.addValue(e.getValue().doubleValue(), "R", e.getKey().toString());
     });
 
