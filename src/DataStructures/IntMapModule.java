@@ -508,7 +508,7 @@ public final class IntMapModule {
         return this;
       }
       else {
-        return smartBranchNodeConstructor(mPrefix, mBranchingBit, mLeft.filter(f), mRight.filter(f));
+        return smartBranchNodeConstructor(mPrefix, mBranchingBit, newL, newR);
       }
     }
 
@@ -521,7 +521,7 @@ public final class IntMapModule {
         return this;
       }
       else {
-        return smartBranchNodeConstructor(mPrefix, mBranchingBit, mLeft.filteri(f), mRight.filteri(f));
+        return smartBranchNodeConstructor(mPrefix, mBranchingBit, newL, newR);
       }
     }
 
