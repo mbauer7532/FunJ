@@ -109,28 +109,28 @@ public final class IntMapModule {
     public <W> Tree<W> map(final Function<V, W> f) {
       Objects.requireNonNull(f);
 
-      return empty();
+      return createEmptyNode();
     }
 
     @Override
     public <W> Tree<W> mapi(final BiFunction<Integer, V, W> f) {
       Objects.requireNonNull(f);
 
-      return empty();
+      return createEmptyNode();
     }
 
     @Override
     public <W> Tree<W> mapPartial(final Function<V, Optional<W>> f) {
       Objects.requireNonNull(f);
 
-      return empty();
+      return createEmptyNode();
     }
 
     @Override
     public <W> Tree<W> mapPartiali(final BiFunction<Integer, V, Optional<W>> f) {
       Objects.requireNonNull(f);
 
-      return empty();
+      return createEmptyNode();
     }
 
     @Override
@@ -165,14 +165,14 @@ public final class IntMapModule {
     public Tree<V> filter(final Predicate<V> f) {
       Objects.requireNonNull(f);
 
-      return empty();
+      return createEmptyNode();
     }
 
     @Override
     public Tree<V> filteri(final BiPredicate<Integer, V> f) {
       Objects.requireNonNull(f);
 
-      return empty();
+      return createEmptyNode();
     }
 
     @Override
@@ -241,7 +241,7 @@ public final class IntMapModule {
 
     @Override
     public Tree<V> remove(final int key) {
-      return mKey == key ? empty() : this;
+      return mKey == key ? EmptyNode.createEmptyNode() : this;
     }
 
     @Override
@@ -330,14 +330,14 @@ public final class IntMapModule {
     public Tree<V> filter(final Predicate<V> f) {
       Objects.requireNonNull(f);
       
-      return f.test(mValue) ? this : empty();
+      return f.test(mValue) ? this : EmptyNode.createEmptyNode();
     }
 
     @Override
     public Tree<V> filteri(final BiPredicate<Integer, V> f) {
       Objects.requireNonNull(f);
       
-      return f.test(mKey, mValue) ? this : empty();
+      return f.test(mKey, mValue) ? this : EmptyNode.createEmptyNode();
     }
 
     @Override
@@ -353,10 +353,10 @@ public final class IntMapModule {
         return createLeafNode(mKey, opt.get());
       }
       else {
-        return empty();
+        return EmptyNode.createEmptyNode();
       }
     }
-    
+
     @Override
     public DSTreeNode[] DSgetChildren() {
       return new DSTreeNode[0];
