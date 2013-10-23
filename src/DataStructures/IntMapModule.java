@@ -45,7 +45,7 @@ public final class IntMapModule {
     public abstract <W> W foldri(final TriFunction<Integer, V, W, W> f, final W w);
     public abstract Tree<V> filter(final Predicate<V> f);
     public abstract Tree<V> filteri(final BiPredicate<Integer, V> f);
-    public abstract Tree<V> merge(final Tree<V> t);
+    public abstract Tree<V> merge(final BiFunction<V, V, V> f, final Tree<V> t);
   }
 
   private static final class EmptyNode<V> extends Tree<V> {
@@ -78,7 +78,7 @@ public final class IntMapModule {
 
     @Override
     public Tree<V> remove(final int key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return this;
     }
 
     @Override
@@ -176,8 +176,9 @@ public final class IntMapModule {
     }
 
     @Override
-    public Tree<V> merge(final Tree<V> t) {
-     Objects.requireNonNull(t);
+    public Tree<V> merge(final BiFunction<V, V, V> f, final Tree<V> t) {
+      Objects.requireNonNull(f);
+      Objects.requireNonNull(t);
 
       return t;
     }
@@ -242,7 +243,7 @@ public final class IntMapModule {
 
     @Override
     public Tree<V> remove(final int key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return mKey == key ? empty() : this;
     }
 
     @Override
@@ -289,16 +290,14 @@ public final class IntMapModule {
     public <W> Tree<W> mapPartial(final Function<V, Optional<W>> f) {
       Objects.requireNonNull(f);
 
-      final Optional<W> opt = f.apply(mVal);
-      return compOptMapedValue(opt);
+      return compOptMapedValue(f.apply(mVal));
     }
 
     @Override
     public <W> Tree<W> mapPartiali(final BiFunction<Integer, V, Optional<W>> f) {
       Objects.requireNonNull(f);
-      
-      final Optional<W> opt = f.apply(mKey, mVal);
-      return compOptMapedValue(opt);
+
+      return compOptMapedValue(f.apply(mKey, mVal));
     }
 
     @Override
@@ -344,8 +343,11 @@ public final class IntMapModule {
     }
 
     @Override
-    public Tree<V> merge(final Tree<V> t) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Tree<V> merge(final BiFunction<V, V, V> f, final Tree<V> t) {
+      Objects.requireNonNull(f);
+      Objects.requireNonNull(t);
+
+      return t.insert((x, y) -> f.apply(y, x), mKey, mVal);
     }
     
     private <W> Tree<W> compOptMapedValue(final Optional<W> opt) {
@@ -413,7 +415,22 @@ public final class IntMapModule {
 
     @Override
     public Tree<V> remove(final int key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      if (! matchPrefix(key, mPrefix, mBranchingBit)) {
+        return this;
+      }
+      else {
+        final Tree<V> t0, t1;
+        if (zeroBit(key, mBranchingBit)) {
+          t0 = mLeft.remove(key);
+          t1 = mRight;
+        }
+        else {
+          t0 = mLeft;
+          t1 = mRight.remove(key);
+        }
+
+        return smartBranchNodeConstructor(mPrefix, mBranchingBit, t0, t1);
+      }
     }
 
     @Override
@@ -428,83 +445,137 @@ public final class IntMapModule {
 
     @Override
     public void app(final Consumer<V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      mLeft.app(f);
+      mRight.app(f);
+      
+      return;
     }
 
     @Override
     public void appi(final BiConsumer<Integer, V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      mLeft.appi(f);
+      mRight.appi(f);
+      
+      return;
     }
 
     @Override
     public <W> Tree<W> map(final Function<V, W> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return new BranchNode<>(mPrefix, mBranchingBit, mLeft.map(f), mRight.map(f));
     }
 
     @Override
     public <W> Tree<W> mapi(final BiFunction<Integer, V, W> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return new BranchNode<>(mPrefix, mBranchingBit, mLeft.mapi(f), mRight.mapi(f));
     }
 
     @Override
     public <W> Tree<W> mapPartial(final Function<V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return new BranchNode<>(mPrefix, mBranchingBit, mLeft.mapPartial(f), mRight.mapPartial(f));
     }
 
     @Override
     public <W> Tree<W> mapPartiali(final BiFunction<Integer, V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return new BranchNode<>(mPrefix, mBranchingBit, mLeft.mapPartiali(f), mRight.mapPartiali(f));
     }
 
     @Override
     public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return mRight.foldl(f, mLeft.foldl(f, w));
     }
 
     @Override
     public <W> W foldli(final TriFunction<Integer, V, W, W> f, final W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return mRight.foldli(f, mLeft.foldli(f, w));
     }
 
     @Override
     public <W> W foldr(final BiFunction<V, W, W> f, final W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return mLeft.foldr(f, mRight.foldr(f, w));
     }
 
     @Override
     public <W> W foldri(final TriFunction<Integer, V, W, W> f, final W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return mLeft.foldri(f, mRight.foldri(f, w));
     }
 
     @Override
     public Tree<V> filter(final Predicate<V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      final Tree<V> newL = mLeft.filter(f);
+      final Tree<V> newR = mRight.filter(f);
+
+      if (newL == mLeft && newR == mRight) {
+        return this;
+      }
+      else {
+        return smartBranchNodeConstructor(mPrefix, mBranchingBit, mLeft.filter(f), mRight.filter(f));
+      }
     }
 
     @Override
     public Tree<V> filteri(final BiPredicate<Integer, V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      final Tree<V> newL = mLeft.filteri(f);
+      final Tree<V> newR = mRight.filteri(f);
+
+      if (newL == mLeft && newR == mRight) {
+        return this;
+      }
+      else {
+        return smartBranchNodeConstructor(mPrefix, mBranchingBit, mLeft.filteri(f), mRight.filteri(f));
+      }
     }
 
     @Override
-    public Tree<V> merge(final Tree<V> t) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private static <W> Tree<W> create(
-            final int prefix,
-            final int branchingBit,
-            final Tree<W> left,
-            final Tree<W> right) {
-      if (left.isEmpty()) {
-        return right;
-      }
-      else if (right.isEmpty()) {
-        return left;
+    public Tree<V> merge(final BiFunction<V, V, V> f, final Tree<V> tree) {
+      if (! (tree instanceof BranchNode)) {
+        return tree.merge((x, y) -> f.apply(y, x), this);
       }
       else {
-        return new BranchNode<>(prefix, branchingBit, left, right);
+        final BranchNode<V> s = this;
+        final BranchNode<V> t = (BranchNode<V>) tree;
+        final int p = s.mPrefix;
+        final int q = t.mPrefix;
+
+        final int m = s.mBranchingBit;
+        final int n = t.mBranchingBit;
+
+        final Tree<V> s0 = s.mLeft, s1 = s.mRight;
+        final Tree<V> t0 = t.mLeft, t1 = t.mRight;
+
+        if (m == n && p == q) {
+          return new BranchNode<>(p, m, s0.merge(f, t0), s1.merge(f, t1));
+        }
+        else if (m < n && matchPrefix(q, p, m)) {
+          if (zeroBit(q, m)) {
+            return new BranchNode<>(p, m, s0.merge(f, t), s1);
+          }
+          else {
+            return new BranchNode<>(p, m, s0, s1.merge(f, t));
+          }
+        }
+        else if (m > n && matchPrefix(p, q, n)) {
+          if (zeroBit(p, n)) {
+            return new BranchNode<>(q, n, s.merge(f, t0), t1);
+          }
+          else {
+            return new BranchNode<>(q, n, t0, s.merge(f, t1));
+          }
+        }
+        else {
+          return join(p, s, q, t);
+        }
       }
+    }
+
+    private static <W> Tree<W> smartBranchNodeConstructor(final int prefix,
+                                                          final int branchingBit,
+                                                          final Tree<W> left,
+                                                          final Tree<W> right) {
+      return left.isEmpty()
+                ? right
+                : (right.isEmpty()
+                   ? left
+                   : new BranchNode<>(prefix, branchingBit, left, right));
     }
 
     private BranchNode(final int prefix,
@@ -569,6 +640,7 @@ public final class IntMapModule {
       nt0 = t1;
       nt1 = t0;
     }
+
     return new BranchNode<>(pnew, m, nt0, nt1);
   }
 

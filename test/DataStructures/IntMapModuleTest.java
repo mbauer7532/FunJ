@@ -86,7 +86,7 @@ public class IntMapModuleTest {
     final int high = 16;
     
     final IntMapModule.Tree<Integer> t0 = IntMapModule.empty();
-
+    
     final IntMapModule.Tree<Integer> t1
             = IntStream.rangeClosed(low, high)
                        .boxed()
@@ -105,7 +105,7 @@ public class IntMapModuleTest {
     final int width = 20;
     DSutils.show(t1, length, width);
     DSutils.show(t2, length, width);
-    final int sleepSeconds = 1009;
+    final int sleepSeconds = 1;
     try {
       Thread.sleep(sleepSeconds * 1000);
     } catch (InterruptedException ex) {
