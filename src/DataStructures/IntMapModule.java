@@ -53,7 +53,7 @@ public final class IntMapModule {
     public Tree<V> insert(final BiFunction<V, V, V> f, final int key, final V value) {
       Objects.requireNonNull(f);
 
-      return new LeafNode<>(key, value);
+      return LeafNode.createLeafNode(key, value);
     }
 
     @Override
@@ -197,27 +197,25 @@ public final class IntMapModule {
     public Color DSgetColor() {
       return Color.GREEN;
     }
+    
+    private static final EmptyNode<?> sEmptyNode = new EmptyNode<>();
+
+    @SuppressWarnings("unchecked")
+    public static <V> EmptyNode<V> createEmptyNode() {
+      return (EmptyNode<V>) sEmptyNode;
+    }
   }
 
   private static final class LeafNode<V> extends Tree<V> {
-    private LeafNode(final int j, final V val) {
-      mKey = j;
-      mVal = val;
-    }
-
-    private final int mKey;
-    private final V mVal;
-
     @Override
     public Tree<V> insert(final BiFunction<V, V, V> f, final int key, final V value) {
       Objects.requireNonNull(f);
-      Objects.requireNonNull(value);
 
       if (key == mKey) {
-        return new LeafNode<>(key, f.apply(value, mVal));
+        return createLeafNode(key, f.apply(value, mValue));
       }
       else {
-        return join(key, new LeafNode<>(key, value), mKey, this);
+        return join(key, createLeafNode(key, value), mKey, this);
       }
     }
 
@@ -233,12 +231,12 @@ public final class IntMapModule {
 
     @Override
     public Optional<V> get(final int key) {
-      return mKey == key ? Optional.of(mVal) : Optional.empty();
+      return mKey == key ? Optional.of(mValue) : Optional.empty();
     }
 
     @Override
     public V getWithDefault(final int key, final V def) {
-      return mKey == key ? mVal : def;
+      return mKey == key ? mValue : def;
     }
 
     @Override
@@ -260,7 +258,7 @@ public final class IntMapModule {
     public void app(final Consumer<V> f) {
       Objects.requireNonNull(f);
 
-      f.accept(mVal);
+      f.accept(mValue);
       return;
     }
 
@@ -268,7 +266,7 @@ public final class IntMapModule {
     public void appi(final BiConsumer<Integer, V> f) {
       Objects.requireNonNull(f);
 
-      f.accept(mKey, mVal); 
+      f.accept(mKey, mValue); 
       return;
     }
 
@@ -276,70 +274,70 @@ public final class IntMapModule {
     public <W> Tree<W> map(final Function<V, W> f) {
       Objects.requireNonNull(f);
 
-      return new LeafNode<>(mKey, f.apply(mVal));
+      return createLeafNode(mKey, f.apply(mValue));
     }
 
     @Override
     public <W> Tree<W> mapi(final BiFunction<Integer, V, W> f) {
       Objects.requireNonNull(f);
 
-      return new LeafNode<>(mKey, f.apply(mKey, mVal));
+      return createLeafNode(mKey, f.apply(mKey, mValue));
     }
 
     @Override
     public <W> Tree<W> mapPartial(final Function<V, Optional<W>> f) {
       Objects.requireNonNull(f);
 
-      return compOptMapedValue(f.apply(mVal));
+      return compOptMapedValue(f.apply(mValue));
     }
 
     @Override
     public <W> Tree<W> mapPartiali(final BiFunction<Integer, V, Optional<W>> f) {
       Objects.requireNonNull(f);
 
-      return compOptMapedValue(f.apply(mKey, mVal));
+      return compOptMapedValue(f.apply(mKey, mValue));
     }
 
     @Override
     public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
       Objects.requireNonNull(f);
       
-      return f.apply(mVal, w);
+      return f.apply(mValue, w);
     }
 
     @Override
     public <W> W foldli(final TriFunction<Integer, V, W, W> f, final W w) {
       Objects.requireNonNull(f);
       
-      return f.apply(mKey, mVal, w);
+      return f.apply(mKey, mValue, w);
     }
 
     @Override
     public <W> W foldr(final BiFunction<V, W, W> f, final W w) {
       Objects.requireNonNull(f);
       
-      return f.apply(mVal, w);
+      return f.apply(mValue, w);
     }
 
     @Override
     public <W> W foldri(final TriFunction<Integer, V, W, W> f, final W w) {
       Objects.requireNonNull(f);
       
-      return f.apply(mKey, mVal, w);
+      return f.apply(mKey, mValue, w);
     }
 
     @Override
     public Tree<V> filter(final Predicate<V> f) {
       Objects.requireNonNull(f);
       
-      return f.test(mVal) ? this : empty();
+      return f.test(mValue) ? this : empty();
     }
 
     @Override
     public Tree<V> filteri(final BiPredicate<Integer, V> f) {
       Objects.requireNonNull(f);
       
-      return f.test(mKey, mVal) ? this : empty();
+      return f.test(mKey, mValue) ? this : empty();
     }
 
     @Override
@@ -347,12 +345,12 @@ public final class IntMapModule {
       Objects.requireNonNull(f);
       Objects.requireNonNull(t);
 
-      return t.insert((x, y) -> f.apply(y, x), mKey, mVal);
+      return t.insert((x, y) -> f.apply(y, x), mKey, mValue);
     }
     
     private <W> Tree<W> compOptMapedValue(final Optional<W> opt) {
       if (opt.isPresent()) {
-        return new LeafNode<>(mKey, opt.get());
+        return createLeafNode(mKey, opt.get());
       }
       else {
         return empty();
@@ -366,30 +364,45 @@ public final class IntMapModule {
 
     @Override
     public Object DSgetValue() {
-      return String.format("(%d -> %s)", mKey, mVal.toString());
+      return String.format("(%d -> %s)", mKey, mValue.toString());
     }
 
     @Override
     public Color DSgetColor() {
       return Color.BLUE;
     }
+
+    private static <V> LeafNode<V> createLeafNode(final int key, final V value) {
+      Objects.requireNonNull(value);
+
+      return new LeafNode<>(key, value);
+    }
+
+    private LeafNode(final int key, final V value) {
+      mKey = key;
+      mValue = value;
+    }
+
+    private final int mKey;
+    private final V mValue;
   }
 
   private static final class BranchNode<V> extends Tree<V> {
     @Override
     public Tree<V> insert(final BiFunction<V, V, V> f, final int key, final V value) {
       Objects.requireNonNull(f);
+      Objects.requireNonNull(value);
 
       if (matchPrefix(key, mPrefix, mBranchingBit)) {
         if (zeroBit(key, mBranchingBit)) {
-          return new BranchNode<>(mPrefix, mBranchingBit, mLeft.insert(f, key, value), mRight);
+          return createBranchNode(mPrefix, mBranchingBit, mLeft.insert(f, key, value), mRight);
         }
         else {
-          return new BranchNode<>(mPrefix, mBranchingBit, mLeft, mRight.insert(f, key, value));
+          return createBranchNode(mPrefix, mBranchingBit, mLeft, mRight.insert(f, key, value));
         }
       }
       else {
-        return join(key, new LeafNode<>(key, value), mPrefix, this);
+        return join(key, LeafNode.createLeafNode(key, value), mPrefix, this);
       }
     }
     
@@ -461,22 +474,22 @@ public final class IntMapModule {
 
     @Override
     public <W> Tree<W> map(final Function<V, W> f) {
-      return new BranchNode<>(mPrefix, mBranchingBit, mLeft.map(f), mRight.map(f));
+      return createBranchNode(mPrefix, mBranchingBit, mLeft.map(f), mRight.map(f));
     }
 
     @Override
     public <W> Tree<W> mapi(final BiFunction<Integer, V, W> f) {
-      return new BranchNode<>(mPrefix, mBranchingBit, mLeft.mapi(f), mRight.mapi(f));
+      return createBranchNode(mPrefix, mBranchingBit, mLeft.mapi(f), mRight.mapi(f));
     }
 
     @Override
     public <W> Tree<W> mapPartial(final Function<V, Optional<W>> f) {
-      return new BranchNode<>(mPrefix, mBranchingBit, mLeft.mapPartial(f), mRight.mapPartial(f));
+      return createBranchNode(mPrefix, mBranchingBit, mLeft.mapPartial(f), mRight.mapPartial(f));
     }
 
     @Override
     public <W> Tree<W> mapPartiali(final BiFunction<Integer, V, Optional<W>> f) {
-      return new BranchNode<>(mPrefix, mBranchingBit, mLeft.mapPartiali(f), mRight.mapPartiali(f));
+      return createBranchNode(mPrefix, mBranchingBit, mLeft.mapPartiali(f), mRight.mapPartiali(f));
     }
 
     @Override
@@ -543,22 +556,22 @@ public final class IntMapModule {
         final Tree<V> t0 = t.mLeft, t1 = t.mRight;
 
         if (m == n && p == q) {
-          return new BranchNode<>(p, m, s0.merge(f, t0), s1.merge(f, t1));
+          return createBranchNode(p, m, s0.merge(f, t0), s1.merge(f, t1));
         }
         else if (m < n && matchPrefix(q, p, m)) {
           if (zeroBit(q, m)) {
-            return new BranchNode<>(p, m, s0.merge(f, t), s1);
+            return createBranchNode(p, m, s0.merge(f, t), s1);
           }
           else {
-            return new BranchNode<>(p, m, s0, s1.merge(f, t));
+            return createBranchNode(p, m, s0, s1.merge(f, t));
           }
         }
         else if (m > n && matchPrefix(p, q, n)) {
           if (zeroBit(p, n)) {
-            return new BranchNode<>(q, n, s.merge(f, t0), t1);
+            return createBranchNode(q, n, s.merge(f, t0), t1);
           }
           else {
-            return new BranchNode<>(q, n, t0, s.merge(f, t1));
+            return createBranchNode(q, n, t0, s.merge(f, t1));
           }
         }
         else {
@@ -571,11 +584,15 @@ public final class IntMapModule {
                                                           final int branchingBit,
                                                           final Tree<W> left,
                                                           final Tree<W> right) {
-      return left.isEmpty()
-                ? right
-                : (right.isEmpty()
-                   ? left
-                   : new BranchNode<>(prefix, branchingBit, left, right));
+      if (left.isEmpty()) {
+        return right;
+      }
+      else if (right.isEmpty()) {
+        return left;
+      }
+      else {
+        return createBranchNode(prefix, branchingBit, left, right);
+      }
     }
 
     private BranchNode(final int prefix,
@@ -587,6 +604,14 @@ public final class IntMapModule {
       mLeft = left;
       mRight = right;
     }
+
+    private static <V> BranchNode<V> createBranchNode(final int prefix,
+                                                      final int branchingBit,
+                                                      final Tree<V> left,
+                                                      final Tree<V> right) {
+      return new BranchNode<>(prefix, branchingBit, left, right);
+    }
+
 
     @Override
     public DSTreeNode[] DSgetChildren() {
@@ -641,17 +666,14 @@ public final class IntMapModule {
       nt1 = t0;
     }
 
-    return new BranchNode<>(pnew, m, nt0, nt1);
+    return BranchNode.createBranchNode(pnew, m, nt0, nt1);
   }
 
-  private static final EmptyNode<?> sEmptyNode = new EmptyNode<>();
-
-  @SuppressWarnings("unchecked")
   public static <V> Tree<V> empty() {
-    return (Tree<V>) sEmptyNode;
+    return EmptyNode.createEmptyNode();
   }
 
   public static <V> Tree<V> singleton(final int key, final V value) {
-    return new LeafNode<>(key, value);
+    return LeafNode.createLeafNode(key, value);
   }
 }
