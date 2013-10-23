@@ -331,16 +331,31 @@ public class NumericTest {
   @Test
   public void testHighestBit() {
     System.out.println("highestBit");
-    final int[] expected 
-            = {1,
-              2, 2,
-              4, 4, 4, 4,
-              8, 8, 8, 8, 8, 8, 8, 8,
-              16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
-              32};
-    final int[] res = IntStream.rangeClosed(1, 32).map(n -> Numeric.highestBit(n)).toArray();
-    assertArrayEquals(expected, res);
     
+    {
+      final int[] expected 
+              = {1,
+                2, 2,
+                4, 4, 4, 4,
+                8, 8, 8, 8, 8, 8, 8, 8,
+                16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16,
+                32};
+      final int[] res = IntStream.rangeClosed(1, 32).map(n -> Numeric.highestBit(n)).toArray();
+      assertArrayEquals(expected, res);
+    }
+    // Test powers of 2.  Should be the identity function.
+    {
+      final int[] array = IntStream.range(0, 32).map(n -> 1 << n).toArray();
+      assertArrayEquals(array, Arrays.stream(array).map(n -> Numeric.highestBit(n)).toArray());
+    }
+    // Test powers of 2 minus 1.
+    {
+      final int[] array = IntStream.range(1, 32).map(n -> 1 << n).toArray();
+      final int[] arrayMinusOne = Arrays.stream(array).map(n -> n - 1).toArray();
+      final int[] expected = Arrays.stream(arrayMinusOne).map(n -> n & ~ (n >>> 1)).toArray();
+      assertArrayEquals(expected, Arrays.stream(arrayMinusOne).map(n -> Numeric.highestBit(n)).toArray());
+    }
+
     return;
   }
 }

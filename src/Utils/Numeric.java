@@ -6,12 +6,10 @@
 
 package Utils;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  *
@@ -92,7 +90,7 @@ public class Numeric {
     return;
   }
 
-  public static double goldenRatio = (Math.sqrt(5.0) + 1.0) / 2.0;
+  public static final double sGoldenRatio = (Math.sqrt(5.0) + 1.0) / 2.0;
 
   public static double log(final double x, final double base) {
     return Math.log(x) / Math.log(base);
@@ -134,10 +132,38 @@ public class Numeric {
     return nlzTab[x >>> 26];
   }
 
-  public static int highestBit(final int y) {
+  private static int highestBitDirect(final int y) {
     if (y == 0) {
-      throw new AssertionError("The input to highestBit() cannot be zero.");
+      return -1;    // A sentinel value.
     }
-    return 1 << (31 - nlz(y));
+    else {
+      return 1 << (31 - nlz(y));
+    }
+  }
+
+  private static final int[] sHighestBitCache = createHighestBitCache();
+
+  private static final int sHighestBitCacheSize = 0x65336;
+  private static final int sLog2HighestBitCacheSize = 16;
+  
+  private static int[] createHighestBitCache() {
+    return IntStream.range(0, sHighestBitCacheSize)
+                    .map(n -> highestBitDirect(n))
+                    .toArray();
+  }
+
+  public static int highestBit(final int y) {
+    final int high = y >>> sLog2HighestBitCacheSize;
+
+    if (high > 0) {
+      return sHighestBitCache[high] << 16;
+    }
+    else {
+      if (y == 0) {
+        throw new AssertionError("Zero does not have a highest bit.");
+      }
+
+      return sHighestBitCache[y];
+    }
   }
 }

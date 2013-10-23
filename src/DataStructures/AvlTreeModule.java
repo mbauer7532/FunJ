@@ -341,5 +341,5 @@ public final class AvlTreeModule {
   }
 
   private static final double sSqrtOf5 = Math.sqrt(5.0);
-  private static final double sDepthCoefficient = Numeric.log(2.0, Numeric.goldenRatio);
+  private static final double sDepthCoefficient = Numeric.log(2.0, Numeric.sGoldenRatio);
 }
