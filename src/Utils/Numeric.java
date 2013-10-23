@@ -148,7 +148,7 @@ public class Numeric {
   
   private static int[] createHighestBitCache() {
     return IntStream.range(0, sHighestBitCacheSize)
-                    .map(n -> highestBitDirect(n))
+                    .map(Numeric::highestBitDirect)
                     .toArray();
   }
 
