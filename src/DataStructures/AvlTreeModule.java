@@ -15,7 +15,7 @@ import org.StructureGraphic.v1.DSTreeNode;
 import org.graphstream.graph.*;
 
 public final class AvlTreeModule {
-  public static abstract class Tree<K, V> implements DSTreeNode {
+  public static abstract class Tree<K extends Comparable<K>, V> implements DSTreeNode {
     private Tree(final int height) {
       mHeight = height;
     }
