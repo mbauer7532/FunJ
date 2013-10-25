@@ -26,19 +26,19 @@ import static org.junit.Assert.*;
 public class IntMapModuleTest {
   public IntMapModuleTest() {
   }
-  
+
   @BeforeClass
   public static void setUpClass() {
   }
-  
+
   @AfterClass
   public static void tearDownClass() {
   }
-  
+
   @Before
   public void setUp() {
   }
-  
+
   @After
   public void tearDown() {
   }
@@ -65,7 +65,7 @@ public class IntMapModuleTest {
   @Test
   public void testSingleton() {
     System.out.println("singleton");
-    
+
     final IntMapModule.Tree<Integer> t0 = IntMapModule.singleton(5, 500);
     final Optional<Integer> res0 = t0.get(5);
     final Optional<Integer> res1 = t0.get(4);
@@ -86,7 +86,7 @@ public class IntMapModuleTest {
     final int high = 16;
     
     final IntMapModule.Tree<Integer> t0 = IntMapModule.empty();
-    
+
     final IntMapModule.Tree<Integer> t1
             = IntStream.rangeClosed(low, high)
                        .boxed()

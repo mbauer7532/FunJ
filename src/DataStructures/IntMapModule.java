@@ -165,14 +165,14 @@ public final class IntMapModule {
     public Tree<V> filter(final Predicate<V> f) {
       Objects.requireNonNull(f);
 
-      return createEmptyNode();
+      return this;
     }
 
     @Override
     public Tree<V> filteri(final BiPredicate<Integer, V> f) {
       Objects.requireNonNull(f);
 
-      return createEmptyNode();
+      return this;
     }
 
     @Override
@@ -423,7 +423,9 @@ public final class IntMapModule {
 
     @Override
     public V getWithDefault(final int key, final V def) {
-      return zeroBit(key, mBranchingBit) ? mLeft.getWithDefault(key, def) : mRight.getWithDefault(key, def);
+      return zeroBit(key, mBranchingBit)
+              ? mLeft.getWithDefault(key, def)
+              : mRight.getWithDefault(key, def);
     }
 
     @Override
@@ -484,12 +486,18 @@ public final class IntMapModule {
 
     @Override
     public <W> Tree<W> mapPartial(final Function<V, Optional<W>> f) {
-      return createBranchNode(mPrefix, mBranchingBit, mLeft.mapPartial(f), mRight.mapPartial(f));
+      final Tree<W> newL = mLeft.mapPartial(f);
+      final Tree<W> newR = mRight.mapPartial(f);
+
+      return smartBranchNodeConstructor(mPrefix, mBranchingBit, newL, newR);
     }
 
     @Override
     public <W> Tree<W> mapPartiali(final BiFunction<Integer, V, Optional<W>> f) {
-      return createBranchNode(mPrefix, mBranchingBit, mLeft.mapPartiali(f), mRight.mapPartiali(f));
+      final Tree<W> newL = mLeft.mapPartiali(f);
+      final Tree<W> newR = mRight.mapPartiali(f);
+
+      return smartBranchNodeConstructor(mPrefix, mBranchingBit, newL, newR);
     }
 
     @Override
