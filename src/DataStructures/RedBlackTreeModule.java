@@ -48,6 +48,13 @@ public class RedBlackTreeModule {
   }
   
   private static final class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
+    private static final EmptyNode<? extends Comparable<?>, ?> sEmptyNode = new EmptyNode<>();
+
+    @SuppressWarnings("unchecked")
+    public static <K extends Comparable<K>, V> EmptyNode<K, V> createEmptyNode() {
+      return (EmptyNode<K, V>) sEmptyNode;
+    }
+
     @Override
     public boolean isEmpty() {
       return true;
@@ -60,7 +67,7 @@ public class RedBlackTreeModule {
 
     @Override
     public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
-      return createEmptyNode(key, value);
+      return createEmptyNode();
     }
 
     @Override
@@ -120,7 +127,7 @@ public class RedBlackTreeModule {
 
     @Override
     public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
-      return createEmptyNode();
+      return w;
     }
 
     @Override
@@ -424,5 +431,4 @@ public class RedBlackTreeModule {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
   }
-  
   
