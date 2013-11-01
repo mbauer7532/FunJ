@@ -20,7 +20,6 @@ import org.StructureGraphic.v1.DSTreeNode;
 /**
  *
  * @author Neo
- * @param <T>
  */
 public class RedBlackTreeModule {
   public static abstract class Tree<K extends Comparable<K>, V> implements DSTreeNode {
