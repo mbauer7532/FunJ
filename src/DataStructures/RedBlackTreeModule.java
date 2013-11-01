@@ -318,7 +318,7 @@ public class RedBlackTreeModule {
     @Override
     public abstract Color DSgetColor();
   }
-  
+
   private static final class RedNode<K extends Comparable<K>, V> extends Node<K, V> {
     private RedNode(final K key, final V value, final Tree<K, V> left, final Tree<K, V> right) {
       super(key, value, left, right);
@@ -374,7 +374,7 @@ public class RedBlackTreeModule {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
   }
-  
+
   private static final class BlackNode<K extends Comparable<K>, V> extends Node<K, V> {
     private BlackNode(final K key, final V value, final Tree<K, V> left, final Tree<K, V> right) {
       super(key, value, left, right);
@@ -430,4 +430,4 @@ public class RedBlackTreeModule {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
   }
-  
+}

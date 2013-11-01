@@ -251,14 +251,14 @@ public final class BrotherTreeModule {
   private static <K extends Comparable<K>, V> Node<K, V> n2_del(final Node<K,V> left, final K a, final V v, final Node<K, V> right) {
     final Node<K, V> cn0 = cN0();
 
-    boolean leftIsN1, leftIsN2;
-    if ((leftIsN1 = (left instanceof N1)) && right instanceof N1) {
+    boolean leftIsN1;
+    if ((leftIsN1 = (left instanceof N1)) && (right instanceof N1)) {
       final Node<K, V> t1 = ((N1<K, V>) left).mt;
       final Node<K, V> t2 = ((N1<K, V>) right).mt;
 
       return c1(t1, a, v, t2);
     }
-    else if (leftIsN1 && right instanceof N2) {
+    else if (leftIsN1 && (right instanceof N2)) {
       final N1<K, V> ln1 = (N1<K, V>) left;
       final N2<K, V> rn2 = (N2<K, V>) right;
 
@@ -300,16 +300,43 @@ public final class BrotherTreeModule {
         }
       }
     }
-    else if ((leftIsN2 = (left instanceof N2)) && right instanceof N1) {
+    else if ((left instanceof N2) && (right instanceof N1)) {
       final N2<K, V> ln2 = (N2<K, V>) left;
       final N1<K, V> rn1 = (N1<K, V>) right;
 
       if (rn1.mt instanceof N1) {
         if (ln2.mt2 instanceof N1) {
-          // 1 case
+          if (ln2.mt1 instanceof N2) {
+            final Node<K, V> t1 = ln2.mt1;
+            final Node<K, V> t2 = ((N1<K, V>) ln2.mt2).mt;
+            final Node<K, V> t3 = ((N1<K, V>) rn1.mt).mt;
+            final K a1 = ln2.ma1, a2 = a;
+            final V v1 = ln2.mv1, v2 = v;
+
+            return c6(t1, a1, v1, t2, a2, v2, t3);
+          }
         }
         else if (ln2.mt2 instanceof N2) {
-          // 2 cases
+          if (ln2.mt1 instanceof N1) {
+            final N2<K, V> z = (N2<K, V>) ln2.mt2;
+            final Node<K, V> t1 = ((N1<K, V>) ln2.mt1).mt;
+            final Node<K, V> t2 = z.mt1;
+            final Node<K, V> t3 = z.mt2;
+            final Node<K, V> t4 = ((N1<K, V>) rn1.mt).mt;
+            final K a1 = ln2.ma1, a2 = z.ma1, a3 = a;
+            final V v1 = ln2.mv1, v2 = z.mv1, v3 = v;
+
+            return c5(t1, a1, v1, t2, a2, v2, t3, a3, v3, t4);
+          }
+          else if (ln2.mt1 instanceof N2) {
+            final Node<K, V> t1 = ln2.mt1;
+            final Node<K, V> t2 = ln2.mt2;
+            final Node<K, V> t3 = rn1.mt;
+            final K a1 = ln2.ma1, a2 = a;
+            final V v1 = ln2.mv1, v2 = v;
+            
+            return c7(t1, a1, v1, t2, a2, v2, t3);
+          }
         }
       }
     }
