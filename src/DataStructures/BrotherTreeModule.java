@@ -35,7 +35,6 @@ public final class BrotherTreeModule {
 
     public abstract Optional<V> get(final K key);
     public abstract V getWithDefault(final K key, final V def);
-    public abstract Tree<K, V> remove(final K key);
     public abstract int size();
     public abstract int depth();
     public abstract void app(final Consumer<V> f);
@@ -96,11 +95,6 @@ public final class BrotherTreeModule {
     @Override
     public V getWithDefault(final K key, final V def) {
       return def;
-    }
-
-    @Override
-    public Tree<K, V> remove(final K key) {
-      return this;
     }
 
     @Override
@@ -197,7 +191,8 @@ public final class BrotherTreeModule {
 
     @Override
     protected Tree<K, V> del(final K a) {
-      return create(mt.del(a));
+      final Tree<K, V> t = mt.del(a);
+      return t != mt ? create(mt.del(a)) : this;
     }
 
     @Override
@@ -207,7 +202,7 @@ public final class BrotherTreeModule {
 
     @Override
     public boolean isEmpty() {
-      throw new AssertionError("Error in tree structure.  N1 note encountered where it shouldn't be.");
+      return false;
     }
 
     @Override
@@ -217,27 +212,22 @@ public final class BrotherTreeModule {
 
     @Override
     public Optional<V> get(final K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return mt.get(key);
     }
 
     @Override
-    public V getWithDefault(K key, V def) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Tree<K, V> remove(K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public V getWithDefault(final K key, final V def) {
+      return mt.getWithDefault(key, def);
     }
 
     @Override
     public int size() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return mt.size();
     }
 
     @Override
     public int depth() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return mt.depth() + 1;
     }
 
     @Override
@@ -379,11 +369,6 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public Tree<K, V> remove(K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public int size() {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -473,21 +458,21 @@ public final class BrotherTreeModule {
 
     private N3(final Tree<K, V> t1, final K a1, final V v1, final Tree<K, V> t2, final K a2, final V v2, final Tree<K, V> t3) {
       mt1 = t1;
-      mt2 = t2;
-      mt3 = t3;
       ma1 = a1;
       mv1 = v1;
+      mt2 = t2;
       ma2 = a2;
       mv2 = v2;
+      mt3 = t3;
     }
 
     private final Tree<K, V> mt1;
-    private final Tree<K, V> mt2;
-    private final Tree<K, V> mt3;
     private final K ma1;
     private final V mv1;
+    private final Tree<K, V> mt2;
     private final K ma2;
     private final V mv2;
+    private final Tree<K, V> mt3;
 
     @Override
     protected Tree<K, V> ins(final BiFunction<V, V, V> f, final K a, final V v) {
@@ -521,11 +506,6 @@ public final class BrotherTreeModule {
 
     @Override
     public V getWithDefault(K key, V def) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Tree<K, V> remove(K key) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -650,11 +630,6 @@ public final class BrotherTreeModule {
 
     @Override
     public V getWithDefault(K key, V def) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Tree<K, V> remove(K key) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
