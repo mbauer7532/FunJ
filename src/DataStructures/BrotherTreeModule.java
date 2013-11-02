@@ -324,8 +324,8 @@ public final class BrotherTreeModule {
   private static <K extends Comparable<K>, V> Node<K, V> n2_del(final Node<K,V> left, final K a, final V v, final Node<K, V> right) {
     final Node<K, V> cn0 = N0.create();
 
-    boolean leftIsN1;
-    if ((leftIsN1 = (left instanceof N1)) && (right instanceof N1)) {
+    final boolean leftIsN1 = left instanceof N1;
+    if (leftIsN1 && (right instanceof N1)) {
       final Node<K, V> t1 = ((N1<K, V>) left).mt;
       final Node<K, V> t2 = ((N1<K, V>) right).mt;
 
@@ -352,7 +352,7 @@ public final class BrotherTreeModule {
             final Node<K, V> t3 = rn2.mt2;
             final K a1 = a, a2 = rn2.ma1;
             final V v1 = v, v2 = rn2.mv1;
-            
+
             return c4(t1, a1, v1, t2, a2, v2, t3);
           }
         }
@@ -367,7 +367,7 @@ public final class BrotherTreeModule {
             final Node<K, V> t4 = z2.mt;
             final K a1 = a, a2 = z1.ma1, a3 = rn2.ma1;
             final V v1 = v, v2 = z1.mv1, v3 = rn2.mv1;
-            
+
             return c3(t1, a1, v1, t2, a2, v2, t3, a3, v3, t4);
           }
         }
@@ -407,7 +407,7 @@ public final class BrotherTreeModule {
             final Node<K, V> t3 = rn1.mt;
             final K a1 = ln2.ma1, a2 = a;
             final V v1 = ln2.mv1, v2 = v;
-            
+
             return c7(t1, a1, v1, t2, a2, v2, t3);
           }
         }
