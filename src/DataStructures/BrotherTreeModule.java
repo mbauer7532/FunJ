@@ -505,11 +505,6 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public boolean contains(K key) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public Optional<V> get(K key) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -625,11 +620,6 @@ public final class BrotherTreeModule {
 
     @Override
     public boolean isEmpty() {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public boolean contains(K key) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
