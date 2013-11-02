@@ -45,7 +45,7 @@ public class RedBlackTreeModule {
     public abstract Tree<K, V> filteri(final BiPredicate<K, V> f);
     public abstract Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t);
   }
-  
+
   private static final class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
     private static final EmptyNode<? extends Comparable<?>, ?> sEmptyNode = new EmptyNode<>();
 
@@ -161,17 +161,17 @@ public class RedBlackTreeModule {
 
     @Override
     public DSTreeNode[] DSgetChildren() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Object DSgetValue() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Color DSgetColor() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
   }
   
@@ -387,47 +387,47 @@ public class RedBlackTreeModule {
 
     @Override
     public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Tree<K, V> remove(K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> Tree<K, W> mapPartial(Function<V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> Tree<K, W> mapPartiali(BiFunction<K, V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Tree<K, V> filter(Predicate<V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Tree<K, V> filteri(BiPredicate<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public DSTreeNode[] DSgetChildren() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Object DSgetValue() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Color DSgetColor() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
   }
 }

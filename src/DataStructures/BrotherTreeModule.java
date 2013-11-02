@@ -286,12 +286,12 @@ public final class BrotherTreeModule {
 
     @Override
     public Tree<K, V> filter(Predicate<V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Tree<K, V> filteri(BiPredicate<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -432,12 +432,12 @@ public final class BrotherTreeModule {
 
     @Override
     public <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -523,97 +523,97 @@ public final class BrotherTreeModule {
 
     @Override
     public boolean isEmpty() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public boolean contains(K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Optional<V> get(K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public V getWithDefault(K key, V def) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public int size() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public int depth() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void app(Consumer<V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void appi(BiConsumer<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> Tree<K, W> map(Function<V, W> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> Tree<K, W> mapi(BiFunction<K, V, W> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> Tree<K, W> mapPartial(Function<V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> Tree<K, W> mapPartiali(BiFunction<K, V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> W foldl(BiFunction<V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> W foldli(TriFunction<K, V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> W foldr(BiFunction<V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> W foldri(TriFunction<K, V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Tree<K, V> filter(Predicate<V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Tree<K, V> filteri(BiPredicate<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
   }
 
@@ -647,97 +647,97 @@ public final class BrotherTreeModule {
 
     @Override
     public boolean isEmpty() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public boolean contains(K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Optional<V> get(K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public V getWithDefault(K key, V def) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public int size() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public int depth() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void app(Consumer<V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void appi(BiConsumer<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> Tree<K, W> map(Function<V, W> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> Tree<K, W> mapi(BiFunction<K, V, W> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> Tree<K, W> mapPartial(Function<V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> Tree<K, W> mapPartiali(BiFunction<K, V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> W foldl(BiFunction<V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> W foldli(TriFunction<K, V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> W foldr(BiFunction<V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public <W> W foldri(TriFunction<K, V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Tree<K, V> filter(Predicate<V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Tree<K, V> filteri(BiPredicate<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
   }
 
