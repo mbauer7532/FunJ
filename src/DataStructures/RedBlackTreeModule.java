@@ -27,10 +27,13 @@ public class RedBlackTreeModule {
       return get(key).isPresent();
     }
 
+    public final V getWithDefault(final K key, final V def) {
+      return get(key).orElse(def);
+    }
+
     public abstract boolean isEmpty();
     public abstract Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value);
     public abstract Optional<V> get(final K key);
-    public abstract V getWithDefault(final K key, final V def);
     public abstract Tree<K, V> remove(final K key);
     public abstract int size();
     public abstract int depth();
@@ -70,11 +73,6 @@ public class RedBlackTreeModule {
     @Override
     public Optional<V> get(final K key) {
       return Optional.empty();
-    }
-
-    @Override
-    public V getWithDefault(final K key, final V def) {
-      return def;
     }
 
     @Override
@@ -208,11 +206,6 @@ public class RedBlackTreeModule {
       else {
         return Optional.of(mValue);
       }
-    }
-
-    @Override
-    public V getWithDefault(final K key, final V def) {
-      return get(key).orElse(def);
     }
 
     @Override
