@@ -23,7 +23,6 @@ import java.util.function.Predicate;
 public final class BrotherTreeModule {
   public abstract static class Tree<K extends Comparable<K>, V> {
     public abstract boolean isEmpty();
-    public abstract boolean contains(final K key);
 
     public Tree<K, V> insert(final BiFunction<V, V, V> f, final K a, final V v) {
       return root_ins(ins(f, a, v));
@@ -31,6 +30,10 @@ public final class BrotherTreeModule {
 
     public Tree<K, V> delete(final K a) {
       return root_del(del(a));
+    }
+
+    public boolean contains(final K key) {
+      return get(key).isPresent();
     }
 
     public abstract Optional<V> get(final K key);
@@ -80,11 +83,6 @@ public final class BrotherTreeModule {
     @Override
     public boolean isEmpty() {
       return true;
-    }
-
-    @Override
-    public boolean contains(final K key) {
-      return false;
     }
 
     @Override
@@ -206,11 +204,6 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public boolean contains(final K key) {
-      return mt.contains(key);
-    }
-
-    @Override
     public Optional<V> get(final K key) {
       return mt.get(key);
     }
@@ -302,10 +295,10 @@ public final class BrotherTreeModule {
 
   private static final class N2<K extends Comparable<K>, V> extends Tree<K, V> {
     private static <K extends Comparable<K>, V> N2<K, V> create(final Tree<K, V> t1, final K a1, final V v1, final Tree<K, V> t2) {
-      return new N2<>(t1, t2, a1, v1);
+      return new N2<>(t1, a1, v1, t2);
     }
 
-    private N2(final Tree<K, V> t1, final Tree<K, V> t2, final K a1, final V v1) {
+    private N2(final Tree<K, V> t1, final K a1, final V v1, final Tree<K, V> t2) {
       mt1 = t1;
       mt2 = t2;
       ma1 = a1;
@@ -313,9 +306,9 @@ public final class BrotherTreeModule {
     }
 
     private final Tree<K, V> mt1;
-    private final Tree<K, V> mt2;
     private final K ma1;
     private final V mv1;
+    private final Tree<K, V> mt2;
 
     @Override
     protected Tree<K, V> ins(final BiFunction<V, V, V> f, final K a, final V v) {
@@ -358,24 +351,9 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public boolean contains(final K key) {
-      final int res = key.compareTo(ma1);
-      
-      if (res < 0) {
-        return mt1.contains(key);
-      }
-      else if (res > 0) {
-        return mt2.contains(key);
-      }
-      else {
-        return true;
-      }
-    }
-
-    @Override
     public Optional<V> get(final K key) {
       final int res = key.compareTo(ma1);
-      
+
       if (res < 0) {
         return mt1.get(key);
       }
