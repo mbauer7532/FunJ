@@ -301,7 +301,7 @@ public final class IntMapModule {
     @Override
     public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
       Objects.requireNonNull(f);
-      
+
       return f.apply(mValue, w);
     }
 
