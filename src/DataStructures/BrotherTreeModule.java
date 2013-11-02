@@ -6,6 +6,9 @@
 
 package DataStructures;
 
+import DataStructures.TuplesModule.Triple;
+import java.util.Optional;
+
 /**
  *
  * @author Neo
@@ -13,12 +16,18 @@ package DataStructures;
 public final class BrotherTreeModule {
   public abstract static class Node<K extends Comparable<K>, V> {
     public Node<K, V> insert(final K a, final V v) {
-      return root(ins(a, v));
+      return root_ins(ins(a, v));
+    }
+
+    public Node<K, V> delete(final K a) {
+      return root_del(del(a));
     }
 
     protected abstract Node<K, V> ins(final K a, final V v);
+    protected abstract Node<K, V> del(final K a);
+    protected abstract Optional<Triple<K, V, Node<K, V>>> splitMin();
   }
-  
+
   private static class N0<K extends Comparable<K>, V> extends Node<K, V> {
     @SuppressWarnings("unchecked")
     static final <K extends Comparable<K>, V> N0<K, V> cN0() { return (N0<K, V>) sN0; }
@@ -26,8 +35,18 @@ public final class BrotherTreeModule {
     static final N0<? extends Comparable<?>, ?> sN0 = new N0<>();
 
     @Override
-    public Node<K, V> ins(final K a, final V v) {
+    protected Node<K, V> ins(final K a, final V v) {
       return cL2(a, v);
+    }
+
+    @Override
+    protected Node<K, V> del(final K a) {
+      return this;
+    }
+
+    @Override
+    protected Optional<Triple<K, V, Node<K, V>>> splitMin() {
+      return Optional.empty();
     }
   }
 
@@ -43,8 +62,18 @@ public final class BrotherTreeModule {
     private final Node<K, V> mt;
 
     @Override
-    public Node<K, V> ins(final K a, final V v) {
+    protected Node<K, V> ins(final K a, final V v) {
       return n1(mt.insert(a, v));
+    }
+
+    @Override
+    protected Node<K, V> del(final K a) {
+      return cN1(mt.del(a));
+    }
+
+    @Override
+    protected Optional<Triple<K, V, Node<K, V>>> splitMin() {
+      return mt.splitMin().map(p -> Triple.create(p.mFirst, p.mSecond, cN1(p.mThird)));
     }
   }
 
@@ -66,7 +95,7 @@ public final class BrotherTreeModule {
     private final V mv1;
 
     @Override
-    public Node<K, V> ins(final K a, final V v) {
+    protected Node<K, V> ins(final K a, final V v) {
       final int res = a.compareTo(ma1);
       if (res < 0) {
         return n2_ins(mt1.insert(a, v), ma1, mv1, mt2);
@@ -78,17 +107,50 @@ public final class BrotherTreeModule {
         return cN2(mt1, a, v, mt2);
       }
     }
+
+    @Override
+    protected Node<K, V> del(final K a) {
+      final int res = a.compareTo(this.ma1);
+      if (res < 0) {
+        return n2_del(mt1.del(a), ma1, mv1, mt2);
+      }
+      else if (res > 0) {
+        return n2_del(mt1, ma1, mv1, mt2.del(a));
+      }
+      else {
+        final Optional<Triple<K, V, Node<K, V>>> opt = ((N2<K,V>)mt2).splitMin();
+        
+        if (opt.isPresent()) {
+          final Triple<K, V, Node<K, V>> p = opt.get();
+          return n2_del(mt1, p.mFirst, p.mSecond, p.mThird);
+        }
+        else {
+          return cN1(mt1);
+        }
+      }
+    }
+
+    @Override
+    protected Optional<Triple<K, V, Node<K, V>>> splitMin() {
+      return Optional.of(mt1.splitMin()
+                            .map(p -> Triple.<K, V, Node<K, V>> create(p.mFirst, p.mSecond, cN2(p.mThird, ma1, mv1, mt2)))
+                            .orElseGet(() -> Triple.create(ma1, mv1, cN1(mt2))));
+    }
   }
 
   private static class N3<K extends Comparable<K>, V> extends Node<K, V> {
     private static <K extends Comparable<K>, V> N3<K, V> cN3(
-            final Node<K, V> t1, final Node<K, V> t2, final Node<K, V> t3,
-            final K a1, final V v1, final K a2, final V v2) {
-      return new N3<>(t1, t2, t3, a1, v1, a2, v2);
+            final Node<K, V> t1,
+            final K a1,
+            final V v1,
+            final Node<K, V> t2,
+            final K a2,
+            final V v2,
+            final Node<K, V> t3) {
+      return new N3<>(t1, a1, v1, t2, a2, v2, t3);
     }
 
-    private N3(final Node<K, V> t1, final Node<K, V> t2, final Node<K, V> t3,
-               final K a1, final V v1, final K a2, final V v2) {
+    private N3(final Node<K, V> t1, final K a1, final V v1, final Node<K, V> t2, final K a2, final V v2, final Node<K, V> t3) {
       mt1 = t1;
       mt2 = t2;
       mt3 = t3;
@@ -107,7 +169,17 @@ public final class BrotherTreeModule {
     private final V mv2;
 
     @Override
-    public Node<K, V> ins(final K a, final V v) {
+    protected Node<K, V> ins(final K a, final V v) {
+      throw new AssertionError("Error in tree structure.  N3 notes encountered where it shouldn't be.");
+    }
+
+    @Override
+    protected Node<K, V> del(final K a) {
+      throw new AssertionError("Error in tree structure.  N3 notes encountered where it shouldn't be.");
+    }
+
+    @Override
+    protected Optional<Triple<K, V, Node<K, V>>> splitMin() {
       throw new AssertionError("Error in tree structure.  N3 notes encountered where it shouldn't be.");
     }
   }
@@ -126,7 +198,17 @@ public final class BrotherTreeModule {
     private final V mv1;
 
     @Override
-    public Node<K, V> ins(final K a, final V v) {
+    protected Node<K, V> ins(final K a, final V v) {
+      throw new AssertionError("Error in tree structure.  N3 notes encountered where it shouldn't be.");
+    }
+
+    @Override
+    protected Node<K, V> del(K a) {
+      throw new AssertionError("Error in tree structure.  N3 notes encountered where it shouldn't be.");
+    }
+
+    @Override
+    protected Optional<Triple<K, V, Node<K, V>>> splitMin() {
       throw new AssertionError("Error in tree structure.  N3 notes encountered where it shouldn't be.");
     }
   }
@@ -134,22 +216,18 @@ public final class BrotherTreeModule {
   private static <K extends Comparable<K>, V> N0<K, V> cN0() { return N0.cN0(); }
   private static <K extends Comparable<K>, V> N1<K, V> cN1(final Node<K, V> t) { return N1.cN1(t); }
   private static <K extends Comparable<K>, V> N2<K, V> cN2(final Node<K, V> t1, final K a1, final V v1, final Node<K, V> t2) { return N2.cN2(t1, a1, v1, t2); }
-  private static <K extends Comparable<K>, V> N3<K, V> cN3(final Node<K, V> t1, final K a1, final V v1, final Node<K, V> t2, final K a2, final V v2, final Node<K, V> t3) { return N3.cN3(t1, t2, t3, a1, v1, a2, v2); }
+  private static <K extends Comparable<K>, V> N3<K, V> cN3(final Node<K, V> t1, final K a1, final V v1, final Node<K, V> t2, final K a2, final V v2, final Node<K, V> t3) { return N3.cN3(t1, a1, v1, t2, a2, v2, t3); }
   private static <K extends Comparable<K>, V> L2<K, V> cL2(final K a, final V v) { return L2.cL2(a, v); }
 
-  private static <K extends Comparable<K>, V> Node<K, V> root(final Node<K,V> t) {
-    final Node<K, V> n1Tree = n1(t);
-
-    if (n1Tree instanceof N1) {
-      final N1<K, V> n1t = (N1<K, V>) t;
-      return n1t.mt;
-    }
-    else {
-      return n1Tree;
-    }
+  private static <K extends Comparable<K>, V> Node<K, V> root_ins(final Node<K,V> t) {
+    return n1_aux(t, false);
   }
 
   private static <K extends Comparable<K>, V> Node<K, V> n1(final Node<K,V> t) {
+    return n1_aux(t, true);
+  }
+
+  private static <K extends Comparable<K>, V> Node<K, V> n1_aux(final Node<K,V> t, final boolean boxN1) {
     final Node<K, V> cn0 = cN0();
 
     if (t instanceof L2) {
@@ -168,7 +246,7 @@ public final class BrotherTreeModule {
       return cN2(cN2(t1, a1, v1, t2), a2, v2, cN1(t3));
     }
     else {
-      return cN1(t);
+      return boxN1 ? cN1(t) : t;
     }
   }
 
@@ -246,6 +324,15 @@ public final class BrotherTreeModule {
     final V v1 = v;
 
     return cN2(t1, a1, v1, t2);
+  }
+
+  private static <K extends Comparable<K>, V> Node<K, V> root_del(final Node<K,V> t) {
+    if (t instanceof N1) {
+      return ((N1<K, V>) t).mt;
+    }
+    else {
+      return t;
+    }
   }
 
   private static <K extends Comparable<K>, V> Node<K, V> n2_del(final Node<K,V> left, final K a, final V v, final Node<K, V> right) {

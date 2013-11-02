@@ -12,6 +12,15 @@ package DataStructures;
  */
 public final class TuplesModule {
   public static final class Pair<T1, T2> {
+    public static <T1, T2> Pair<T1, T2> create(final T1 x1, final T2 x2) {
+      return new Pair<>(x1, x2);
+    }
+
+    private Pair(final T1 x1, final T2 x2) {
+      mFirst = x1;
+      mSecond = x2;
+    }
+
     public T1 mFirst;
     public T2 mSecond;
 
@@ -24,6 +33,16 @@ public final class TuplesModule {
   }
 
   public static final class Triple<T1, T2, T3> {
+    public static <T1, T2, T3> Triple<T1, T2, T3> create(final T1 x1, final T2 x2, final T3 x3) {
+      return new Triple<>(x1, x2, x3);
+    }
+
+    private Triple(final T1 x1, final T2 x2, final T3 x3) {
+      mFirst = x1;
+      mSecond = x2;
+      mThird = x3;
+    }
+
     public T1 mFirst;
     public T2 mSecond;
     public T3 mThird;
