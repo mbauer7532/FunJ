@@ -24,15 +24,15 @@ public final class BrotherTreeModule {
   public abstract static class Tree<K extends Comparable<K>, V> {
     public abstract boolean isEmpty();
 
-    public Tree<K, V> insert(final BiFunction<V, V, V> f, final K a, final V v) {
+    public final Tree<K, V> insert(final BiFunction<V, V, V> f, final K a, final V v) {
       return root_ins(ins(f, a, v));
     }
 
-    public Tree<K, V> delete(final K a) {
+    public final Tree<K, V> delete(final K a) {
       return root_del(del(a));
     }
 
-    public boolean contains(final K key) {
+    public final boolean contains(final K key) {
       return get(key).isPresent();
     }
 

@@ -23,8 +23,11 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public class RedBlackTreeModule {
   public static abstract class Tree<K extends Comparable<K>, V> implements DSTreeNode {
+    public final boolean contains(final K key) {
+      return get(key).isPresent();
+    }
+
     public abstract boolean isEmpty();
-    public abstract boolean contains(final K key);
     public abstract Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value);
     public abstract Optional<V> get(final K key);
     public abstract V getWithDefault(final K key, final V def);
@@ -57,11 +60,6 @@ public class RedBlackTreeModule {
     @Override
     public boolean isEmpty() {
       return true;
-    }
-
-    @Override
-    public boolean contains(final K key) {
-      return false;
     }
 
     @Override
@@ -193,20 +191,6 @@ public class RedBlackTreeModule {
     @Override
     public boolean isEmpty() {
       return false;
-    }
-
-    @Override
-    public boolean contains(final K key) {
-      final int cmp = key.compareTo(mKey);
-      if (cmp < 0) {
-        return mLeft.contains(key);
-      }
-      else if (cmp > 0) {
-        return mRight.contains(key);
-      }
-      else {
-        return true;
-      }
     }
 
     @Override
