@@ -36,8 +36,11 @@ public final class BrotherTreeModule {
       return get(key).isPresent();
     }
 
+    public final V getWithDefault(final K key, final V def) {
+      return get(key).orElse(def);
+    }
+
     public abstract Optional<V> get(final K key);
-    public abstract V getWithDefault(final K key, final V def);
     public abstract int size();
     public abstract int depth();
     public abstract void app(final Consumer<V> f);
@@ -88,11 +91,6 @@ public final class BrotherTreeModule {
     @Override
     public Optional<V> get(final K key) {
       return Optional.empty();
-    }
-
-    @Override
-    public V getWithDefault(final K key, final V def) {
-      return def;
     }
 
     @Override
@@ -206,11 +204,6 @@ public final class BrotherTreeModule {
     @Override
     public Optional<V> get(final K key) {
       return mt.get(key);
-    }
-
-    @Override
-    public V getWithDefault(final K key, final V def) {
-      return mt.getWithDefault(key, def);
     }
 
     @Override
@@ -366,11 +359,6 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public V getWithDefault(final K key, final V def) {
-      return get(key).orElse(def);
-    }
-
-    @Override
     public int size() {
       return mt1.size() + mt2.size() + 1;
     }
@@ -510,11 +498,6 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public V getWithDefault(K key, V def) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public int size() {
       throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -625,11 +608,6 @@ public final class BrotherTreeModule {
 
     @Override
     public Optional<V> get(K key) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public V getWithDefault(K key, V def) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
