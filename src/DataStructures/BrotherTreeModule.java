@@ -472,104 +472,106 @@ public final class BrotherTreeModule {
     private final V mv2;
     private final Tree<K, V> mt3;
 
+    private final static AssertionError sTreeStructureError = new AssertionError("Error in tree structure.  N3 notes encountered where it shouldn't be.");
+
     @Override
     protected Tree<K, V> ins(final BiFunction<V, V, V> f, final K a, final V v) {
-      throw new AssertionError("Error in tree structure.  N3 notes encountered where it shouldn't be.");
+      throw sTreeStructureError;
     }
 
     @Override
     protected Tree<K, V> del(final K a) {
-      throw new AssertionError("Error in tree structure.  N3 notes encountered where it shouldn't be.");
+      throw sTreeStructureError;
     }
 
     @Override
     protected Optional<Triple<K, V, Tree<K, V>>> splitMin() {
-      throw new AssertionError("Error in tree structure.  N3 notes encountered where it shouldn't be.");
+      throw sTreeStructureError;
     }
 
     @Override
     public boolean isEmpty() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public Optional<V> get(K key) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public int size() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public int depth() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public void app(Consumer<V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public void appi(BiConsumer<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> Tree<K, W> map(Function<V, W> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> Tree<K, W> mapi(BiFunction<K, V, W> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> Tree<K, W> mapPartial(Function<V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> Tree<K, W> mapPartiali(BiFunction<K, V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> W foldl(BiFunction<V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> W foldli(TriFunction<K, V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> W foldr(BiFunction<V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> W foldri(TriFunction<K, V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public Tree<K, V> filter(Predicate<V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public Tree<K, V> filteri(BiPredicate<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
   }
 
@@ -586,104 +588,106 @@ public final class BrotherTreeModule {
     private final K ma1;
     private final V mv1;
 
+    private final static AssertionError sTreeStructureError = new AssertionError("Error in tree structure.  L2 notes encountered where it shouldn't be.");
+
     @Override
     protected Tree<K, V> ins(final BiFunction<V, V, V> f, final K a, final V v) {
-      throw new AssertionError("Error in tree structure.  N3 notes encountered where it shouldn't be.");
+      throw sTreeStructureError;
     }
 
     @Override
     protected Tree<K, V> del(K a) {
-      throw new AssertionError("Error in tree structure.  N3 notes encountered where it shouldn't be.");
+      throw sTreeStructureError;
     }
 
     @Override
     protected Optional<Triple<K, V, Tree<K, V>>> splitMin() {
-      throw new AssertionError("Error in tree structure.  N3 notes encountered where it shouldn't be.");
+      throw sTreeStructureError;
     }
 
     @Override
     public boolean isEmpty() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public Optional<V> get(K key) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public int size() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public int depth() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public void app(Consumer<V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public void appi(BiConsumer<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> Tree<K, W> map(Function<V, W> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> Tree<K, W> mapi(BiFunction<K, V, W> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> Tree<K, W> mapPartial(Function<V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> Tree<K, W> mapPartiali(BiFunction<K, V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> W foldl(BiFunction<V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> W foldli(TriFunction<K, V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> W foldr(BiFunction<V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public <W> W foldri(TriFunction<K, V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public Tree<K, V> filter(Predicate<V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public Tree<K, V> filteri(BiPredicate<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
 
     @Override
     public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      throw sTreeStructureError;
     }
   }
 
