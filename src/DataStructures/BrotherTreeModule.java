@@ -40,20 +40,40 @@ public final class BrotherTreeModule {
       return get(key).orElse(def);
     }
 
+    public final <W> Tree<K, W> map(final Function<V, W> f) {
+      return mapi((k, v) -> f.apply(v));
+    }
+
+    public final void app(final Consumer<V> f) {
+      appi((k, v) -> f.accept(v));
+
+      return;
+    }
+
+    public final <W> W foldl(final BiFunction<V, W, W> f, final W w) {
+      return foldli((k, v, z) -> f.apply(v, z), w);
+    }
+
+    public final <W> W foldr(final BiFunction<V, W, W> f, final W w) {
+      return foldri((k, v, z) -> f.apply(v, z), w);
+    }
+
+    public final Tree<K, V> filter(final Predicate<V> f) {
+      return filteri((k, v) -> f.test(v));
+    }
+
+    public final <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
+      return mapPartiali((k, v) -> f.apply(v));
+    }
+
     public abstract Optional<V> get(final K key);
     public abstract int size();
     public abstract int depth();
-    public abstract void app(final Consumer<V> f);
     public abstract void appi(final BiConsumer<K, V> f);
-    public abstract <W> Tree<K, W> map(final Function<V, W> f);
     public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
-    public abstract <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f);
     public abstract <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f);
-    public abstract <W> W foldl(final BiFunction<V, W, W> f, final W w);
     public abstract <W> W foldli(final TriFunction<K, V, W, W> f, final W w);
-    public abstract <W> W foldr(final BiFunction<V, W, W> f, final W w);
     public abstract <W> W foldri(final TriFunction<K, V, W, W> f, final W w);
-    public abstract Tree<K, V> filter(final Predicate<V> f);
     public abstract Tree<K, V> filteri(final BiPredicate<K, V> f);
     public abstract Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t);
 
@@ -104,27 +124,12 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public void app(final Consumer<V> f) {
-      return;
-    }
-
-    @Override
     public void appi(final BiConsumer<K, V> f) {
       return;
     }
 
     @Override
-    public <W> Tree<K, W> map(final Function<V, W> f) {
-      return N0.create();
-    }
-
-    @Override
     public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
-      return N0.create();
-    }
-
-    @Override
-    public <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
       return N0.create();
     }
 
@@ -134,28 +139,13 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
-      return w;
-    }
-
-    @Override
     public <W> W foldli(final TriFunction<K, V, W, W> f, final W w) {
-      return w;
-    }
-
-    @Override
-    public <W> W foldr(final BiFunction<V, W, W> f, final W w) {
       return w;
     }
 
     @Override
     public <W> W foldri(final TriFunction<K, V, W, W> f, final W w) {
       return w;
-    }
-
-    @Override
-    public Tree<K, V> filter(final Predicate<V> f) {
-      return this;
     }
 
     @Override
@@ -217,22 +207,10 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public void app(final Consumer<V> f) {
-      mt.app(f);
-
-      return;
-    }
-
-    @Override
     public void appi(final BiConsumer<K, V> f) {
       mt.appi(f);
 
       return;
-    }
-
-    @Override
-    public <W> Tree<K, W> map(final Function<V, W> f) {
-      return N1.create(mt.map(f));
     }
 
     @Override
@@ -241,18 +219,8 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
       throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
-      return mt.foldl(f, w);
     }
 
     @Override
@@ -261,18 +229,8 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public <W> W foldr(final BiFunction<V, W, W> f, final W w) {
-      return mt.foldr(f, w);
-    }
-
-    @Override
     public <W> W foldri(final TriFunction<K, V, W, W> f, final W w) {
       return mt.foldri(f, w);
-    }
-
-    @Override
-    public Tree<K, V> filter(Predicate<V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -369,15 +327,6 @@ public final class BrotherTreeModule {
     }                            // depth of one branch.
 
     @Override
-    public void app(final Consumer<V> f) {
-      mt1.app(f);
-      f.accept(mv1);
-      mt2.app(f);
-      
-      return;
-    }
-
-    @Override
     public void appi(final BiConsumer<K, V> f) {
       mt1.appi(f);
       f.accept(ma1, mv1);
@@ -387,18 +336,8 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public <W> Tree<K, W> map(final Function<V, W> f) {
-      return N2.create(mt1.map(f), ma1, f.apply(mv1), mt2.map(f));
-    }
-
-    @Override
     public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
       return N2.create(mt1.mapi(f), ma1, f.apply(ma1, mv1), mt2.mapi(f));
-    }
-
-    @Override
-    public <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -407,28 +346,13 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
-      return mt2.foldl(f, f.apply(mv1, mt1.foldl(f, w)));
-    }
-
-    @Override
     public <W> W foldli(final TriFunction<K, V, W, W> f, final W w) {
       return mt2.foldli(f, f.apply(ma1, mv1, mt1.foldli(f, w)));
     }
 
     @Override
-    public <W> W foldr(final BiFunction<V, W, W> f, final W w) {
-      return mt1.foldr(f, f.apply(mv1, mt2.foldr(f, w)));
-    }
-
-    @Override
     public <W> W foldri(final TriFunction<K, V, W, W> f, final W w) {
       return mt1.foldri(f, f.apply(ma1, mv1, mt2.foldri(f, w)));
-    }
-
-    @Override
-    public Tree<K, V> filter(final Predicate<V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -510,17 +434,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public void app(Consumer<V> f) {
-      throw sTreeStructureError;
-    }
-
-    @Override
     public void appi(BiConsumer<K, V> f) {
-      throw sTreeStructureError;
-    }
-
-    @Override
-    public <W> Tree<K, W> map(Function<V, W> f) {
       throw sTreeStructureError;
     }
 
@@ -530,17 +444,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public <W> Tree<K, W> mapPartial(Function<V, Optional<W>> f) {
-      throw sTreeStructureError;
-    }
-
-    @Override
     public <W> Tree<K, W> mapPartiali(BiFunction<K, V, Optional<W>> f) {
-      throw sTreeStructureError;
-    }
-
-    @Override
-    public <W> W foldl(BiFunction<V, W, W> f, W w) {
       throw sTreeStructureError;
     }
 
@@ -550,17 +454,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public <W> W foldr(BiFunction<V, W, W> f, W w) {
-      throw sTreeStructureError;
-    }
-
-    @Override
     public <W> W foldri(TriFunction<K, V, W, W> f, W w) {
-      throw sTreeStructureError;
-    }
-
-    @Override
-    public Tree<K, V> filter(Predicate<V> f) {
       throw sTreeStructureError;
     }
 
@@ -626,17 +520,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public void app(Consumer<V> f) {
-      throw sTreeStructureError;
-    }
-
-    @Override
     public void appi(BiConsumer<K, V> f) {
-      throw sTreeStructureError;
-    }
-
-    @Override
-    public <W> Tree<K, W> map(Function<V, W> f) {
       throw sTreeStructureError;
     }
 
@@ -646,17 +530,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public <W> Tree<K, W> mapPartial(Function<V, Optional<W>> f) {
-      throw sTreeStructureError;
-    }
-
-    @Override
     public <W> Tree<K, W> mapPartiali(BiFunction<K, V, Optional<W>> f) {
-      throw sTreeStructureError;
-    }
-
-    @Override
-    public <W> W foldl(BiFunction<V, W, W> f, W w) {
       throw sTreeStructureError;
     }
 
@@ -666,17 +540,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public <W> W foldr(BiFunction<V, W, W> f, W w) {
-      throw sTreeStructureError;
-    }
-
-    @Override
     public <W> W foldri(TriFunction<K, V, W, W> f, W w) {
-      throw sTreeStructureError;
-    }
-
-    @Override
-    public Tree<K, V> filter(Predicate<V> f) {
       throw sTreeStructureError;
     }
 
