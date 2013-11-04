@@ -31,23 +31,40 @@ public class RedBlackTreeModule {
       return get(key).orElse(def);
     }
 
+    public <W> Tree<K, W> map(final Function<V, W> f) {
+      return mapi((k, v) -> f.apply(v));
+    }
+
+    public void app(final Consumer<V> f) {
+      appi((k, v) -> f.accept(v));
+
+      return;
+    }
+
+    public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
+      return foldli((k, v, z) -> f.apply(v, z), w);
+    }
+
+    public <W> W foldr(final BiFunction<V, W, W> f, final W w) {
+      return foldri((k, v, z) -> f.apply(v, z), w);
+    }
+
+    public Tree<K, V> filter(final Predicate<V> f) {
+      return filteri((k, v) -> f.test(v));
+    }
+
     public abstract boolean isEmpty();
     public abstract Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value);
     public abstract Optional<V> get(final K key);
     public abstract Tree<K, V> remove(final K key);
     public abstract int size();
     public abstract int depth();
-    public abstract void app(final Consumer<V> f);
     public abstract void appi(final BiConsumer<K, V> f);
-    public abstract <W> Tree<K, W> map(final Function<V, W> f);
     public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
     public abstract <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f);
     public abstract <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f);
-    public abstract <W> W foldl(final BiFunction<V, W, W> f, final W w);
     public abstract <W> W foldli(final TriFunction<K, V, W, W> f, final W w);
-    public abstract <W> W foldr(final BiFunction<V, W, W> f, final W w);
     public abstract <W> W foldri(final TriFunction<K, V, W, W> f, final W w);
-    public abstract Tree<K, V> filter(final Predicate<V> f);
     public abstract Tree<K, V> filteri(final BiPredicate<K, V> f);
     public abstract Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t);
   }
@@ -91,18 +108,8 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public void app(final Consumer<V> f) {
-      return;
-    }
-
-    @Override
     public void appi(final BiConsumer<K, V> f) {
       return;
-    }
-
-    @Override
-    public <W> Tree<K, W> map(final Function<V, W> f) {
-      return createEmptyNode();
     }
 
     @Override
@@ -121,28 +128,13 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
-      return w;
-    }
-
-    @Override
     public <W> W foldli(final TriFunction<K, V, W, W> f, final W w) {
-      return w;
-    }
-
-    @Override
-    public <W> W foldr(final BiFunction<V, W, W> f, final W w) {
       return w;
     }
 
     @Override
     public <W> W foldri(final TriFunction<K, V, W, W> f, final W w) {
       return w;
-    }
-
-    @Override
-    public Tree<K, V> filter(final Predicate<V> f) {
-      return this;
     }
 
     @Override
@@ -170,7 +162,7 @@ public class RedBlackTreeModule {
       throw new UnsupportedOperationException("Not supported yet.");
     }
   }
-  
+
   private static abstract class Node<K extends Comparable<K>, V> extends Tree<K, V> {
     private Node(final K key, final V value, final Tree<K, V> left, final Tree<K, V> right) {
       mKey = key;
@@ -178,12 +170,12 @@ public class RedBlackTreeModule {
       mLeft = left;
       mRight = right;
     }
- 
+
     protected final K mKey;
     protected final V mValue;
     protected final Tree<K, V> mLeft;
     protected final Tree<K, V> mRight;
- 
+
     public abstract <W> Node<K, W> createNode(final K key, final W newValue, final Tree<K, W> left, final Tree<K, W> right);
 
     @Override
@@ -222,15 +214,6 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public void app(final Consumer<V> f) {
-      mLeft.app(f);
-      f.accept(mValue);
-      mRight.app(f);
-      
-      return;
-    }
-
-    @Override
     public void appi(final BiConsumer<K, V> f) {
       mLeft.appi(f);
       f.accept(mKey, mValue);
@@ -239,11 +222,6 @@ public class RedBlackTreeModule {
       return;
     }
 
-    @Override
-    public <W> Tree<K, W> map(final Function<V, W> f) {
-      return createNode(mKey, f.apply(mValue), mLeft.map(f), mRight.map(f));
-    }
- 
     @Override
     public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
       return createNode(mKey, f.apply(mKey, mValue), mLeft.mapi(f), mRight.mapi(f));
@@ -256,27 +234,14 @@ public class RedBlackTreeModule {
     public abstract <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f);
 
     @Override
-    public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
-      return mRight.foldl(f, f.apply(mValue, mLeft.foldl(f, w)));
-    }
-
-    @Override
     public <W> W foldli(final TriFunction<K, V, W, W> f, final W w) {
       return mRight.foldli(f, f.apply(mKey, mValue, mLeft.foldli(f, w)));
-    }
-
-    @Override
-    public <W> W foldr(final BiFunction<V, W, W> f, final W w) {
-      return mLeft.foldr(f, f.apply(mValue, mRight.foldr(f, w)));
     }
 
     @Override
     public <W> W foldri(final TriFunction<K, V, W, W> f, final W w) {
       return mLeft.foldri(f, f.apply(mKey, mValue, mRight.foldri(f, w)));
     }
-
-    @Override
-    public abstract Tree<K, V> filter(final Predicate<V> f);
 
     @Override
     public abstract Tree<K, V> filteri(final BiPredicate<K, V> f);
@@ -312,27 +277,22 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public Tree<K, V> remove(K key) {
+    public Tree<K, V> remove(final K key) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public <W> Tree<K, W> mapPartial(Function<V, Optional<W>> f) {
+    public <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public <W> Tree<K, W> mapPartiali(BiFunction<K, V, Optional<W>> f) {
+    public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Tree<K, V> filter(Predicate<V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public Tree<K, V> filteri(BiPredicate<K, V> f) {
+    public Tree<K, V> filteri(final BiPredicate<K, V> f) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
@@ -368,27 +328,22 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public Tree<K, V> remove(K key) {
+    public Tree<K, V> remove(final K key) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public <W> Tree<K, W> mapPartial(Function<V, Optional<W>> f) {
+    public <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public <W> Tree<K, W> mapPartiali(BiFunction<K, V, Optional<W>> f) {
+    public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public Tree<K, V> filter(Predicate<V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public Tree<K, V> filteri(BiPredicate<K, V> f) {
+    public Tree<K, V> filteri(final BiPredicate<K, V> f) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
