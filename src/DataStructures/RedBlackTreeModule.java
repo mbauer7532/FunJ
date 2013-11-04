@@ -53,6 +53,10 @@ public class RedBlackTreeModule {
       return filteri((k, v) -> f.test(v));
     }
 
+    public <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
+      return mapPartiali((k, v) -> f.apply(v));
+    }
+
     public abstract boolean isEmpty();
     public abstract Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value);
     public abstract Optional<V> get(final K key);
@@ -61,7 +65,6 @@ public class RedBlackTreeModule {
     public abstract int depth();
     public abstract void appi(final BiConsumer<K, V> f);
     public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
-    public abstract <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f);
     public abstract <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f);
     public abstract <W> W foldli(final TriFunction<K, V, W, W> f, final W w);
     public abstract <W> W foldri(final TriFunction<K, V, W, W> f, final W w);
@@ -114,11 +117,6 @@ public class RedBlackTreeModule {
 
     @Override
     public <W> Tree<K, W> mapi(BiFunction<K, V, W> f) {
-      return createEmptyNode();
-    }
-
-    @Override
-    public <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
       return createEmptyNode();
     }
 
@@ -228,9 +226,6 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public abstract <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f);
-
-    @Override
     public abstract <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f);
 
     @Override
@@ -282,11 +277,6 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -329,11 +319,6 @@ public class RedBlackTreeModule {
 
     @Override
     public Tree<K, V> remove(final K key) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
