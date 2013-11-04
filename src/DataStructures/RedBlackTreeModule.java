@@ -31,29 +31,29 @@ public class RedBlackTreeModule {
       return get(key).orElse(def);
     }
 
-    public <W> Tree<K, W> map(final Function<V, W> f) {
+    public final <W> Tree<K, W> map(final Function<V, W> f) {
       return mapi((k, v) -> f.apply(v));
     }
 
-    public void app(final Consumer<V> f) {
+    public final void app(final Consumer<V> f) {
       appi((k, v) -> f.accept(v));
 
       return;
     }
 
-    public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
+    public final <W> W foldl(final BiFunction<V, W, W> f, final W w) {
       return foldli((k, v, z) -> f.apply(v, z), w);
     }
 
-    public <W> W foldr(final BiFunction<V, W, W> f, final W w) {
+    public final <W> W foldr(final BiFunction<V, W, W> f, final W w) {
       return foldri((k, v, z) -> f.apply(v, z), w);
     }
 
-    public Tree<K, V> filter(final Predicate<V> f) {
+    public final Tree<K, V> filter(final Predicate<V> f) {
       return filteri((k, v) -> f.test(v));
     }
 
-    public <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
+    public final <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
       return mapPartiali((k, v) -> f.apply(v));
     }
 

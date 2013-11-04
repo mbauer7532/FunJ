@@ -211,12 +211,9 @@ public final class IntMapModule {
     public Tree<V> insert(final BiFunction<V, V, V> f, final int key, final V value) {
       Objects.requireNonNull(f);
 
-      if (key == mKey) {
-        return createLeafNode(key, f.apply(value, mValue));
-      }
-      else {
-        return join(key, createLeafNode(key, value), mKey, this);
-      }
+      return key == mKey
+              ? createLeafNode(key, f.apply(value, mValue))
+              : join(key, createLeafNode(key, value), mKey, this);
     }
 
     @Override
