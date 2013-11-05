@@ -6,6 +6,7 @@
 
 package DataStructures;
 
+import DataStructures.TuplesModule.Tuple4;
 import Utils.Functionals.TriFunction;
 import java.awt.Color;
 import java.util.Optional;
@@ -62,6 +63,12 @@ public class RedBlackTreeModule {
     }
 
     public abstract boolean isEmpty();
+    protected abstract boolean isRed();
+    protected abstract boolean isBlack();
+
+    protected abstract RedNode<K, V> asRed();
+    protected abstract BlackNode<K, V> asBlack();
+
     public abstract Optional<V> get(final K key);
     public abstract Tree<K, V> remove(final K key);
     public abstract int size();
@@ -86,10 +93,30 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public boolean isEmpty() {
+    public final boolean isEmpty() {
       return true;
     }
 
+    @Override
+    protected final boolean isRed() {
+      return false;
+    }
+
+    @Override
+    protected final boolean isBlack() {
+      return false;
+    }
+
+    @Override
+    protected final RedNode<K, V> asRed() {
+      return null;
+    }
+
+    @Override
+    protected final BlackNode<K, V> asBlack() {
+      return null;
+    }
+    
     @Override
     public Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value) {
       return createEmptyNode();
@@ -182,7 +209,7 @@ public class RedBlackTreeModule {
     public abstract <W> Node<K, W> createNode(final Tree<K, W> left, final K key, final W newValue, final Tree<K, W> right);
 
     @Override
-    public boolean isEmpty() {
+    public final boolean isEmpty() {
       return false;
     }
 
@@ -275,6 +302,30 @@ public class RedBlackTreeModule {
       return create(left, key, newValue, right);
     }
 
+    private RedNode<K, V> convertToBlack() {
+      return RedNode.create(mLeft, mKey, mValue, mRight);
+    }
+
+    @Override
+    protected final boolean isRed() {
+      return true;
+    }
+
+    @Override
+    protected final boolean isBlack() {
+      return false;
+    }
+
+    @Override
+    protected final RedNode<K, V> asRed() {
+      return this;
+    }
+
+    @Override
+    protected final BlackNode<K, V> asBlack() {
+      return null;
+    }
+
 //    let add x s =
 //    let rec ins = function
 //      | Empty ->
@@ -353,6 +404,30 @@ public class RedBlackTreeModule {
     @Override
     public <W> Node<K, W> createNode(final Tree<K, W> left, final K key, final W value, final Tree<K, W> right) {
       return create(left, key, value, right);
+    }
+
+    private RedNode<K, V> convertToRed() {
+      return RedNode.create(mLeft, mKey, mValue, mRight);
+    }
+ 
+    @Override
+    protected final boolean isRed() {
+      return false;
+    }
+
+    @Override
+    protected final boolean isBlack() {
+      return true;
+    }
+
+    @Override
+    protected final RedNode<K, V> asRed() {
+      return null;
+    }
+
+    @Override
+    protected final BlackNode<K, V> asBlack() {
+      return this;
     }
 
 //    let add x s =
@@ -434,20 +509,19 @@ public class RedBlackTreeModule {
           final K key,
           final V value,
           final Tree<K, V> right) {
-    if (left instanceof RedNode) {
-      final RedNode<K, V> l = (RedNode<K, V>) left;
-      if (l.mLeft instanceof RedNode) {
-        final RedNode<K, V> ll = (RedNode<K, V>) l.mLeft;
+    final RedNode<K, V> l;
 
+    if ((l = left.asRed()) != null) {
+      final RedNode<K, V> ll, lr;
+
+      if ((ll = l.mLeft.asRed()) != null) {
         return RedNode.create(
                 BlackNode.create(ll.mLeft, ll.mKey, ll.mValue, ll.mRight),
                 l.mKey,
                 l.mValue,
                 BlackNode.create(l.mRight, key, value, right));
       }
-      else if (l.mRight instanceof RedNode) {
-        final RedNode<K, V> lr = (RedNode<K, V>) l.mRight;
-
+      else if ((lr = l.mRight.asRed()) != null) {
         return RedNode.create(
                 BlackNode.create(l.mLeft, l.mKey, l.mValue, lr.mLeft),
                 lr.mKey,
@@ -472,20 +546,19 @@ public class RedBlackTreeModule {
           final K key,
           final V value,
           final Tree<K, V> right) {
-    if (right instanceof RedNode) {
-      final RedNode<K, V> r = (RedNode<K, V>) right;
-      if (r.mLeft instanceof RedNode) {
-        final RedNode<K, V> rl = (RedNode<K, V>) r.mLeft;
+    final RedNode<K, V> r = right.asRed();
 
+    if (r != null) {
+      final RedNode<K, V> rl, rr;
+
+      if ((rl = r.mLeft.asRed()) != null) {
         return RedNode.create(
                 BlackNode.create(left, key, value, rl.mLeft),
                 rl.mKey,
                 rl.mValue,
                 BlackNode.create(rl.mRight, r.mKey, r.mValue, r.mRight));
       }
-      else if (r.mRight instanceof RedNode) {
-        final RedNode<K, V> rr = (RedNode<K, V>) r.mRight;
-
+      else if ((rr = r.mRight.asRed()) != null) {
         return RedNode.create(
                 BlackNode.create(left, key, value, r.mLeft),
                 r.mKey,
@@ -502,12 +575,195 @@ public class RedBlackTreeModule {
 //      | Red (a, y, b) -> Black (a, y, b)
 //      | Empty -> assert false
   private static <K extends Comparable<K>, V> Tree<K, V> blackify(final Tree<K, V> t) {
-    if (t instanceof RedNode) {
-      final RedNode<K, V> r = (RedNode<K, V>) t;
-      return BlackNode.create(r.mLeft, r.mKey, r.mValue, r.mRight);
+    final RedNode<K, V> r = t.asRed();
+    return (r != null) ? BlackNode.create(r.mLeft, r.mKey, r.mValue, r.mRight) : t;
+  }
+
+  private static class unbalanceRes<K extends Comparable<K>, V> {
+    public static <K extends Comparable<K>, V> unbalanceRes<K, V> create(final Tree<K, V> tree, final boolean res) {
+      return new unbalanceRes<>(tree, res);
+    }
+
+    private unbalanceRes(final Tree<K, V> tree, final boolean res) {
+      mTree = tree;
+      mRes = res;
+    }
+
+    private final Tree<K, V> mTree;
+    private final boolean mRes;
+  }
+
+//    (* [unbalanced_left] repares invariant (2) when the black height of the
+//     left son exceeds (by 1) the black height of the right son *)
+//
+//  let unbalanced_left = function
+//    | Red (Black (t1, x1, t2), x2, t3) ->
+//        lbalance (Red (t1, x1, t2)) x2 t3, false
+//    | Black (Black (t1, x1, t2), x2, t3) ->
+//        lbalance (Red (t1, x1, t2)) x2 t3, true
+//    | Black (Red (t1, x1, Black (t2, x2, t3)), x3, t4) ->
+//        Black (t1, x1, lbalance (Red (t2, x2, t3)) x3 t4), false
+//    | _ ->
+//        assert false
+
+  private static <K extends Comparable<K>, V> unbalanceRes<K, V> unbalanceLeft(final Tree<K, V> t) {
+    final RedNode<K, V> red;
+    final BlackNode<K, V> black;
+    
+    if ((red = t.asRed()) != null) {
+      final BlackNode<K, V> rb = red.mLeft.asBlack();
+      if (rb != null) {
+        return unbalanceRes.create(leftBalance(rb.convertToRed(), red.mKey, red.mValue, red.mRight), false);
+      }
+    }
+    else if ((black = t.asBlack()) != null) {
+      final Tree<K, V> left = black.mLeft;
+      BlackNode<K, V> bb;
+      final RedNode<K, V> br;
+
+      if ((bb = left.asBlack()) != null) {
+        return unbalanceRes.create(leftBalance(bb.convertToRed(), black.mKey, black.mValue, black.mRight), true);
+      }
+      else if ((br = left.asRed()) != null && (bb = br.mRight.asBlack()) != null) {
+        return unbalanceRes.create(
+                BlackNode.create(br.mLeft, br.mKey, br.mValue,
+                                 leftBalance(bb.convertToRed(), black.mKey, black.mValue, black.mRight)),
+                false);
+      }
+    }
+
+    throw new AssertionError("Should never get here.");
+  }
+  
+//  let unbalanced_right = function
+//    | Red (t1, x1, Black (t2, x2, t3)) ->
+//        rbalance t1 x1 (Red (t2, x2, t3)), false
+//    | Black (t1, x1, Black (t2, x2, t3)) ->
+//        rbalance t1 x1 (Red (t2, x2, t3)), true
+//    | Black (t1, x1, Red (Black (t2, x2, t3), x3, t4)) ->
+//        Black (rbalance t1 x1 (Red (t2, x2, t3)), x3, t4), false
+//    | _ ->
+//        assert false
+
+  private static <K extends Comparable<K>, V> unbalanceRes<K, V> unbalanceRight(final Tree<K, V> t) {
+    final RedNode<K, V> red;
+    final BlackNode<K, V> black;
+
+    if ((red = t.asRed()) != null) {
+      final BlackNode<K, V> rb = red.mRight.asBlack();
+
+      if (rb != null) {
+        return unbalanceRes.create(rightBalance(red.mLeft, red.mKey, red.mValue, rb.convertToRed()), false);
+      }
+    }
+    else if ((black = t.asBlack()) != null) {
+      final Tree<K, V> right = black.mRight;
+      BlackNode<K, V> bb;
+      final RedNode<K, V> br;
+      
+      if ((bb = right.asBlack()) != null) {
+        return unbalanceRes.create(rightBalance(black.mLeft, black.mKey, black.mValue, bb.convertToRed()), true);
+      }
+      else if ((br = right.asRed()) != null && (bb = br.mLeft.asBlack()) != null) {
+        return unbalanceRes.create(
+                BlackNode.create(rightBalance(black.mLeft, black.mKey, black.mValue, bb.convertToRed()),
+                                 br.mKey, br.mValue, br.mRight),
+                false);
+      }      
+    }
+
+    throw new AssertionError("Should never get here.");
+  }
+
+// (* [remove_min s = (s',m,b)] extracts the minimum [m] of [s], [s'] being the
+//      resulting set, and indicates with [b] whether the black height has
+//      decreased *)
+
+//   let rec remove_min = function
+//     | Empty ->
+//         assert false
+//     (* minimum is reached *)
+//     | Black (Empty, x, Empty) ->
+//         Empty, x, true
+//     | Black (Empty, x, Red (l, y, r)) ->
+//         Black (l, y, r), x, false
+//     | Black (Empty, _, Black _) ->
+//         assert false
+//     | Red (Empty, x, r) ->
+//         r, x, false
+//     (* minimum is recursively extracted from [l] *)
+//     | Black (l, x, r) ->
+//         let l',m,d = remove_min l in
+//         let t = Black (l', x, r) in
+//         if d then
+//           let t,d' = unbalanced_right t in t,m,d'
+//         else
+//           t, m, false
+//     | Red (l, x, r) ->
+//         let l',m,d = remove_min l in
+//         let t = Red (l', x, r) in
+//         if d then
+//           let t,d' = unbalanced_right t in t,m,d'
+//         else
+//           t, m, false
+
+  private static <K extends Comparable<K>, V> Tuple4<Tree<K,V>, K, V, Boolean> removeMin(final Tree<K, V> tree) {
+    if (tree.isEmpty()) {
+      throw new AssertionError("The tree cannot be empty in this context.");
+    }
+
+    final BlackNode<K, V> black = tree.asBlack();
+    if (black != null) {
+      final Tree<K, V> l = black.mLeft, r = black.mRight;
+
+      if (l.isEmpty()) {
+        if (r.isEmpty()) {
+          return Tuple4.create(l, black.mKey, black.mValue, true);
+        }
+
+        final RedNode<K, V> br = r.asRed();
+        if (br != null) {
+          return Tuple4.create(br.asBlack(), black.mKey, black.mValue, false);
+        }
+
+        final BlackNode<K, V> bb = r.asBlack();
+        if (bb != null) {
+          throw new AssertionError("BlackNode encountered at the wrong place.");
+        }
+      }
+
+      final Tuple4<Tree<K, V>, K, V, Boolean> res = removeMin(l);
+      final Tree<K, V> t = BlackNode.create(res.mx1, black.mKey, black.mValue, r);
+
+      if (res.mx4) {
+        final unbalanceRes<K, V> u = unbalanceRight(t);
+        return Tuple4.create(u.mTree, res.mx2, res.mx3, u.mRes);
+      }
+      else {
+        return Tuple4.create(t, res.mx2, res.mx3, false);
+      }
+    }
+    final RedNode<K, V> red = tree.asRed();
+    if (red == null) {
+      throw new AssertionError("The node must be red at this point.");
+    }
+
+    final Tree<K, V> l = red.mLeft, r = red.mRight;
+    
+    if (l.isEmpty()) {
+      return Tuple4.create(red.mRight, red.mKey, red.mValue, false);
     }
     else {
-      return t;
+      final Tuple4<Tree<K, V>, K, V, Boolean> res = removeMin(l);
+      final Tree<K, V> t = RedNode.create(res.mx1, red.mKey, red.mValue, r);
+
+      if (res.mx4) {
+        final unbalanceRes<K, V> u = unbalanceRight(t);
+        return Tuple4.create(u.mTree, res.mx2, res.mx3, u.mRes);
+      }
+      else {
+        return Tuple4.create(t, res.mx2, res.mx3, false);
+      }
     }
   }
 }
