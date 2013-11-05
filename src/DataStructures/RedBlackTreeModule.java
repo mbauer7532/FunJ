@@ -261,14 +261,48 @@ public class RedBlackTreeModule {
       super(key, value, left, right);
     }
 
-    @Override
-    public <W> Node<K, W> createNode(final K key, final W newValue, final Tree<K, W> left, final Tree<K, W> right) {
-      return new RedNode<>(key, newValue, left, right);
+    public static <K extends Comparable<K>, V> RedNode<K, V> create(final K key, final V value, final Tree<K, V> left, final Tree<K, V> right) {
+      return new RedNode<>(key, value, left, right);
     }
 
     @Override
+    public <W> Node<K, W> createNode(final K key, final W newValue, final Tree<K, W> left, final Tree<K, W> right) {
+      return create(key, newValue, left, right);
+    }
+
+//    let add x s =
+//    let rec ins = function
+//      | Empty ->
+//          Red (Empty, x, Empty)
+//      | Red (a, y, b) as s ->
+//          let c = Ord.compare x y in
+//          if c < 0 then Red (ins a, y, b)
+//          else if c > 0 then Red (a, y, ins b)
+//          else s
+//      | Black (a, y, b) as s ->
+//          let c = Ord.compare x y in
+//          if c < 0 then lbalance (ins a) y b
+//          else if c > 0 then rbalance a y (ins b)
+//          else s
+//    in
+//    match ins s with
+//      | Black _ as s -> s
+//      | Red (a, y, b) -> Black (a, y, b)
+//      | Empty -> assert false
+
+    @Override
     public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      final int res = key.compareTo(mKey);
+
+      if (res < 0) {
+        return create(mKey, mValue, mLeft.insert(f, key, value), mRight);
+      }
+      else if (res > 0) {
+        return create(mKey, mValue, mLeft, mRight.insert(f, key, value));
+      }
+      else {
+        return create(mKey, f.apply(mValue, value), mLeft, mRight);
+      }
     }
 
     @Override
@@ -307,14 +341,56 @@ public class RedBlackTreeModule {
       super(key, value, left, right);
     }
 
+    public static <K extends Comparable<K>, V> BlackNode<K, V> create(final K key, final V value, final Tree<K, V> left, final Tree<K, V> right) {
+      return new BlackNode<>(key, value, left, right);
+    }
+
     @Override
-    public <W> Node<K, W> createNode(final K key, final W newValue, final Tree<K, W> left, final Tree<K, W> right) {
-      return new BlackNode<>(key, newValue, left, right);
+    public <W> Node<K, W> createNode(final K key, final W value, final Tree<K, W> left, final Tree<K, W> right) {
+      return create(key, value, left, right);
+    }
+
+//    let add x s =
+//    let rec ins = function
+//      | Empty ->
+//          Red (Empty, x, Empty)
+//      | Red (a, y, b) as s ->
+//          let c = Ord.compare x y in
+//          if c < 0 then Red (ins a, y, b)
+//          else if c > 0 then Red (a, y, ins b)
+//          else s
+//      | Black (a, y, b) as s ->
+//          let c = Ord.compare x y in
+//          if c < 0 then lbalance (ins a) y b
+//          else if c > 0 then rbalance a y (ins b)
+//          else s
+//    in
+//    match ins s with
+//      | Black _ as s -> s
+//      | Red (a, y, b) -> Black (a, y, b)
+//      | Empty -> assert false
+
+    private static <K extends Comparable<K>, V> Tree<K, V> leftBalance(final Tree<K, V> left, final K key, final V value, final Tree<K, V> right) {
+      return null;
+    }
+
+    private static <K extends Comparable<K>, V> Tree<K, V> rightBalance(final Tree<K, V> left, final K key, final V value, final Tree<K, V> right) {
+      return null;
     }
 
     @Override
     public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      final int res = key.compareTo(mKey);
+      
+      if (res < 0) {
+        return leftBalance(mLeft.insert(f, key, value), mKey, mValue, mRight);
+      }
+      else if (res > 0) {
+        return rightBalance(mLeft, mKey, mValue, mRight.insert(f, key, value));
+      }
+      else {
+        return create(key, f.apply(mValue, value), mLeft, mRight);
+      }
     }
 
     @Override
