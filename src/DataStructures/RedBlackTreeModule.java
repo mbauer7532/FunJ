@@ -174,7 +174,7 @@ public class RedBlackTreeModule {
     protected final Tree<K, V> mLeft;
     protected final Tree<K, V> mRight;
 
-    public abstract <W> Node<K, W> createNode(final K key, final W newValue, final Tree<K, W> left, final Tree<K, W> right);
+    public abstract <W> Node<K, W> createNode(final Tree<K, W> left, final K key, final W newValue, final Tree<K, W> right);
 
     @Override
     public boolean isEmpty() {
@@ -222,7 +222,7 @@ public class RedBlackTreeModule {
 
     @Override
     public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
-      return createNode(mKey, f.apply(mKey, mValue), mLeft.mapi(f), mRight.mapi(f));
+      return createNode(mLeft.mapi(f), mKey, f.apply(mKey, mValue), mRight.mapi(f));
     }
 
     @Override
@@ -257,17 +257,17 @@ public class RedBlackTreeModule {
   }
 
   private static final class RedNode<K extends Comparable<K>, V> extends Node<K, V> {
-    private RedNode(final K key, final V value, final Tree<K, V> left, final Tree<K, V> right) {
+    private RedNode(final Tree<K, V> left, final K key, final V value, final Tree<K, V> right) {
       super(key, value, left, right);
     }
 
-    public static <K extends Comparable<K>, V> RedNode<K, V> create(final K key, final V value, final Tree<K, V> left, final Tree<K, V> right) {
-      return new RedNode<>(key, value, left, right);
+    public static <K extends Comparable<K>, V> RedNode<K, V> create(final Tree<K, V> left, final K key, final V value, final Tree<K, V> right) {
+      return new RedNode<>(left, key, value, right);
     }
 
     @Override
-    public <W> Node<K, W> createNode(final K key, final W newValue, final Tree<K, W> left, final Tree<K, W> right) {
-      return create(key, newValue, left, right);
+    public <W> Node<K, W> createNode(final Tree<K, W> left, final K key, final W newValue, final Tree<K, W> right) {
+      return create(left, key, newValue, right);
     }
 
 //    let add x s =
@@ -295,13 +295,13 @@ public class RedBlackTreeModule {
       final int res = key.compareTo(mKey);
 
       if (res < 0) {
-        return create(mKey, mValue, mLeft.insert(f, key, value), mRight);
+        return create(mLeft.insert(f, key, value), mKey, mValue, mRight);
       }
       else if (res > 0) {
-        return create(mKey, mValue, mLeft, mRight.insert(f, key, value));
+        return create(mLeft, mKey, mValue, mRight.insert(f, key, value));
       }
       else {
-        return create(mKey, f.apply(mValue, value), mLeft, mRight);
+        return create(mLeft, mKey, f.apply(mValue, value), mRight);
       }
     }
 
@@ -337,17 +337,17 @@ public class RedBlackTreeModule {
   }
 
   private static final class BlackNode<K extends Comparable<K>, V> extends Node<K, V> {
-    private BlackNode(final K key, final V value, final Tree<K, V> left, final Tree<K, V> right) {
+    private BlackNode(final Tree<K, V> left, final K key, final V value, final Tree<K, V> right) {
       super(key, value, left, right);
     }
 
-    public static <K extends Comparable<K>, V> BlackNode<K, V> create(final K key, final V value, final Tree<K, V> left, final Tree<K, V> right) {
-      return new BlackNode<>(key, value, left, right);
+    public static <K extends Comparable<K>, V> BlackNode<K, V> create(final Tree<K, V> left, final K key, final V value, final Tree<K, V> right) {
+      return new BlackNode<>(left, key, value, right);
     }
 
     @Override
-    public <W> Node<K, W> createNode(final K key, final W value, final Tree<K, W> left, final Tree<K, W> right) {
-      return create(key, value, left, right);
+    public <W> Node<K, W> createNode(final Tree<K, W> left, final K key, final W value, final Tree<K, W> right) {
+      return create(left, key, value, right);
     }
 
 //    let add x s =
@@ -370,18 +370,10 @@ public class RedBlackTreeModule {
 //      | Red (a, y, b) -> Black (a, y, b)
 //      | Empty -> assert false
 
-    private static <K extends Comparable<K>, V> Tree<K, V> leftBalance(final Tree<K, V> left, final K key, final V value, final Tree<K, V> right) {
-      return null;
-    }
-
-    private static <K extends Comparable<K>, V> Tree<K, V> rightBalance(final Tree<K, V> left, final K key, final V value, final Tree<K, V> right) {
-      return null;
-    }
-
     @Override
     public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
       final int res = key.compareTo(mKey);
-      
+
       if (res < 0) {
         return leftBalance(mLeft.insert(f, key, value), mKey, mValue, mRight);
       }
@@ -389,7 +381,7 @@ public class RedBlackTreeModule {
         return rightBalance(mLeft, mKey, mValue, mRight.insert(f, key, value));
       }
       else {
-        return create(key, f.apply(mValue, value), mLeft, mRight);
+        return create(mLeft, key, f.apply(mValue, value), mRight);
       }
     }
 
@@ -422,5 +414,81 @@ public class RedBlackTreeModule {
     public Color DSgetColor() {
       throw new UnsupportedOperationException("Not supported yet.");
     }
+  }
+
+//    let lbalance x1 x2 x3 = match x1, x2, x3 with
+//    | Red (Red (a,x,b), y, c), z, d ->
+//        Red (Black (a,x,b), y, Black (c,z,d))
+//    | Red (a, x, Red (b,y,c)), z, d ->
+//        Red (Black (a,x,b), y, Black (c,z,d))
+//    | a,x,b ->
+//        Black (a,x,b)
+//
+  private static <K extends Comparable<K>, V> Tree<K, V> leftBalance(
+          final Tree<K, V> left,
+          final K key,
+          final V value,
+          final Tree<K, V> right) {
+    if (left instanceof RedNode) {
+      final RedNode<K, V> l = (RedNode<K, V>) left;
+      if (l.mLeft instanceof RedNode) {
+        final RedNode<K, V> ll = (RedNode<K, V>) l.mLeft;
+
+        return RedNode.create(
+                BlackNode.create(ll.mLeft, ll.mKey, ll.mValue, ll.mRight),
+                l.mKey,
+                l.mValue,
+                BlackNode.create(l.mRight, key, value, right));
+      }
+      else if (l.mRight instanceof RedNode) {
+        final RedNode<K, V> lr = (RedNode<K, V>) l.mRight;
+
+        return RedNode.create(
+                BlackNode.create(l.mLeft, l.mKey, l.mValue, lr.mLeft),
+                lr.mKey,
+                lr.mValue,
+                BlackNode.create(lr.mRight, key, value, right));
+      }
+    }
+ 
+    return BlackNode.create(left, key, value, right);
+  }
+
+//  let rbalance x1 x2 x3 = match x1, x2, x3 with
+//    | a, x, Red (Red (b,y,c), z, d) ->
+//        Red (Black (a,x,b), y, Black (c,z,d))
+//    | a, x, Red (b, y, Red (c,z,d)) ->
+//        Red (Black (a,x,b), y, Black (c,z,d))
+//    | a,x,b ->
+//        Black (a,x,b)
+
+  private static <K extends Comparable<K>, V> Tree<K, V> rightBalance(
+          final Tree<K, V> left,
+          final K key,
+          final V value,
+          final Tree<K, V> right) {
+    if (right instanceof RedNode) {
+      final RedNode<K, V> r = (RedNode<K, V>) right;
+      if (r.mLeft instanceof RedNode) {
+        final RedNode<K, V> rl = (RedNode<K, V>) r.mLeft;
+
+        return RedNode.create(
+                BlackNode.create(left, key, value, rl.mLeft),
+                rl.mKey,
+                rl.mValue,
+                BlackNode.create(rl.mRight, r.mKey, r.mValue, r.mRight));
+      }
+      else if (r.mRight instanceof RedNode) {
+        final RedNode<K, V> rr = (RedNode<K, V>) r.mRight;
+
+        return RedNode.create(
+                BlackNode.create(left, key, value, r.mLeft),
+                r.mKey,
+                r.mValue,
+                BlackNode.create(rr.mLeft, rr.mKey, rr.mValue, rr.mRight));
+      }
+    }
+
+    return BlackNode.create(left, key, value, right);
   }
 }
