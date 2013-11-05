@@ -57,8 +57,11 @@ public class RedBlackTreeModule {
       return mapPartiali((k, v) -> f.apply(v));
     }
 
+    public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
+      return blackify(ins(f, key, value));
+    }
+
     public abstract boolean isEmpty();
-    public abstract Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value);
     public abstract Optional<V> get(final K key);
     public abstract Tree<K, V> remove(final K key);
     public abstract int size();
@@ -70,6 +73,8 @@ public class RedBlackTreeModule {
     public abstract <W> W foldri(final TriFunction<K, V, W, W> f, final W w);
     public abstract Tree<K, V> filteri(final BiPredicate<K, V> f);
     public abstract Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t);
+
+    protected abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
   }
 
   private static final class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -86,7 +91,7 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
+    public Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value) {
       return createEmptyNode();
     }
 
@@ -182,15 +187,15 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public abstract Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value);
+    protected abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
 
     @Override
     public Optional<V> get(final K key) {
-      final int cmp = key.compareTo(mKey);
-      if (cmp < 0) {
+      final int res = key.compareTo(mKey);
+      if (res < 0) {
         return mLeft.get(key);
       }
-      else if (cmp > 0) {
+      else if (res > 0) {
         return mRight.get(key);
       }
       else {
@@ -291,14 +296,14 @@ public class RedBlackTreeModule {
 //      | Empty -> assert false
 
     @Override
-    public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
+    protected Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value) {
       final int res = key.compareTo(mKey);
 
       if (res < 0) {
-        return create(mLeft.insert(f, key, value), mKey, mValue, mRight);
+        return create(mLeft.ins(f, key, value), mKey, mValue, mRight);
       }
       else if (res > 0) {
-        return create(mLeft, mKey, mValue, mRight.insert(f, key, value));
+        return create(mLeft, mKey, mValue, mRight.ins(f, key, value));
       }
       else {
         return create(mLeft, mKey, f.apply(mValue, value), mRight);
@@ -371,14 +376,14 @@ public class RedBlackTreeModule {
 //      | Empty -> assert false
 
     @Override
-    public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
+    protected Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value) {
       final int res = key.compareTo(mKey);
 
       if (res < 0) {
-        return leftBalance(mLeft.insert(f, key, value), mKey, mValue, mRight);
+        return leftBalance(mLeft.ins(f, key, value), mKey, mValue, mRight);
       }
       else if (res > 0) {
-        return rightBalance(mLeft, mKey, mValue, mRight.insert(f, key, value));
+        return rightBalance(mLeft, mKey, mValue, mRight.ins(f, key, value));
       }
       else {
         return create(mLeft, key, f.apply(mValue, value), mRight);
@@ -490,5 +495,19 @@ public class RedBlackTreeModule {
     }
 
     return BlackNode.create(left, key, value, right);
+  }
+
+//   match ins s with
+//      | Black _ as s -> s
+//      | Red (a, y, b) -> Black (a, y, b)
+//      | Empty -> assert false
+  private static <K extends Comparable<K>, V> Tree<K, V> blackify(final Tree<K, V> t) {
+    if (t instanceof RedNode) {
+      final RedNode<K, V> r = (RedNode<K, V>) t;
+      return BlackNode.create(r.mLeft, r.mKey, r.mValue, r.mRight);
+    }
+    else {
+      return t;
+    }
   }
 }
