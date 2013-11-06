@@ -4,6 +4,9 @@
  * and open the template in the editor.
  */
 
+// https://github.com/bmeurer/ocaml-rbtrees/blob/master/src/rbmap.ml
+// https://www.lri.fr/~filliatr/ftp/ocaml/ds/rbset.ml.html
+
 package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
@@ -59,8 +62,12 @@ public class RedBlackTreeModule {
       return mapPartiali((k, v) -> f.apply(v));
     }
 
-    public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
+    public final Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
       return blackify(ins(f, key, value));
+    }
+
+    public final Tree<K, V> remove(final K key) {
+      return rem(key).mx1;
     }
 
     public abstract boolean isEmpty();
@@ -71,7 +78,6 @@ public class RedBlackTreeModule {
     abstract BlackNode<K, V> asBlack();
 
     public abstract Optional<V> get(final K key);
-    public abstract Tree<K, V> remove(final K key);
     public abstract int size();
     public abstract int depth();
     public abstract void appi(final BiConsumer<K, V> f);
@@ -132,11 +138,6 @@ public class RedBlackTreeModule {
     @Override
     public Optional<V> get(final K key) {
       return Optional.empty();
-    }
-
-    @Override
-    public Tree<K, V> remove(final K key) {
-      return this;
     }
 
     @Override
@@ -233,9 +234,6 @@ public class RedBlackTreeModule {
         return Optional.of(mValue);
       }
     }
-
-    @Override
-    public abstract Tree<K, V> remove(final K key);
 
     @Override
     public int size() {
@@ -412,24 +410,19 @@ public class RedBlackTreeModule {
     @Override
     Pair<Tree<K, V>, Boolean> rem(final K key) {
       final int c = key.compareTo(mKey);
-      Tree<K, V> l = mLeft, r = mRight, m;
-      boolean d;
+      final Tree<K, V> l = mLeft, r = mRight;
       
       if (c < 0) {
         final Pair<Tree<K, V>, Boolean> p = l.rem(key);
-        l = p.mx1;
-        d = p.mx2;
-        m = RedNode.create(l, mKey, mValue, r);
+        final RedNode<K, V> m = RedNode.create(p.mx1, mKey, mValue, r);
 
-        return d ? unbalancedRight(m) : Pair.create(m, false);
+        return p.mx2 ? unbalancedRight(m) : Pair.create(m, false);
       }
       else if (c > 0) {
         final Pair<Tree<K, V>, Boolean> p = r.rem(key);
-        r = p.mx1;
-        d = p.mx2;
-        m = RedNode.create(l, mKey, mValue, r);
+        final RedNode<K, V> m = RedNode.create(l, mKey, mValue, p.mx1);
 
-        return d ? unbalancedLeft(m) : Pair.create(m, false);
+        return p.mx2 ? unbalancedLeft(m) : Pair.create(m, false);
       }
       else {
         if (r.isEmpty()) {
@@ -437,18 +430,11 @@ public class RedBlackTreeModule {
         }
         else {
           final Tuple4<Tree<K, V>, K, V, Boolean> p = removeMin(r);
-          r = p.mx1;
-          d = p.mx4;
-          m = RedNode.create(l, p.mx2, p.mx3, r);
+          final RedNode<K, V> m = RedNode.create(l, p.mx2, p.mx3, p.mx1);
 
-          return d ? unbalancedLeft(m) : Pair.create(m, false);
+          return p.mx4 ? unbalancedLeft(m) : Pair.create(m, false);
         }
       }
-    }
-
-    @Override
-    public Tree<K, V> remove(final K key) {
-      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -577,44 +563,33 @@ public class RedBlackTreeModule {
     @Override
     Pair<Tree<K, V>, Boolean> rem(final K key) {
       final int c = key.compareTo(mKey);
-      Tree<K, V> l = mLeft, r = mRight, m;
-      boolean d;
+      final Tree<K, V> l = mLeft, r = mRight;
       
       if (c < 0) {
         final Pair<Tree<K, V>, Boolean> p = l.rem(key);
-        l = p.mx1;
-        d = p.mx2;
-        m = BlackNode.create(l, mKey, mValue, r);
+        final BlackNode<K, V> m = BlackNode.create(p.mx1, mKey, mValue, r);
 
-        return d ? unbalancedRight(m) : Pair.create(m, false);
+        return p.mx2 ? unbalancedRight(m) : Pair.create(m, false);
       }
       else if (c > 0) {
         final Pair<Tree<K, V>, Boolean> p = r.rem(key);
-        r = p.mx1;
-        d = p.mx2;
-        m = BlackNode.create(l, mKey, mValue, r);
+        final BlackNode<K, V> m = BlackNode.create(l, mKey, mValue, p.mx1);
 
-        return d ? unbalancedLeft(m) : Pair.create(m, false);
+        return p.mx2 ? unbalancedLeft(m) : Pair.create(m, false);
       }
       else {
         if (r.isEmpty()) {
           final RedNode<K, V> red = l.asRed();
-          return (red != null) ? Pair.create(red.convertToBlack(), false) : Pair.create(l, true);
+          return (red != null) ? Pair.create(red.convertToBlack(), false)
+                               : Pair.create(l, true);
         }
         else {
           final Tuple4<Tree<K, V>, K, V, Boolean> p = removeMin(r);
-          r = p.mx1;
-          d = p.mx4;
-          m = BlackNode.create(l, p.mx2, p.mx3, r);
+          final BlackNode<K, V> m = BlackNode.create(l, p.mx2, p.mx3, p.mx1);
 
-          return d ? unbalancedLeft(m) : Pair.create(m, false);
+          return p.mx4 ? unbalancedLeft(m) : Pair.create(m, false);
         }
       }
-    }
-
-    @Override
-    public Tree<K, V> remove(final K key) {
-      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -793,7 +768,7 @@ public class RedBlackTreeModule {
       final Tree<K, V> right = black.mRight;
       BlackNode<K, V> bb;
       final RedNode<K, V> br;
-      
+
       if ((bb = right.asBlack()) != null) {
         return Pair.create(rightBalance(black.mLeft, black.mKey, black.mValue, bb.convertToRed()), true);
       }
@@ -900,8 +875,7 @@ public class RedBlackTreeModule {
     }
   }
 
-// https://github.com/bmeurer/ocaml-rbtrees/blob/master/src/rbmap.ml
-// https://www.lri.fr/~filliatr/ftp/ocaml/ds/rbset.ml.html
+
 //    let remove k m =
 //    let rec remove_aux = function
 //      | Empty ->
