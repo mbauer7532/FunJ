@@ -925,14 +925,17 @@ public class RedBlackTreeModule {
       throw new AssertionError("The root of a red-black tree must be black.");
     }
     
-    if (! childrenPropertyHolds(t)) {
+    if (! redChildrenPropertyHolds(t)) {
       throw new AssertionError("There are red nodes that have red children.");
     }
-    
-    if (! true) {}
+    final Pair<Integer, Boolean> p = blackNodeCountPropertyHolds(t);
+    if (! p.mx2)  {
+      throw new AssertionError("Number of black nodes to leaves of tree "
+                               + "from left and right subtree did not match.");
+    }
   }
 
-  private static <K extends Comparable<K>, V> boolean childrenPropertyHolds(final Tree<K, V> t) {
+  private static <K extends Comparable<K>, V> boolean redChildrenPropertyHolds(final Tree<K, V> t) {
     if (t.isEmpty()) {
       return true;
     }
@@ -940,7 +943,7 @@ public class RedBlackTreeModule {
     final BlackNode<K, V> black = t.asBlack();
     if (black != null) {
       final Tree<K, V> l = black.mLeft, r = black.mRight;
-      return childrenPropertyHolds(l) && childrenPropertyHolds(r);
+      return redChildrenPropertyHolds(l) && redChildrenPropertyHolds(r);
     }
     
     final RedNode<K, V> red = t.asRed();
@@ -953,7 +956,29 @@ public class RedBlackTreeModule {
       return false;
     }
     else {
-      return childrenPropertyHolds(l) && childrenPropertyHolds(r);
+      return redChildrenPropertyHolds(l) && redChildrenPropertyHolds(r);
+    }
+  }
+
+  private static <K extends Comparable<K>, V> Pair<Integer, Boolean> blackNodeCountPropertyHolds(final Tree<K, V> t) {
+    if (t.isEmpty()) {
+      return Pair.create(1, true);
+    }
+    {
+      final BlackNode<K, V> b = t.asBlack();
+      if (b != null) {
+        final Pair<Integer, Boolean> pleft  = blackNodeCountPropertyHolds(b.mLeft);
+        final Pair<Integer, Boolean> pright = blackNodeCountPropertyHolds(b.mRight);
+      
+        return Pair.create(pleft.mx1 + 1, pleft.mx2 && pright.mx2 && pleft.mx1.equals(pright.mx1));
+      }
+    }
+    {
+      final RedNode<K, V> r = t.asRed();
+      final Pair<Integer, Boolean> pleft  = blackNodeCountPropertyHolds(r.mLeft);
+      final Pair<Integer, Boolean> pright = blackNodeCountPropertyHolds(r.mRight);
+      
+      return Pair.create(pleft.mx1, pleft.mx2 && pright.mx2 && pleft.mx1.equals(pright.mx1));
     }
   }
 }
