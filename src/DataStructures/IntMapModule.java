@@ -240,21 +240,21 @@ public final class IntMapModule {
     @Override
     public <W> W foldli(final TriFunction<Integer, V, W, W> f, final W w) {
       Objects.requireNonNull(f);
-      
+
       return f.apply(mKey, mValue, w);
     }
 
     @Override
     public <W> W foldri(final TriFunction<Integer, V, W, W> f, final W w) {
       Objects.requireNonNull(f);
-      
+
       return f.apply(mKey, mValue, w);
     }
 
     @Override
     public Tree<V> filteri(final BiPredicate<Integer, V> f) {
       Objects.requireNonNull(f);
-      
+
       return f.test(mKey, mValue) ? this : EmptyNode.createEmptyNode();
     }
 
@@ -368,7 +368,7 @@ public final class IntMapModule {
     public void appi(final BiConsumer<Integer, V> f) {
       mLeft.appi(f);
       mRight.appi(f);
-      
+
       return;
     }
 
