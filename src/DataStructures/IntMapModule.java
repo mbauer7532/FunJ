@@ -265,7 +265,7 @@ public final class IntMapModule {
 
       return t.insert((x, y) -> f.apply(y, x), mKey, mValue);
     }
-    
+
     private <W> Tree<W> compOptMapedValue(final Optional<W> opt) {
       if (opt.isPresent()) {
         return createLeafNode(mKey, opt.get());
@@ -469,10 +469,10 @@ public final class IntMapModule {
                        final int branchingBit,
                        final Tree<V> left,
                        final Tree<V> right) {
-      mPrefix = prefix;
+      mPrefix       = prefix;
       mBranchingBit = branchingBit;
-      mLeft = left;
-      mRight = right;
+      mLeft         = left;
+      mRight        = right;
     }
 
     private static <V> BranchNode<V> createBranchNode(final int prefix,
@@ -481,7 +481,6 @@ public final class IntMapModule {
                                                       final Tree<V> right) {
       return new BranchNode<>(prefix, branchingBit, left, right);
     }
-
 
     @Override
     public DSTreeNode[] DSgetChildren() {
