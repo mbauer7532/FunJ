@@ -25,25 +25,51 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public final class IntMapModule {
   public static abstract class Tree<V> implements DSTreeNode {
+    public final boolean contains(final int key) {
+      return get(key).isPresent();
+    }
+
+    public final V getWithDefault(final int key, final V def) {
+      return get(key).orElse(def);
+    }
+
+    public final <W> Tree<W> map(final Function<V, W> f) {
+      return mapi((k, v) -> f.apply(v));
+    }
+
+    public final void app(final Consumer<V> f) {
+      appi((k, v) -> f.accept(v));
+
+      return;
+    }
+
+    public final <W> W foldl(final BiFunction<V, W, W> f, final W w) {
+      return foldli((k, v, z) -> f.apply(v, z), w);
+    }
+
+    public final <W> W foldr(final BiFunction<V, W, W> f, final W w) {
+      return foldri((k, v, z) -> f.apply(v, z), w);
+    }
+
+    public final Tree<V> filter(final Predicate<V> f) {
+      return filteri((k, v) -> f.test(v));
+    }
+
+    public final <W> Tree<W> mapPartial(final Function<V, Optional<W>> f) {
+      return mapPartiali((k, v) -> f.apply(v));
+    }
+
     public abstract boolean isEmpty();
-    public abstract boolean contains(final int key);
     public abstract Tree<V> insert(final BiFunction<V, V, V> f, final int key, final V value);
     public abstract Optional<V> get(final int key);
-    public abstract V getWithDefault(final int key, final V def);
     public abstract Tree<V> remove(final int key);
     public abstract int size();
     public abstract int depth();
-    public abstract void app(final Consumer<V> f);
     public abstract void appi(final BiConsumer<Integer, V> f);
-    public abstract <W> Tree<W> map(final Function<V, W> f);
     public abstract <W> Tree<W> mapi(final BiFunction<Integer, V, W> f);
-    public abstract <W> Tree<W> mapPartial(final Function<V, Optional<W>> f);
     public abstract <W> Tree<W> mapPartiali(final BiFunction<Integer, V, Optional<W>> f);
-    public abstract <W> W foldl(final BiFunction<V, W, W> f, final W w);
     public abstract <W> W foldli(final TriFunction<Integer, V, W, W> f, final W w);
-    public abstract <W> W foldr(final BiFunction<V, W, W> f, final W w);
     public abstract <W> W foldri(final TriFunction<Integer, V, W, W> f, final W w);
-    public abstract Tree<V> filter(final Predicate<V> f);
     public abstract Tree<V> filteri(final BiPredicate<Integer, V> f);
     public abstract Tree<V> merge(final BiFunction<V, V, V> f, final Tree<V> t);
   }
@@ -62,18 +88,8 @@ public final class IntMapModule {
     }
 
     @Override
-    public boolean contains(final int key) {
-      return false;
-    }
-
-    @Override
     public Optional<V> get(final int key) {
       return Optional.empty();
-    }
-
-    @Override
-    public V getWithDefault(final int key, final V def) {
-      return def;
     }
 
     @Override
@@ -92,13 +108,6 @@ public final class IntMapModule {
     }
 
     @Override
-    public void app(final Consumer<V> f) {
-      Objects.requireNonNull(f);
-
-      return;
-    }
-
-    @Override
     public void appi(final BiConsumer<Integer, V> f) {
       Objects.requireNonNull(f);
 
@@ -106,21 +115,7 @@ public final class IntMapModule {
     }
 
     @Override
-    public <W> Tree<W> map(final Function<V, W> f) {
-      Objects.requireNonNull(f);
-
-      return createEmptyNode();
-    }
-
-    @Override
     public <W> Tree<W> mapi(final BiFunction<Integer, V, W> f) {
-      Objects.requireNonNull(f);
-
-      return createEmptyNode();
-    }
-
-    @Override
-    public <W> Tree<W> mapPartial(final Function<V, Optional<W>> f) {
       Objects.requireNonNull(f);
 
       return createEmptyNode();
@@ -134,21 +129,7 @@ public final class IntMapModule {
     }
 
     @Override
-    public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
-      Objects.requireNonNull(f);
-
-      return w;
-    }
-
-    @Override
     public <W> W foldli(final TriFunction<Integer, V, W, W> f, final W w) {
-      Objects.requireNonNull(f);
-
-      return w;
-    }
-
-    @Override
-    public <W> W foldr(final BiFunction<V, W, W> f, final W w) {
       Objects.requireNonNull(f);
 
       return w;
@@ -159,13 +140,6 @@ public final class IntMapModule {
       Objects.requireNonNull(f);
 
       return w;
-    }
-
-    @Override
-    public Tree<V> filter(final Predicate<V> f) {
-      Objects.requireNonNull(f);
-
-      return this;
     }
 
     @Override
@@ -222,18 +196,8 @@ public final class IntMapModule {
     }
 
     @Override
-    public boolean contains(final int key) {
-      return mKey == key;
-    }
-
-    @Override
     public Optional<V> get(final int key) {
       return mKey == key ? Optional.of(mValue) : Optional.empty();
-    }
-
-    @Override
-    public V getWithDefault(final int key, final V def) {
-      return mKey == key ? mValue : def;
     }
 
     @Override
@@ -252,26 +216,11 @@ public final class IntMapModule {
     }
 
     @Override
-    public void app(final Consumer<V> f) {
-      Objects.requireNonNull(f);
-
-      f.accept(mValue);
-      return;
-    }
-
-    @Override
     public void appi(final BiConsumer<Integer, V> f) {
       Objects.requireNonNull(f);
 
       f.accept(mKey, mValue); 
       return;
-    }
-
-    @Override
-    public <W> Tree<W> map(final Function<V, W> f) {
-      Objects.requireNonNull(f);
-
-      return createLeafNode(mKey, f.apply(mValue));
     }
 
     @Override
@@ -282,24 +231,10 @@ public final class IntMapModule {
     }
 
     @Override
-    public <W> Tree<W> mapPartial(final Function<V, Optional<W>> f) {
-      Objects.requireNonNull(f);
-
-      return compOptMapedValue(f.apply(mValue));
-    }
-
-    @Override
     public <W> Tree<W> mapPartiali(final BiFunction<Integer, V, Optional<W>> f) {
       Objects.requireNonNull(f);
 
       return compOptMapedValue(f.apply(mKey, mValue));
-    }
-
-    @Override
-    public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
-      Objects.requireNonNull(f);
-
-      return f.apply(mValue, w);
     }
 
     @Override
@@ -310,24 +245,10 @@ public final class IntMapModule {
     }
 
     @Override
-    public <W> W foldr(final BiFunction<V, W, W> f, final W w) {
-      Objects.requireNonNull(f);
-      
-      return f.apply(mValue, w);
-    }
-
-    @Override
     public <W> W foldri(final TriFunction<Integer, V, W, W> f, final W w) {
       Objects.requireNonNull(f);
       
       return f.apply(mKey, mValue, w);
-    }
-
-    @Override
-    public Tree<V> filter(final Predicate<V> f) {
-      Objects.requireNonNull(f);
-      
-      return f.test(mValue) ? this : EmptyNode.createEmptyNode();
     }
 
     @Override
@@ -409,20 +330,8 @@ public final class IntMapModule {
     }
 
     @Override
-    public boolean contains(final int key) {
-      return zeroBit(key, mBranchingBit) ? mLeft.contains(key) : mRight.contains(key);
-    }
-
-    @Override
     public Optional<V> get(final int key) {
       return zeroBit(key, mBranchingBit) ? mLeft.get(key) : mRight.get(key);
-    }
-
-    @Override
-    public V getWithDefault(final int key, final V def) {
-      return zeroBit(key, mBranchingBit)
-              ? mLeft.getWithDefault(key, def)
-              : mRight.getWithDefault(key, def);
     }
 
     @Override
@@ -456,14 +365,6 @@ public final class IntMapModule {
     }
 
     @Override
-    public void app(final Consumer<V> f) {
-      mLeft.app(f);
-      mRight.app(f);
-      
-      return;
-    }
-
-    @Override
     public void appi(final BiConsumer<Integer, V> f) {
       mLeft.appi(f);
       mRight.appi(f);
@@ -472,21 +373,8 @@ public final class IntMapModule {
     }
 
     @Override
-    public <W> Tree<W> map(final Function<V, W> f) {
-      return createBranchNode(mPrefix, mBranchingBit, mLeft.map(f), mRight.map(f));
-    }
-
-    @Override
     public <W> Tree<W> mapi(final BiFunction<Integer, V, W> f) {
       return createBranchNode(mPrefix, mBranchingBit, mLeft.mapi(f), mRight.mapi(f));
-    }
-
-    @Override
-    public <W> Tree<W> mapPartial(final Function<V, Optional<W>> f) {
-      final Tree<W> newL = mLeft.mapPartial(f);
-      final Tree<W> newR = mRight.mapPartial(f);
-
-      return smartBranchNodeConstructor(mPrefix, mBranchingBit, newL, newR);
     }
 
     @Override
@@ -498,36 +386,13 @@ public final class IntMapModule {
     }
 
     @Override
-    public <W> W foldl(final BiFunction<V, W, W> f, final W w) {
-      return mRight.foldl(f, mLeft.foldl(f, w));
-    }
-
-    @Override
     public <W> W foldli(final TriFunction<Integer, V, W, W> f, final W w) {
       return mRight.foldli(f, mLeft.foldli(f, w));
     }
 
     @Override
-    public <W> W foldr(final BiFunction<V, W, W> f, final W w) {
-      return mLeft.foldr(f, mRight.foldr(f, w));
-    }
-
-    @Override
     public <W> W foldri(final TriFunction<Integer, V, W, W> f, final W w) {
       return mLeft.foldri(f, mRight.foldri(f, w));
-    }
-
-    @Override
-    public Tree<V> filter(final Predicate<V> f) {
-      final Tree<V> newL = mLeft.filter(f);
-      final Tree<V> newR = mRight.filter(f);
-
-      if (newL == mLeft && newR == mRight) {
-        return this;
-      }
-      else {
-        return smartBranchNodeConstructor(mPrefix, mBranchingBit, newL, newR);
-      }
     }
 
     @Override
