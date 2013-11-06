@@ -920,4 +920,40 @@ public class RedBlackTreeModule {
 //              end
 //    in fst (remove_aux m)
 
+  public static <K extends Comparable<K>, V> void verifyRedBlackProperties(final Tree<K, V> t) {
+    if (!t.isBlack() && !t.isEmpty()) {
+      throw new AssertionError("The root of a red-black tree must be black.");
+    }
+    
+    if (! childrenPropertyHolds(t)) {
+      throw new AssertionError("There are red nodes that have red children.");
+    }
+    
+    if (! true) {}
+  }
+
+  private static <K extends Comparable<K>, V> boolean childrenPropertyHolds(final Tree<K, V> t) {
+    if (t.isEmpty()) {
+      return true;
+    }
+  
+    final BlackNode<K, V> black = t.asBlack();
+    if (black != null) {
+      final Tree<K, V> l = black.mLeft, r = black.mRight;
+      return childrenPropertyHolds(l) && childrenPropertyHolds(r);
+    }
+    
+    final RedNode<K, V> red = t.asRed();
+    if (red == null) {
+      throw new AssertionError("Internal error during verification.");
+    }
+
+    final Tree<K, V> l = red.mLeft, r = red.mRight;
+    if (! l.isRed() || !r.isRed()) {
+      return false;
+    }
+    else {
+      return childrenPropertyHolds(l) && childrenPropertyHolds(r);
+    }
+  }
 }
