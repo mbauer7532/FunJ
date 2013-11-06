@@ -6,6 +6,7 @@
 
 package DataStructures;
 
+import DataStructures.TuplesModule.Pair;
 import DataStructures.TuplesModule.Tuple4;
 import Utils.Functionals.TriFunction;
 import java.awt.Color;
@@ -579,20 +580,6 @@ public class RedBlackTreeModule {
     return (r != null) ? BlackNode.create(r.mLeft, r.mKey, r.mValue, r.mRight) : t;
   }
 
-  private static class unbalanceRes<K extends Comparable<K>, V> {
-    public static <K extends Comparable<K>, V> unbalanceRes<K, V> create(final Tree<K, V> tree, final boolean res) {
-      return new unbalanceRes<>(tree, res);
-    }
-
-    private unbalanceRes(final Tree<K, V> tree, final boolean res) {
-      mTree = tree;
-      mRes = res;
-    }
-
-    private final Tree<K, V> mTree;
-    private final boolean mRes;
-  }
-
 //    (* [unbalanced_left] repares invariant (2) when the black height of the
 //     left son exceeds (by 1) the black height of the right son *)
 //
@@ -606,14 +593,14 @@ public class RedBlackTreeModule {
 //    | _ ->
 //        assert false
 
-  private static <K extends Comparable<K>, V> unbalanceRes<K, V> unbalanceLeft(final Tree<K, V> t) {
+  private static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> unbalanceLeft(final Tree<K, V> t) {
     final RedNode<K, V> red;
     final BlackNode<K, V> black;
     
     if ((red = t.asRed()) != null) {
       final BlackNode<K, V> rb = red.mLeft.asBlack();
       if (rb != null) {
-        return unbalanceRes.create(leftBalance(rb.convertToRed(), red.mKey, red.mValue, red.mRight), false);
+        return Pair.create(leftBalance(rb.convertToRed(), red.mKey, red.mValue, red.mRight), false);
       }
     }
     else if ((black = t.asBlack()) != null) {
@@ -622,10 +609,10 @@ public class RedBlackTreeModule {
       final RedNode<K, V> br;
 
       if ((bb = left.asBlack()) != null) {
-        return unbalanceRes.create(leftBalance(bb.convertToRed(), black.mKey, black.mValue, black.mRight), true);
+        return Pair.create(leftBalance(bb.convertToRed(), black.mKey, black.mValue, black.mRight), true);
       }
       else if ((br = left.asRed()) != null && (bb = br.mRight.asBlack()) != null) {
-        return unbalanceRes.create(
+        return Pair.create(
                 BlackNode.create(br.mLeft, br.mKey, br.mValue,
                                  leftBalance(bb.convertToRed(), black.mKey, black.mValue, black.mRight)),
                 false);
@@ -645,7 +632,7 @@ public class RedBlackTreeModule {
 //    | _ ->
 //        assert false
 
-  private static <K extends Comparable<K>, V> unbalanceRes<K, V> unbalanceRight(final Tree<K, V> t) {
+  private static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> unbalanceRight(final Tree<K, V> t) {
     final RedNode<K, V> red;
     final BlackNode<K, V> black;
 
@@ -653,7 +640,7 @@ public class RedBlackTreeModule {
       final BlackNode<K, V> rb = red.mRight.asBlack();
 
       if (rb != null) {
-        return unbalanceRes.create(rightBalance(red.mLeft, red.mKey, red.mValue, rb.convertToRed()), false);
+        return Pair.create(rightBalance(red.mLeft, red.mKey, red.mValue, rb.convertToRed()), false);
       }
     }
     else if ((black = t.asBlack()) != null) {
@@ -662,10 +649,10 @@ public class RedBlackTreeModule {
       final RedNode<K, V> br;
       
       if ((bb = right.asBlack()) != null) {
-        return unbalanceRes.create(rightBalance(black.mLeft, black.mKey, black.mValue, bb.convertToRed()), true);
+        return Pair.create(rightBalance(black.mLeft, black.mKey, black.mValue, bb.convertToRed()), true);
       }
       else if ((br = right.asRed()) != null && (bb = br.mLeft.asBlack()) != null) {
-        return unbalanceRes.create(
+        return Pair.create(
                 BlackNode.create(rightBalance(black.mLeft, black.mKey, black.mValue, bb.convertToRed()),
                                  br.mKey, br.mValue, br.mRight),
                 false);
@@ -728,7 +715,7 @@ public class RedBlackTreeModule {
 
         final BlackNode<K, V> bb = r.asBlack();
         if (bb != null) {
-          throw new AssertionError("BlackNode encountered at the wrong place.");
+          throw new AssertionError("BlackNode encountered at inapropriate place.");
         }
       }
 
@@ -736,8 +723,8 @@ public class RedBlackTreeModule {
       final Tree<K, V> t = BlackNode.create(res.mx1, black.mKey, black.mValue, r);
 
       if (res.mx4) {
-        final unbalanceRes<K, V> u = unbalanceRight(t);
-        return Tuple4.create(u.mTree, res.mx2, res.mx3, u.mRes);
+        final Pair<Tree<K, V>, Boolean> u = unbalanceRight(t);
+        return Tuple4.create(u.mx1, res.mx2, res.mx3, u.mx2);
       }
       else {
         return Tuple4.create(t, res.mx2, res.mx3, false);
@@ -758,8 +745,8 @@ public class RedBlackTreeModule {
       final Tree<K, V> t = RedNode.create(res.mx1, red.mKey, red.mValue, r);
 
       if (res.mx4) {
-        final unbalanceRes<K, V> u = unbalanceRight(t);
-        return Tuple4.create(u.mTree, res.mx2, res.mx3, u.mRes);
+        final Pair<Tree<K, V>, Boolean> u = unbalanceRight(t);
+        return Tuple4.create(u.mx1, res.mx2, res.mx3, u.mx2);
       }
       else {
         return Tuple4.create(t, res.mx2, res.mx3, false);
