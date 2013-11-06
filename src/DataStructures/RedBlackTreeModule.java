@@ -64,11 +64,11 @@ public class RedBlackTreeModule {
     }
 
     public abstract boolean isEmpty();
-    protected abstract boolean isRed();
-    protected abstract boolean isBlack();
+    abstract boolean isRed();
+    abstract boolean isBlack();
 
-    protected abstract RedNode<K, V> asRed();
-    protected abstract BlackNode<K, V> asBlack();
+    abstract RedNode<K, V> asRed();
+    abstract BlackNode<K, V> asBlack();
 
     public abstract Optional<V> get(final K key);
     public abstract Tree<K, V> remove(final K key);
@@ -82,7 +82,8 @@ public class RedBlackTreeModule {
     public abstract Tree<K, V> filteri(final BiPredicate<K, V> f);
     public abstract Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t);
 
-    protected abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
+    abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
+    abstract Pair<Tree<K, V>, Boolean> rem(final K key);
   }
 
   private static final class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -99,28 +100,33 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    protected final boolean isRed() {
+    final boolean isRed() {
       return false;
     }
 
     @Override
-    protected final boolean isBlack() {
+    final boolean isBlack() {
       return false;
     }
 
     @Override
-    protected final RedNode<K, V> asRed() {
+    final RedNode<K, V> asRed() {
       return null;
     }
 
     @Override
-    protected final BlackNode<K, V> asBlack() {
+    final BlackNode<K, V> asBlack() {
       return null;
     }
     
     @Override
     public Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value) {
       return createEmptyNode();
+    }
+
+    @Override
+    Pair<Tree<K, V>, Boolean> rem(final K key) {
+      return Pair.create(this, false);
     }
 
     @Override
@@ -215,9 +221,6 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    protected abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
-
-    @Override
     public Optional<V> get(final K key) {
       final int res = key.compareTo(mKey);
       if (res < 0) {
@@ -308,22 +311,22 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    protected final boolean isRed() {
+    final boolean isRed() {
       return true;
     }
 
     @Override
-    protected final boolean isBlack() {
+    final boolean isBlack() {
       return false;
     }
 
     @Override
-    protected final RedNode<K, V> asRed() {
+    final RedNode<K, V> asRed() {
       return this;
     }
 
     @Override
-    protected final BlackNode<K, V> asBlack() {
+    final BlackNode<K, V> asBlack() {
       return null;
     }
 
@@ -348,7 +351,7 @@ public class RedBlackTreeModule {
 //      | Empty -> assert false
 
     @Override
-    protected Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value) {
+    Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value) {
       final int res = key.compareTo(mKey);
 
       if (res < 0) {
@@ -359,6 +362,87 @@ public class RedBlackTreeModule {
       }
       else {
         return create(mLeft, mKey, f.apply(mValue, value), mRight);
+      }
+    }
+
+//    let remove k m =
+//    let rec remove_aux = function
+//      | Empty ->
+//          Empty, false
+//      | Black(l, kx, x, r) ->
+//          let c = Ord.compare k kx in
+//            if c < 0 then
+//              let l, d = remove_aux l in
+//              let m = Black(l, kx, x, r) in
+//                if d then unbalanced_right m else m, false
+//            else if c > 0 then
+//              let r, d = remove_aux r in
+//              let m = Black(l, kx, x, r) in
+//                if d then unbalanced_left m else m, false
+//            else
+//              begin match r with
+//                | Empty ->
+//                    blackify l
+//                | _ ->
+//                    let r, kx, x, d = remove_min r in
+//                    let m = Black(l, kx, x, r) in
+//                      if d then unbalanced_left m else m, false
+//              end
+//      | Red(l, kx, x, r) ->
+//          let c = Ord.compare k kx in
+//            if c < 0 then
+//              let l, d = remove_aux l in
+//              let m = Red(l, kx, x, r) in
+//                if d then unbalanced_right m else m, false
+//            else if c > 0 then
+//              let r, d = remove_aux r in
+//              let m = Red(l, kx, x, r) in
+//                if d then unbalanced_left m else m, false
+//            else
+//              begin match r with
+//                | Empty ->
+//                    l, false
+//                | _ ->
+//                    let r, kx, x, d = remove_min r in
+//                    let m = Red(l, kx, x, r) in
+//                      if d then unbalanced_left m else m, false
+//              end
+//    in fst (remove_aux m)
+
+    @Override
+    Pair<Tree<K, V>, Boolean> rem(final K key) {
+      final int c = key.compareTo(mKey);
+      Tree<K, V> l = mLeft, r = mRight, m;
+      boolean d;
+      
+      if (c < 0) {
+        final Pair<Tree<K, V>, Boolean> p = l.rem(key);
+        l = p.mx1;
+        d = p.mx2;
+        m = RedNode.create(l, mKey, mValue, r);
+
+        return d ? unbalancedRight(m) : Pair.create(m, false);
+      }
+      else if (c > 0) {
+        final Pair<Tree<K, V>, Boolean> p = r.rem(key);
+        r = p.mx1;
+        d = p.mx2;
+        m = RedNode.create(l, mKey, mValue, r);
+
+        return d ? unbalancedLeft(m) : Pair.create(m, false);
+      }
+      else {
+        if (r.isEmpty()) {
+          return Pair.create(l, false);
+        }
+        else {
+          final Tuple4<Tree<K, V>, K, V, Boolean> p = removeMin(r);
+          r = p.mx1;
+          d = p.mx4;
+          m = RedNode.create(l, p.mx2, p.mx3, r);
+
+          return d ? unbalancedLeft(m) : Pair.create(m, false);
+        }
       }
     }
 
@@ -412,22 +496,22 @@ public class RedBlackTreeModule {
     }
  
     @Override
-    protected final boolean isRed() {
+    final boolean isRed() {
       return false;
     }
 
     @Override
-    protected final boolean isBlack() {
+    final boolean isBlack() {
       return true;
     }
 
     @Override
-    protected final RedNode<K, V> asRed() {
+    final RedNode<K, V> asRed() {
       return null;
     }
 
     @Override
-    protected final BlackNode<K, V> asBlack() {
+    final BlackNode<K, V> asBlack() {
       return this;
     }
 
@@ -452,7 +536,7 @@ public class RedBlackTreeModule {
 //      | Empty -> assert false
 
     @Override
-    protected Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value) {
+    Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value) {
       final int res = key.compareTo(mKey);
 
       if (res < 0) {
@@ -463,6 +547,68 @@ public class RedBlackTreeModule {
       }
       else {
         return create(mLeft, key, f.apply(mValue, value), mRight);
+      }
+    }
+
+//    let remove k m =
+//    let rec remove_aux = function
+//      | Empty ->
+//          Empty, false
+//      | Black(l, kx, x, r) ->
+//          let c = Ord.compare k kx in
+//            if c < 0 then
+//              let l, d = remove_aux l in
+//              let m = Black(l, kx, x, r) in
+//                if d then unbalanced_right m else m, false
+//            else if c > 0 then
+//              let r, d = remove_aux r in
+//              let m = Black(l, kx, x, r) in
+//                if d then unbalanced_left m else m, false
+//            else
+//              begin match r with
+//                | Empty ->
+//                    blackify l
+//                | _ ->
+//                    let r, kx, x, d = remove_min r in
+//                    let m = Black(l, kx, x, r) in
+//                      if d then unbalanced_left m else m, false
+//              end
+
+    @Override
+    Pair<Tree<K, V>, Boolean> rem(final K key) {
+      final int c = key.compareTo(mKey);
+      Tree<K, V> l = mLeft, r = mRight, m;
+      boolean d;
+      
+      if (c < 0) {
+        final Pair<Tree<K, V>, Boolean> p = l.rem(key);
+        l = p.mx1;
+        d = p.mx2;
+        m = BlackNode.create(l, mKey, mValue, r);
+
+        return d ? unbalancedRight(m) : Pair.create(m, false);
+      }
+      else if (c > 0) {
+        final Pair<Tree<K, V>, Boolean> p = r.rem(key);
+        r = p.mx1;
+        d = p.mx2;
+        m = BlackNode.create(l, mKey, mValue, r);
+
+        return d ? unbalancedLeft(m) : Pair.create(m, false);
+      }
+      else {
+        if (r.isEmpty()) {
+          final RedNode<K, V> red = l.asRed();
+          return (red != null) ? Pair.create(red.convertToBlack(), false) : Pair.create(l, true);
+        }
+        else {
+          final Tuple4<Tree<K, V>, K, V, Boolean> p = removeMin(r);
+          r = p.mx1;
+          d = p.mx4;
+          m = BlackNode.create(l, p.mx2, p.mx3, r);
+
+          return d ? unbalancedLeft(m) : Pair.create(m, false);
+        }
       }
     }
 
@@ -593,7 +739,7 @@ public class RedBlackTreeModule {
 //    | _ ->
 //        assert false
 
-  private static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> unbalanceLeft(final Tree<K, V> t) {
+  private static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> unbalancedLeft(final Tree<K, V> t) {
     final RedNode<K, V> red;
     final BlackNode<K, V> black;
     
@@ -632,7 +778,7 @@ public class RedBlackTreeModule {
 //    | _ ->
 //        assert false
 
-  private static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> unbalanceRight(final Tree<K, V> t) {
+  private static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> unbalancedRight(final Tree<K, V> t) {
     final RedNode<K, V> red;
     final BlackNode<K, V> black;
 
@@ -723,7 +869,7 @@ public class RedBlackTreeModule {
       final Tree<K, V> t = BlackNode.create(res.mx1, black.mKey, black.mValue, r);
 
       if (res.mx4) {
-        final Pair<Tree<K, V>, Boolean> u = unbalanceRight(t);
+        final Pair<Tree<K, V>, Boolean> u = unbalancedRight(t);
         return Tuple4.create(u.mx1, res.mx2, res.mx3, u.mx2);
       }
       else {
@@ -745,7 +891,7 @@ public class RedBlackTreeModule {
       final Tree<K, V> t = RedNode.create(res.mx1, red.mKey, red.mValue, r);
 
       if (res.mx4) {
-        final Pair<Tree<K, V>, Boolean> u = unbalanceRight(t);
+        final Pair<Tree<K, V>, Boolean> u = unbalancedRight(t);
         return Tuple4.create(u.mx1, res.mx2, res.mx3, u.mx2);
       }
       else {
@@ -753,4 +899,51 @@ public class RedBlackTreeModule {
       }
     }
   }
+
+// https://github.com/bmeurer/ocaml-rbtrees/blob/master/src/rbmap.ml
+// https://www.lri.fr/~filliatr/ftp/ocaml/ds/rbset.ml.html
+//    let remove k m =
+//    let rec remove_aux = function
+//      | Empty ->
+//          Empty, false
+//      | Black(l, kx, x, r) ->
+//          let c = Ord.compare k kx in
+//            if c < 0 then
+//              let l, d = remove_aux l in
+//              let m = Black(l, kx, x, r) in
+//                if d then unbalanced_right m else m, false
+//            else if c > 0 then
+//              let r, d = remove_aux r in
+//              let m = Black(l, kx, x, r) in
+//                if d then unbalanced_left m else m, false
+//            else
+//              begin match r with
+//                | Empty ->
+//                    blackify l
+//                | _ ->
+//                    let r, kx, x, d = remove_min r in
+//                    let m = Black(l, kx, x, r) in
+//                      if d then unbalanced_left m else m, false
+//              end
+//      | Red(l, kx, x, r) ->
+//          let c = Ord.compare k kx in
+//            if c < 0 then
+//              let l, d = remove_aux l in
+//              let m = Red(l, kx, x, r) in
+//                if d then unbalanced_right m else m, false
+//            else if c > 0 then
+//              let r, d = remove_aux r in
+//              let m = Red(l, kx, x, r) in
+//                if d then unbalanced_left m else m, false
+//            else
+//              begin match r with
+//                | Empty ->
+//                    l, false
+//                | _ ->
+//                    let r, kx, x, d = remove_min r in
+//                    let m = Red(l, kx, x, r) in
+//                      if d then unbalanced_left m else m, false
+//              end
+//    in fst (remove_aux m)
+
 }
