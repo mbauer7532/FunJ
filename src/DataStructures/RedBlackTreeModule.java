@@ -75,11 +75,12 @@ public class RedBlackTreeModule {
     }
 
     public abstract boolean isEmpty();
-    abstract boolean isRed();
-    abstract boolean isBlack();
 
-    abstract RedNode<K, V> asRed();
-    abstract BlackNode<K, V> asBlack();
+    boolean isRed() { return false; }
+    boolean isBlack() { return false; }
+
+    RedNode<K, V> asRed() { return null; }
+    BlackNode<K, V> asBlack() { return null; }
 
     public abstract Optional<V> get(final K key);
     public abstract int size();
@@ -113,26 +114,6 @@ public class RedBlackTreeModule {
       return true;
     }
 
-    @Override
-    final boolean isRed() {
-      return false;
-    }
-
-    @Override
-    final boolean isBlack() {
-      return false;
-    }
-
-    @Override
-    final RedNode<K, V> asRed() {
-      return null;
-    }
-
-    @Override
-    final BlackNode<K, V> asBlack() {
-      return null;
-    }
-    
     @Override
     public Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value) {
       final Tree<K, V> e = create();
@@ -322,24 +303,10 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    final boolean isRed() {
-      return true;
-    }
+    final boolean isRed() { return true; }
 
     @Override
-    final boolean isBlack() {
-      return false;
-    }
-
-    @Override
-    final RedNode<K, V> asRed() {
-      return this;
-    }
-
-    @Override
-    final BlackNode<K, V> asBlack() {
-      return null;
-    }
+    final RedNode<K, V> asRed() { return this; }
 
 //    let add x s =
 //    let rec ins = function
@@ -493,26 +460,12 @@ public class RedBlackTreeModule {
     private RedNode<K, V> convertToRed() {
       return RedNode.create(mLeft, mKey, mValue, mRight);
     }
- 
-    @Override
-    final boolean isRed() {
-      return false;
-    }
 
     @Override
-    final boolean isBlack() {
-      return true;
-    }
+    final boolean isBlack() { return true; }
 
     @Override
-    final RedNode<K, V> asRed() {
-      return null;
-    }
-
-    @Override
-    final BlackNode<K, V> asBlack() {
-      return this;
-    }
+    final BlackNode<K, V> asBlack() { return this; }
 
 //    let add x s =
 //    let rec ins = function
@@ -994,7 +947,7 @@ public class RedBlackTreeModule {
       return Pair.create(pleft.mx1, pleft.mx2 && pright.mx2 && pleft.mx1.equals(pright.mx1));
     }
   }
-  
+
   // Public interface
   //@SuppressWarnings("unchecked")
   public static <K extends Comparable<K>, V> Tree<K, V> empty() {
