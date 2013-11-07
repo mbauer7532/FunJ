@@ -96,7 +96,7 @@ public class RedBlackTreeModule {
     private static final EmptyNode<? extends Comparable<?>, ?> sEmptyNode = new EmptyNode<>();
 
     @SuppressWarnings("unchecked")
-    public static <K extends Comparable<K>, V> EmptyNode<K, V> createEmptyNode() {
+    public static <K extends Comparable<K>, V> EmptyNode<K, V> create() {
       return (EmptyNode<K, V>) sEmptyNode;
     }
 
@@ -127,7 +127,8 @@ public class RedBlackTreeModule {
     
     @Override
     public Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value) {
-      return createEmptyNode();
+      final Tree<K, V> e = create();
+      return RedNode.create(e, key, value, e);
     }
 
     @Override
@@ -157,12 +158,12 @@ public class RedBlackTreeModule {
 
     @Override
     public <W> Tree<K, W> mapi(BiFunction<K, V, W> f) {
-      return createEmptyNode();
+      return create();
     }
 
     @Override
     public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
-      return createEmptyNode();
+      return create();
     }
 
     @Override
@@ -187,17 +188,17 @@ public class RedBlackTreeModule {
 
     @Override
     public DSTreeNode[] DSgetChildren() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      return new DSTreeNode[0];
     }
 
     @Override
     public Object DSgetValue() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      return "E";
     }
 
     @Override
     public Color DSgetColor() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      return Color.BLACK;
     }
   }
 
@@ -237,7 +238,7 @@ public class RedBlackTreeModule {
 
     @Override
     public int size() {
-      return mLeft.size() + mRight.size();
+      return mLeft.size() + mRight.size() + 1;
     }
 
     @Override
@@ -449,17 +450,17 @@ public class RedBlackTreeModule {
 
     @Override
     public DSTreeNode[] DSgetChildren() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      return new DSTreeNode[] { mLeft, mRight };
     }
 
     @Override
     public Object DSgetValue() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      return mKey;
     }
 
     @Override
     public Color DSgetColor() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      return Color.RED;
     }
   }
 
@@ -604,17 +605,17 @@ public class RedBlackTreeModule {
 
     @Override
     public DSTreeNode[] DSgetChildren() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      return new DSTreeNode[] { mLeft, mRight };
     }
 
     @Override
     public Object DSgetValue() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      return mKey;
     }
 
     @Override
     public Color DSgetColor() {
-      throw new UnsupportedOperationException("Not supported yet.");
+      return Color.BLACK;
     }
   }
 
@@ -980,5 +981,16 @@ public class RedBlackTreeModule {
       
       return Pair.create(pleft.mx1, pleft.mx2 && pright.mx2 && pleft.mx1.equals(pright.mx1));
     }
+  }
+  
+  // Public interface
+  //@SuppressWarnings("unchecked")
+  public static <K extends Comparable<K>, V> Tree<K, V> empty() {
+    return EmptyNode.create();
+  }
+
+  public static <K extends Comparable<K>, V> Tree<K, V> singleton(final K key, final V value) {
+    final Tree<K, V> e = empty();
+    return e.insert((x, y) -> x, key, value);
   }
 }

@@ -285,14 +285,14 @@ public final class BrotherTreeModule {
         return n2_del(mt1, ma1, mv1, mt2.del(a));
       }
       else {
-        return ((N2<K,V>) mt2).splitMin().map(p -> n2_del(mt1, p.mFimx1.mSecond, p.mThird)).orElseGet(() -> N1.create(mt1));
+        return ((N2<K,V>) mt2).splitMin().map(p -> n2_del(mt1, p.mx1, p.mx2, p.mx3)).orElseGet(() -> N1.create(mt1));
       }
     }
 
     @Override
     protected Optional<Triple<K, V, Tree<K, V>>> splitMin() {
       return Optional.of(mt1.splitMin()
-                            .map(p -> Triple.<K, V, Tree<K, V>> create(p.mFirstmx1econd, create(p.mThird, ma1, mv1, mt2)))
+                            .map(p -> Triple.<K, V, Tree<K, V>> create(p.mx1, p.mx2, create(p.mx3, ma1, mv1, mt2)))
                             .orElseGet(() -> Triple.create(ma1, mv1, N1.create(mt2))));
     }
 
