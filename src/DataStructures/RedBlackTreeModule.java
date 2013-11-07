@@ -66,6 +66,10 @@ public class RedBlackTreeModule {
       return blackify(ins(f, key, value));
     }
 
+    public final Tree<K, V> insert(final K key, final V value) {
+      return insert(Tree::chooseExisting, key, value);
+    }
+
     public final Tree<K, V> remove(final K key) {
       return rem(key).mx1;
     }
@@ -90,6 +94,10 @@ public class RedBlackTreeModule {
 
     abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
     abstract Pair<Tree<K, V>, Boolean> rem(final K key);
+
+    private static <K extends Comparable<K>, V> V chooseExisting(final V existingElem, final V newElem) {
+      return existingElem;
+    }
   }
 
   private static final class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -296,7 +304,11 @@ public class RedBlackTreeModule {
       super(key, value, left, right);
     }
 
-    public static <K extends Comparable<K>, V> RedNode<K, V> create(final Tree<K, V> left, final K key, final V value, final Tree<K, V> right) {
+    public static <K extends Comparable<K>, V> RedNode<K, V> create(
+            final Tree<K, V> left,
+            final K key,
+            final V value,
+            final Tree<K, V> right) {
       return new RedNode<>(left, key, value, right);
     }
 
@@ -991,6 +1003,6 @@ public class RedBlackTreeModule {
 
   public static <K extends Comparable<K>, V> Tree<K, V> singleton(final K key, final V value) {
     final Tree<K, V> e = empty();
-    return e.insert((x, y) -> x, key, value);
+    return e.insert(key, value);
   }
 }
