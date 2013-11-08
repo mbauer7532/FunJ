@@ -830,50 +830,6 @@ public class RedBlackTreeModule {
     throw new AssertionError("The tree cannot be empty in this context.");
   }
 
-//    let remove k m =
-//    let rec remove_aux = function
-//      | Empty ->
-//          Empty, false
-//      | Black(l, kx, x, r) ->
-//          let c = Ord.compare k kx in
-//            if c < 0 then
-//              let l, d = remove_aux l in
-//              let m = Black(l, kx, x, r) in
-//                if d then unbalanced_right m else m, false
-//            else if c > 0 then
-//              let r, d = remove_aux r in
-//              let m = Black(l, kx, x, r) in
-//                if d then unbalanced_left m else m, false
-//            else
-//              begin match r with
-//                | Empty ->
-//                    blackify l
-//                | _ ->
-//                    let r, kx, x, d = remove_min r in
-//                    let m = Black(l, kx, x, r) in
-//                      if d then unbalanced_left m else m, false
-//              end
-//      | Red(l, kx, x, r) ->
-//          let c = Ord.compare k kx in
-//            if c < 0 then
-//              let l, d = remove_aux l in
-//              let m = Red(l, kx, x, r) in
-//                if d then unbalanced_right m else m, false
-//            else if c > 0 then
-//              let r, d = remove_aux r in
-//              let m = Red(l, kx, x, r) in
-//                if d then unbalanced_left m else m, false
-//            else
-//              begin match r with
-//                | Empty ->
-//                    l, false
-//                | _ ->
-//                    let r, kx, x, d = remove_min r in
-//                    let m = Red(l, kx, x, r) in
-//                      if d then unbalanced_left m else m, false
-//              end
-//    in fst (remove_aux m)
-
   static <K extends Comparable<K>, V> Pair<Boolean, String> verifyRedBlackProperties(final Tree<K, V> t) {
     if (! redChildrenPropertyHolds(t)) {
       return Pair.create(false, "There are red nodes that have red children.");
