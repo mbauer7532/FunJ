@@ -112,7 +112,7 @@ public class RedBlackTreeModuleTest {
     }
   }
   
-   @Test
+  @Test
   public void testVerifyRedBlackPropertiesRandomSample() {
     System.out.println("verifyRedBlackPropertiesRandomSample");
 
@@ -122,9 +122,9 @@ public class RedBlackTreeModuleTest {
     final long seed = 125332;
     final Random rng = new Random(seed);
 
-    final int numIters = 1;
+    final int numIters = 10;
     IntStream.range(0, numIters).forEach(x -> {
-      final int low = 1, high = 100;
+      final int low = 1, high = 1024;
       final int size = high;
       final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
       assertEquals(size, perm1.length);
@@ -137,19 +137,20 @@ public class RedBlackTreeModuleTest {
       }
       assertEquals(size, t.size());
       checkRedBlackTreeStatus(t);
+      System.out.printf("Full: Size = %d Depth = %d\n", t.size(), t.depth());
 
       //DSutils.show(t, length, width);
 
       final int[] perm2 = Numeric.randomPermuation(low, high, size, rng);
 
       for (int i = 0; i != size/2; ++i) {
-        System.out.printf("i = %d\n", i);
         t = t.remove(perm2[i]);
         
         checkRedBlackTreeStatus(t);
         assertEquals(size - i - 1, t.size());
       }
-      DSutils.show(t, length, width);
+      System.out.printf("Half: Size = %d Depth = %d\n", t.size(), t.depth());
+//      DSutils.show(t, length, width);
 //      int i = -1;
 //      t = t.remove(perm2[++i]);
 //      DSutils.show(t, length, width);
@@ -164,12 +165,36 @@ public class RedBlackTreeModuleTest {
 //      t = t.remove(perm2[++i]);
 //      DSutils.show(t, length, width);
 
-      final int sleepSeconds = 100;
-      try {
-        Thread.sleep(sleepSeconds * 1000);
-      } catch (InterruptedException ex) {
-        Logger.getLogger(IntMapModuleTest.class.getName()).log(Level.SEVERE, null, ex);
-      }
+//      final int sleepSeconds = 100;
+//      try {
+//        Thread.sleep(sleepSeconds * 1000);
+//      } catch (InterruptedException ex) {
+//        Logger.getLogger(IntMapModuleTest.class.getName()).log(Level.SEVERE, null, ex);
+//      }
     });
+  }
+  
+  @Test
+  public void testRedBlackTreeInvariants() {
+    System.out.println("redBlackTreeInvariants");
+    
+    final Tree<Integer, Integer> t1 = RedBlackTreeModule.singleton(10, 10);
+    assertFalse(t1.isEmpty());
+
+    final Tree<Integer, Integer> t2 = t1.remove(10);
+    assertFalse(t1.isEmpty());
+    assertTrue(t2.isEmpty());
+
+    final Tree<Integer, Integer> t3 = t1.remove(11);
+    assertFalse(t1.isEmpty());
+    assertTrue(t2.isEmpty());
+    assertFalse(t3.isEmpty());
+    
+    assertTrue(t1.contains(10));
+    assertFalse(t2.contains(10));
+    assertTrue(t3.contains(10));
+
+    assertTrue(t1 == t3);
+    assertTrue(t1 != t2);
   }
 }

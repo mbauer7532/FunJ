@@ -71,7 +71,11 @@ public class RedBlackTreeModule {
     }
 
     public final Tree<K, V> remove(final K key) {
-      return rem(key).mx1;
+      try {
+        return rem(key).mx1;
+      } catch (ControlExnNoSuchElement ex) {
+        return this;
+      }
     }
 
     public abstract boolean isEmpty();
@@ -94,7 +98,7 @@ public class RedBlackTreeModule {
     public abstract Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t);
 
     abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
-    abstract Pair<Tree<K, V>, Boolean> rem(final K key);
+    abstract Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement;
 
     private static <K extends Comparable<K>, V> V chooseExisting(final V existingElem, final V newElem) {
       return existingElem;
@@ -121,8 +125,12 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    Pair<Tree<K, V>, Boolean> rem(final K key) {
-      return Pair.create(this, false);
+    Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement {
+      // This exception is used for control purposes.
+      // When removing non-existent elements we simply return the same input tree
+      // no new allocations take place.  The alternative implementation that 
+      // copies the path is: return Pair.create(this, false);
+      throw sNoSuchElement;  
     }
 
     @Override
@@ -389,7 +397,7 @@ public class RedBlackTreeModule {
 //    in fst (remove_aux m)
 
     @Override
-    Pair<Tree<K, V>, Boolean> rem(final K key) {
+    Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement {
       final int c = key.compareTo(mKey);
       final Tree<K, V> l = mLeft, r = mRight;
       
@@ -518,7 +526,7 @@ public class RedBlackTreeModule {
 //              end
 
     @Override
-    Pair<Tree<K, V>, Boolean> rem(final K key) {
+    Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement {
       final int c = key.compareTo(mKey);
       final Tree<K, V> l = mLeft, r = mRight;
       
@@ -934,6 +942,9 @@ public class RedBlackTreeModule {
 
   public static <K extends Comparable<K>, V> Tree<K, V> singleton(final K key, final V value) {
     final Tree<K, V> e = empty();
-    return e.insert(key, value);
+    return BlackNode.create(e, key, value, e);
   }
+
+  private static final class ControlExnNoSuchElement extends Exception {}
+  private static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
 }
