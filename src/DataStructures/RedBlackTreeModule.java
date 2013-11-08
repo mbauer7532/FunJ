@@ -767,10 +767,6 @@ public class RedBlackTreeModule {
 //           t, m, false
 
   private static <K extends Comparable<K>, V> Tuple4<Tree<K,V>, K, V, Boolean> removeMin(final Tree<K, V> tree) {
-    if (tree.isEmpty()) {
-      throw new AssertionError("The tree cannot be empty in this context.");
-    }
-
     final BlackNode<K, V> black = tree.asBlack();
     if (black != null) {
       final Tree<K, V> l = black.mLeft, r = black.mRight;
@@ -802,30 +798,30 @@ public class RedBlackTreeModule {
         return Tuple4.create(t, res.mx2, res.mx3, false);
       }
     }
+
     final RedNode<K, V> red = tree.asRed();
-    if (red == null) {
-      throw new AssertionError("The node must be red at this point.");
-    }
-
-    final Tree<K, V> l = red.mLeft, r = red.mRight;
+    if (red != null) {
+      final Tree<K, V> l = red.mLeft, r = red.mRight;
     
-    if (l.isEmpty()) {
-      return Tuple4.create(red.mRight, red.mKey, red.mValue, false);
-    }
-    else {
-      final Tuple4<Tree<K, V>, K, V, Boolean> res = removeMin(l);
-      final Tree<K, V> t = RedNode.create(res.mx1, red.mKey, red.mValue, r);
-
-      if (res.mx4) {
-        final Pair<Tree<K, V>, Boolean> u = unbalancedRight(t);
-        return Tuple4.create(u.mx1, res.mx2, res.mx3, u.mx2);
+      if (l.isEmpty()) {
+        return Tuple4.create(red.mRight, red.mKey, red.mValue, false);
       }
       else {
-        return Tuple4.create(t, res.mx2, res.mx3, false);
+        final Tuple4<Tree<K, V>, K, V, Boolean> res = removeMin(l);
+        final Tree<K, V> t = RedNode.create(res.mx1, red.mKey, red.mValue, r);
+
+        if (res.mx4) {
+          final Pair<Tree<K, V>, Boolean> u = unbalancedRight(t);
+          return Tuple4.create(u.mx1, res.mx2, res.mx3, u.mx2);
+        }
+        else {
+          return Tuple4.create(t, res.mx2, res.mx3, false);
+        }
       }
     }
-  }
 
+    throw new AssertionError("The tree cannot be empty in this context.");
+  }
 
 //    let remove k m =
 //    let rec remove_aux = function
@@ -887,13 +883,13 @@ public class RedBlackTreeModule {
     if (t.isEmpty()) {
       return true;
     }
-  
+
     final BlackNode<K, V> black = t.asBlack();
     if (black != null) {
       final Tree<K, V> l = black.mLeft, r = black.mRight;
       return redChildrenPropertyHolds(l) && redChildrenPropertyHolds(r);
     }
-    
+
     final RedNode<K, V> red = t.asRed();
     if (red == null) {
       throw new AssertionError("Internal error during verification.");
