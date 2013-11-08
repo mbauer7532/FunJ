@@ -918,7 +918,7 @@ public class RedBlackTreeModule {
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromSortedArray(final ArrayList<Pair<K, V>> v) {
-    return fromSortedArrayAux(v, 0, v.size() - 1, 1 - (Numeric.ilog(v.size()) & 1));
+    return fromSortedArrayAux(v, 0, v.size() - 1, (Numeric.ilog(v.size()) & 1) ^ 1);
   }
 
   private static final class ControlExnNoSuchElement extends Exception {}
