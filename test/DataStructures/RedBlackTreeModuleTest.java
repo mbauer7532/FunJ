@@ -214,6 +214,6 @@ public class RedBlackTreeModuleTest {
       waitTime(1);
       checkRedBlackTreeStatus(resTree);
     });
-    waitTime(100);
+    waitTime(1);
   }
 }

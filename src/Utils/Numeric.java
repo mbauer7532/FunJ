@@ -147,9 +147,9 @@ public class Numeric {
 
   private static final int[] sHighestBitCache = createHighestBitCache();
 
-  private static final int sHighestBitCacheSize = 0x65336;
+  private static final int sHighestBitCacheSize = 0x10000;
   private static final int sLog2HighestBitCacheSize = 16;
-  
+
   private static int[] createHighestBitCache() {
     return IntStream.range(0, sHighestBitCacheSize)
                     .map(Numeric::highestBitDirect)
