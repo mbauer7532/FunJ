@@ -79,13 +79,6 @@ public class RedBlackTreeModule {
     }
 
     public abstract boolean isEmpty();
-
-    boolean isRed() { return false; }
-    boolean isBlack() { return false; }
-
-    RedNode<K, V> asRed() { return null; }
-    BlackNode<K, V> asBlack() { return null; }
-
     public abstract Optional<V> get(final K key);
     public abstract int size();
     public abstract int depth();
@@ -96,6 +89,12 @@ public class RedBlackTreeModule {
     public abstract <W> W foldri(final TriFunction<K, V, W, W> f, final W w);
     public abstract Tree<K, V> filteri(final BiPredicate<K, V> f);
     public abstract Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t);
+
+    boolean isRed() { return false; }
+    boolean isBlack() { return false; }
+
+    RedNode<K, V> asRed() { return null; }
+    BlackNode<K, V> asBlack() { return null; }
 
     abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
     abstract Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement;
