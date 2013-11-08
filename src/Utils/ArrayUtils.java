@@ -38,11 +38,19 @@ public class ArrayUtils {
     }
   }
 
-  public static <T extends Comparable<T>> boolean isMonotone(final List<T> lst) {
+  public static <T extends Comparable<T>> boolean isIncreasing(final List<T> lst) {
     return consecutiveElemsHaveProperty(lst, res -> res <= 0);
   }
 
-  public static <T extends Comparable<T>> boolean isStrictlyMonotone(final List<T> lst) {
+  public static <T extends Comparable<T>> boolean isStrictlyIncreasing(final List<T> lst) {
     return consecutiveElemsHaveProperty(lst, res -> res < 0);
+  }
+
+  public static <T extends Comparable<T>> boolean isDecreasing(final List<T> lst) {
+    return consecutiveElemsHaveProperty(lst, res -> res >= 0);
+  }
+
+  public static <T extends Comparable<T>> boolean isStrictlyDecreasing(final List<T> lst) {
+    return consecutiveElemsHaveProperty(lst, res -> res > 0);
   }
 }
