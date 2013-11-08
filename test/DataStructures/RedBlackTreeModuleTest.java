@@ -86,34 +86,34 @@ public class RedBlackTreeModuleTest {
       RedBlackTreeModule.verifyRedBlackProperties(t);
     }
     {
-      System.out.printf("I am here.\n");
+      //System.out.printf("I am here.\n");
       Tree<Integer, Integer> t = RedBlackTreeModule.empty();
       final int N = 3;
       for (int i = 0; i != N; ++i) {
         t = t.insert(i, i);
         System.out.printf("Length = %d\n", t.size());
       }
-      showGraph(t);
+      //showGraph(t);
       
       RedBlackTreeModule.verifyRedBlackProperties(t);
       t = t.remove(1);
       RedBlackTreeModule.verifyRedBlackProperties(t);
 
       System.out.printf("Length = %d\n", t.size());
-      showGraph(t);
+      //showGraph(t);
 
-      final int sleepSeconds = 1;
-      waitTime(sleepSeconds);
+      //final int sleepSeconds = 1;
+      //waitTime(sleepSeconds);
     }
   }
-  
+
   static void checkRedBlackTreeStatus(final Tree<Integer, Integer> t) {
     final Pair<Boolean, String> res = RedBlackTreeModule.verifyRedBlackProperties(t);
 
     if (! res.mx1) {
       showGraph(t);
-      final int secs = 1;
-      waitTime(secs);
+//      final int secs = 1;
+//      waitTime(secs);
       
       assertTrue(res.mx2, false);
     }
@@ -197,23 +197,34 @@ public class RedBlackTreeModuleTest {
     assertTrue(t1 == t3);
     assertTrue(t1 != t2);
   }
-  
+
   @Test
-  public void testFromSortedArray() {
-    System.out.println("fromSortedArray");
+  public void testFromStrictlyIncreasingArray() {
+    System.out.println("fromStrictlyIncreasingArray");
 
     IntStream.rangeClosed(1, 16).forEach(y -> {
-      System.out.printf("y = %d\n", y);
-      final Tree<Integer, Integer> e = RedBlackTreeModule.empty();
       final ArrayList<Pair<Integer, Integer>> v = new ArrayList<>();
       IntStream.rangeClosed(1, y).forEach(x -> v.add(Pair.create(x, x)));
+      final Tree<Integer, Integer> resTree = RedBlackTreeModule.fromStrictlyIncreasingArray(v);
 
-      final Tree<Integer, Integer> resTree = RedBlackTreeModule.fromSortedArray(v);
-
-      showGraph(resTree);
-      waitTime(1);
+      //showGraph(resTree);
+      //waitTime(1);
       checkRedBlackTreeStatus(resTree);
     });
-    waitTime(1);
+  }
+
+  @Test
+  public void testFromStrictlyDecreasingArray() {
+    System.out.println("fromStrictlyDecreasingArray");
+
+    IntStream.rangeClosed(1, 16).forEach(y -> {
+      final ArrayList<Pair<Integer, Integer>> v = new ArrayList<>();
+      IntStream.rangeClosed(1, y).map(x -> y + 1 - x).forEach(x -> v.add(Pair.create(x, x)));
+      final Tree<Integer, Integer> resTree = RedBlackTreeModule.fromStrictlyDecreasingArray(v);
+
+      //showGraph(resTree);
+      //waitTime(1);
+      checkRedBlackTreeStatus(resTree);
+    });
   }
 }

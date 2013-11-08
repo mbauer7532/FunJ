@@ -11,6 +11,7 @@ package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
 import DataStructures.TuplesModule.Tuple4;
+import Utils.ArrayUtils;
 import Utils.Functionals.TriFunction;
 import Utils.Numeric;
 import java.awt.Color;
@@ -841,6 +842,10 @@ public class RedBlackTreeModule {
       return Pair.create(false, "Number of black nodes to leaves of tree "
                                 + "from left and right subtree did not match.");
     }
+    if (! binaryTreePropertyHolds(t)) {
+      return Pair.create(false, "Binary Tree property does not hold.");
+    }
+
     return Pair.create(true, "Success!");
   }
 
@@ -891,6 +896,13 @@ public class RedBlackTreeModule {
     }
   }
 
+  private static <K extends Comparable<K>, V> boolean binaryTreePropertyHolds(final Tree<K, V> t) {
+    final ArrayList<K> keys = new ArrayList<>();
+    t.appi((k, v) -> keys.add(k));
+
+    return ArrayUtils.isStrictlyIncreasing(keys);
+  }
+          
   // Public interface
   //@SuppressWarnings("unchecked")
   public static <K extends Comparable<K>, V> Tree<K, V> empty() {
@@ -902,7 +914,12 @@ public class RedBlackTreeModule {
     return BlackNode.create(e, key, value, e);
   }
 
-  private static <K extends Comparable<K>, V> Tree<K, V> fromSortedArrayAux(final ArrayList<Pair<K, V>> v, final int left, final int right, final int color) {
+  private static <K extends Comparable<K>, V> Tree<K, V> fromMonotoneArrayAux(
+          final ArrayList<Pair<K, V>> v,
+          final int left,
+          final int right,
+          final int color,
+          final boolean increasing) {
     if (left > right)
       return empty();
 
@@ -910,18 +927,29 @@ public class RedBlackTreeModule {
     final Pair<K, V> p = v.get(mid);
 
     final int newColor = 1 - color;
-    final Tree<K, V> lt = fromSortedArrayAux(v, left, mid - 1, newColor);
-    final Tree<K, V> rt = fromSortedArrayAux(v, mid + 1, right, newColor);
-    
+    Tree<K, V> lt, rt, t;
+    lt = fromMonotoneArrayAux(v, left, mid - 1, newColor, increasing);
+    rt = fromMonotoneArrayAux(v, mid + 1, right, newColor, increasing);
+
+    if (! increasing) {
+      t = lt; lt = rt; rt = t;
+    }
+
     return color == 0 ? BlackNode.create(lt, p.mx1, p.mx2, rt)
                       : RedNode.create(lt, p.mx1, p.mx2, rt);
   }
 
-  public static <K extends Comparable<K>, V> Tree<K, V> fromSortedArray(final ArrayList<Pair<K, V>> v) {
-    return fromSortedArrayAux(v, 0, v.size() - 1, (Numeric.ilog(v.size()) & 1) ^ 1);
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+    return fromMonotoneArrayAux(v, 0, v.size() - 1, (Numeric.ilog(v.size()) & 1) ^ 1, true);
   }
 
-  private static final class ControlExnNoSuchElement extends Exception {}
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+    return fromMonotoneArrayAux(v, 0, v.size() - 1, (Numeric.ilog(v.size()) & 1) ^ 1, false);
+  }
+
+  private static final class ControlExnNoSuchElement extends Exception {
+    private static final long serialVersionUID = 1L;
+  }
 
   private static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
 }

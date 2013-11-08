@@ -22,7 +22,7 @@ public class ArrayUtils {
       return true;
     }
     else {
-      Iterator<T> it = lst.iterator();
+      final Iterator<T> it = lst.iterator();
       T x1 = it.next();
 
       while (it.hasNext()) {
