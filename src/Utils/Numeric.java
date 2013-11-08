@@ -179,4 +179,13 @@ public class Numeric {
   public static int ilog(final int y) {
     return 31 - nlz(y);
   }
+
+  /**
+   *
+   * @param y
+   * @return the integer ceiling of log2(y).
+   */
+  public static int ilogCeiling(final int y) {
+    return ilog(y - 1) + 1;
+  }
 }
