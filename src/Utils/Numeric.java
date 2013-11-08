@@ -170,4 +170,13 @@ public class Numeric {
       return sHighestBitCache[y];
     }
   }
+
+  /**
+   *
+   * @param y
+   * @return the integer floor of log2(y).
+   */
+  public static int ilog(final int y) {
+    return 31 - nlz(y);
+  }
 }

@@ -9,6 +9,7 @@ package DataStructures;
 import DataStructures.RedBlackTreeModule.Tree;
 import DataStructures.TuplesModule.Pair;
 import Utils.Numeric;
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,14 +46,31 @@ public class RedBlackTreeModuleTest {
   public void tearDown() {
   }
 
+  final static int sLength = 44;
+  final static int sWidth = 20;
+
+  private static <K extends Comparable<K>, V> void showGraph(final Tree<K, V> t) {
+    DSutils.show(t, sLength, sWidth);
+
+    return;
+  }
+
+  private static void waitTime(final int secs) {
+      try {
+        Thread.sleep(secs * 1000);
+      } catch (InterruptedException ex) {
+        Logger.getLogger(IntMapModuleTest.class.getName()).log(Level.SEVERE, null, ex);
+      }
+  
+      return;
+  }
+
   /**
    * Test of verifyRedBlackProperties method, of class RedBlackTreeModule.
    */
   @Test
   public void testVerifyRedBlackProperties() {
     System.out.println("verifyRedBlackProperties");
-    final int length = 44;
-    final int width = 20;
 /*
     {
       final Tree<String, Integer> t = RedBlackTreeModule.empty();
@@ -75,21 +93,17 @@ public class RedBlackTreeModuleTest {
         t = t.insert(i, i);
         System.out.printf("Length = %d\n", t.size());
       }
-      DSutils.show(t, length, width);
+      showGraph(t);
       
       RedBlackTreeModule.verifyRedBlackProperties(t);
       t = t.remove(1);
       RedBlackTreeModule.verifyRedBlackProperties(t);
 
       System.out.printf("Length = %d\n", t.size());
-      DSutils.show(t, length, width);
+      showGraph(t);
 
       final int sleepSeconds = 1;
-      try {
-        Thread.sleep(sleepSeconds * 1000);
-      } catch (InterruptedException ex) {
-        Logger.getLogger(IntMapModuleTest.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      waitTime(sleepSeconds);
     }
   }
   
@@ -97,16 +111,9 @@ public class RedBlackTreeModuleTest {
     final Pair<Boolean, String> res = RedBlackTreeModule.verifyRedBlackProperties(t);
 
     if (! res.mx1) {
-      final int length = 44;
-      final int width = 20;
-      DSutils.show(t, length, width);
-      
-      final int sleepSeconds = 1;
-      try {
-        Thread.sleep(sleepSeconds * 1000);
-      } catch (InterruptedException ex) {
-        Logger.getLogger(IntMapModuleTest.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      showGraph(t);
+      final int secs = 1;
+      waitTime(secs);
       
       assertTrue(res.mx2, false);
     }
@@ -115,9 +122,6 @@ public class RedBlackTreeModuleTest {
   @Test
   public void testVerifyRedBlackPropertiesRandomSample() {
     System.out.println("verifyRedBlackPropertiesRandomSample");
-
-    final int length = 44;
-    final int width = 20;
 
     final long seed = 125332;
     final Random rng = new Random(seed);
@@ -139,7 +143,7 @@ public class RedBlackTreeModuleTest {
       checkRedBlackTreeStatus(t);
       System.out.printf("Full: Size = %d Depth = %d\n", t.size(), t.depth());
 
-      //DSutils.show(t, length, width);
+      // showGraph(t);
 
       final int[] perm2 = Numeric.randomPermuation(low, high, size, rng);
 
@@ -150,27 +154,23 @@ public class RedBlackTreeModuleTest {
         assertEquals(size - i - 1, t.size());
       }
       System.out.printf("Half: Size = %d Depth = %d\n", t.size(), t.depth());
-//      DSutils.show(t, length, width);
+//      showGraph(t);
 //      int i = -1;
 //      t = t.remove(perm2[++i]);
-//      DSutils.show(t, length, width);
+//      showGraph(t);
 //      RedBlackTreeModule.verifyRedBlackProperties(t);
 //
 //      t = t.remove(perm2[++i]);
-//      DSutils.show(t, length, width);
+//      showGraph(t);
 //
 //      t = t.remove(perm2[++i]);
-//      DSutils.show(t, length, width);
+//      showGraph(t);
 //
 //      t = t.remove(perm2[++i]);
-//      DSutils.show(t, length, width);
+//      showGraph(t);
 
 //      final int sleepSeconds = 100;
-//      try {
-//        Thread.sleep(sleepSeconds * 1000);
-//      } catch (InterruptedException ex) {
-//        Logger.getLogger(IntMapModuleTest.class.getName()).log(Level.SEVERE, null, ex);
-//      }
+//      waitTime(sleepSeconds);
     });
   }
   
@@ -196,5 +196,24 @@ public class RedBlackTreeModuleTest {
 
     assertTrue(t1 == t3);
     assertTrue(t1 != t2);
+  }
+  
+  @Test
+  public void testFromSortedArray() {
+    System.out.println("fromSortedArray");
+
+    IntStream.rangeClosed(1, 16).forEach(y -> {
+      System.out.printf("y = %d\n", y);
+      final Tree<Integer, Integer> e = RedBlackTreeModule.empty();
+      final ArrayList<Pair<Integer, Integer>> v = new ArrayList<>();
+      IntStream.rangeClosed(1, y).forEach(x -> v.add(Pair.create(x, x)));
+
+      final Tree<Integer, Integer> resTree = RedBlackTreeModule.fromSortedArray(v);
+
+      showGraph(resTree);
+      waitTime(1);
+      checkRedBlackTreeStatus(resTree);
+    });
+    waitTime(100);
   }
 }

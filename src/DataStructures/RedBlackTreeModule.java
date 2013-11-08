@@ -12,7 +12,9 @@ package DataStructures;
 import DataStructures.TuplesModule.Pair;
 import DataStructures.TuplesModule.Tuple4;
 import Utils.Functionals.TriFunction;
+import Utils.Numeric;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -675,7 +677,7 @@ public class RedBlackTreeModule {
   private static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> unbalancedLeft(final Tree<K, V> t) {
     final RedNode<K, V> red;
     final BlackNode<K, V> black;
-    
+
     if ((red = t.asRed()) != null) {
       final BlackNode<K, V> rb = red.mLeft.asBlack();
       if (rb != null) {
@@ -900,6 +902,26 @@ public class RedBlackTreeModule {
     return BlackNode.create(e, key, value, e);
   }
 
+  private static <K extends Comparable<K>, V> Tree<K, V> fromSortedArrayAux(final ArrayList<Pair<K, V>> v, final int left, final int right, final int color) {
+    if (left > right)
+      return empty();
+
+    final int mid = (left + right) >>> 1;
+    final Pair<K, V> p = v.get(mid);
+
+    final int newColor = 1 - color;
+    final Tree<K, V> lt = fromSortedArrayAux(v, left, mid - 1, newColor);
+    final Tree<K, V> rt = fromSortedArrayAux(v, mid + 1, right, newColor);
+    
+    return color == 0 ? BlackNode.create(lt, p.mx1, p.mx2, rt)
+                      : RedNode.create(lt, p.mx1, p.mx2, rt);
+  }
+
+  public static <K extends Comparable<K>, V> Tree<K, V> fromSortedArray(final ArrayList<Pair<K, V>> v) {
+    return fromSortedArrayAux(v, 0, v.size() - 1, 1 - (Numeric.ilog(v.size()) & 1));
+  }
+
   private static final class ControlExnNoSuchElement extends Exception {}
+
   private static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
 }
