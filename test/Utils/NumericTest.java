@@ -9,6 +9,7 @@ package Utils;
 import java.awt.Dimension;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -63,6 +64,9 @@ public class NumericTest {
   public void testRandomInt() {
     System.out.println("randomInt");
 
+    final long seed = 12345678;
+    final Random rng = new Random(seed);
+
     final int N = 2000000;
     final double tol = 1.0e-2;
     {
@@ -71,7 +75,7 @@ public class NumericTest {
       final double expResult = ((double)(high + low)) / 2;
       final double res = IntStream.range(0, N)
                                   .parallel()
-                                  .mapToDouble(_n -> (double) Numeric.randomInt(low, high))
+                                  .mapToDouble(_n -> (double) Numeric.randomInt(low, high, rng))
                                   .average()
                                   .getAsDouble();
       assertTrue(Numeric.isRelativeEqWithinTolerance(expResult, res, tol));
@@ -83,7 +87,7 @@ public class NumericTest {
 
       final int[] arr = new int[10];
       IntStream.range(0, N)
-               .forEach(_n -> { ++arr[Numeric.randomInt(low, high)]; });
+               .forEach(_n -> { ++arr[Numeric.randomInt(low, high, rng)]; });
       Arrays.stream(arr)
             .mapToDouble(n -> ((double) n) / N)
             .forEach(res -> {
@@ -117,9 +121,12 @@ public class NumericTest {
     final int size = 3;
     final int N = 18000;
 
+    final long seed = 12345678;
+    final Random rng = new Random(seed);
+
     final Map<Integer, Integer> m = new TreeMap<>();
     for (int i = 0; i != N; ++i) {
-      final Set<Integer> a = Numeric.randomSet(low, high, size);
+      final Set<Integer> a = Numeric.randomSet(low, high, size, rng);
       final int r = a.stream().reduce(0, (n, x) -> n * 10 + x);
       final Integer ii = m.get(r);
       m.put(r, ii == null ? 1 : ii + 1);
@@ -188,9 +195,12 @@ public class NumericTest {
     final int size = 2;
     final int N = 100000;
 
+    final long seed = 12345678;
+    final Random rng = new Random(seed);
+
     final Map<Integer, Integer> m = new TreeMap<>();
     for (int i = 0; i != N; ++i) {
-      final int[] a = Numeric.randomPermuation(low, high, size);
+      final int[] a = Numeric.randomPermuation(low, high, size, rng);
       final int r = Arrays.stream(a).reduce(0, (n, x) -> n * 10 + x);
       final Integer ii = m.get(r);
       m.put(r, ii == null ? 1 : ii + 1);

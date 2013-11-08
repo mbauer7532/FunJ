@@ -9,6 +9,7 @@ package DataStructures;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.StructureGraphic.v1.DSutils;
@@ -96,13 +97,16 @@ public class AvlTreeModuleTest {
   public void testRandomTreeDepth() {
     System.out.println("RandomTreeDepth");
 
+    final long seed = 12345678;
+    final Random rng = new Random(seed);
+
     final int m = -1000;
     final int n = 1000;
     final int Experiments = 500;
     final int N = 400;
 
     for (int i = 0; i != Experiments; ++i) {
-      final int[] data = Utils.Numeric.randomPermuation(m, n, N);
+      final int[] data = Utils.Numeric.randomPermuation(m, n, N, rng);
       AvlTreeModule.Tree<Integer, Integer> t0 = AvlTreeModule.empty();
 
       AvlTreeModule.Tree<Integer, Integer> t

@@ -8,6 +8,7 @@ package Utils;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.IntStream;
 
@@ -23,16 +24,17 @@ public class Numeric {
    * @param high
    * @return Function returns a random integer in the range [low, high].
    */
-  public static int randomInt(final int low, final int high) {
+  public static int randomInt(final int low, final int high, final Random rng) {
     if (low > high)
       throw new AssertionError("Low must be less than or equal to high.");
-    return low + (int)(Math.random() * (double) (high - low + 1));
+    return low + rng.nextInt(high - low + 1);
   }
 
   public static Set<Integer> randomSet(
           final int low,
           final int high,
-          final int size) {
+          final int size,
+          final Random rng) {
     if (low > high) {
       throw new AssertionError("Low must be less than or equal to high.");
     }
@@ -49,7 +51,7 @@ public class Numeric {
 
     for (int i = 0; i != size; ++i) {
       final int h = j + i;
-      final int r = randomInt(low, h);
+      final int r = randomInt(low, h, rng);
 
       final boolean alreadyThere = ! hset.add(r);
       if (alreadyThere) {
@@ -69,9 +71,10 @@ public class Numeric {
   public static int[] randomPermuation(
           final int low,
           final int high,
-          final int size) {
+          final int size,
+          final Random rng) {
     final int[] array = new int[size];
-    randomPermutation(low, high, array);
+    randomPermutation(low, high, array, rng);
 
     return array;
   }
@@ -79,13 +82,14 @@ public class Numeric {
   public static void randomPermutation(
           final int low,
           final int high,
-          final int[] array) {
+          final int[] array,
+          final Random rng) {
     final int size = array.length;
     final int lastIdx = size - 1;
-    final Iterator<Integer> it = randomSet(low, high, size).iterator();
+    final Iterator<Integer> it = randomSet(low, high, size, rng).iterator();
 
     IntStream.range(0, size).forEach(i -> { array[i] = it.next(); });
-    IntStream.range(0, lastIdx).forEach(n -> { swap(array, n, randomInt(n, lastIdx)); });
+    IntStream.range(0, lastIdx).forEach(n -> { swap(array, n, randomInt(n, lastIdx, rng)); });
 
     return;
   }

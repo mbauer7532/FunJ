@@ -271,13 +271,14 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public abstract DSTreeNode[] DSgetChildren();
+    public DSTreeNode[] DSgetChildren() {
+      return new DSTreeNode[] { mLeft, mRight };
+    }
 
     @Override
-    public abstract Object DSgetValue();
-
-    @Override
-    public abstract Color DSgetColor();
+    public Object DSgetValue() {
+      return mKey.toString() + "," + mValue.toString();
+    }
   }
 
   private static final class RedNode<K extends Comparable<K>, V> extends Node<K, V> {
@@ -298,8 +299,8 @@ public class RedBlackTreeModule {
       return create(left, key, newValue, right);
     }
 
-    private RedNode<K, V> convertToBlack() {
-      return RedNode.create(mLeft, mKey, mValue, mRight);
+    private BlackNode<K, V> convertToBlack() {
+      return BlackNode.create(mLeft, mKey, mValue, mRight);
     }
 
     @Override
@@ -428,16 +429,6 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public DSTreeNode[] DSgetChildren() {
-      return new DSTreeNode[] { mLeft, mRight };
-    }
-
-    @Override
-    public Object DSgetValue() {
-      return mKey;
-    }
-
-    @Override
     public Color DSgetColor() {
       return Color.RED;
     }
@@ -545,9 +536,7 @@ public class RedBlackTreeModule {
       }
       else {
         if (r.isEmpty()) {
-          final RedNode<K, V> red = l.asRed();
-          return (red != null) ? Pair.create(red.convertToBlack(), false)
-                               : Pair.create(l, true);
+          return blackifyRem(l);
         }
         else {
           final Tuple4<Tree<K, V>, K, V, Boolean> p = removeMin(r);
@@ -566,16 +555,6 @@ public class RedBlackTreeModule {
     @Override
     public Tree<K, V> filteri(final BiPredicate<K, V> f) {
       throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public DSTreeNode[] DSgetChildren() {
-      return new DSTreeNode[] { mLeft, mRight };
-    }
-
-    @Override
-    public Object DSgetValue() {
-      return mKey;
     }
 
     @Override
@@ -604,7 +583,7 @@ public class RedBlackTreeModule {
 
       if ((ll = l.mLeft.asRed()) != null) {
         return RedNode.create(
-                BlackNode.create(ll.mLeft, ll.mKey, ll.mValue, ll.mRight),
+                ll.convertToBlack(),
                 l.mKey,
                 l.mValue,
                 BlackNode.create(l.mRight, key, value, right));
@@ -651,7 +630,7 @@ public class RedBlackTreeModule {
                 BlackNode.create(left, key, value, r.mLeft),
                 r.mKey,
                 r.mValue,
-                BlackNode.create(rr.mLeft, rr.mKey, rr.mValue, rr.mRight));
+                rr.convertToBlack());
       }
     }
 
@@ -664,7 +643,13 @@ public class RedBlackTreeModule {
 //      | Empty -> assert false
   private static <K extends Comparable<K>, V> Tree<K, V> blackify(final Tree<K, V> t) {
     final RedNode<K, V> r = t.asRed();
-    return (r != null) ? BlackNode.create(r.mLeft, r.mKey, r.mValue, r.mRight) : t;
+    return (r != null) ? r.convertToBlack() : t;
+  }
+
+  private static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> blackifyRem(final Tree<K, V> t) {
+    final RedNode<K, V> red = t.asRed();
+    return (red != null) ? Pair.create(red.convertToBlack(), false)
+                         : Pair.create(t, true);
   }
 
 //    (* [unbalanced_left] repares invariant (2) when the black height of the
@@ -797,7 +782,7 @@ public class RedBlackTreeModule {
 
         final RedNode<K, V> br = r.asRed();
         if (br != null) {
-          return Tuple4.create(br.asBlack(), black.mKey, black.mValue, false);
+          return Tuple4.create(br.convertToBlack(), black.mKey, black.mValue, false);
         }
 
         final BlackNode<K, V> bb = r.asBlack();
@@ -886,19 +871,16 @@ public class RedBlackTreeModule {
 //              end
 //    in fst (remove_aux m)
 
-  public static <K extends Comparable<K>, V> void verifyRedBlackProperties(final Tree<K, V> t) {
-    if (!t.isBlack() && !t.isEmpty()) {
-      throw new AssertionError("The root of a red-black tree must be black.");
-    }
-    
+  public static <K extends Comparable<K>, V> Pair<Boolean, String> verifyRedBlackProperties(final Tree<K, V> t) {
     if (! redChildrenPropertyHolds(t)) {
-      throw new AssertionError("There are red nodes that have red children.");
+      return Pair.create(false, "There are red nodes that have red children.");
     }
     final Pair<Integer, Boolean> p = blackNodeCountPropertyHolds(t);
     if (! p.mx2)  {
-      throw new AssertionError("Number of black nodes to leaves of tree "
-                               + "from left and right subtree did not match.");
+      return Pair.create(false, "Number of black nodes to leaves of tree "
+                                + "from left and right subtree did not match.");
     }
+    return Pair.create(true, "Success!");
   }
 
   private static <K extends Comparable<K>, V> boolean redChildrenPropertyHolds(final Tree<K, V> t) {
@@ -918,7 +900,7 @@ public class RedBlackTreeModule {
     }
 
     final Tree<K, V> l = red.mLeft, r = red.mRight;
-    if (! l.isRed() || !r.isRed()) {
+    if (l.isRed() || r.isRed()) {
       return false;
     }
     else {
