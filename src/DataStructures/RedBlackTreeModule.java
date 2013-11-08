@@ -642,8 +642,8 @@ public class RedBlackTreeModule {
 //      | Red (a, y, b) -> Black (a, y, b)
 //      | Empty -> assert false
   private static <K extends Comparable<K>, V> Tree<K, V> blackify(final Tree<K, V> t) {
-    final RedNode<K, V> r = t.asRed();
-    return (r != null) ? r.convertToBlack() : t;
+    final RedNode<K, V> red = t.asRed();
+    return (red != null) ? red.convertToBlack() : t;
   }
 
   private static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> blackifyRem(final Tree<K, V> t) {
