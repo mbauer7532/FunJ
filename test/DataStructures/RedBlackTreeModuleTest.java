@@ -27,24 +27,19 @@ import static org.junit.Assert.*;
  * @author Neo
  */
 public class RedBlackTreeModuleTest {
-  public RedBlackTreeModuleTest() {
-  }
+  public RedBlackTreeModuleTest() {}
   
   @BeforeClass
-  public static void setUpClass() {
-  }
+  public static void setUpClass() {}
   
   @AfterClass
-  public static void tearDownClass() {
-  }
+  public static void tearDownClass() {}
   
   @Before
-  public void setUp() {
-  }
+  public void setUp() {}
   
   @After
-  public void tearDown() {
-  }
+  public void tearDown() {}
 
   final static int sLength = 44;
   final static int sWidth = 20;
@@ -56,13 +51,13 @@ public class RedBlackTreeModuleTest {
   }
 
   private static void waitTime(final int secs) {
-      try {
-        Thread.sleep(secs * 1000);
-      } catch (InterruptedException ex) {
-        Logger.getLogger(IntMapModuleTest.class.getName()).log(Level.SEVERE, null, ex);
-      }
-  
-      return;
+    try {
+      Thread.sleep(secs * 1000);
+    } catch (InterruptedException ex) {
+      Logger.getLogger(IntMapModuleTest.class.getName()).log(Level.SEVERE, null, ex);
+    }
+
+    return;
   }
 
   /**
@@ -71,7 +66,7 @@ public class RedBlackTreeModuleTest {
   @Test
   public void testVerifyRedBlackProperties() {
     System.out.println("verifyRedBlackProperties");
-/*
+    /*
     {
       final Tree<String, Integer> t = RedBlackTreeModule.empty();
       RedBlackTreeModule.verifyRedBlackProperties(t);
@@ -101,9 +96,6 @@ public class RedBlackTreeModuleTest {
 
       System.out.printf("Length = %d\n", t.size());
       //showGraph(t);
-
-      //final int sleepSeconds = 1;
-      //waitTime(sleepSeconds);
     }
   }
 
