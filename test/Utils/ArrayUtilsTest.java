@@ -25,19 +25,19 @@ public class ArrayUtilsTest {
   
   public ArrayUtilsTest() {
   }
-  
+
   @BeforeClass
   public static void setUpClass() {
   }
-  
+
   @AfterClass
   public static void tearDownClass() {
   }
-  
+
   @Before
   public void setUp() {
   }
-  
+
   @After
   public void tearDown() {
   }
@@ -86,7 +86,11 @@ public class ArrayUtilsTest {
     assertFalse(ArrayUtils.isStrictlyIncreasing(toBoxedList(a9)));
     assertFalse(ArrayUtils.isStrictlyIncreasing(toBoxedList(a10)));
   }
-  
+
+   /**
+   * Test of isDecreasing method, of class ArrayUtils.
+   */
+
   @Test
   public void testIsDecreasing() {
     System.out.println("isDecreasing");
