@@ -914,42 +914,48 @@ public class RedBlackTreeModule {
     return BlackNode.create(e, key, value, e);
   }
 
-  private static <K extends Comparable<K>, V> Tree<K, V> fromMonotoneArrayAux(
-          final ArrayList<Pair<K, V>> v,
-          final int left,
-          final int right,
-          final int color,
-          final boolean increasing) {
-    if (left > right)
-      return empty();
+  private static final class InitFromArrayWorker<K extends Comparable<K>, V> {
+    private final ArrayList<Pair<K, V>> mVector;
+    private final boolean mIncreasing;
+    
+    public InitFromArrayWorker(final ArrayList<Pair<K, V>> vector,
+                               final boolean increasing) {
+      mVector = vector;
+      mIncreasing = increasing;
+    }
 
-    final int mid = (left + right) >>> 1;
-    final Pair<K, V> p = v.get(mid);
+    public Tree<K, V> doit(final int left, final int right, final int color) {
+      if (left > right)
+        return empty();
 
-    final int newColor = 1 - color;
-    Tree<K, V> lt, rt, t;
-    lt = fromMonotoneArrayAux(v, left, mid - 1, newColor, increasing);
-    rt = fromMonotoneArrayAux(v, mid + 1, right, newColor, increasing);
+      final int mid = (left + right) >>> 1;
+      final Pair<K, V> p = mVector.get(mid);
 
-    if (! increasing) {
-      t = lt; lt = rt; rt = t;
+      final int newColor = 1 - color;
+      Tree<K, V> lt, rt;
+      lt = doit(left, mid - 1, newColor);
+      rt = doit(mid + 1, right, newColor);
+
+    if (! mIncreasing) {
+      Tree<K, V> t = lt;
+      lt = rt;
+      rt = t;
     }
 
     return color == 0 ? BlackNode.create(lt, p.mx1, p.mx2, rt)
                       : RedNode.create(lt, p.mx1, p.mx2, rt);
+    }
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
-    return fromMonotoneArrayAux(v, 0, v.size() - 1, (Numeric.ilog(v.size()) & 1) ^ 1, true);
+    return (new InitFromArrayWorker<>(v, true)).doit(0, v.size() - 1, (Numeric.ilog(v.size()) & 1) ^ 1);
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
-    return fromMonotoneArrayAux(v, 0, v.size() - 1, (Numeric.ilog(v.size()) & 1) ^ 1, false);
+    return (new InitFromArrayWorker<>(v, false)).doit(0, v.size() - 1, (Numeric.ilog(v.size()) & 1) ^ 1);
   }
 
-  private static final class ControlExnNoSuchElement extends Exception {
-    private static final long serialVersionUID = 1L;
-  }
+  private static final class ControlExnNoSuchElement extends Exception {};
 
   private static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
 }

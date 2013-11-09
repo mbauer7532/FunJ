@@ -160,7 +160,7 @@ public class RedBlackTreeModuleTest {
 //
 //      t = t.remove(perm2[++i]);
 //      showGraph(t);
-
+//
 //      final int sleepSeconds = 100;
 //      waitTime(sleepSeconds);
     });
