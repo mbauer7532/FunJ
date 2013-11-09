@@ -10,9 +10,11 @@ import DataStructures.RedBlackTreeModule.Tree;
 import DataStructures.TuplesModule.Pair;
 import Utils.Numeric;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.StructureGraphic.v1.DSutils;
 import org.junit.After;
@@ -53,64 +55,80 @@ public class RedBlackTreeModuleTest {
   private static void waitTime(final int secs) {
     try {
       Thread.sleep(secs * 1000);
-    } catch (InterruptedException ex) {
+    }
+    catch (InterruptedException ex) {
       Logger.getLogger(IntMapModuleTest.class.getName()).log(Level.SEVERE, null, ex);
     }
 
     return;
   }
 
-  /**
-   * Test of verifyRedBlackProperties method, of class RedBlackTreeModule.
-   */
-  @Test
-  public void testVerifyRedBlackProperties() {
-    System.out.println("verifyRedBlackProperties");
-    /*
-    {
-      final Tree<String, Integer> t = RedBlackTreeModule.empty();
-      RedBlackTreeModule.verifyRedBlackProperties(t);
-    }
-    {
-      final Tree<String, Integer> t = RedBlackTreeModule.singleton("hi", 2);
-      RedBlackTreeModule.verifyRedBlackProperties(t);
-    }
-    */
-    {
-      final Tree<String, Integer> t = RedBlackTreeModule.singleton("hi", 2).insert((x, y) -> x, "there", 23);
-      RedBlackTreeModule.verifyRedBlackProperties(t);
-    }
-    {
-      //System.out.printf("I am here.\n");
-      Tree<Integer, Integer> t = RedBlackTreeModule.empty();
-      final int N = 3;
-      for (int i = 0; i != N; ++i) {
-        t = t.insert(i, i);
-        System.out.printf("Length = %d\n", t.size());
-      }
-      //showGraph(t);
-      
-      RedBlackTreeModule.verifyRedBlackProperties(t);
-      t = t.remove(1);
-      RedBlackTreeModule.verifyRedBlackProperties(t);
-
-      System.out.printf("Length = %d\n", t.size());
-      //showGraph(t);
-    }
-  }
-
-  static void checkRedBlackTreeStatus(final Tree<Integer, Integer> t) {
+  private static <K extends Comparable<K>, V> void checkRedBlackTreeProperties(final Tree<K, V> t) {
     final Pair<Boolean, String> res = RedBlackTreeModule.verifyRedBlackProperties(t);
 
     if (! res.mx1) {
       showGraph(t);
 //      final int secs = 1;
 //      waitTime(secs);
-      
+
       assertTrue(res.mx2, false);
     }
   }
   
+  /**
+   * Test of verifyRedBlackProperties method, of class RedBlackTreeModule.
+   */
+  @Test
+  public void testVerifyRedBlackProperties() {
+    System.out.println("verifyRedBlackProperties");
+    {
+      final Tree<String, Integer> t = RedBlackTreeModule.empty();
+      checkRedBlackTreeProperties(t);
+    }
+    {
+      final Tree<String, Integer> t = RedBlackTreeModule.singleton("hi", 2);
+      checkRedBlackTreeProperties(t);
+    }
+    {
+      final Tree<String, Integer> t = RedBlackTreeModule.singleton("hi", 2).insert((x, y) -> x, "there", 23);
+      checkRedBlackTreeProperties(t);
+    }
+    {
+      final Tree<String, Integer> t = RedBlackTreeModule.singleton("hi", 2).insert("there", 23);
+      checkRedBlackTreeProperties(t);
+    }
+    {
+      Tree<Integer, Integer> t = RedBlackTreeModule.empty();
+
+      final int N = 10;
+      ArrayList<Tree<Integer, Integer>> a = new ArrayList<>();
+      for (int i = 0; i != N; ++i) {
+        a.add(t);
+        t = t.insert(i, i);
+        assertEquals(i + 1, t.size());
+        checkRedBlackTreeProperties(t);
+      }
+      a.add(t);
+ 
+      for (int i = 0; i != a.size(); ++i) {
+        final Tree<Integer, Integer> q = a.get(i);
+        
+        assertEquals(i, q.size());
+        checkRedBlackTreeProperties(t);
+        IntStream.range(0, i).forEach(n -> assertTrue(q.contains(n)));
+      }
+
+      for (int i = 0; i != N; ++i) {
+        t = t.remove(i);
+        
+        assertEquals(N - i - 1, t.size());
+        checkRedBlackTreeProperties(t);
+        // After each removal also check that none of the stored trees has it's size changed.
+        IntStream.range(0, a.size()).forEach(n -> assertEquals(n, a.get(n).size()));
+      }
+    }
+  }
+
   @Test
   public void testVerifyRedBlackPropertiesRandomSample() {
     System.out.println("verifyRedBlackPropertiesRandomSample");
@@ -118,51 +136,32 @@ public class RedBlackTreeModuleTest {
     final long seed = 125332;
     final Random rng = new Random(seed);
 
-    final int numIters = 10;
+    final int numIters = 20;
+    final int low = 1, high = 1024;
+    final int size = high;
     IntStream.range(0, numIters).forEach(x -> {
-      final int low = 1, high = 1024;
-      final int size = high;
       final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
       assertEquals(size, perm1.length);
 
       Tree<Integer, Integer> t = RedBlackTreeModule.empty();
       for (int i = 0; i != size; ++i) {
         assertEquals(i, t.size());
-        checkRedBlackTreeStatus(t);
+        checkRedBlackTreeProperties(t);
         t = t.insert(perm1[i], perm1[i]);
       }
       assertEquals(size, t.size());
-      checkRedBlackTreeStatus(t);
-      System.out.printf("Full: Size = %d Depth = %d\n", t.size(), t.depth());
-
-      // showGraph(t);
+      checkRedBlackTreeProperties(t);
 
       final int[] perm2 = Numeric.randomPermuation(low, high, size, rng);
 
-      for (int i = 0; i != size/2; ++i) {
+      for (int i = 0; i != size; ++i) {
+        assertTrue(t.contains(perm2[i]));
         t = t.remove(perm2[i]);
-        
-        checkRedBlackTreeStatus(t);
+
+        checkRedBlackTreeProperties(t);
         assertEquals(size - i - 1, t.size());
       }
-      System.out.printf("Half: Size = %d Depth = %d\n", t.size(), t.depth());
-//      showGraph(t);
-//      int i = -1;
-//      t = t.remove(perm2[++i]);
-//      showGraph(t);
-//      RedBlackTreeModule.verifyRedBlackProperties(t);
-//
-//      t = t.remove(perm2[++i]);
-//      showGraph(t);
-//
-//      t = t.remove(perm2[++i]);
-//      showGraph(t);
-//
-//      t = t.remove(perm2[++i]);
-//      showGraph(t);
-//
-//      final int sleepSeconds = 100;
-//      waitTime(sleepSeconds);
+      assertTrue(t.isEmpty());
     });
   }
   
@@ -194,14 +193,16 @@ public class RedBlackTreeModuleTest {
   public void testFromStrictlyIncreasingArray() {
     System.out.println("fromStrictlyIncreasingArray");
 
-    IntStream.rangeClosed(1, 16).forEach(y -> {
-      final ArrayList<Pair<Integer, Integer>> v = new ArrayList<>();
-      IntStream.rangeClosed(1, y).forEach(x -> v.add(Pair.create(x, x)));
+    final int N = 42;
+    IntStream.rangeClosed(0, N).forEach(y -> {
+      final ArrayList<Pair<Integer, Integer>> v =
+              IntStream.rangeClosed(1, y)
+                       .mapToObj(x -> Pair.create(x, x))
+                       .collect(Collectors.toCollection(ArrayList::new));
+
       final Tree<Integer, Integer> resTree = RedBlackTreeModule.fromStrictlyIncreasingArray(v);
 
-      //showGraph(resTree);
-      //waitTime(1);
-      checkRedBlackTreeStatus(resTree);
+      checkRedBlackTreeProperties(resTree);
     });
   }
 
@@ -209,14 +210,63 @@ public class RedBlackTreeModuleTest {
   public void testFromStrictlyDecreasingArray() {
     System.out.println("fromStrictlyDecreasingArray");
 
-    IntStream.rangeClosed(1, 16).forEach(y -> {
-      final ArrayList<Pair<Integer, Integer>> v = new ArrayList<>();
-      IntStream.rangeClosed(1, y).map(x -> y + 1 - x).forEach(x -> v.add(Pair.create(x, x)));
+    final int N = 42;
+    IntStream.rangeClosed(0, N).forEach(y -> {
+      final ArrayList<Pair<Integer, Integer>> v =
+              IntStream.rangeClosed(1, y)
+                       .map(x -> y + 1 - x)
+                       .mapToObj(x -> Pair.create(x, x))
+                       .collect(Collectors.toCollection(ArrayList::new));
+
       final Tree<Integer, Integer> resTree = RedBlackTreeModule.fromStrictlyDecreasingArray(v);
 
-      //showGraph(resTree);
-      //waitTime(1);
-      checkRedBlackTreeStatus(resTree);
+      checkRedBlackTreeProperties(resTree);
     });
+  }
+
+  @Test
+  public void testRedBlackTreeDepthTreeSize() {
+    System.out.println("redBlackTreeDepthTreeSize");
+
+    // Small trees
+    {
+      final Tree<Integer, Integer> t0 = RedBlackTreeModule.empty();
+      final Tree<Integer, Integer> t1 = RedBlackTreeModule.singleton(1, 1);
+      final Tree<Integer, Integer> t2 = t1.insert(2, 2);
+      final Tree<Integer, Integer> t3 = t2.insert(3, 3);
+
+      showGraph(t0); showGraph(t1); showGraph(t2); showGraph(t3);
+
+      assertEquals(0, t0.size());
+      assertEquals(1, t1.size());
+      assertEquals(2, t2.size());
+      assertEquals(3, t3.size());
+
+      assertEquals(0, t0.height());
+      assertEquals(1, t1.height());
+      assertEquals(2, t2.height());
+      assertEquals(2, t3.height());
+    }
+    // Let's try some large trees
+    {
+      final long seed = 125332;
+      final Random rng = new Random(seed);
+
+      final int numIters = 10;
+      final int low = -200, high = 200;
+      final int size = 20;
+
+      IntStream.range(0, numIters).forEach(x -> {
+        final ArrayList<Pair<Integer, Integer>> v =
+                Arrays.stream(Numeric.randomPermuation(low, high, size, rng))
+                        .mapToObj(i -> Pair.create(i, i))
+                        .collect(Collectors.toCollection(ArrayList::new));
+
+        final Tree<Integer, Integer> t = RedBlackTreeModule.fromRandomArray(v);
+
+        // Checking tree validity also checks its height.
+        checkRedBlackTreeProperties(t);
+      });
+    }
   }
 }

@@ -23,6 +23,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import org.StructureGraphic.v1.DSTreeNode;
 
 /**
@@ -70,7 +71,7 @@ public class RedBlackTreeModule {
     }
 
     public final Tree<K, V> insert(final K key, final V value) {
-      return insert(Tree::chooseExisting, key, value);
+      return blackify(ins(key, value));
     }
 
     public final Tree<K, V> remove(final K key) {
@@ -84,7 +85,7 @@ public class RedBlackTreeModule {
     public abstract boolean isEmpty();
     public abstract Optional<V> get(final K key);
     public abstract int size();
-    public abstract int depth();
+    public abstract int height();
     public abstract void appi(final BiConsumer<K, V> f);
     public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
     public abstract <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f);
@@ -100,6 +101,7 @@ public class RedBlackTreeModule {
     BlackNode<K, V> asBlack() { return null; }
 
     abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
+    abstract Tree<K, V> ins(final K key, final V value);
     abstract Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement;
 
     private static <K extends Comparable<K>, V> V chooseExisting(final V existingElem, final V newElem) {
@@ -127,6 +129,12 @@ public class RedBlackTreeModule {
     }
 
     @Override
+    public Tree<K, V> ins(final K key, final V value) {
+      final Tree<K, V> e = create();
+      return RedNode.create(e, key, value, e);
+    }
+
+    @Override
     Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement {
       // This exception is used for control purposes.
       // When removing non-existent elements we simply return the same input tree
@@ -146,7 +154,7 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public int depth() {
+    public int height() {
       return 0;
     }
 
@@ -241,8 +249,8 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public int depth() {
-      return Math.max(mLeft.depth(), mRight.depth()) + 1;
+    public int height() {
+      return Math.max(mLeft.height(), mRight.height()) + 1;
     }
 
     @Override
@@ -351,6 +359,21 @@ public class RedBlackTreeModule {
       }
       else {
         return create(mLeft, mKey, f.apply(mValue, value), mRight);
+      }
+    }
+
+    @Override
+    Tree<K, V> ins(final K key, final V value) {
+      final int res = key.compareTo(mKey);
+
+      if (res < 0) {
+        return create(mLeft.ins(key, value), mKey, mValue, mRight);
+      }
+      else if (res > 0) {
+        return create(mLeft, mKey, mValue, mRight.ins(key, value));
+      }
+      else {
+        return this;
       }
     }
 
@@ -500,6 +523,21 @@ public class RedBlackTreeModule {
       }
       else {
         return create(mLeft, key, f.apply(mValue, value), mRight);
+      }
+    }
+
+    @Override
+    Tree<K, V> ins(final K key, final V value) {
+      final int res = key.compareTo(mKey);
+
+      if (res < 0) {
+        return leftBalance(mLeft.ins(key, value), mKey, mValue, mRight);
+      }
+      else if (res > 0) {
+        return rightBalance(mLeft, mKey, mValue, mRight.ins(key, value));
+      }
+      else {
+        return this;
       }
     }
 
@@ -846,7 +884,22 @@ public class RedBlackTreeModule {
       return Pair.create(false, "Binary Tree property does not hold.");
     }
 
+    if (! heightOfRedBlackTreeConstraintHolds(t)) {
+      return Pair.create(false, "The depth of the tree was much larger than the log(size).");
+    }
     return Pair.create(true, "Success!");
+  }
+
+  private static <K extends Comparable<K>, V> boolean heightOfRedBlackTreeConstraintHolds(final Tree<K, V> t) {
+    final int n = t.size();
+    final double logSize = Numeric.log((double)(n + 1), 2.0);
+    final int height = t.height();
+
+    // In CLR you would find height <= 2 * log(n) but they have a weird definition for height --
+    // it considers the tree with 0 nodes to have size 0, and the tree with 1 node to also have height zero.
+    // We consider the second to have heigh 1.  Basically we count the edges traversed to reach a leaf which
+    // makes a lot more sense.  That's why below in order to have the same condition as CLR we subtract 1 from height.
+    return ((double) (height - 1)) <= 2.0 * logSize;
   }
 
   private static <K extends Comparable<K>, V> boolean redChildrenPropertyHolds(final Tree<K, V> t) {
@@ -902,7 +955,7 @@ public class RedBlackTreeModule {
 
     return ArrayUtils.isStrictlyIncreasing(keys);
   }
-          
+
   // Public interface
   //@SuppressWarnings("unchecked")
   public static <K extends Comparable<K>, V> Tree<K, V> empty() {
@@ -953,6 +1006,13 @@ public class RedBlackTreeModule {
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
     return (new InitFromArrayWorker<>(v, false)).doit(0, v.size() - 1, (Numeric.ilog(v.size()) & 1) ^ 1);
+  }
+
+  public static <K extends Comparable<K>, V> Tree<K, V> fromRandomArray(final ArrayList<Pair<K, V>> v) {
+    return v.stream()
+            .reduce(empty(),
+                    ((t, p) -> t.insert(p.mx1, p.mx2)),
+                    ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
   }
 
   private static final class ControlExnNoSuchElement extends Exception {};
