@@ -16,6 +16,7 @@ import Utils.Functionals.TriFunction;
 import Utils.Numeric;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -97,6 +98,18 @@ public class RedBlackTreeModule {
       }
     }
 
+    public final List<K> keys() {
+      final ArrayList<K> ks = new ArrayList<>();
+      appi((k, v) -> { ks.add(k); });
+      return ks;
+    }
+
+    public final List<Pair<K, V>> keyValuePairs() {
+      final ArrayList<Pair<K, V>> kvs = new ArrayList<>();
+      appi((k, v) -> { kvs.add(Pair.create(k, v)); });
+      return kvs;
+    }
+
     public abstract boolean isEmpty();
     public abstract Optional<V> get(final K key);
     public abstract int size();
@@ -119,10 +132,6 @@ public class RedBlackTreeModule {
     abstract Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement;
     abstract Tree<K, V> filt(final BiPredicate<K, V> f, final Tree<K, V> acc);
     abstract void part(final BiPredicate<K, V> f, final Pair<Tree<K, V>, Tree<K, V>> res);
-
-    private static <K extends Comparable<K>, V> V chooseExisting(final V existingElem, final V newElem) {
-      return existingElem;
-    }
   }
 
   private static final class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -248,8 +257,6 @@ public class RedBlackTreeModule {
     protected final Tree<K, V> mLeft;
     protected final Tree<K, V> mRight;
 
-    public abstract <W> Node<K, W> createNode(final Tree<K, W> left, final K key, final W newValue, final Tree<K, W> right);
-
     @Override
     public final boolean isEmpty() {
       return false;
@@ -284,17 +291,9 @@ public class RedBlackTreeModule {
       mLeft.appi(f);
       f.accept(mKey, mValue);
       mRight.appi(f);
-      
+
       return;
     }
-
-    @Override
-    public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
-      return createNode(mLeft.mapi(f), mKey, f.apply(mKey, mValue), mRight.mapi(f));
-    }
-
-    @Override
-    public abstract <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f);
 
     @Override
     public <W> W foldli(final TriFunction<K, V, W, W> f, final W w) {
@@ -352,11 +351,6 @@ public class RedBlackTreeModule {
             final V value,
             final Tree<K, V> right) {
       return new RedNode<>(left, key, value, right);
-    }
-
-    @Override
-    public <W> Node<K, W> createNode(final Tree<K, W> left, final K key, final W newValue, final Tree<K, W> right) {
-      return create(left, key, newValue, right);
     }
 
     private BlackNode<K, V> convertToBlack() {
@@ -494,6 +488,11 @@ public class RedBlackTreeModule {
     }
 
     @Override
+    public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
+      return create(mLeft.mapi(f), mKey, f.apply(mKey, mValue), mRight.mapi(f));
+    }
+
+    @Override
     public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -511,11 +510,6 @@ public class RedBlackTreeModule {
 
     public static <K extends Comparable<K>, V> BlackNode<K, V> create(final Tree<K, V> left, final K key, final V value, final Tree<K, V> right) {
       return new BlackNode<>(left, key, value, right);
-    }
-
-    @Override
-    public <W> Node<K, W> createNode(final Tree<K, W> left, final K key, final W value, final Tree<K, W> right) {
-      return create(left, key, value, right);
     }
 
     private RedNode<K, V> convertToRed() {
@@ -630,6 +624,11 @@ public class RedBlackTreeModule {
           return p.mx4 ? unbalancedLeft(m) : Pair.create(m, false);
         }
       }
+    }
+
+    @Override
+    public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
+      return create(mLeft.mapi(f), mKey, f.apply(mKey, mValue), mRight.mapi(f));
     }
 
     @Override
@@ -1040,7 +1039,7 @@ public class RedBlackTreeModule {
     return (new InitFromArrayWorker<>(v, false)).doit(0, v.size() - 1, (Numeric.ilog(v.size()) & 1) ^ 1);
   }
 
-  public static <K extends Comparable<K>, V> Tree<K, V> fromRandomArray(final ArrayList<Pair<K, V>> v) {
+  public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
     return v.stream()
             .reduce(empty(),
                     ((t, p) -> t.insert(p.mx1, p.mx2)),

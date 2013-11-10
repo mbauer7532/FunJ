@@ -262,7 +262,7 @@ public class RedBlackTreeModuleTest {
                         .mapToObj(i -> Pair.create(i, i))
                         .collect(Collectors.toCollection(ArrayList::new));
 
-        final Tree<Integer, Integer> t = RedBlackTreeModule.fromRandomArray(v);
+        final Tree<Integer, Integer> t = RedBlackTreeModule.fromArray(v);
 
         // Checking tree validity also checks its height.
         checkRedBlackTreeProperties(t);
@@ -277,7 +277,8 @@ public class RedBlackTreeModuleTest {
     System.out.println("filterAndFilteri");
 
     final int N = 40;
-    final Tree<Integer, Integer> t0 = RedBlackTreeModule.fromRandomArray(
+    final int halfN = N / 2;
+    final Tree<Integer, Integer> t0 = RedBlackTreeModule.fromArray(
             IntStream.range(0, N)
                      .mapToObj(i -> Pair.create(i, i))
                      .collect(Collectors.toCollection(ArrayList::new)));
@@ -287,7 +288,7 @@ public class RedBlackTreeModuleTest {
     checkRedBlackTreeProperties(t1);
 
     assertEquals(N, t0.size());
-    assertEquals(N / 2, t1.size());
+    assertEquals(halfN, t1.size());
     
     IntStream.range(0, N).forEach(n -> {
       if ((n & 1) == 0) {
@@ -304,7 +305,8 @@ public class RedBlackTreeModuleTest {
     System.out.println("partitionAndPartitioni");
 
     final int N = 40;
-    final Tree<Integer, Integer> t0 = RedBlackTreeModule.fromRandomArray(
+    final int halfN = N / 2;
+    final Tree<Integer, Integer> t0 = RedBlackTreeModule.fromArray(
             IntStream.range(0, N)
                      .mapToObj(i -> Pair.create(i, i))
                      .collect(Collectors.toCollection(ArrayList::new)));
@@ -315,10 +317,10 @@ public class RedBlackTreeModuleTest {
     checkRedBlackTreeProperties(t0);
     checkRedBlackTreeProperties(t1);
     checkRedBlackTreeProperties(t2);
-    
+
     assertEquals(N, t0.size());
-    assertEquals(N / 2, t1.size());
-    assertEquals(N / 2, t2.size());
+    assertEquals(halfN, t1.size());
+    assertEquals(halfN, t2.size());
 
     IntStream.range(0, N).forEach(n -> {
       if ((n & 1) == 1) {
