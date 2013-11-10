@@ -64,7 +64,19 @@ public class RedBlackTreeModule {
     public Tree<K, V> filteri(final BiPredicate<K, V> f) {
       return filt(f, empty());
     }
-    
+
+    public Pair<Tree<K, V>, Tree<K, V>> partition(final Predicate<V> f) {
+      return partitioni((k, v) -> f.test(v));
+    }
+
+    public Pair<Tree<K, V>, Tree<K, V>> partitioni(final BiPredicate<K, V> f) {
+      final Tree<K, V> e = empty();
+      final Pair<Tree<K, V>, Tree<K, V>> res = Pair.create(e, e);
+      part(f, res);
+      
+      return res;
+    }
+
     public final <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
       return mapPartiali((k, v) -> f.apply(v));
     }
@@ -106,6 +118,7 @@ public class RedBlackTreeModule {
     abstract Tree<K, V> ins(final K key, final V value);
     abstract Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement;
     abstract Tree<K, V> filt(final BiPredicate<K, V> f, final Tree<K, V> acc);
+    abstract void part(final BiPredicate<K, V> f, final Pair<Tree<K, V>, Tree<K, V>> res);
 
     private static <K extends Comparable<K>, V> V chooseExisting(final V existingElem, final V newElem) {
       return existingElem;
@@ -149,6 +162,11 @@ public class RedBlackTreeModule {
     @Override
     Tree<K, V> filt(final BiPredicate<K, V> f, final Tree<K, V> acc) {
       return acc;
+    }
+
+    @Override
+    void part(final BiPredicate<K, V> f, final Pair<Tree<K, V>, Tree<K, V>> res) {
+      return;
     }
 
     @Override
@@ -293,6 +311,20 @@ public class RedBlackTreeModule {
       return mRight.filt(f, mLeft.filt(f, f.test(mKey, mValue) ? acc : acc.insert(mKey, mValue)));
     }
 
+    @Override
+    void part(final BiPredicate<K, V> f, final Pair<Tree<K, V>, Tree<K, V>> res) {
+      mLeft.part(f, res);
+      if (f.test(mKey, mValue)) {
+        res.mx1 = res.mx1.insert(mKey, mValue);
+      }
+      else {
+        res.mx2 = res.mx2.insert(mKey, mValue);
+      }
+      mRight.part(f, res);
+      
+      return;
+    }
+ 
     @Override
     public Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
       throw new UnsupportedOperationException("Not supported yet.");
