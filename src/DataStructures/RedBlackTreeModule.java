@@ -23,7 +23,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 import org.StructureGraphic.v1.DSTreeNode;
 
 /**
@@ -62,6 +61,10 @@ public class RedBlackTreeModule {
       return filteri((k, v) -> f.test(v));
     }
 
+    public Tree<K, V> filteri(final BiPredicate<K, V> f) {
+      return filt(f, empty());
+    }
+    
     public final <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
       return mapPartiali((k, v) -> f.apply(v));
     }
@@ -91,7 +94,6 @@ public class RedBlackTreeModule {
     public abstract <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f);
     public abstract <W> W foldli(final TriFunction<K, V, W, W> f, final W w);
     public abstract <W> W foldri(final TriFunction<K, V, W, W> f, final W w);
-    public abstract Tree<K, V> filteri(final BiPredicate<K, V> f);
     public abstract Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t);
 
     boolean isRed() { return false; }
@@ -103,6 +105,7 @@ public class RedBlackTreeModule {
     abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
     abstract Tree<K, V> ins(final K key, final V value);
     abstract Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement;
+    abstract Tree<K, V> filt(final BiPredicate<K, V> f, final Tree<K, V> acc);
 
     private static <K extends Comparable<K>, V> V chooseExisting(final V existingElem, final V newElem) {
       return existingElem;
@@ -141,6 +144,11 @@ public class RedBlackTreeModule {
       // no new allocations take place.  The alternative implementation that 
       // copies the path is: return Pair.create(this, false);
       throw sNoSuchElement;  
+    }
+
+    @Override
+    Tree<K, V> filt(final BiPredicate<K, V> f, final Tree<K, V> acc) {
+      return acc;
     }
 
     @Override
@@ -281,7 +289,9 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public abstract Tree<K, V> filteri(final BiPredicate<K, V> f);
+    Tree<K, V> filt(final BiPredicate<K, V> f, final Tree<K, V> acc) {
+      return mRight.filt(f, mLeft.filt(f, f.test(mKey, mValue) ? acc : acc.insert(mKey, mValue)));
+    }
 
     @Override
     public Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
@@ -457,11 +467,6 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public Tree<K, V> filteri(final BiPredicate<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public Color DSgetColor() {
       return Color.RED;
     }
@@ -597,11 +602,6 @@ public class RedBlackTreeModule {
 
     @Override
     public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
-    public Tree<K, V> filteri(final BiPredicate<K, V> f) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
 

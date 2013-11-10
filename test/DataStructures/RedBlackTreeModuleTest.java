@@ -256,9 +256,10 @@ public class RedBlackTreeModuleTest {
       final int low = -200, high = 200;
       final int size = 20;
 
+      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
       IntStream.range(0, numIters).forEach(x -> {
         final ArrayList<Pair<Integer, Integer>> v =
-                Arrays.stream(Numeric.randomPermuation(low, high, size, rng))
+                Arrays.stream(perm)
                         .mapToObj(i -> Pair.create(i, i))
                         .collect(Collectors.toCollection(ArrayList::new));
 
@@ -266,7 +267,33 @@ public class RedBlackTreeModuleTest {
 
         // Checking tree validity also checks its height.
         checkRedBlackTreeProperties(t);
+        
+        assertTrue(IntStream.range(0, numIters).allMatch(idx -> t.contains(perm[idx])));
       });
     }
+  }
+
+  @Test
+  public void testFilterAndFilteri() {
+    System.out.println("redBlackTreeDepthTreeSize");
+
+    final int N = 40;
+    final Tree<Integer, Integer> t0 = RedBlackTreeModule.fromRandomArray(
+            IntStream.range(0, N)
+                     .mapToObj(i -> Pair.create(i, i))
+                     .collect(Collectors.toCollection(ArrayList::new)));
+    final Tree<Integer, Integer> t1 = t0.filteri((k, v) -> (k & 1) == 1);
+
+    assertEquals(N, t0.size());
+    assertEquals(N / 2, t1.size());
+    
+    IntStream.range(0, N).forEach(n -> {
+      if ((n & 1) == 0) {
+        assertTrue(t0.contains(n) && t1.contains(n));
+      }
+      else {
+        assertTrue(t0.contains(n) && ! t1.contains(n));
+      }
+    });
   }
 }
