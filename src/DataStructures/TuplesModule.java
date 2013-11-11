@@ -30,6 +30,23 @@ public final class TuplesModule {
                             mx1.toString(),
                             mx2.toString());
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (obj instanceof Pair) {
+        @SuppressWarnings("unchecked")
+        final Pair<T1, T2> p = (Pair<T1, T2>) obj;
+        return mx1.equals(p.mx1) && mx2.equals(p.mx2);
+      }
+      else {
+        return false;
+      }
+    }
+
+    @Override
+    public int hashCode() {
+      return mx1.hashCode() + mx2.hashCode();
+    }
   }
 
   public static final class Triple<T1, T2, T3> {
@@ -54,8 +71,25 @@ public final class TuplesModule {
                             mx2.toString(),
                             mx3.toString());
     }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (obj instanceof Triple) {
+        @SuppressWarnings("unchecked")
+        final Triple<T1, T2, T3> p = (Triple<T1, T2, T3>) obj;
+        return mx1.equals(p.mx1) && mx2.equals(p.mx2) && mx3.equals(p.mx3);
+      }
+      else {
+        return false;
+      }
+    }
+    
+    @Override
+    public int hashCode() {
+      return mx1.hashCode() + mx2.hashCode() + mx3.hashCode();
+    }
   }
-  
+
   public static final class Tuple4<T1, T2, T3, T4> {
     public static <T1, T2, T3, T4> Tuple4<T1, T2, T3, T4> create(final T1 x1, final T2 x2, final T3 x3, final T4 x4) {
       return new Tuple4<>(x1, x2, x3, x4);
@@ -80,6 +114,26 @@ public final class TuplesModule {
                             mx2.toString(),
                             mx3.toString(),
                             mx4.toString());
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (obj instanceof Triple) {
+        @SuppressWarnings("unchecked")
+        final Tuple4<T1, T2, T3, T4> p = (Tuple4<T1, T2, T3, T4>) obj;
+        return mx1.equals(p.mx1)
+                && mx2.equals(p.mx2)
+                && mx3.equals(p.mx3)
+                && mx4.equals(p.mx4);
+      }
+      else {
+        return false;
+      }
+    }
+    
+    @Override
+    public int hashCode() {
+      return mx1.hashCode() + mx2.hashCode() + mx3.hashCode() + mx4.hashCode();
     }
   }
 

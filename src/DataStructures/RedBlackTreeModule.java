@@ -16,7 +16,6 @@ import Utils.Functionals.TriFunction;
 import Utils.Numeric;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -98,16 +97,26 @@ public class RedBlackTreeModule {
       }
     }
 
-    public final List<K> keys() {
+    public final ArrayList<K> keys() {
       final ArrayList<K> ks = new ArrayList<>();
       appi((k, v) -> { ks.add(k); });
       return ks;
     }
 
-    public final List<Pair<K, V>> keyValuePairs() {
+    public final ArrayList<Pair<K, V>> keyValuePairs() {
       final ArrayList<Pair<K, V>> kvs = new ArrayList<>();
       appi((k, v) -> { kvs.add(Pair.create(k, v)); });
       return kvs;
+    }
+
+    public final Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
+      final ArrayList<Pair<K, V>> kv0 = keyValuePairs();
+      final ArrayList<Pair<K, V>> kv1 = t.keyValuePairs();
+      final ArrayList<Pair<K, V>> res = new ArrayList<>();
+
+      mergeArrays(f, kv0, kv1, res);
+
+      return fromStrictlyIncreasingArray(res);
     }
 
     public abstract boolean isEmpty();
@@ -119,7 +128,8 @@ public class RedBlackTreeModule {
     public abstract <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f);
     public abstract <W> W foldli(final TriFunction<K, V, W, W> f, final W w);
     public abstract <W> W foldri(final TriFunction<K, V, W, W> f, final W w);
-    public abstract Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t);
+    public abstract Pair<K, V> minElementPair();
+    public abstract Pair<K, V> maxElementPair();
 
     boolean isRed() { return false; }
     boolean isBlack() { return false; }
@@ -132,8 +142,68 @@ public class RedBlackTreeModule {
     abstract Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement;
     abstract Tree<K, V> filt(final BiPredicate<K, V> f, final Tree<K, V> acc);
     abstract void part(final BiPredicate<K, V> f, final Pair<Tree<K, V>, Tree<K, V>> res);
-  }
 
+    public static <K extends Comparable<K>, V> void mergeArrays(
+            final BiFunction<V, V, V> f,
+            final ArrayList<Pair<K, V>> v0,
+            final ArrayList<Pair<K, V>> v1,
+            final ArrayList<Pair<K, V>> destVec) {
+      final int s0 = v0.size();
+      final int s1 = v1.size();
+      final int len = s0 + s1;
+
+      destVec.ensureCapacity(len);
+
+      if (v0.get(s0 - 1).mx1.compareTo(v1.get(0).mx1) < 0) {
+        destVec.addAll(v0);
+        destVec.addAll(v1);
+      }
+      else if (v0.get(0).mx1.compareTo(v1.get(s1 - 1).mx1) > 0) {
+        destVec.addAll(v1);
+        destVec.addAll(v0);
+      }
+      else {
+        int idx0 = 0, idx1 = 0;
+        for (int i = 0; i != len; ++i) {
+          if (idx0 == s0) {
+            for (int j = idx1; j != s1; ++j) {
+              destVec.add(v1.get(j));
+            }
+            break;
+          }
+          else if (idx1 == s1) {
+            for (int j = idx0; j != s0; ++j) {
+              destVec.add(v0.get(j));
+            }
+            break;
+          }
+          else {
+            final Pair<K, V> e0 = v0.get(idx0), e1 = v1.get(idx1), e;
+            final int res = e0.mx1.compareTo(e1.mx1);
+
+            if (res < 0) {
+              e = e0;
+              ++idx0;
+            }
+            else if (res > 0) {
+              e = e1;
+              ++idx1;
+            }
+            else {
+              e = Pair.create(e0.mx1, f.apply(e0.mx2, e1.mx2));
+              ++idx0;
+              ++idx1;
+            }
+
+            destVec.add(e);
+          }
+        }
+      }
+
+      return;
+    }
+  }
+  
   private static final class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
     private static final EmptyNode<? extends Comparable<?>, ?> sEmptyNode = new EmptyNode<>();
 
@@ -219,13 +289,13 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public Tree<K, V> filteri(final BiPredicate<K, V> f) {
-      return this;
+    public Pair<K, V> minElementPair() {
+      throw new AssertionError("The empty tree has no minimum element.");
     }
 
     @Override
-    public Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
-      return t;
+    public Pair<K, V> maxElementPair() {
+      throw new AssertionError("The empty tree has no maximum element.");
     }
 
     @Override
@@ -306,6 +376,26 @@ public class RedBlackTreeModule {
     }
 
     @Override
+    public Pair<K, V> minElementPair() {
+      if (mLeft.isEmpty()) {
+        return Pair.create(mKey, mValue);
+      }
+      else {
+        return mLeft.minElementPair();
+      }
+    }
+
+    @Override
+    public Pair<K, V> maxElementPair() {
+      if (mRight.isEmpty()) {
+        return Pair.create(mKey, mValue);
+      }
+      else {
+        return mRight.maxElementPair();
+      }
+    }
+
+    @Override
     Tree<K, V> filt(final BiPredicate<K, V> f, final Tree<K, V> acc) {
       return mRight.filt(f, mLeft.filt(f, f.test(mKey, mValue) ? acc : acc.insert(mKey, mValue)));
     }
@@ -324,11 +414,6 @@ public class RedBlackTreeModule {
       return;
     }
  
-    @Override
-    public Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
     @Override
     public DSTreeNode[] DSgetChildren() {
       return new DSTreeNode[] { mLeft, mRight };
