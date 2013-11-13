@@ -11,7 +11,9 @@ import DataStructures.TuplesModule.Pair;
 import Utils.Numeric;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Random;
+import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -114,7 +116,7 @@ public class RedBlackTreeModuleTest {
         
         assertEquals(i, q.size());
         checkRedBlackTreeProperties(t);
-        IntStream.range(0, i).forEach(n -> assertTrue(q.contains(n)));
+        IntStream.range(0, i).forEach(n -> assertTrue(q.containsKey(n)));
       }
 
       for (int i = 0; i != N; ++i) {
@@ -154,7 +156,7 @@ public class RedBlackTreeModuleTest {
       final int[] perm2 = Numeric.randomPermuation(low, high, size, rng);
 
       for (int i = 0; i != size; ++i) {
-        assertTrue(t.contains(perm2[i]));
+        assertTrue(t.containsKey(perm2[i]));
         t = t.remove(perm2[i]);
 
         checkRedBlackTreeProperties(t);
@@ -180,9 +182,9 @@ public class RedBlackTreeModuleTest {
     assertTrue(t2.isEmpty());
     assertFalse(t3.isEmpty());
     
-    assertTrue(t1.contains(10));
-    assertFalse(t2.contains(10));
-    assertTrue(t3.contains(10));
+    assertTrue(t1.containsKey(10));
+    assertFalse(t2.containsKey(10));
+    assertTrue(t3.containsKey(10));
 
     assertTrue(t1 == t3);
     assertTrue(t1 != t2);
@@ -202,6 +204,8 @@ public class RedBlackTreeModuleTest {
       final Tree<Integer, Integer> resTree = RedBlackTreeModule.fromStrictlyIncreasingArray(v);
 
       checkRedBlackTreeProperties(resTree);
+//      showGraph(resTree);
+//      waitTime(2);
     });
   }
 
@@ -267,7 +271,7 @@ public class RedBlackTreeModuleTest {
         // Checking tree validity also checks its height.
         checkRedBlackTreeProperties(t);
         
-        assertTrue(IntStream.range(0, numIters).allMatch(idx -> t.contains(perm[idx])));
+        assertTrue(IntStream.range(0, numIters).allMatch(idx -> t.containsKey(perm[idx])));
       });
     }
   }
@@ -292,10 +296,10 @@ public class RedBlackTreeModuleTest {
     
     IntStream.range(0, N).forEach(n -> {
       if ((n & 1) == 0) {
-        assertTrue(t0.contains(n) && t1.contains(n));
+        assertTrue(t0.containsKey(n) && t1.containsKey(n));
       }
       else {
-        assertTrue(t0.contains(n) && ! t1.contains(n));
+        assertTrue(t0.containsKey(n) && ! t1.containsKey(n));
       }
     });
   }
@@ -324,11 +328,147 @@ public class RedBlackTreeModuleTest {
 
     IntStream.range(0, N).forEach(n -> {
       if ((n & 1) == 1) {
-        assertTrue(t0.contains(n) && t1.contains(n) && ! t2.contains(n));
+        assertTrue(t0.containsKey(n) && t1.containsKey(n) && ! t2.containsKey(n));
       }
       else {
-        assertTrue(t0.contains(n) && ! t1.contains(n) && t2.contains(n));
+        assertTrue(t0.containsKey(n) && ! t1.containsKey(n) && t2.containsKey(n));
       }
+    });
+  }
+  
+  @Test
+  public void testMinMaxElement() {
+    System.out.println("minMaxElement");
+    {
+      final int N = 40;
+      final Tree<Integer, Integer> t = RedBlackTreeModule.fromArray(
+              IntStream.rangeClosed(-N, N)
+                      .mapToObj(i -> Pair.create(i, i))
+                      .collect(Collectors.toCollection(ArrayList::new)));
+
+      assertEquals(Pair.create(-N, -N), t.minElementPair());
+      assertEquals(Pair.create(N, N), t.maxElementPair());
+    }
+    { // And one assymetric one.
+      final int N = 40;
+      final Tree<Integer, Integer> t = RedBlackTreeModule.fromArray(
+              IntStream.rangeClosed(-N, 2 * N)
+                      .mapToObj(i -> Pair.create(i, i))
+                      .collect(Collectors.toCollection(ArrayList::new)));
+
+      assertEquals(Pair.create(-N, -N), t.minElementPair());
+      assertEquals(Pair.create(2 * N, 2 * N), t.maxElementPair());
+    }
+
+    final Tree<Integer, Integer> t0 = RedBlackTreeModule.empty();
+    try {
+      final Pair<Integer, Integer> p = t0.minElementPair();
+      fail("Internal error.  The empty tree must not have a minimum element.");
+    }
+    catch (AssertionError e) {}
+
+    try {
+      final Pair<Integer, Integer> p = t0.maxElementPair();
+      fail("Internal error.  The empty tree must not have a maximum element.");
+    }
+    catch (AssertionError e) {}
+  }
+
+  private static void mergeAux(final int i0, final int i1, final int j0, final int j1) {
+    final Tree<Integer, Integer> t0 = RedBlackTreeModule.fromStrictlyIncreasingArray(
+            IntStream.rangeClosed(i0, i1)
+                    .mapToObj(i -> Pair.create(i, 7 * i))
+                    .collect(Collectors.toCollection(ArrayList::new)));
+
+    final Tree<Integer, Integer> t1 = RedBlackTreeModule.fromStrictlyIncreasingArray(
+            IntStream.rangeClosed(j0, j1)
+                    .mapToObj(i -> Pair.create(i, 13 * i))
+                    .collect(Collectors.toCollection(ArrayList::new)));
+
+    final BiFunction<Integer, Integer, Integer> f = (x1, x2) -> x1 - x2;
+    final Tree<Integer, Integer> tres = t0.merge(f, t1);
+
+    final int numElems0 = i1 - i0 + 1;
+    final int numElems1 = j1 - j0 + 1;
+    final int numElemsMerged;
+    if (j1 < i0 || i1 < j0) {
+      numElemsMerged = numElems0 + numElems1;
+    }
+    else {
+      numElemsMerged = Math.max(i1, j1) - Math.min(i0, j0) + 1;
+    }
+
+    assertEquals(numElems0, t0.size());
+    assertEquals(numElems1, t1.size());
+    assertEquals(numElemsMerged, tres.size());
+
+    checkRedBlackTreeProperties(tres);
+
+    final ArrayList<Pair<Integer, Integer>> kv0 = t0.keyValuePairs();
+    final ArrayList<Pair<Integer, Integer>> kv1 = t1.keyValuePairs();
+
+    kv0.stream().forEach((final Pair<Integer, Integer> p) -> {
+      final Optional<Integer> p1 = t1.get(p.mx1);
+
+      final Integer expectedRes = p1.isPresent() ? f.apply(p.mx2, p1.get()) : p.mx2;
+      assertEquals(expectedRes, tres.get(p.mx1).get());
+    });
+
+    kv1.stream().forEach((final Pair<Integer, Integer> p) -> {
+      final Optional<Integer> p0 = t0.get(p.mx1);
+
+      final Integer expectedRes = p0.isPresent() ? f.apply(p0.get(), p.mx2) : p.mx2;
+      assertEquals(expectedRes, tres.get(p.mx1).get());
+    });
+  }
+
+  @Test
+  public void testMerge1() {
+    System.out.println("Merge1");
+
+    final int N = 6;
+    // Assume the two ranges are r1, r2
+    // Case 1: r1 < r2
+    mergeAux(-N, N, -N - 3 * N, N - 3 * N);
+    // Case 2: r1 <= r2
+    mergeAux(-N, N, -N - N / 2 , N - N / 2);
+    // Case 3a: r2 subset r1
+    mergeAux(-N, N, -N + 1, N - 1);
+    // Case 3b: r1 subset r2
+    mergeAux(-N - 1, N + 1, -N, N);
+    // Case 4: r1 >= r2
+    mergeAux(-N + N / 2, N + N / 2, -N , N);
+    // Case 4: r1 > r2
+    mergeAux(-N + 3 * N, N + 3 * N, -N , N);
+  }
+
+  @Test
+  public void testMerge2() {
+    System.out.println("Merge2");
+
+    final long seed = 125332;
+    final Random rng = new Random(seed);
+
+    final int N = 1000;
+    final int low = -50, high = 60;
+    IntStream.range(0, N).forEach(i -> {
+      int i0 = Numeric.randomInt(low, high, rng);
+      int i1 = Numeric.randomInt(low, high, rng);
+      if (i0 > i1) {
+        final int z = i0;
+        i0 = i1;
+        i1 = z;
+      }
+
+      int j0 = Numeric.randomInt(low, high, rng);
+      int j1 = Numeric.randomInt(low, high, rng);
+      if (j0 > j1) {
+        final int z = j0;
+        j0 = j1;
+        j1 = z;
+      }
+
+      mergeAux(i0, i1, j0, j1);
     });
   }
 }

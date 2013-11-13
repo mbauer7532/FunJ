@@ -16,6 +16,7 @@ import Utils.Functionals.TriFunction;
 import Utils.Numeric;
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -23,6 +24,8 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.IntStream;
 import org.StructureGraphic.v1.DSTreeNode;
 
 /**
@@ -31,12 +34,16 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public class RedBlackTreeModule {
   public static abstract class Tree<K extends Comparable<K>, V> implements DSTreeNode {
-    public final boolean contains(final K key) {
+    public final boolean containsKey(final K key) {
       return get(key).isPresent();
     }
 
-    public final V getWithDefault(final K key, final V def) {
+    public final V getOrElse(final K key, final V def) {
       return get(key).orElse(def);
+    }
+
+    public final V getOrElseSupplier(final K key, final Supplier<V> other) {
+      return get(key).orElseGet(other);
     }
 
     public final <W> Tree<K, W> map(final Function<V, W> f) {
@@ -73,7 +80,7 @@ public class RedBlackTreeModule {
       final Tree<K, V> e = empty();
       final Pair<Tree<K, V>, Tree<K, V>> res = Pair.create(e, e);
       part(f, res);
-      
+
       return res;
     }
 
@@ -106,21 +113,17 @@ public class RedBlackTreeModule {
     public final ArrayList<Pair<K, V>> keyValuePairs() {
       final ArrayList<Pair<K, V>> kvs = new ArrayList<>();
       appi((k, v) -> { kvs.add(Pair.create(k, v)); });
+
       return kvs;
     }
 
     public final Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
-      final ArrayList<Pair<K, V>> kv0 = keyValuePairs();
-      final ArrayList<Pair<K, V>> kv1 = t.keyValuePairs();
-      final ArrayList<Pair<K, V>> res = new ArrayList<>();
-
-      mergeArrays(f, kv0, kv1, res);
-
-      return fromStrictlyIncreasingArray(res);
+      return fromStrictlyIncreasingArray(mergeArrays(f, keyValuePairs(), t.keyValuePairs()));
     }
 
     public abstract boolean isEmpty();
     public abstract Optional<V> get(final K key);
+    public abstract boolean containsValue(final V value);
     public abstract int size();
     public abstract int height();
     public abstract void appi(final BiConsumer<K, V> f);
@@ -143,16 +146,15 @@ public class RedBlackTreeModule {
     abstract Tree<K, V> filt(final BiPredicate<K, V> f, final Tree<K, V> acc);
     abstract void part(final BiPredicate<K, V> f, final Pair<Tree<K, V>, Tree<K, V>> res);
 
-    public static <K extends Comparable<K>, V> void mergeArrays(
+    private static <K extends Comparable<K>, V> ArrayList<Pair<K, V>> mergeArrays(
             final BiFunction<V, V, V> f,
             final ArrayList<Pair<K, V>> v0,
-            final ArrayList<Pair<K, V>> v1,
-            final ArrayList<Pair<K, V>> destVec) {
+            final ArrayList<Pair<K, V>> v1) {
       final int s0 = v0.size();
       final int s1 = v1.size();
       final int len = s0 + s1;
 
-      destVec.ensureCapacity(len);
+      ArrayList<Pair<K, V>> destVec = new ArrayList<>(len);
 
       if (v0.get(s0 - 1).mx1.compareTo(v1.get(0).mx1) < 0) {
         destVec.addAll(v0);
@@ -166,15 +168,11 @@ public class RedBlackTreeModule {
         int idx0 = 0, idx1 = 0;
         for (int i = 0; i != len; ++i) {
           if (idx0 == s0) {
-            for (int j = idx1; j != s1; ++j) {
-              destVec.add(v1.get(j));
-            }
+            IntStream.range(idx1, s1).forEach(j -> { destVec.add(v1.get(j)); });
             break;
           }
           else if (idx1 == s1) {
-            for (int j = idx0; j != s0; ++j) {
-              destVec.add(v0.get(j));
-            }
+            IntStream.range(idx0, s0).forEach(j -> { destVec.add(v0.get(j)); });
             break;
           }
           else {
@@ -200,7 +198,7 @@ public class RedBlackTreeModule {
         }
       }
 
-      return;
+      return destVec;
     }
   }
   
@@ -251,6 +249,11 @@ public class RedBlackTreeModule {
     @Override
     public Optional<V> get(final K key) {
       return Optional.empty();
+    }
+
+    @Override
+    public boolean containsValue(final V value) {
+      return false;
     }
 
     @Override
@@ -344,6 +347,13 @@ public class RedBlackTreeModule {
       else {
         return Optional.of(mValue);
       }
+    }
+
+    @Override
+    public boolean containsValue(final V value) {
+      return mValue.equals(value)
+              || mLeft.containsValue(value)
+              || mRight.containsValue(value);
     }
 
     @Override
@@ -1086,24 +1096,27 @@ public class RedBlackTreeModule {
   private static final class InitFromArrayWorker<K extends Comparable<K>, V> {
     private final ArrayList<Pair<K, V>> mVector;
     private final boolean mIncreasing;
+    private final int mRedLevel;
     
     public InitFromArrayWorker(final ArrayList<Pair<K, V>> vector,
-                               final boolean increasing) {
+                               final boolean increasing,
+                               final int redLevel) {
       mVector = vector;
       mIncreasing = increasing;
+      mRedLevel = redLevel;
     }
 
-    public Tree<K, V> doit(final int left, final int right, final int color) {
+    public Tree<K, V> doit(final int left, final int right, final int depth) {
       if (left > right)
         return empty();
 
       final int mid = (left + right) >>> 1;
       final Pair<K, V> p = mVector.get(mid);
 
-      final int newColor = 1 - color;
       Tree<K, V> lt, rt;
-      lt = doit(left, mid - 1, newColor);
-      rt = doit(mid + 1, right, newColor);
+      final int newDepth = depth + 1;
+      lt = doit(left, mid - 1, newDepth);
+      rt = doit(mid + 1, right, newDepth);
 
     if (! mIncreasing) {
       Tree<K, V> t = lt;
@@ -1111,17 +1124,21 @@ public class RedBlackTreeModule {
       rt = t;
     }
 
-    return color == 0 ? BlackNode.create(lt, p.mx1, p.mx2, rt)
-                      : RedNode.create(lt, p.mx1, p.mx2, rt);
+    return depth == mRedLevel ? RedNode.create(lt, p.mx1, p.mx2, rt)
+                              : BlackNode.create(lt, p.mx1, p.mx2, rt);
     }
   }
 
+  private static int computeRedDepth(final int size) {
+    return Numeric.ilog(size + 1);
+  }
+
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
-    return (new InitFromArrayWorker<>(v, true)).doit(0, v.size() - 1, (Numeric.ilog(v.size()) & 1) ^ 1);
+    return (new InitFromArrayWorker<>(v, true, computeRedDepth(v.size())).doit(0, v.size() - 1, 0));
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
-    return (new InitFromArrayWorker<>(v, false)).doit(0, v.size() - 1, (Numeric.ilog(v.size()) & 1) ^ 1);
+    return (new InitFromArrayWorker<>(v, false, computeRedDepth(v.size())).doit(0, v.size() - 1, 0));
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
