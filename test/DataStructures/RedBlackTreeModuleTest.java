@@ -485,6 +485,6 @@ public class RedBlackTreeModuleTest {
 
     IntStream.range(Low, High).forEach(n -> { assertTrue(t.containsValue(2 * n)); });
     IntStream.range(Low, High).forEach(n -> { assertFalse(t.containsValue(-2 * n)); });
-    IntStream.range(High, High + Gap)).forEach(n -> { assertFalse(t.containsValue(-2 * n)); });
+    IntStream.range(High, High + Gap).forEach(n -> { assertFalse(t.containsValue(-2 * n)); });
   }
 }
