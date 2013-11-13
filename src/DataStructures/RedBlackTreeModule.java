@@ -154,7 +154,7 @@ public class RedBlackTreeModule {
       final int s1 = v1.size();
       final int len = s0 + s1;
 
-      ArrayList<Pair<K, V>> destVec = new ArrayList<>(len);
+      final ArrayList<Pair<K, V>> destVec = new ArrayList<>(len);
 
       if (v0.get(s0 - 1).mx1.compareTo(v1.get(0).mx1) < 0) {
         destVec.addAll(v0);

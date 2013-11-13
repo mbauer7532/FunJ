@@ -471,4 +471,20 @@ public class RedBlackTreeModuleTest {
       mergeAux(i0, i1, j0, j1);
     });
   }
+
+  @Test
+  public void testContainsValue() {
+    System.out.println("containsValue");
+
+    final int Low = 1, High = 40;
+    final int Gap = High - Low;
+
+    final Tree<Integer, Integer> t = RedBlackTreeModule.fromStrictlyIncreasingArray(
+            IntStream.range(Low, High).mapToObj(i -> Pair.create(i, 2 * i))
+                                      .collect(Collectors.toCollection(ArrayList::new)));
+
+    IntStream.range(Low, High).forEach(n -> { assertTrue(t.containsValue(2 * n)); });
+    IntStream.range(Low, High).forEach(n -> { assertFalse(t.containsValue(-2 * n)); });
+    IntStream.range(High, High + Gap)).forEach(n -> { assertFalse(t.containsValue(-2 * n)); });
+  }
 }
