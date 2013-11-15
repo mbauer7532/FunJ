@@ -188,4 +188,4 @@ public class Numeric {
   public static int ilogCeiling(final int y) {
     return ilog(y - 1) + 1;
   }
-}
+      }

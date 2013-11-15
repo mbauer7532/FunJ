@@ -11,8 +11,11 @@ import DataStructures.TuplesModule.Pair;
 import Utils.Numeric;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.BiFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -346,8 +349,8 @@ public class RedBlackTreeModuleTest {
                       .mapToObj(i -> Pair.create(i, i))
                       .collect(Collectors.toCollection(ArrayList::new)));
 
-      assertEquals(Pair.create(-N, -N), t.minElementPair());
-      assertEquals(Pair.create(N, N), t.maxElementPair());
+      assertEquals(Pair.create(-N, -N), t.minElementPair().get());
+      assertEquals(Pair.create(N, N), t.maxElementPair().get());
     }
     { // And one assymetric one.
       final int N = 40;
@@ -356,19 +359,19 @@ public class RedBlackTreeModuleTest {
                       .mapToObj(i -> Pair.create(i, i))
                       .collect(Collectors.toCollection(ArrayList::new)));
 
-      assertEquals(Pair.create(-N, -N), t.minElementPair());
-      assertEquals(Pair.create(2 * N, 2 * N), t.maxElementPair());
+      assertEquals(Pair.create(-N, -N), t.minElementPair().get());
+      assertEquals(Pair.create(2 * N, 2 * N), t.maxElementPair().get());
     }
 
     final Tree<Integer, Integer> t0 = RedBlackTreeModule.empty();
     try {
-      final Pair<Integer, Integer> p = t0.minElementPair();
+      final Optional<Pair<Integer, Integer>> p = t0.minElementPair();
       fail("Internal error.  The empty tree must not have a minimum element.");
     }
     catch (AssertionError e) {}
 
     try {
-      final Pair<Integer, Integer> p = t0.maxElementPair();
+      final Optional<Pair<Integer, Integer>> p = t0.maxElementPair();
       fail("Internal error.  The empty tree must not have a maximum element.");
     }
     catch (AssertionError e) {}
@@ -486,5 +489,94 @@ public class RedBlackTreeModuleTest {
     IntStream.range(Low, High).forEach(n -> { assertTrue(t.containsValue(2 * n)); });
     IntStream.range(Low, High).forEach(n -> { assertFalse(t.containsValue(-2 * n)); });
     IntStream.range(High, High + Gap).forEach(n -> { assertFalse(t.containsValue(-2 * n)); });
+  }
+
+  @Test
+  public void testLowerPair() {
+    System.out.println("lowerPair");
+
+    final int N = 40;
+    final ArrayList<Pair<Integer, Integer>> v =
+            IntStream.range(0, N)
+                     .mapToObj(i -> Pair.create(2 * i, 2 * i))
+                     .collect(Collectors.toCollection(ArrayList::new));
+    final Tree<Integer, Integer> t = RedBlackTreeModule.fromArray(v);
+  
+    IntStream.range(1, 2 * N - 2).forEach(n -> {
+      assertEquals(n - 1 - (1 - (n & 1)), t.lowerKey(n).get().intValue());
+    });
+
+    assertEquals(Optional.empty(), t.lowerKey(0));
+    assertEquals(Optional.empty(), t.lowerKey(-1));
+
+    assertEquals(2 * N - 6, t.lowerKey(2 * N - 4).get().intValue());
+    assertEquals(2 * N - 4, t.lowerKey(2 * N - 3).get().intValue());
+    assertEquals(2 * N - 4, t.lowerKey(2 * N - 2).get().intValue());
+    assertEquals(2 * N - 2, t.lowerKey(2 * N - 1).get().intValue());
+    assertEquals(2 * N - 2, t.lowerKey(2 * N).get().intValue());
+  }
+
+  @Test
+  public void testHigherPair() {
+    System.out.println("higherPair");
+
+    final int N = 40;
+    final ArrayList<Pair<Integer, Integer>> v =
+            IntStream.range(0, N)
+                     .mapToObj(i -> Pair.create(2 * i, 2 * i))
+                     .collect(Collectors.toCollection(ArrayList::new));
+    final Tree<Integer, Integer> t = RedBlackTreeModule.fromArray(v);
+  
+    IntStream.range(1, 2 * N - 2).forEach(n -> {
+      assertEquals(n + 1 + (1 - (n & 1)), t.higherKey(n).get().intValue());
+    });
+
+    assertEquals(2, t.higherKey(0).get().intValue());
+    assertEquals(0, t.higherKey(-1).get().intValue());
+
+    assertEquals(2 * N - 2, t.higherKey(2 * N - 4).get().intValue());
+    assertEquals(2 * N - 2, t.higherKey(2 * N - 3).get().intValue());
+    assertEquals(Optional.empty(), t.higherKey(2 * N - 2));
+    assertEquals(Optional.empty(), t.higherKey(2 * N - 1));
+    assertEquals(Optional.empty(), t.higherKey(2 * N - 0));
+  }
+
+  private static <K, V> Optional<Pair<K, V>> toPair(final Map.Entry<K, V> e) {
+    return e == null ? Optional.empty() : Optional.of(Pair.create(e.getKey(), e.getValue()));
+  }
+
+  @Test
+  public void testLowerHigherPairRandomInputs() {
+    System.out.println("lowerHigherPairRandomInputs");
+
+    final long seed = 1253327;
+    final Random rng = new Random(seed);
+
+    final int N = 500;
+    final int low = -50, high = 600;
+    final int size = 180;
+
+    IntStream.range(0, N).forEach(x -> {
+      final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
+
+      final ArrayList<Pair<Integer, Integer>> v =
+              Arrays.stream(perm1)
+                    .mapToObj(i -> Pair.create(i, i))
+                    .collect(Collectors.toCollection(ArrayList::new));
+      final Tree<Integer, Integer> pm = RedBlackTreeModule.fromArray(v);
+      final TreeMap<Integer, Integer> tm = new TreeMap<>();
+      v.stream().forEach(p -> tm.put(p.mx1, p.mx2));
+
+      Numeric.randomSet(low - 200, high + 200, 500, rng).forEach(n -> {
+        final Optional<Pair<Integer, Integer>>
+                tmlowerExpected  = toPair(tm.lowerEntry(n)),
+                pmLower          = pm.lowerPair(n),
+                tmHigherExpected = toPair(tm.higherEntry(n)),
+                pmHigher         = pm.higherPair(n);
+
+        assertEquals(tmlowerExpected, pmLower);
+        assertEquals(tmHigherExpected, pmHigher);
+      });
+    });
   }
 }

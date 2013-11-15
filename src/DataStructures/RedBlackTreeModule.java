@@ -16,7 +16,6 @@ import Utils.Functionals.TriFunction;
 import Utils.Numeric;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -121,6 +120,22 @@ public class RedBlackTreeModule {
       return fromStrictlyIncreasingArray(mergeArrays(f, keyValuePairs(), t.keyValuePairs()));
     }
 
+    public Optional<K> lowerKey(final K key) {
+      return lowerPair(key).map(p -> p.mx1);
+    }
+
+    public Optional<Pair<K, V>> lowerPair(final K key) {
+      return RedBlackTreeModule.lowerPair(this, key);
+    }
+
+    public Optional<K> higherKey(final K key) {
+      return higherPair(key).map(p -> p.mx1);
+    }
+
+    public Optional<Pair<K, V>> higherPair(final K key) {
+      return RedBlackTreeModule.higherPair(this, key);
+    }
+
     public abstract boolean isEmpty();
     public abstract Optional<V> get(final K key);
     public abstract boolean containsValue(final V value);
@@ -131,8 +146,8 @@ public class RedBlackTreeModule {
     public abstract <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f);
     public abstract <W> W foldli(final TriFunction<K, V, W, W> f, final W w);
     public abstract <W> W foldri(final TriFunction<K, V, W, W> f, final W w);
-    public abstract Pair<K, V> minElementPair();
-    public abstract Pair<K, V> maxElementPair();
+    public abstract Optional<Pair<K, V>> minElementPair();
+    public abstract Optional<Pair<K, V>> maxElementPair();
 
     boolean isRed() { return false; }
     boolean isBlack() { return false; }
@@ -292,13 +307,13 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public Pair<K, V> minElementPair() {
-      throw new AssertionError("The empty tree has no minimum element.");
+    public Optional<Pair<K, V>> minElementPair() {
+      return Optional.empty();
     }
 
     @Override
-    public Pair<K, V> maxElementPair() {
-      throw new AssertionError("The empty tree has no maximum element.");
+    public Optional<Pair<K, V>> maxElementPair() {
+      return Optional.empty();
     }
 
     @Override
@@ -386,9 +401,9 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public Pair<K, V> minElementPair() {
+    public Optional<Pair<K, V>> minElementPair() {
       if (mLeft.isEmpty()) {
-        return Pair.create(mKey, mValue);
+        return Optional.of(Pair.create(mKey, mValue));
       }
       else {
         return mLeft.minElementPair();
@@ -396,9 +411,9 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public Pair<K, V> maxElementPair() {
+    public Optional<Pair<K, V>> maxElementPair() {
       if (mRight.isEmpty()) {
-        return Pair.create(mKey, mValue);
+        return Optional.of(Pair.create(mKey, mValue));
       }
       else {
         return mRight.maxElementPair();
@@ -997,6 +1012,68 @@ public class RedBlackTreeModule {
     throw new AssertionError("The tree cannot be empty in this context.");
   }
 
+  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> makeBoundPair(final Node<K, V> candidate) {
+    return candidate == null
+            ? Optional.empty()
+            : Optional.of(Pair.create(candidate.mKey, candidate.mValue));
+  }
+
+  static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
+    Tree<K, V> tree = t;
+    Node<K, V> n, candidate = null;
+
+    while (! tree.isEmpty()) {
+      n = (Node<K, V>) tree;
+      int res = key.compareTo(n.mKey);
+      if (res > 0) {
+        tree = n.mRight;
+        candidate = n;
+      }
+      else if (res < 0) {
+        tree = n.mLeft;
+      }
+      else {
+         final Optional<Pair<K, V>> p = n.mLeft.maxElementPair();
+         if (p.isPresent()) {
+           return p;
+         }
+         else {
+           break;
+         }
+      }
+    }
+
+    return makeBoundPair(candidate);
+  }
+
+  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPair(final Tree<K, V> t, final K key) {
+    Tree<K, V> tree = t;
+    Node<K, V> n, candidate = null;
+
+    while (! tree.isEmpty()) {
+      n = (Node<K, V>) tree;
+      int res = key.compareTo(n.mKey);
+      if (res > 0) {
+        tree = n.mRight;
+      }
+      else if (res < 0) {
+        tree = n.mLeft;
+        candidate = n;
+      }
+      else {
+        final Optional<Pair<K, V>> p = n.mRight.minElementPair();
+        if (p.isPresent()) {
+           return p;
+         }
+         else {
+           break;
+         }
+      }
+    }
+
+    return makeBoundPair(candidate);
+  }
+
   static <K extends Comparable<K>, V> Pair<Boolean, String> verifyRedBlackProperties(final Tree<K, V> t) {
     if (! redChildrenPropertyHolds(t)) {
       return Pair.create(false, "There are red nodes that have red children.");
@@ -1021,7 +1098,7 @@ public class RedBlackTreeModule {
     final double logSize = Numeric.log((double)(n + 1), 2.0);
     final int height = t.height();
 
-    // In CLR you would find height <= 2 * log(n) but they have a weird definition for height --
+    // In CLR's Algorithms you would find height <= 2 * log(n) but they have a weird definition for height --
     // it considers the tree with 0 nodes to have size 0, and the tree with 1 node to also have height zero.
     // We consider the second to have heigh 1.  Basically we count the edges traversed to reach a leaf which
     // makes a lot more sense.  That's why below in order to have the same condition as CLR we subtract 1 from height.
