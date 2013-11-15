@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.StructureGraphic.v1.DSTreeNode;
 
 /**
@@ -1072,11 +1073,17 @@ public class RedBlackTreeModule {
   }
 
   private static final <K extends Comparable<K>, V, W> Tree<K, W> mapPartiali(final Tree<K, V> t, final BiFunction<K, V, Optional<W>> f) {
+//    return fromStrictlyIncreasingArray(
+//            t.keyValuePairs().stream()
+//                             .map(p -> Pair.create(p.mx1, f.apply(p.mx1, p.mx2)))
+//                             .filter(p -> p.mx2.isPresent())
+//                             .map(p -> Pair.create(p.mx1, p.mx2.get()))
+//                             .collect(Collectors.toCollection(ArrayList::new)));
     return fromStrictlyIncreasingArray(
             t.keyValuePairs().stream()
-                             .map(p -> Pair.create(p.mx1, f.apply(p.mx1, p.mx2)))
-                             .filter(p -> p.mx2.isPresent())
-                             .map(p -> Pair.create(p.mx1, p.mx2.get()))
+                             .flatMap(p -> f.apply(p.mx1, p.mx2)
+                                            .map(w -> Stream.of(Pair.create(p.mx1, w)))
+                                            .orElseGet(() -> Stream.empty()))
                              .collect(Collectors.toCollection(ArrayList::new)));
   }
 
