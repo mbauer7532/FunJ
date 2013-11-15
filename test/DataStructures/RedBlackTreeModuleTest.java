@@ -621,4 +621,35 @@ public class RedBlackTreeModuleTest {
       });
     });
   }
+
+  @Test
+  public void testMinKeyMaxKey() {
+    System.out.println("minKeyMaxKey");
+
+    final long seed = 12332713;
+    final Random rng = new Random(seed);
+
+    final int N = 100;
+    final int low = -50, high = 600;
+    final int size = 180;
+
+    IntStream.range(0, N).forEach(x -> {
+      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
+
+      final ArrayList<Pair<Integer, Integer>> v =
+              Arrays.stream(perm)
+                    .mapToObj(i -> Pair.create(i, i))
+                    .collect(Collectors.toCollection(ArrayList::new));
+      final Tree<Integer, Integer> t = RedBlackTreeModule.fromArray(v);
+
+      final int minExpected = Arrays.stream(perm).min().getAsInt();
+      final int maxExpected = Arrays.stream(perm).max().getAsInt();
+
+      final int min = t.minKey().get().intValue();
+      final int max = t.maxKey().get().intValue();
+
+      assertEquals(maxExpected, max);
+      assertEquals(minExpected, min);
+    });
+  }
 }
