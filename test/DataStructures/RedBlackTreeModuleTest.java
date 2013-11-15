@@ -648,8 +648,42 @@ public class RedBlackTreeModuleTest {
       final int min = t.minKey().get().intValue();
       final int max = t.maxKey().get().intValue();
 
-      assertEquals(maxExpected, max);
       assertEquals(minExpected, min);
+      assertEquals(maxExpected, max);
+    });
+  }
+
+  @Test
+  public void testMinElementPairMaxElementPair() {
+    System.out.println("minElementPairMaxElementPair");
+
+    final long seed = 12332713;
+    final Random rng = new Random(seed);
+
+    final int N = 100;
+    final int low = -50, high = 600;
+    final int size = 180;
+
+    IntStream.range(0, N).forEach(x -> {
+      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
+
+      final ArrayList<Pair<Integer, Integer>> v =
+              Arrays.stream(perm)
+                    .mapToObj(i -> Pair.create(i, 2 * i))
+                    .collect(Collectors.toCollection(ArrayList::new));
+      final Tree<Integer, Integer> t = RedBlackTreeModule.fromArray(v);
+
+      final int minExpected = Arrays.stream(perm).min().getAsInt();
+      final int maxExpected = Arrays.stream(perm).max().getAsInt();
+
+      final Pair<Integer, Integer> min = t.minElementPair().get();
+      final Pair<Integer, Integer> max = t.maxElementPair().get();
+
+      assertEquals(minExpected, min.mx1.intValue());
+      assertEquals(2 * minExpected, min.mx2.intValue());
+
+      assertEquals(maxExpected, max.mx1.intValue());
+      assertEquals(2 * maxExpected, max.mx2.intValue());
     });
   }
 }
