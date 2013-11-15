@@ -880,7 +880,7 @@ public class RedBlackTreeModule {
 
     throw new AssertionError("Should never get here.");
   }
-  
+
 //  let unbalanced_right = function
 //    | Red (t1, x1, Black (t2, x2, t3)) ->
 //        rbalance t1 x1 (Red (t2, x2, t3)), false
@@ -1073,12 +1073,6 @@ public class RedBlackTreeModule {
   }
 
   private static final <K extends Comparable<K>, V, W> Tree<K, W> mapPartiali(final Tree<K, V> t, final BiFunction<K, V, Optional<W>> f) {
-//    return fromStrictlyIncreasingArray(
-//            t.keyValuePairs().stream()
-//                             .map(p -> Pair.create(p.mx1, f.apply(p.mx1, p.mx2)))
-//                             .filter(p -> p.mx2.isPresent())
-//                             .map(p -> Pair.create(p.mx1, p.mx2.get()))
-//                             .collect(Collectors.toCollection(ArrayList::new)));
     return fromStrictlyIncreasingArray(
             t.keyValuePairs().stream()
                              .flatMap(p -> f.apply(p.mx1, p.mx2)
