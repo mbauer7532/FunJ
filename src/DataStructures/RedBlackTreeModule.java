@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.StructureGraphic.v1.DSTreeNode;
 
@@ -67,15 +68,15 @@ public class RedBlackTreeModule {
       return filteri((k, v) -> f.test(v));
     }
 
-    public Tree<K, V> filteri(final BiPredicate<K, V> f) {
+    public final Tree<K, V> filteri(final BiPredicate<K, V> f) {
       return filt(f, empty());
     }
 
-    public Pair<Tree<K, V>, Tree<K, V>> partition(final Predicate<V> f) {
+    public final Pair<Tree<K, V>, Tree<K, V>> partition(final Predicate<V> f) {
       return partitioni((k, v) -> f.test(v));
     }
 
-    public Pair<Tree<K, V>, Tree<K, V>> partitioni(final BiPredicate<K, V> f) {
+    public final Pair<Tree<K, V>, Tree<K, V>> partitioni(final BiPredicate<K, V> f) {
       final Tree<K, V> e = empty();
       final Pair<Tree<K, V>, Tree<K, V>> res = Pair.create(e, e);
       part(f, res);
@@ -85,6 +86,10 @@ public class RedBlackTreeModule {
 
     public final <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
       return mapPartiali((k, v) -> f.apply(v));
+    }
+
+    public final <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
+      return RedBlackTreeModule.mapPartiali(this, f);
     }
 
     public final Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
@@ -120,20 +125,28 @@ public class RedBlackTreeModule {
       return fromStrictlyIncreasingArray(mergeArrays(f, keyValuePairs(), t.keyValuePairs()));
     }
 
-    public Optional<K> lowerKey(final K key) {
+    public final Optional<K> lowerKey(final K key) {
       return lowerPair(key).map(p -> p.mx1);
     }
 
-    public Optional<Pair<K, V>> lowerPair(final K key) {
+    public final Optional<Pair<K, V>> lowerPair(final K key) {
       return RedBlackTreeModule.lowerPair(this, key);
     }
 
-    public Optional<K> higherKey(final K key) {
+    public final Optional<K> higherKey(final K key) {
       return higherPair(key).map(p -> p.mx1);
     }
 
-    public Optional<Pair<K, V>> higherPair(final K key) {
+    public final Optional<Pair<K, V>> higherPair(final K key) {
       return RedBlackTreeModule.higherPair(this, key);
+    }
+
+    public final Optional<K> minKey() {
+      return minElementPair().map(p -> p.mx1);
+    }
+
+    public final Optional<K> maxKey() {
+      return maxElementPair().map(p -> p.mx1);
     }
 
     public abstract boolean isEmpty();
@@ -143,7 +156,6 @@ public class RedBlackTreeModule {
     public abstract int height();
     public abstract void appi(final BiConsumer<K, V> f);
     public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
-    public abstract <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f);
     public abstract <W> W foldli(final TriFunction<K, V, W, W> f, final W w);
     public abstract <W> W foldri(final TriFunction<K, V, W, W> f, final W w);
     public abstract Optional<Pair<K, V>> minElementPair();
@@ -288,11 +300,6 @@ public class RedBlackTreeModule {
 
     @Override
     public <W> Tree<K, W> mapi(BiFunction<K, V, W> f) {
-      return create();
-    }
-
-    @Override
-    public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
       return create();
     }
 
@@ -603,11 +610,6 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public Color DSgetColor() {
       return Color.RED;
     }
@@ -739,11 +741,6 @@ public class RedBlackTreeModule {
     @Override
     public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
       return create(mLeft.mapi(f), mKey, f.apply(mKey, mValue), mRight.mapi(f));
-    }
-
-    @Override
-    public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
@@ -1074,6 +1071,15 @@ public class RedBlackTreeModule {
     return makeBoundPair(candidate);
   }
 
+  private static final <K extends Comparable<K>, V, W> Tree<K, W> mapPartiali(final Tree<K, V> t, final BiFunction<K, V, Optional<W>> f) {
+    return fromStrictlyIncreasingArray(
+            t.keyValuePairs().stream()
+                             .map(p -> Pair.create(p.mx1, f.apply(p.mx1, p.mx2)))
+                             .filter(p -> p.mx2.isPresent())
+                             .map(p -> Pair.create(p.mx1, p.mx2.get()))
+                             .collect(Collectors.toCollection(ArrayList::new)));
+  }
+
   static <K extends Comparable<K>, V> Pair<Boolean, String> verifyRedBlackProperties(final Tree<K, V> t) {
     if (! redChildrenPropertyHolds(t)) {
       return Pair.create(false, "There are red nodes that have red children.");
@@ -1153,10 +1159,7 @@ public class RedBlackTreeModule {
   }
 
   private static <K extends Comparable<K>, V> boolean binaryTreePropertyHolds(final Tree<K, V> t) {
-    final ArrayList<K> keys = new ArrayList<>();
-    t.appi((k, v) -> keys.add(k));
-
-    return ArrayUtils.isStrictlyIncreasing(keys);
+    return ArrayUtils.isStrictlyIncreasing(t.keys());
   }
 
   // Public interface

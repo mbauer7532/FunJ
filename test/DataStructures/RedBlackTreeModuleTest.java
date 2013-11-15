@@ -579,4 +579,46 @@ public class RedBlackTreeModuleTest {
       });
     });
   }
+
+  @Test
+  public void testMapPartialPartiali() {
+    System.out.println("mapPartialPartiali");
+
+    final long seed = 12332713;
+    final Random rng = new Random(seed);
+
+    final int N = 40;
+    final int low = -50, high = 600;
+    final int size = 180;
+    
+    IntStream.range(0, N).forEach(x -> {
+      final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
+
+      final ArrayList<Pair<Integer, Integer>> v =
+              Arrays.stream(perm1)
+                    .mapToObj(i -> Pair.create(i, i))
+                    .collect(Collectors.toCollection(ArrayList::new));
+      final Tree<Integer, Integer> t = RedBlackTreeModule.fromArray(v);
+
+      final Tree<Integer, Integer> tEven = t.mapPartial(n -> Optional.ofNullable((n & 1) == 0 ? n : null));
+      final Tree<Integer, Integer> tOdd  = t.mapPartial(n -> Optional.ofNullable((n & 1) == 1 ? n : null));
+
+      final int tSize = t.size();
+      final int tEvenSize = tEven.size();
+      final int tOddSize = tOdd.size();
+
+      assertEquals(size, tSize);
+      assertEquals(tSize, tEvenSize + tOddSize);
+
+      Arrays.stream(perm1).forEach(n -> {
+        assertTrue(t.containsKey(n));
+        if ((n & 1) == 0) {
+          assertTrue(tEven.containsKey(n) && ! tOdd.containsKey(n));
+        }
+        else {
+          assertTrue(! tEven.containsKey(n) && tOdd.containsKey(n));
+        }
+      });
+    });
+  }
 }
