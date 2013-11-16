@@ -1164,7 +1164,6 @@ public class RedBlackTreeModule {
   }
 
   // Public interface
-  //@SuppressWarnings("unchecked")
   public static <K extends Comparable<K>, V> Tree<K, V> empty() {
     return EmptyNode.create();
   }

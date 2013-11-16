@@ -11,7 +11,11 @@ import Utils.Numeric;
 import java.awt.Color;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import org.StructureGraphic.v1.DSTreeNode;
 import org.graphstream.graph.*;
 
@@ -22,6 +26,24 @@ public final class AvlTreeModule {
     }
 
     protected final int mHeight;
+
+    public final V getOrElse(final K key, final V def) {
+      return get(key).orElse(def);
+    }
+
+    public final V getOrElseSupplier(final K key, final Supplier<V> other) {
+      return get(key).orElseGet(other);
+    }
+
+    public final <W> Tree<K, W> map(final Function<V, W> f) {
+      return mapi((k, v) -> f.apply(v));
+    }
+
+    public final void app(final Consumer<V> f) {
+      appi((k, v) -> f.accept(v));
+
+      return;
+    }
 
     public final Optional<K> minKey() {
       return minElementPair().map(p -> p.mx1);
@@ -40,11 +62,20 @@ public final class AvlTreeModule {
     public abstract <U> U fold(BiFunction<V, U, U> f, U acc);
     public abstract Optional<Pair<K, V>> minElementPair();
     public abstract Optional<Pair<K, V>> maxElementPair();
-
+    public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
+    public abstract void appi(final BiConsumer<K, V> f);
+    
     public abstract String graph(final Graph g);
   }
 
   private final static class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
+    private static final EmptyNode<? extends Comparable<?>, ?> sEmptyNode = new EmptyNode<>();
+
+    @SuppressWarnings("unchecked")
+    public static <K extends Comparable<K>, V> EmptyNode<K, V> create() {
+      return (EmptyNode<K, V>) sEmptyNode;
+    }
+
     private EmptyNode() {
       super(0);
     }
@@ -59,13 +90,11 @@ public final class AvlTreeModule {
 
     @Override
     public Tree<K, V> put(final K key, final V value) {
-      return new Node<>(this, this, key, value, 1);
+      return Node.create(this, key, value, this, 1);
     }
 
     @Override
     public boolean containsKey(final K key) {
-      Objects.requireNonNull(key, "Key cannot be null.");
-
       return false;
     }
 
@@ -100,6 +129,16 @@ public final class AvlTreeModule {
     }
 
     @Override
+    public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
+      return create();
+    }
+
+    @Override
+    public void appi(final BiConsumer<K, V> f) {
+      return;
+    }
+
+    @Override
     public DSTreeNode[] DSgetChildren() {
       return new DSTreeNode[0];
     }
@@ -117,31 +156,52 @@ public final class AvlTreeModule {
 
   private final static class Node<K extends Comparable<K>, V> extends Tree<K, V> {
     private final Tree<K, V> mLeft;
-    private final Tree<K, V> mRight;
     private final K mKey;
     private final V mValue;
+    private final Tree<K, V> mRight;
 
     private Node(final Tree<K, V> left,
-                 final Tree<K, V> right,
                  final K key,
                  final V value,
+                 final Tree<K, V> right,
                  final int height) {
       super(height);
       mLeft = left;
-      mRight = right;
       mKey = key;
       mValue = value;
+      mRight = right;
+    }
+
+    public static <K extends Comparable<K>, V> Node<K, V> create(
+            final Tree<K, V> left,
+            final K key,
+            final V value,
+            final Tree<K, V> right,
+            final int height) {
+      return new Node<>(left, key, value, right, height);
+    }
+
+    public static <K extends Comparable<K>, V> Node<K, V> create(
+            final Tree<K, V> left,
+            final K key,
+            final V value,
+            final Tree<K, V> right) {
+      return create(left, key, value, right, Math.max(left.mHeight, right.mHeight) + 1);
     }
 
     @Override
     public final boolean isEmpty() { return false; }
 
     @Override
-    public V Optional<K> get(final K key) {
+    public Optional<V> get(final K key) {
       Objects.requireNonNull(key, "Key cannot be null.");
 
       final int res = mKey.compareTo(key);
-      return res < 0 ? mLeft.get(key) : (res > 0 ? mRight.get(key) : Optional.of(mValue));
+      return res < 0
+              ? mLeft.get(key)
+              : (res > 0
+                 ? mRight.get(key)
+                 : Optional.of(mValue));
     }
 
     @Override
@@ -157,7 +217,7 @@ public final class AvlTreeModule {
         return rebalance(mLeft, mRight.put(key, value), mKey, mValue);
       }
       else {
-        return createNode(mLeft, mRight, key, value, mHeight);
+        return create(mLeft, key, value, mRight, mHeight);
       }
     }
 
@@ -184,7 +244,7 @@ public final class AvlTreeModule {
             final Tree<K, V> l,
             final Tree<K, V> rr,
             final Tree<K, V> rl) {
-      return createNode(rr, createNode(rl, l, key, value), r.mKey, r.mValue);
+      return create(rr, r.mKey, r.mValue, create(rl, key, value, l));
     }
 
     private static <K extends Comparable<K>, V> Node<K, V> rotateRight(
@@ -194,7 +254,7 @@ public final class AvlTreeModule {
             final Tree<K, V> r,
             final Tree<K, V> ll,
             final Tree<K, V> lr) {
-      return createNode(ll, createNode(lr, r, key, value), l.mKey, l.mValue);
+      return create(ll, l.mKey, l.mValue, create(lr, key, value, r));
     }
 
     private static <K extends Comparable<K>, V> Tree<K, V> rebalance(
@@ -219,11 +279,11 @@ public final class AvlTreeModule {
           //   return rotateRight(key, value, newLeft, r, newLeft.mLeft, newLeft.mRight);
           // but creates one less node.
 
-          return createNode(
-                  createNode(ll, lrAsNode.mLeft, l.mKey, l.mValue),
-                  createNode(lrAsNode.mRight, r, key, value),
+          return create(
+                  create(ll, l.mKey, l.mValue, lrAsNode.mLeft),
                   lrAsNode.mKey,
-                  lrAsNode.mValue);
+                  lrAsNode.mValue,
+                  create(lrAsNode.mRight, key, value, r));
         }
         else {
           return rotateRight(key, value, l, r, ll, lr);
@@ -243,18 +303,18 @@ public final class AvlTreeModule {
           //   return rotateLeft(key, value, newRight, l, newRight.mRight, newRight.mLeft);
           // but creates one less node.
 
-          return createNode(
-                  createNode(l, rlAsNode.mLeft, key, value),
-                  createNode(rlAsNode.mRight, rr, r.mKey, r.mValue),
+          return create(
+                  create(l, key, value, rlAsNode.mLeft),
                   rlAsNode.mKey,
-                  rlAsNode.mValue);
+                  rlAsNode.mValue,
+                  create(rlAsNode.mRight, r.mKey, r.mValue, rr));
         }
         else {
           return rotateLeft(key, value, r, l, rr, rl);
         }
       }
       else {
-        return createNode(left, right, key, value);
+        return create(left, key, value, right);
       }
     }
 
@@ -286,17 +346,35 @@ public final class AvlTreeModule {
 
     @Override
     public Optional<Pair<K, V>> minElementPair() {
-      return mLeft == sEmptyNode ? Optional.of(Pair.create(mKey, mValue)) : mLeft.minElementPair();
+      return mLeft.isEmpty()
+              ? Optional.of(Pair.create(mKey, mValue))
+              : mLeft.minElementPair();
     }
 
     @Override
     public Optional<Pair<K, V>> maxElementPair() {
-      return mRight == sEmptyNode ? Optional.of(Pair.create(mKey, mValue)) : mRight.maxElementPair();
+      return mRight.isEmpty()
+              ? Optional.of(Pair.create(mKey, mValue))
+              : mRight.maxElementPair();
     }
 
     @Override
     public <U> U fold(BiFunction<V, U, U> f, U acc) {
       return mLeft.fold(f, f.apply(mValue, mRight.fold(f, acc)));
+    }
+
+    @Override
+    public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
+      return create(mLeft.mapi(f), mKey, f.apply(mKey, mValue), mRight.mapi(f), mHeight);
+    }
+
+    @Override
+    public void appi(final BiConsumer<K, V> f) {
+      mLeft.appi(f);
+      f.accept(mKey, mValue);
+      mRight.appi(f);
+
+      return;
     }
 
     @Override
@@ -315,34 +393,14 @@ public final class AvlTreeModule {
     }
   }
 
-  private static final EmptyNode<? extends Comparable<?>, ?> sEmptyNode = new EmptyNode<>();
-
-  private static <K extends Comparable<K>, V> Node<K, V> createNode(
-          final Tree<K, V> left,
-          final Tree<K, V> right,
-          final K key,
-          final V value,
-          final int height) {
-    return new Node<>(left, right, key, value, height);
-  }
-
-  private static <K extends Comparable<K>, V> Node<K, V> createNode(
-          final Tree<K, V> left,
-          final Tree<K, V> right,
-          final K key,
-          final V value) {
-    return createNode(left, right, key, value, Math.max(left.mHeight, right.mHeight) + 1);
-  }
-
   // Public interface
-  @SuppressWarnings("unchecked")
   public static <K extends Comparable<K>, V> Tree<K, V> empty() {
-    return (EmptyNode<K, V>) sEmptyNode;
+    return EmptyNode.create();
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> singleton(final K key, final V value) {
     final Tree<K, V> e = empty();
-    return createNode(e, e, key, value, 1);
+    return Node.create(e, key, value, e, 1);
   }
 
   public static double expectedDepth(final int n) {
