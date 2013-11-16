@@ -27,8 +27,8 @@ public final class AvlTreeModule {
     public abstract boolean containsKey(final K key);
     public abstract int size();
     public abstract int depth();
-    public abstract K findMin();
-    public abstract K findMax();
+    public abstract K minKey();
+    public abstract K maxKey();
     public abstract <U> U fold(BiFunction<V, U, U> f, U acc);
 
     public abstract String graph(final Graph g);
@@ -70,12 +70,12 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public K findMin() {
+    public K minKey() {
       throw new AssertionError("An empty tree does not have a minimum.");
     }
 
     @Override
-    public K findMax() {
+    public K maxKey() {
       throw new AssertionError("An empty tree does not have a maximum.");
     }
 
@@ -275,13 +275,13 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public K findMin() {
-      return mLeft == sEmptyNode ? mKey : mLeft.findMin();
+    public K minKey() {
+      return mLeft == sEmptyNode ? mKey : mLeft.minKey();
     }
 
     @Override
-    public K findMax() {
-      return mRight == sEmptyNode ? mKey : mRight.findMax();
+    public K maxKey() {
+      return mRight == sEmptyNode ? mKey : mRight.maxKey();
     }
 
     @Override
