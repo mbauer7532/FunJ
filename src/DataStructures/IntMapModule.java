@@ -61,6 +61,7 @@ public final class IntMapModule {
 
     public abstract boolean isEmpty();
     public abstract Tree<V> insert(final BiFunction<V, V, V> f, final int key, final V value);
+    public abstract Tree<V> insert(final int key, final V value);
     public abstract Optional<V> get(final int key);
     public abstract Tree<V> remove(final int key);
     public abstract int size();
@@ -79,6 +80,11 @@ public final class IntMapModule {
     public Tree<V> insert(final BiFunction<V, V, V> f, final int key, final V value) {
       Objects.requireNonNull(f);
 
+      return LeafNode.createLeafNode(key, value);
+    }
+
+    @Override
+    public Tree<V> insert(final int key, final V value) {
       return LeafNode.createLeafNode(key, value);
     }
 
@@ -187,6 +193,13 @@ public final class IntMapModule {
 
       return key == mKey
               ? createLeafNode(key, f.apply(value, mValue))
+              : join(key, createLeafNode(key, value), mKey, this);
+    }
+
+    @Override
+    public Tree<V> insert(final int key, final V value) {
+      return key == mKey
+              ? createLeafNode(key, value)
               : join(key, createLeafNode(key, value), mKey, this);
     }
 
@@ -323,7 +336,22 @@ public final class IntMapModule {
         return join(key, LeafNode.createLeafNode(key, value), mPrefix, this);
       }
     }
-    
+
+    @Override
+    public Tree<V> insert(final int key, final V value) {
+      if (matchPrefix(key, mPrefix, mBranchingBit)) {
+        if (zeroBit(key, mBranchingBit)) {
+          return createBranchNode(mPrefix, mBranchingBit, mLeft.insert(key, value), mRight);
+        }
+        else {
+          return createBranchNode(mPrefix, mBranchingBit, mLeft, mRight.insert(key, value));
+        }
+      }
+      else {
+        return join(key, LeafNode.createLeafNode(key, value), mPrefix, this);
+      }
+    }
+
     @Override
     public boolean isEmpty() {
       return false;
