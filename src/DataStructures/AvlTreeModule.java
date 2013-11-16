@@ -6,9 +6,11 @@
 
 package DataStructures;
 
+import DataStructures.TuplesModule.Pair;
 import Utils.Numeric;
 import java.awt.Color;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import org.StructureGraphic.v1.DSTreeNode;
 import org.graphstream.graph.*;
@@ -21,15 +23,23 @@ public final class AvlTreeModule {
 
     protected final int mHeight;
 
+    public final Optional<K> minKey() {
+      return minElementPair().map(p -> p.mx1);
+    }
+
+    public final Optional<K> maxKey() {
+      return maxElementPair().map(p -> p.mx1);
+    }
+    
     public abstract boolean isEmpty();
     public abstract V get(final K key);
     public abstract Tree<K, V> put(final K key, final V value);
     public abstract boolean containsKey(final K key);
     public abstract int size();
     public abstract int depth();
-    public abstract K minKey();
-    public abstract K maxKey();
     public abstract <U> U fold(BiFunction<V, U, U> f, U acc);
+    public abstract Optional<Pair<K, V>> minElementPair();
+    public abstract Optional<Pair<K, V>> maxElementPair();
 
     public abstract String graph(final Graph g);
   }
@@ -70,12 +80,12 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public K minKey() {
-      throw new AssertionError("An empty tree does not have a minimum.");
+    public Optional<Pair<K, V>> minElementPair() {
+      throw new AssertionError("An empty tree does not have a maximum.");
     }
 
     @Override
-    public K maxKey() {
+    public Optional<Pair<K, V>> maxElementPair() {
       throw new AssertionError("An empty tree does not have a maximum.");
     }
 
@@ -275,13 +285,13 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public K minKey() {
-      return mLeft == sEmptyNode ? mKey : mLeft.minKey();
+    public Optional<Pair<K, V>> minElementPair() {
+      return mLeft == sEmptyNode ? Optional.of(Pair.create(mKey, mValue)) : mLeft.minElementPair();
     }
 
     @Override
-    public K maxKey() {
-      return mRight == sEmptyNode ? mKey : mRight.maxKey();
+    public Optional<Pair<K, V>> maxElementPair() {
+      return mRight == sEmptyNode ? Optional.of(Pair.create(mKey, mValue)) : mRight.maxElementPair();
     }
 
     @Override
