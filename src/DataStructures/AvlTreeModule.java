@@ -24,7 +24,7 @@ public final class AvlTreeModule {
     public abstract boolean isEmpty();
     public abstract V get(final K key);
     public abstract Tree<K, V> put(final K key, final V value);
-    public abstract boolean member(final K key);
+    public abstract boolean containsKey(final K key);
     public abstract int size();
     public abstract int depth();
     public abstract K findMin();
@@ -53,7 +53,7 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public boolean member(final K key) {
+    public boolean containsKey(final K key) {
       Objects.requireNonNull(key, "Key cannot be null.");
 
       return false;
@@ -152,15 +152,15 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public boolean member(final K key) {
+    public boolean containsKey(final K key) {
       Objects.requireNonNull(key, "Key cannot be null.");
 
       final int res = mKey.compareTo(key);
       if (res < 0) {
-        return mLeft.member(key);
+        return mLeft.containsKey(key);
       }
       else if (res > 0) {
-        return mRight.member(key);
+        return mRight.containsKey(key);
       }
       else {
         return true;
