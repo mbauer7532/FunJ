@@ -9,6 +9,7 @@ package DataStructures;
 import DataStructures.TuplesModule.Pair;
 import Utils.Numeric;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
@@ -55,7 +56,7 @@ public final class AvlTreeModule {
     
     public abstract boolean isEmpty();
     public abstract Optional<V> get(final K key);
-    public abstract Tree<K, V> put(final K key, final V value);
+    public abstract Tree<K, V> insert(final K key, final V value);
     public abstract boolean containsKey(final K key);
     public abstract int size();
     public abstract int depth();
@@ -89,7 +90,7 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public Tree<K, V> put(final K key, final V value) {
+    public Tree<K, V> insert(final K key, final V value) {
       return Node.create(this, key, value, this, 1);
     }
 
@@ -205,16 +206,16 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public Tree<K, V> put(final K key, final V value) {
+    public Tree<K, V> insert(final K key, final V value) {
       Objects.requireNonNull(key, "Key cannot be null.");
       Objects.requireNonNull(value, "Value cannot be null.");
 
       final int res = mKey.compareTo(key);
       if (res < 0) {
-        return rebalance(mLeft.put(key, value), mRight, mKey, mValue);
+        return rebalance(mLeft.insert(key, value), mRight, mKey, mValue);
       }
       else if (res > 0) {
-        return rebalance(mLeft, mRight.put(key, value), mKey, mValue);
+        return rebalance(mLeft, mRight.insert(key, value), mKey, mValue);
       }
       else {
         return create(mLeft, key, value, mRight, mHeight);
@@ -401,6 +402,57 @@ public final class AvlTreeModule {
   public static <K extends Comparable<K>, V> Tree<K, V> singleton(final K key, final V value) {
     final Tree<K, V> e = empty();
     return Node.create(e, key, value, e, 1);
+  }
+
+  private static final class InitFromArrayWorker<K extends Comparable<K>, V> {
+    private final ArrayList<Pair<K, V>> mVector;
+    private final boolean mIncreasing;
+
+    
+    public InitFromArrayWorker(final ArrayList<Pair<K, V>> vector,
+                               final boolean increasing) {
+      mVector = vector;
+      mIncreasing = increasing;
+    }
+
+    private Tree<K, V> workerFunc(final int left, final int right) {
+      if (left > right)
+        return empty();
+
+      final int mid = (left + right) >>> 1;
+      final Pair<K, V> p = mVector.get(mid);
+
+      Tree<K, V> lt, rt;
+      lt = workerFunc(left, mid - 1);
+      rt = workerFunc(mid + 1, right);
+
+      if (! mIncreasing) {
+        Tree<K, V> t = lt;
+        lt = rt;
+        rt = t;
+      }
+
+      return Node.create(lt, p.mx1, p.mx2, rt);
+    }
+    
+    public final Tree<K, V> doIt() {
+      return workerFunc(0, mVector.size() - 1);
+    }
+  }
+
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+    return (new InitFromArrayWorker<>(v, true).doIt());
+  }
+
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+    return (new InitFromArrayWorker<>(v, false).doIt());
+  }
+
+  public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+    return v.stream()
+            .reduce(empty(),
+                    ((t, p) -> t.insert(p.mx1, p.mx2)),
+                    ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
   }
 
   public static double expectedDepth(final int n) {

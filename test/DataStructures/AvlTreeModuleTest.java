@@ -71,7 +71,7 @@ public class AvlTreeModuleTest {
     AvlTreeModule.Tree<Integer, String> t = AvlTreeModule.empty();
     at.add(t);
     for (int i = 0; i != N; ++i) {
-      t = t.put(i * 10, "hi");
+      t = t.insert(i * 10, "hi");
       at.add(t);
     }
 
@@ -113,7 +113,7 @@ public class AvlTreeModuleTest {
               = Arrays.stream(data)
                       .boxed()
                       .reduce(t0,
-                              ((AvlTreeModule.Tree<Integer, Integer> tx, Integer x) -> tx.put(x, x)),
+                              ((AvlTreeModule.Tree<Integer, Integer> tx, Integer x) -> tx.insert(x, x)),
                               ((AvlTreeModule.Tree<Integer, Integer> z1, AvlTreeModule.Tree<Integer, Integer> z2) -> null));
 
       final int expectedSize = N;

@@ -1186,7 +1186,7 @@ public class RedBlackTreeModule {
       mRedLevel = redLevel;
     }
 
-    public Tree<K, V> doit(final int left, final int right, final int depth) {
+    private Tree<K, V> workerFunc(final int left, final int right, final int depth) {
       if (left > right)
         return empty();
 
@@ -1195,17 +1195,22 @@ public class RedBlackTreeModule {
 
       Tree<K, V> lt, rt;
       final int newDepth = depth + 1;
-      lt = doit(left, mid - 1, newDepth);
-      rt = doit(mid + 1, right, newDepth);
+      lt = workerFunc(left, mid - 1, newDepth);
+      rt = workerFunc(mid + 1, right, newDepth);
 
-    if (! mIncreasing) {
-      Tree<K, V> t = lt;
-      lt = rt;
-      rt = t;
+      if (! mIncreasing) {
+        Tree<K, V> t = lt;
+        lt = rt;
+        rt = t;
+      }
+
+      return depth == mRedLevel
+              ? RedNode.create(lt, p.mx1, p.mx2, rt)
+              : BlackNode.create(lt, p.mx1, p.mx2, rt);
     }
-
-    return depth == mRedLevel ? RedNode.create(lt, p.mx1, p.mx2, rt)
-                              : BlackNode.create(lt, p.mx1, p.mx2, rt);
+    
+    public final Tree<K, V> doIt() {
+      return workerFunc(0, mVector.size() - 1, 0);
     }
   }
 
@@ -1214,11 +1219,11 @@ public class RedBlackTreeModule {
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
-    return (new InitFromArrayWorker<>(v, true, computeRedDepth(v.size())).doit(0, v.size() - 1, 0));
+    return (new InitFromArrayWorker<>(v, true, computeRedDepth(v.size())).doIt());
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
-    return (new InitFromArrayWorker<>(v, false, computeRedDepth(v.size())).doit(0, v.size() - 1, 0));
+    return (new InitFromArrayWorker<>(v, false, computeRedDepth(v.size())).doIt());
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
