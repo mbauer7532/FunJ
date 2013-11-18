@@ -29,20 +29,16 @@ import org.graphstream.graph.implementations.*;
  */
 public class AvlTreeModuleTest {
   @BeforeClass
-  public static void setUpClass() {
-  }
+  public static void setUpClass() {}
 
   @AfterClass
-  public static void tearDownClass() {
-  }
+  public static void tearDownClass() {}
 
   @Before
-  public void setUp() {
-  }
+  public void setUp() {}
 
   @After
-  public void tearDown() {
-  }
+  public void tearDown() {}
 
   public void graphTree(AvlTreeModule.Tree<Integer, String> t) {
     Graph graph = new SingleGraph("Graph");

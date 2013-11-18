@@ -34,49 +34,61 @@ import org.StructureGraphic.v1.DSTreeNode;
  * @author Neo
  */
 public class RedBlackTreeModule {
-  public static abstract class Tree<K extends Comparable<K>, V> implements DSTreeNode {
+  public static abstract class Tree<K extends Comparable<K>, V>
+                                      implements PersistentMap<K, V, Tree<K, V>>, DSTreeNode {
+    @Override
     public final boolean containsKey(final K key) {
       return get(key).isPresent();
     }
 
+    @Override
     public final V getOrElse(final K key, final V def) {
       return get(key).orElse(def);
     }
 
+    @Override
     public final V getOrElseSupplier(final K key, final Supplier<V> other) {
       return get(key).orElseGet(other);
     }
 
+    @Override
     public final <W> Tree<K, W> map(final Function<V, W> f) {
       return mapi((k, v) -> f.apply(v));
     }
 
+    @Override
     public final void app(final Consumer<V> f) {
       appi((k, v) -> f.accept(v));
 
       return;
     }
 
+    @Override
     public final <W> W foldl(final BiFunction<V, W, W> f, final W w) {
       return foldli((k, v, z) -> f.apply(v, z), w);
     }
 
+    @Override
     public final <W> W foldr(final BiFunction<V, W, W> f, final W w) {
       return foldri((k, v, z) -> f.apply(v, z), w);
     }
 
+    @Override
     public final Tree<K, V> filter(final Predicate<V> f) {
       return filteri((k, v) -> f.test(v));
     }
 
+    @Override
     public final Tree<K, V> filteri(final BiPredicate<K, V> f) {
       return filt(f, empty());
     }
 
+    @Override
     public final Pair<Tree<K, V>, Tree<K, V>> partition(final Predicate<V> f) {
       return partitioni((k, v) -> f.test(v));
     }
 
+    @Override
     public final Pair<Tree<K, V>, Tree<K, V>> partitioni(final BiPredicate<K, V> f) {
       final Tree<K, V> e = empty();
       final Pair<Tree<K, V>, Tree<K, V>> res = Pair.create(e, e);
@@ -85,22 +97,27 @@ public class RedBlackTreeModule {
       return res;
     }
 
+    @Override
     public final <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
       return mapPartiali((k, v) -> f.apply(v));
     }
 
+    @Override
     public final <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
       return RedBlackTreeModule.mapPartiali(this, f);
     }
 
+    @Override
     public final Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
       return blackify(ins(f, key, value));
     }
 
+    @Override
     public final Tree<K, V> insert(final K key, final V value) {
       return blackify(ins(key, value));
     }
 
+    @Override
     public final Tree<K, V> remove(final K key) {
       try {
         return rem(key).mx1;
@@ -109,12 +126,14 @@ public class RedBlackTreeModule {
       }
     }
 
+    @Override
     public final ArrayList<K> keys() {
       final ArrayList<K> ks = new ArrayList<>();
       appi((k, v) -> { ks.add(k); });
       return ks;
     }
 
+    @Override
     public final ArrayList<Pair<K, V>> keyValuePairs() {
       final ArrayList<Pair<K, V>> kvs = new ArrayList<>();
       appi((k, v) -> { kvs.add(Pair.create(k, v)); });
@@ -122,45 +141,42 @@ public class RedBlackTreeModule {
       return kvs;
     }
 
+    @Override
     public final Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
       return fromStrictlyIncreasingArray(mergeArrays(f, keyValuePairs(), t.keyValuePairs()));
     }
 
+    @Override
     public final Optional<K> lowerKey(final K key) {
       return lowerPair(key).map(p -> p.mx1);
     }
 
+    @Override
     public final Optional<Pair<K, V>> lowerPair(final K key) {
       return RedBlackTreeModule.lowerPair(this, key);
     }
 
+    @Override
     public final Optional<K> higherKey(final K key) {
       return higherPair(key).map(p -> p.mx1);
     }
 
+    @Override
     public final Optional<Pair<K, V>> higherPair(final K key) {
       return RedBlackTreeModule.higherPair(this, key);
     }
 
+    @Override
     public final Optional<K> minKey() {
       return minElementPair().map(p -> p.mx1);
     }
 
+    @Override
     public final Optional<K> maxKey() {
       return maxElementPair().map(p -> p.mx1);
     }
 
-    public abstract boolean isEmpty();
-    public abstract Optional<V> get(final K key);
-    public abstract boolean containsValue(final V value);
-    public abstract int size();
-    public abstract int height();
-    public abstract void appi(final BiConsumer<K, V> f);
     public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
-    public abstract <W> W foldli(final TriFunction<K, V, W, W> f, final W w);
-    public abstract <W> W foldri(final TriFunction<K, V, W, W> f, final W w);
-    public abstract Optional<Pair<K, V>> minElementPair();
-    public abstract Optional<Pair<K, V>> maxElementPair();
 
     boolean isRed() { return false; }
     boolean isBlack() { return false; }
@@ -1072,7 +1088,7 @@ public class RedBlackTreeModule {
     return makeBoundPair(candidate);
   }
 
-  private static final <K extends Comparable<K>, V, W> Tree<K, W> mapPartiali(final Tree<K, V> t, final BiFunction<K, V, Optional<W>> f) {
+  private static <K extends Comparable<K>, V, W> Tree<K, W> mapPartiali(final Tree<K, V> t, final BiFunction<K, V, Optional<W>> f) {
     return fromStrictlyIncreasingArray(
             t.keyValuePairs().stream()
                              .flatMap(p -> f.apply(p.mx1, p.mx2)
