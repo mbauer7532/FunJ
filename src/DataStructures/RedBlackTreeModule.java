@@ -176,6 +176,7 @@ public class RedBlackTreeModule {
       return maxElementPair().map(p -> p.mx1);
     }
 
+    @Override
     public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
 
     boolean isRed() { return false; }
@@ -446,7 +447,7 @@ public class RedBlackTreeModule {
 
     @Override
     Tree<K, V> filt(final BiPredicate<K, V> f, final Tree<K, V> acc) {
-      return mRight.filt(f, mLeft.filt(f, f.test(mKey, mValue) ? acc : acc.insert(mKey, mValue)));
+      return mRight.filt(f, mLeft.filt(f, f.test(mKey, mValue) ? acc.insert(mKey, mValue) : acc));
     }
 
     @Override
@@ -729,7 +730,7 @@ public class RedBlackTreeModule {
     Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement {
       final int c = key.compareTo(mKey);
       final Tree<K, V> l = mLeft, r = mRight;
-      
+
       if (c < 0) {
         final Pair<Tree<K, V>, Boolean> p = l.rem(key);
         final BlackNode<K, V> m = BlackNode.create(p.mx1, mKey, mValue, r);

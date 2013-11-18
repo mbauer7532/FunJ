@@ -71,13 +71,10 @@ public class RedBlackTreeModuleTest {
     final Pair<Boolean, String> res = RedBlackTreeModule.verifyRedBlackProperties(t);
 
     if (! res.mx1) {
-//      showGraph(t);
-//      waitTime(1);
-
       assertTrue(res.mx2, false);
     }
   }
-  
+
   /**
    * Test of verifyRedBlackProperties method, of class RedBlackTreeModule.
    */
@@ -206,8 +203,6 @@ public class RedBlackTreeModuleTest {
       final Tree<Integer, Integer> resTree = RedBlackTreeModule.fromStrictlyIncreasingArray(v);
 
       checkRedBlackTreeProperties(resTree);
-//      showGraph(resTree);
-//      waitTime(2);
     });
   }
 
@@ -258,8 +253,8 @@ public class RedBlackTreeModuleTest {
       final Random rng = new Random(seed);
 
       final int numIters = 10;
-      final int low = -200, high = 200;
-      final int size = 20;
+      final int low = -3000, high = 2000;
+      final int size = 2000;
 
       final int[] perm = Numeric.randomPermuation(low, high, size, rng);
       IntStream.range(0, numIters).forEach(x -> {
@@ -272,8 +267,8 @@ public class RedBlackTreeModuleTest {
 
         // Checking tree validity also checks its height.
         checkRedBlackTreeProperties(t);
-        
-        assertTrue(IntStream.range(0, numIters).allMatch(idx -> t.containsKey(perm[idx])));
+
+        assertTrue(Arrays.stream(perm).allMatch(t::containsKey));
       });
     }
   }
@@ -282,60 +277,82 @@ public class RedBlackTreeModuleTest {
   public void testFilterAndFilteri() {
     System.out.println("filterAndFilteri");
 
-    final int N = 40;
-    final int halfN = N / 2;
-    final Tree<Integer, Integer> t0 = RedBlackTreeModule.fromArray(
-            IntStream.range(0, N)
-                     .mapToObj(i -> Pair.create(i, i))
-                     .collect(Collectors.toCollection(ArrayList::new)));
-    final Tree<Integer, Integer> t1 = t0.filteri((k, v) -> (k & 1) == 1);
+    {
+      final int N = 40;
+      final int halfN = N / 2;
+      final Tree<Integer, Integer> t0 = RedBlackTreeModule.fromArray(
+              IntStream.range(0, N)
+                      .mapToObj(i -> Pair.create(i, i))
+                      .collect(Collectors.toCollection(ArrayList::new)));
+      final Tree<Integer, Integer> t1 = t0.filteri((k, v) -> (k & 1) == 1);
 
-    checkRedBlackTreeProperties(t0);
-    checkRedBlackTreeProperties(t1);
+      checkRedBlackTreeProperties(t0);
+      checkRedBlackTreeProperties(t1);
 
-    assertEquals(N, t0.size());
-    assertEquals(halfN, t1.size());
+      assertEquals(N, t0.size());
+      assertEquals(halfN, t1.size());
     
-    IntStream.range(0, N).forEach(n -> {
-      if ((n & 1) == 0) {
-        assertTrue(t0.containsKey(n) && t1.containsKey(n));
-      }
-      else {
-        assertTrue(t0.containsKey(n) && ! t1.containsKey(n));
-      }
-    });
+      IntStream.range(0, N).forEach(n -> {
+        if ((n & 1) == 0) {
+          assertTrue(t0.containsKey(n) && ! t1.containsKey(n));
+        }
+        else {
+          assertTrue(t0.containsKey(n) && t1.containsKey(n));
+        }
+      });
+    }
+    {
+      final PersistentMap<Integer, Integer, ?> pm0 = RedBlackTreeModule.singleton(10, 20);
+      final PersistentMap<Integer, Integer, ?> pm1 = pm0.filter(v -> v != 20);
+      final PersistentMap<Integer, Integer, ?> pm2 = pm0.filteri((k, v) -> k + v != 30);
+
+      assertTrue(! pm0.isEmpty());
+      assertTrue(pm1.isEmpty());
+      assertTrue(pm2.isEmpty());
+    }
   }
 
   @Test
   public void testPartitionAndPartitioni() {
     System.out.println("partitionAndPartitioni");
 
-    final int N = 40;
-    final int halfN = N / 2;
-    final Tree<Integer, Integer> t0 = RedBlackTreeModule.fromArray(
-            IntStream.range(0, N)
-                     .mapToObj(i -> Pair.create(i, i))
-                     .collect(Collectors.toCollection(ArrayList::new)));
+    {
+      final int N = 40;
+      final int halfN = N / 2;
+      final Tree<Integer, Integer> t0 = RedBlackTreeModule.fromArray(
+              IntStream.range(0, N)
+                       .mapToObj(i -> Pair.create(i, i))
+                       .collect(Collectors.toCollection(ArrayList::new)));
 
-    final Pair<Tree<Integer, Integer>, Tree<Integer, Integer>> p = t0.partitioni((k, v) -> (k & 1) == 1);
-    final Tree<Integer, Integer> t1 = p.mx1, t2 = p.mx2;
+      final Pair<Tree<Integer, Integer>, Tree<Integer, Integer>> p = t0.partitioni((k, v) -> (k & 1) == 1);
+      final Tree<Integer, Integer> t1 = p.mx1, t2 = p.mx2;
 
-    checkRedBlackTreeProperties(t0);
-    checkRedBlackTreeProperties(t1);
-    checkRedBlackTreeProperties(t2);
+      checkRedBlackTreeProperties(t0);
+      checkRedBlackTreeProperties(t1);
+      checkRedBlackTreeProperties(t2);
 
-    assertEquals(N, t0.size());
-    assertEquals(halfN, t1.size());
-    assertEquals(halfN, t2.size());
+      assertEquals(N, t0.size());
+      assertEquals(halfN, t1.size());
+      assertEquals(halfN, t2.size());
 
-    IntStream.range(0, N).forEach(n -> {
-      if ((n & 1) == 1) {
-        assertTrue(t0.containsKey(n) && t1.containsKey(n) && ! t2.containsKey(n));
-      }
-      else {
-        assertTrue(t0.containsKey(n) && ! t1.containsKey(n) && t2.containsKey(n));
-      }
-    });
+      IntStream.range(0, N).forEach(n -> {
+        if ((n & 1) == 1) {
+          assertTrue(t0.containsKey(n) && t1.containsKey(n) && ! t2.containsKey(n));
+        }
+        else {
+          assertTrue(t0.containsKey(n) && ! t1.containsKey(n) && t2.containsKey(n));
+        }
+      });
+    }
+    {
+      final PersistentMap<Integer, Integer, ?> pm = RedBlackTreeModule.singleton(10, 20);
+      final Pair<? extends PersistentMap<Integer, Integer, ?>, ? extends PersistentMap<Integer, Integer, ?>> ms = pm.partition(v -> v != 20);
+      final PersistentMap<Integer, Integer, ?> pm1 = ms.mx1, pm2 = ms.mx2;
+
+      assertTrue(! pm.isEmpty());
+      assertTrue(pm1.isEmpty());
+      assertTrue(! pm2.isEmpty());
+    }
   }
   
   @Test
