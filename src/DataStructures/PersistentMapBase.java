@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 /**
@@ -85,5 +86,18 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
       appi((k, v) -> { kvs.add(Pair.create(k, v)); });
 
       return kvs;
+    }
+
+    @Override
+    public abstract <W> PersistentMapBase<K, W, ?> mapi(final BiFunction<K, V, W> f);
+
+    @Override
+    public final <W> PersistentMapBase<K, W, ?> map(final Function<V, W> f) {
+      return mapi((k, v) -> f.apply(v));
+    }
+
+    @Override
+    public final Pair<M, M> partition(final Predicate<V> f) {
+      return partitioni((k, v) -> f.test(v));
     }
 }

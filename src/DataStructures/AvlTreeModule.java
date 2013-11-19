@@ -31,11 +31,6 @@ public final class AvlTreeModule {
     protected final int mHeight;
 
     @Override
-    public final <W> Tree<K, W> map(final Function<V, W> f) {
-      return mapi((k, v) -> f.apply(v));
-    }
-
-    @Override
     public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
     
     public abstract String graph(final Graph g);

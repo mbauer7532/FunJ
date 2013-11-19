@@ -35,13 +35,8 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public class RedBlackTreeModule {
   public static abstract class Tree<K extends Comparable<K>, V>
-                                      extends PersistentMapBase<K, V, Tree<K, V>>
-                                      implements DSTreeNode {
-    @Override
-    public final <W> Tree<K, W> map(final Function<V, W> f) {
-      return mapi((k, v) -> f.apply(v));
-    }
-
+                                extends PersistentMapBase<K, V, Tree<K, V>>
+                                implements DSTreeNode {
     @Override
     public final Tree<K, V> filter(final Predicate<V> f) {
       return filteri((k, v) -> f.test(v));
@@ -50,11 +45,6 @@ public class RedBlackTreeModule {
     @Override
     public final Tree<K, V> filteri(final BiPredicate<K, V> f) {
       return filt(f, empty());
-    }
-
-    @Override
-    public final Pair<Tree<K, V>, Tree<K, V>> partition(final Predicate<V> f) {
-      return partitioni((k, v) -> f.test(v));
     }
 
     @Override
