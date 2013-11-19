@@ -21,46 +21,26 @@ import org.StructureGraphic.v1.DSTreeNode;
 import org.graphstream.graph.*;
 
 public final class AvlTreeModule {
-  public static abstract class Tree<K extends Comparable<K>, V> implements DSTreeNode {
+  public static abstract class Tree<K extends Comparable<K>, V>
+                               extends PersistentMapBase<K, V, Tree<K, V>>
+                               implements DSTreeNode {
     private Tree(final int height) {
       mHeight = height;
     }
 
     protected final int mHeight;
 
-    public final V getOrElse(final K key, final V def) {
-      return get(key).orElse(def);
-    }
-
-    public final V getOrElseSupplier(final K key, final Supplier<V> other) {
-      return get(key).orElseGet(other);
-    }
-
+    @Override
     public final <W> Tree<K, W> map(final Function<V, W> f) {
       return mapi((k, v) -> f.apply(v));
     }
 
-    public final void app(final Consumer<V> f) {
-      appi((k, v) -> f.accept(v));
-
-      return;
-    }
-
-    public final Optional<K> minKey() {
-      return minElementPair().map(p -> p.mx1);
-    }
-
-    public final Optional<K> maxKey() {
-      return maxElementPair().map(p -> p.mx1);
-    }
-    
     public abstract boolean isEmpty();
     public abstract Optional<V> get(final K key);
     public abstract Tree<K, V> insert(final K key, final V value);
-    public abstract boolean containsKey(final K key);
     public abstract int size();
     public abstract int depth();
-    public abstract <U> U fold(BiFunction<V, U, U> f, U acc);
+
     public abstract Optional<Pair<K, V>> minElementPair();
     public abstract Optional<Pair<K, V>> maxElementPair();
     public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
@@ -122,11 +102,6 @@ public final class AvlTreeModule {
     @Override
     public String graph(final Graph g) {
       return null;
-    }
-
-    @Override
-    public <U> U fold(BiFunction<V, U, U> f, U acc) {
-      return acc;
     }
 
     @Override
@@ -357,11 +332,6 @@ public final class AvlTreeModule {
       return mRight.isEmpty()
               ? Optional.of(Pair.create(mKey, mValue))
               : mRight.maxElementPair();
-    }
-
-    @Override
-    public <U> U fold(BiFunction<V, U, U> f, U acc) {
-      return mLeft.fold(f, f.apply(mValue, mRight.fold(f, acc)));
     }
 
     @Override

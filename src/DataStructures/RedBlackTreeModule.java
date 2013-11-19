@@ -35,42 +35,11 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public class RedBlackTreeModule {
   public static abstract class Tree<K extends Comparable<K>, V>
-                                      implements PersistentMap<K, V, Tree<K, V>>, DSTreeNode {
-    @Override
-    public final boolean containsKey(final K key) {
-      return get(key).isPresent();
-    }
-
-    @Override
-    public final V getOrElse(final K key, final V def) {
-      return get(key).orElse(def);
-    }
-
-    @Override
-    public final V getOrElseSupplier(final K key, final Supplier<V> other) {
-      return get(key).orElseGet(other);
-    }
-
+                                      extends PersistentMapBase<K, V, Tree<K, V>>
+                                      implements DSTreeNode {
     @Override
     public final <W> Tree<K, W> map(final Function<V, W> f) {
       return mapi((k, v) -> f.apply(v));
-    }
-
-    @Override
-    public final void app(final Consumer<V> f) {
-      appi((k, v) -> f.accept(v));
-
-      return;
-    }
-
-    @Override
-    public final <W> W foldl(final BiFunction<V, W, W> f, final W w) {
-      return foldli((k, v, z) -> f.apply(v, z), w);
-    }
-
-    @Override
-    public final <W> W foldr(final BiFunction<V, W, W> f, final W w) {
-      return foldri((k, v, z) -> f.apply(v, z), w);
     }
 
     @Override
@@ -147,33 +116,13 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public final Optional<K> lowerKey(final K key) {
-      return lowerPair(key).map(p -> p.mx1);
-    }
-
-    @Override
     public final Optional<Pair<K, V>> lowerPair(final K key) {
       return RedBlackTreeModule.lowerPair(this, key);
     }
 
     @Override
-    public final Optional<K> higherKey(final K key) {
-      return higherPair(key).map(p -> p.mx1);
-    }
-
-    @Override
     public final Optional<Pair<K, V>> higherPair(final K key) {
       return RedBlackTreeModule.higherPair(this, key);
-    }
-
-    @Override
-    public final Optional<K> minKey() {
-      return minElementPair().map(Pair::getFirst);
-    }
-
-    @Override
-    public final Optional<K> maxKey() {
-      return maxElementPair().map(Pair::getFirst);
     }
 
     @Override
