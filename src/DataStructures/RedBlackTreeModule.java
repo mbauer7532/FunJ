@@ -38,11 +38,6 @@ public class RedBlackTreeModule {
                                 extends PersistentMapBase<K, V, Tree<K, V>>
                                 implements DSTreeNode {
     @Override
-    public final Tree<K, V> filter(final Predicate<V> f) {
-      return filteri((k, v) -> f.test(v));
-    }
-
-    @Override
     public final Tree<K, V> filteri(final BiPredicate<K, V> f) {
       return filt(f, empty());
     }
