@@ -67,7 +67,7 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public int depth() {
+    public int height() {
       return 0;
     }
 
@@ -152,22 +152,23 @@ public final class AvlTreeModule {
 
     @Override
     public Optional<V> get(final K key) {
-      Objects.requireNonNull(key, "Key cannot be null.");
-
       final int res = mKey.compareTo(key);
-      return res < 0
-              ? mLeft.get(key)
-              : (res > 0
-                 ? mRight.get(key)
-                 : Optional.of(mValue));
+
+      if (res < 0) {
+        return mLeft.get(key);
+      }
+      else if (res > 0) {
+        return mRight.get(key);
+      }
+      else {
+        return Optional.of(mValue);
+      }
     }
 
     @Override
     public Tree<K, V> insert(final K key, final V value) {
-      Objects.requireNonNull(key, "Key cannot be null.");
-      Objects.requireNonNull(value, "Value cannot be null.");
-
       final int res = mKey.compareTo(key);
+
       if (res < 0) {
         return rebalance(mLeft.insert(key, value), mRight, mKey, mValue);
       }
@@ -266,6 +267,11 @@ public final class AvlTreeModule {
     }
 
     @Override
+    public int height() {
+      return Math.max(mLeft.height(), mRight.height()) + 1;
+    }
+
+    @Override
     public String graph(final Graph g) {
       final String nodeName = String.format("%s : %s", mKey.toString(), Integer.toString(mHeight));
       g.addNode(nodeName).addAttribute("ui.label", nodeName);
@@ -282,22 +288,23 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public int depth() {
-      return Math.max(mLeft.depth(), mRight.depth()) + 1;
-    }
-
-    @Override
     public Optional<Pair<K, V>> minElementPair() {
-      return mLeft.isEmpty()
-              ? Optional.of(Pair.create(mKey, mValue))
-              : mLeft.minElementPair();
+      if (mLeft.isEmpty()) {
+        return Optional.of(Pair.create(mKey, mValue));
+      }
+      else {
+        return mLeft.minElementPair();
+      }
     }
 
     @Override
     public Optional<Pair<K, V>> maxElementPair() {
-      return mRight.isEmpty()
-              ? Optional.of(Pair.create(mKey, mValue))
-              : mRight.maxElementPair();
+      if (mRight.isEmpty()) {
+        return Optional.of(Pair.create(mKey, mValue));
+      }
+      else {
+        return mRight.maxElementPair();
+      }
     }
 
     @Override

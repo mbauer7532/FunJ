@@ -77,6 +77,7 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
   public final ArrayList<K> keys() {
     final ArrayList<K> ks = new ArrayList<>();
     appi((k, v) -> { ks.add(k); });
+
     return ks;
   }
 
