@@ -75,11 +75,6 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public boolean containsKey(final K key) {
-      return false;
-    }
-
-    @Override
     public int size() {
       return 0;
     }
@@ -194,22 +189,6 @@ public final class AvlTreeModule {
       }
       else {
         return create(mLeft, key, value, mRight, mHeight);
-      }
-    }
-
-    @Override
-    public boolean containsKey(final K key) {
-      Objects.requireNonNull(key, "Key cannot be null.");
-
-      final int res = mKey.compareTo(key);
-      if (res < 0) {
-        return mLeft.containsKey(key);
-      }
-      else if (res > 0) {
-        return mRight.containsKey(key);
-      }
-      else {
-        return true;
       }
     }
 
