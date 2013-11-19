@@ -7,6 +7,7 @@
 package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
+import Utils.Functionals;
 import Utils.Numeric;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -109,6 +111,66 @@ public final class AvlTreeModule {
     @Override
     public Color DSgetColor() {
       return Color.GREEN;
+    }
+
+    @Override
+    public boolean containsValue(final V value) {
+      return false;
+    }
+
+    @Override
+    public Tree<K, V> filteri(final BiPredicate<K, V> f) {
+      return fromStrictlyIncreasingArray(getElementsSatisfyingPredicate(f));
+    }
+
+    @Override
+    public Pair<Tree<K, V>, Tree<K, V>> partitioni(BiPredicate<K, V> f) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public <W> PersistentMap<K, W, ?> mapPartial(Function<V, Optional<W>> f) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public <W> PersistentMap<K, W, ?> mapPartiali(BiFunction<K, V, Optional<W>> f) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Tree<K, V> insert(BiFunction<V, V, V> f, K key, V value) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Tree<K, V> remove(K key) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Optional<Pair<K, V>> lowerPair(K key) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Optional<Pair<K, V>> higherPair(K key) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public <W> W foldli(Functionals.TriFunction<K, V, W, W> f, W w) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public <W> W foldri(Functionals.TriFunction<K, V, W, W> f, W w) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
   }
 
@@ -334,6 +396,13 @@ public final class AvlTreeModule {
     @Override
     public Color DSgetColor() {
       return Color.BLUE;
+    }
+
+    @Override
+    public boolean containsValue(final V value) {
+      return mValue.equals(value)
+              || mLeft.containsValue(value)
+              || mRight.containsValue(value);
     }
   }
 

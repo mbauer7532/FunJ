@@ -39,7 +39,7 @@ public class RedBlackTreeModule {
                                 implements DSTreeNode {
     @Override
     public final Tree<K, V> filteri(final BiPredicate<K, V> f) {
-      return filt(f, empty());
+      return fromStrictlyIncreasingArray(getElementsSatisfyingPredicate(f));
     }
 
     @Override
@@ -107,7 +107,6 @@ public class RedBlackTreeModule {
     abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
     abstract Tree<K, V> ins(final K key, final V value);
     abstract Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement;
-    abstract Tree<K, V> filt(final BiPredicate<K, V> f, final Tree<K, V> acc);
     abstract void part(final BiPredicate<K, V> f, final Pair<Tree<K, V>, Tree<K, V>> res);
 
     private static <K extends Comparable<K>, V> ArrayList<Pair<K, V>> mergeArrays(
@@ -198,11 +197,6 @@ public class RedBlackTreeModule {
       // no new allocations take place.  The alternative implementation that 
       // copies the path is: return Pair.create(this, false);
       throw sNoSuchElement;  
-    }
-
-    @Override
-    Tree<K, V> filt(final BiPredicate<K, V> f, final Tree<K, V> acc) {
-      return acc;
     }
 
     @Override
@@ -362,11 +356,6 @@ public class RedBlackTreeModule {
       else {
         return mRight.maxElementPair();
       }
-    }
-
-    @Override
-    Tree<K, V> filt(final BiPredicate<K, V> f, final Tree<K, V> acc) {
-      return mRight.filt(f, mLeft.filt(f, f.test(mKey, mValue) ? acc.insert(mKey, mValue) : acc));
     }
 
     @Override

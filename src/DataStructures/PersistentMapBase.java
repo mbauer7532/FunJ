@@ -10,6 +10,7 @@ import DataStructures.TuplesModule.Pair;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -105,5 +106,15 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
   @Override
   public final M filter(final Predicate<V> f) {
     return filteri((k, v) -> f.test(v));
+  }
+  
+  protected ArrayList<Pair<K, V>> getElementsSatisfyingPredicate(final BiPredicate<K, V> f) {
+    final ArrayList<Pair<K, V>> kvs = new ArrayList<>();
+    appi((k, v) -> {
+      if (f.test(k, v)) {
+        kvs.add(Pair.create(k, v));
+      }
+    });
+    return kvs;
   }
 }
