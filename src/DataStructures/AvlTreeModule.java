@@ -35,16 +35,8 @@ public final class AvlTreeModule {
       return mapi((k, v) -> f.apply(v));
     }
 
-    public abstract boolean isEmpty();
-    public abstract Optional<V> get(final K key);
-    public abstract Tree<K, V> insert(final K key, final V value);
-    public abstract int size();
-    public abstract int depth();
-
-    public abstract Optional<Pair<K, V>> minElementPair();
-    public abstract Optional<Pair<K, V>> maxElementPair();
+    @Override
     public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
-    public abstract void appi(final BiConsumer<K, V> f);
     
     public abstract String graph(final Graph g);
   }
