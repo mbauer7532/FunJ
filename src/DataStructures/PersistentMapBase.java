@@ -7,6 +7,7 @@
 package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -69,5 +70,20 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
     @Override
     public final <W> W foldr(final BiFunction<V, W, W> f, final W w) {
       return foldri((k, v, z) -> f.apply(v, z), w);
+    }
+
+    @Override
+    public final ArrayList<K> keys() {
+      final ArrayList<K> ks = new ArrayList<>();
+      appi((k, v) -> { ks.add(k); });
+      return ks;
+    }
+
+    @Override
+    public final ArrayList<Pair<K, V>> keyValuePairs() {
+      final ArrayList<Pair<K, V>> kvs = new ArrayList<>();
+      appi((k, v) -> { kvs.add(Pair.create(k, v)); });
+
+      return kvs;
     }
 }

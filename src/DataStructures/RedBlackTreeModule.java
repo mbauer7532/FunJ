@@ -96,21 +96,6 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public final ArrayList<K> keys() {
-      final ArrayList<K> ks = new ArrayList<>();
-      appi((k, v) -> { ks.add(k); });
-      return ks;
-    }
-
-    @Override
-    public final ArrayList<Pair<K, V>> keyValuePairs() {
-      final ArrayList<Pair<K, V>> kvs = new ArrayList<>();
-      appi((k, v) -> { kvs.add(Pair.create(k, v)); });
-
-      return kvs;
-    }
-
-    @Override
     public final Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
       return fromStrictlyIncreasingArray(mergeArrays(f, keyValuePairs(), t.keyValuePairs()));
     }
