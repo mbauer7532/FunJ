@@ -25,13 +25,25 @@ import java.util.function.Supplier;
 public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentMap<K, V, M>> {
   public boolean containsKey(final K key);
 
+  public boolean containsValue(final V value);
+
+  public Optional<V> get(final K key);
+
   public V getOrElse(final K key, final V def);
 
   public V getOrElseSupplier(final K key, final Supplier<V> other);
 
+  public boolean isEmpty();
+
+  public int size();
+
   public <W> PersistentMap<K, W, ?> map(final Function<V, W> f);
 
+  public <W> PersistentMap<K, W, ?> mapi(final BiFunction<K, V, W> f);
+
   public void app(final Consumer<V> f);
+
+  public void appi(final BiConsumer<K, V> f);
 
   public <W> W foldl(final BiFunction<V, W, W> f, final W w);
 
@@ -49,9 +61,9 @@ public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentM
 
   public <W> PersistentMap<K, W, ?> mapPartiali(final BiFunction<K, V, Optional<W>> f);
 
-  public M insert(final BiFunction<V, V, V> f, final K key, final V value);
-
   public M insert(final K key, final V value);
+
+  public M insert(final BiFunction<V, V, V> f, final K key, final V value);
 
   public M remove(final K key);
 
@@ -73,20 +85,6 @@ public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentM
 
   public Optional<K> maxKey();
 
-  public boolean isEmpty();
-
-  public Optional<V> get(final K key);
-
-  public boolean containsValue(final V value);
-
-  public int size();
-
-  public int height();
-
-  public void appi(final BiConsumer<K, V> f);
-
-  public <W> PersistentMap<K, W, ?> mapi(final BiFunction<K, V, W> f);
-
   public <W> W foldli(final TriFunction<K, V, W, W> f, final W w);
 
   public <W> W foldri(final TriFunction<K, V, W, W> f, final W w);
@@ -94,4 +92,6 @@ public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentM
   public Optional<Pair<K, V>> minElementPair();
 
   public Optional<Pair<K, V>> maxElementPair();
+
+  public int height();
 }

@@ -47,6 +47,9 @@ public final class TuplesModule {
     public int hashCode() {
       return mx1.hashCode() + mx2.hashCode();
     }
+
+    public T1 getFirst()  { return mx1; }
+    public T2 getSecond() { return mx2; }
   }
 
   public static final class Triple<T1, T2, T3> {

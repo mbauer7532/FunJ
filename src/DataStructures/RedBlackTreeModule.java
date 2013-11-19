@@ -168,12 +168,12 @@ public class RedBlackTreeModule {
 
     @Override
     public final Optional<K> minKey() {
-      return minElementPair().map(p -> p.mx1);
+      return minElementPair().map(Pair::getFirst);
     }
 
     @Override
     public final Optional<K> maxKey() {
-      return maxElementPair().map(p -> p.mx1);
+      return maxElementPair().map(Pair::getFirst);
     }
 
     @Override
@@ -246,7 +246,7 @@ public class RedBlackTreeModule {
       return destVec;
     }
   }
-  
+
   private static final class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
     private static final EmptyNode<? extends Comparable<?>, ?> sEmptyNode = new EmptyNode<>();
 
@@ -1194,7 +1194,7 @@ public class RedBlackTreeModule {
     private final ArrayList<Pair<K, V>> mVector;
     private final boolean mIncreasing;
     private final int mRedLevel;
-    
+
     public InitFromArrayWorker(final ArrayList<Pair<K, V>> vector,
                                final boolean increasing,
                                final int redLevel) {
