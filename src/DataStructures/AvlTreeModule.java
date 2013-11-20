@@ -413,6 +413,61 @@ public final class AvlTreeModule {
               || mLeft.containsValue(value)
               || mRight.containsValue(value);
     }
+
+    @Override
+    public Tree<K, V> filteri(BiPredicate<K, V> f) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Pair<Tree<K, V>, Tree<K, V>> partitioni(BiPredicate<K, V> f) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public <W> PersistentMap<K, W, ?> mapPartial(Function<V, Optional<W>> f) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public <W> PersistentMap<K, W, ?> mapPartiali(BiFunction<K, V, Optional<W>> f) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Tree<K, V> insert(BiFunction<V, V, V> f, K key, V value) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Tree<K, V> remove(K key) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Optional<Pair<K, V>> lowerPair(K key) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Optional<Pair<K, V>> higherPair(K key) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public <W> W foldli(TriFunction<K, V, W, W> f, W w) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public <W> W foldri(TriFunction<K, V, W, W> f, W w) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
   }
 
   // Public interface

@@ -116,7 +116,7 @@ public class AvlTreeModuleTest {
       final double expectedDepth = AvlTreeModule.expectedDepth(N);
 
       final int avlTreeSize = t.size();
-      final int avlTreeDepth = t.depth();
+      final int avlTreeDepth = t.height();
 
       assertEquals(expectedSize, avlTreeSize);
       assertTrue(((double) avlTreeDepth) < expectedDepth);
