@@ -38,6 +38,15 @@ public final class AvlTreeModule {
     }
 
     @Override
+    public final Tree<K, V> remove(final K key) {
+      try {
+        return rem(key).mx1;
+      } catch (ControlExnNoSuchElement ex) {
+        return this;
+      }
+    }
+
+    @Override
     public final Tree<K, V> filteri(final BiPredicate<K, V> f) {
       return fromStrictlyIncreasingArray(getElementsSatisfyingPredicate(f));
     }
@@ -75,6 +84,7 @@ public final class AvlTreeModule {
       return AvlTreeModule.higherPair(this, key);
     }
 
+    abstract Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement;
     public abstract String graph(final Graph g);
   }
 
@@ -159,8 +169,12 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public Tree<K, V> remove(final K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    Pair<Tree<K, V>, Boolean> rem(final K key)  throws ControlExnNoSuchElement {
+      // This exception is used for control purposes.
+      // When removing non-existent elements we simply return the same input tree
+      // no new allocations take place.  The alternative implementation that 
+      // copies the path is: return Pair.create(this, false);
+      throw sNoSuchElement;
     }
 
     @Override
@@ -406,7 +420,7 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public Tree<K, V> remove(K key) {
+    Pair<Tree<K, V>, Boolean> rem(K key)  throws ControlExnNoSuchElement {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -551,4 +565,8 @@ public final class AvlTreeModule {
 
   private static final double sSqrtOf5 = Math.sqrt(5.0);
   private static final double sDepthCoefficient = Numeric.log(2.0, Numeric.sGoldenRatio);
+
+  private static final class ControlExnNoSuchElement extends Exception {};
+
+  private static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
 }
