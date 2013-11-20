@@ -98,6 +98,11 @@ public class RedBlackTreeModule {
     @Override
     public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
 
+    @Override
+    public final <W> Tree<K, W> map(final Function<V, W> f) {
+      return mapi((k, v) -> f.apply(v));
+    }
+
     boolean isRed() { return false; }
     boolean isBlack() { return false; }
 

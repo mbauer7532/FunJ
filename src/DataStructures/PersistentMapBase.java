@@ -94,11 +94,6 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
   public abstract <W> PersistentMapBase<K, W, ?> mapi(final BiFunction<K, V, W> f);
 
   @Override
-  public final <W> PersistentMapBase<K, W, ?> map(final Function<V, W> f) {
-    return mapi((k, v) -> f.apply(v));
-  }
-
-  @Override
   public final Pair<M, M> partition(final Predicate<V> f) {
     return partitioni((k, v) -> f.test(v));
   }
@@ -107,7 +102,7 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
   public final M filter(final Predicate<V> f) {
     return filteri((k, v) -> f.test(v));
   }
-  
+
   protected ArrayList<Pair<K, V>> getElementsSatisfyingPredicate(final BiPredicate<K, V> f) {
     final ArrayList<Pair<K, V>> kvs = new ArrayList<>();
     appi((k, v) -> {
