@@ -113,13 +113,13 @@ public class AvlTreeModuleTest {
                               ((AvlTreeModule.Tree<Integer, Integer> z1, AvlTreeModule.Tree<Integer, Integer> z2) -> null));
 
       final int expectedSize = N;
-      final double expectedDepth = AvlTreeModule.expectedDepth(N);
+      final double expectedHeight = AvlTreeModule.expectedHeight(N);
 
       final int avlTreeSize = t.size();
-      final int avlTreeDepth = t.height();
+      final int avlTreeHeight = t.height();
 
       assertEquals(expectedSize, avlTreeSize);
-      assertTrue(((double) avlTreeDepth) < expectedDepth);
+      assertTrue(((double) avlTreeHeight) < expectedHeight);
     }
   }
 }

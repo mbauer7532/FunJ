@@ -7,6 +7,7 @@
 package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
+import Utils.ArrayUtils;
 import Utils.Functionals.TriFunction;
 import Utils.Numeric;
 import java.awt.Color;
@@ -559,7 +560,7 @@ public final class AvlTreeModule {
   }
 
 
-  public static double expectedDepth(final int n) {
+  public static double expectedHeight(final int n) {
     return sDepthCoefficient * Numeric.log(sSqrtOf5 * (double)(n + 2), 2.0) - 2.0;
   }
 
@@ -569,4 +570,37 @@ public final class AvlTreeModule {
   private static final class ControlExnNoSuchElement extends Exception {};
 
   private static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
+
+  private static <K extends Comparable<K>, V> boolean binaryTreePropertyHolds(final Tree<K, V> t) {
+    return ArrayUtils.isStrictlyIncreasing(t.keys());
+  }
+
+  private static <K extends Comparable<K>, V> boolean heightOfAvlTreeConstraintHolds(final Tree<K, V> t) {
+    final int avlTreeSize   = t.size();
+    final int avlTreeHeight = t.height();
+    
+    final double expectedHeight = expectedHeight(avlTreeSize);
+    
+    return (double)avlTreeHeight < expectedHeight;
+  }
+
+  private static <K extends Comparable<K>, V> boolean avlTreePropertyHolds(final Tree<K, V> t) {
+    return true;
+  }
+
+  static <K extends Comparable<K>, V> Pair<Boolean, String> verifyAVLTreeProperties(final Tree<K, V> t) {
+    if (! binaryTreePropertyHolds(t)) {
+      return Pair.create(false, "Binary Tree property does not hold.");
+    }
+
+    if (! heightOfAvlTreeConstraintHolds(t)) {
+      return Pair.create(false, "The depth of the tree was larger than the expected size.");
+    }
+
+    if (! avlTreePropertyHolds(t)) {
+      return Pair.create(false, "AVL property does not hold on this tree.");
+    }
+ 
+    return Pair.create(true, "Success!");
+  }
 }
