@@ -44,11 +44,10 @@ public class RedBlackTreeModule {
 
     @Override
     public final Pair<Tree<K, V>, Tree<K, V>> partitioni(final BiPredicate<K, V> f) {
-      final Tree<K, V> e = empty();
-      final Pair<Tree<K, V>, Tree<K, V>> res = Pair.create(e, e);
-      part(f, res);
+      final Pair<ArrayList<Pair<K, V>>, ArrayList<Pair<K, V>>> elemsPair = splitElemsAccordingToPredicate(f);
 
-      return res;
+      return Pair.create(fromStrictlyIncreasingArray(elemsPair.mx1),
+                         fromStrictlyIncreasingArray(elemsPair.mx2));
     }
 
     @Override
@@ -58,7 +57,7 @@ public class RedBlackTreeModule {
 
     @Override
     public final <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
-      return RedBlackTreeModule.mapPartiali(this, f);
+      return fromStrictlyIncreasingArray(selectNonEmptyOptionalElements(f));
     }
 
     @Override
@@ -112,7 +111,6 @@ public class RedBlackTreeModule {
     abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
     abstract Tree<K, V> ins(final K key, final V value);
     abstract Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement;
-    abstract void part(final BiPredicate<K, V> f, final Pair<Tree<K, V>, Tree<K, V>> res);
 
     private static <K extends Comparable<K>, V> ArrayList<Pair<K, V>> mergeArrays(
             final BiFunction<V, V, V> f,
@@ -202,11 +200,6 @@ public class RedBlackTreeModule {
       // no new allocations take place.  The alternative implementation that 
       // copies the path is: return Pair.create(this, false);
       throw sNoSuchElement;  
-    }
-
-    @Override
-    void part(final BiPredicate<K, V> f, final Pair<Tree<K, V>, Tree<K, V>> res) {
-      return;
     }
 
     @Override
@@ -363,20 +356,6 @@ public class RedBlackTreeModule {
       }
     }
 
-    @Override
-    void part(final BiPredicate<K, V> f, final Pair<Tree<K, V>, Tree<K, V>> res) {
-      mLeft.part(f, res);
-      if (f.test(mKey, mValue)) {
-        res.mx1 = res.mx1.insert(mKey, mValue);
-      }
-      else {
-        res.mx2 = res.mx2.insert(mKey, mValue);
-      }
-      mRight.part(f, res);
-      
-      return;
-    }
- 
     @Override
     public DSTreeNode[] DSgetChildren() {
       return new DSTreeNode[] { mLeft, mRight };
@@ -1000,15 +979,6 @@ public class RedBlackTreeModule {
     }
 
     return makeBoundPair(candidate);
-  }
-
-  private static <K extends Comparable<K>, V, W> Tree<K, W> mapPartiali(final Tree<K, V> t, final BiFunction<K, V, Optional<W>> f) {
-    return fromStrictlyIncreasingArray(
-            t.keyValuePairs().stream()
-                             .flatMap(p -> f.apply(p.mx1, p.mx2)
-                                            .map(w -> Stream.of(Pair.create(p.mx1, w)))
-                                            .orElseGet(() -> Stream.empty()))
-                             .collect(Collectors.toCollection(ArrayList::new)));
   }
 
   static <K extends Comparable<K>, V> Pair<Boolean, String> verifyRedBlackProperties(final Tree<K, V> t) {

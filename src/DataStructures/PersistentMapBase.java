@@ -105,11 +105,41 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
 
   protected ArrayList<Pair<K, V>> getElementsSatisfyingPredicate(final BiPredicate<K, V> f) {
     final ArrayList<Pair<K, V>> kvs = new ArrayList<>();
+
     appi((k, v) -> {
       if (f.test(k, v)) {
         kvs.add(Pair.create(k, v));
       }
     });
     return kvs;
+  }
+
+  protected Pair<ArrayList<Pair<K, V>>, ArrayList<Pair<K, V>>> splitElemsAccordingToPredicate(final BiPredicate<K, V> f) {
+    final ArrayList<Pair<K, V>> v0 = new ArrayList<>(), v1 = new ArrayList<>();
+
+    appi((k, v) -> {
+      final Pair<K, V> p = Pair.create(k, v);
+      if (f.test(k, v)) {
+        v0.add(p);
+      }
+      else {
+        v1.add(p);
+      }
+    });
+
+    return Pair.create(v0, v1);
+  }
+
+  protected <W> ArrayList<Pair<K, W>> selectNonEmptyOptionalElements(final BiFunction<K, V, Optional<W>> f) {
+    final ArrayList<Pair<K, W>> vws = new ArrayList<>();
+
+    appi((k, v) -> {
+      final Optional<W> opt = f.apply(k, v);
+      if (opt.isPresent()) {
+        vws.add(Pair.create(k, opt.get()));
+      }
+    });
+
+    return vws;
   }
 }

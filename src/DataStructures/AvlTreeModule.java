@@ -8,6 +8,7 @@ package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
 import Utils.Functionals;
+import Utils.Functionals.TriFunction;
 import Utils.Numeric;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -61,6 +62,11 @@ public final class AvlTreeModule {
     @Override
     public Optional<V> get(final K key) {
       return Optional.empty();
+    }
+
+    @Override
+    public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
+      return Node.create(this, key, value, this, 1);
     }
 
     @Override
@@ -129,52 +135,50 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public Pair<Tree<K, V>, Tree<K, V>> partitioni(BiPredicate<K, V> f) {
+    public final Pair<Tree<K, V>, Tree<K, V>> partitioni(final BiPredicate<K, V> f) {
+      final Pair<ArrayList<Pair<K, V>>, ArrayList<Pair<K, V>>> elemsPair = splitElemsAccordingToPredicate(f);
+
+      return Pair.create(fromStrictlyIncreasingArray(elemsPair.mx1),
+                         fromStrictlyIncreasingArray(elemsPair.mx2));
+    }
+
+    @Override
+    public final <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
+      return mapPartiali((k, v) -> f.apply(v));
+    }
+
+    @Override
+    public final <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
+      return fromStrictlyIncreasingArray(selectNonEmptyOptionalElements(f));
+    }
+
+    @Override
+    public Tree<K, V> remove(final K key) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public <W> PersistentMap<K, W, ?> mapPartial(Function<V, Optional<W>> f) {
+    public Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public <W> PersistentMap<K, W, ?> mapPartiali(BiFunction<K, V, Optional<W>> f) {
+    public Optional<Pair<K, V>> lowerPair(final K key) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Tree<K, V> insert(BiFunction<V, V, V> f, K key, V value) {
+    public Optional<Pair<K, V>> higherPair(final K key) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Tree<K, V> remove(K key) {
+    public <W> W foldli(final TriFunction<K, V, W, W> f, final W w) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Optional<Pair<K, V>> lowerPair(K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Optional<Pair<K, V>> higherPair(K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public <W> W foldli(Functionals.TriFunction<K, V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public <W> W foldri(Functionals.TriFunction<K, V, W, W> f, W w) {
+    public <W> W foldri(final TriFunction<K, V, W, W> f, final W w) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
   }
