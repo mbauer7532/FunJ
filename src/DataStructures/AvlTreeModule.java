@@ -51,8 +51,13 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public final <W> PersistentMap<K, W, ?> mapPartial(Function<V, Optional<W>> f) {
+    public final <W> Tree<K, W> mapPartial(Function<V, Optional<W>> f) {
       return mapPartiali((k, v) -> f.apply(v));
+    }
+
+    @Override
+    public final <W> Tree<K, W> mapPartiali(BiFunction<K, V, Optional<W>> f) {
+      return fromStrictlyIncreasingArray(selectNonEmptyOptionalElements(f));
     }
 
     @Override
@@ -68,11 +73,6 @@ public final class AvlTreeModule {
     @Override
     public final Optional<Pair<K, V>> higherPair(final K key) {
       return AvlTreeModule.higherPair(this, key);
-    }
-
-    @Override
-    public final <W> PersistentMap<K, W, ?> mapPartiali(BiFunction<K, V, Optional<W>> f) {
-      return fromStrictlyIncreasingArray(selectNonEmptyOptionalElements(f));
     }
 
     public abstract String graph(final Graph g);
