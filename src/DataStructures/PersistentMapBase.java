@@ -28,6 +28,11 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
   }
 
   @Override
+  public M insert(final K key, final V value) {
+    return insert((v0, v1) -> v1, key, value);
+  }
+
+  @Override
   public final V getOrElse(final K key, final V def) {
     return get(key).orElse(def);
   }

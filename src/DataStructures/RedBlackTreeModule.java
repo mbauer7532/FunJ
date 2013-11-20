@@ -425,21 +425,6 @@ public class RedBlackTreeModule {
       }
     }
 
-    @Override
-    Tree<K, V> ins(final K key, final V value) {
-      final int res = key.compareTo(mKey);
-
-      if (res < 0) {
-        return create(mLeft.ins(key, value), mKey, mValue, mRight);
-      }
-      else if (res > 0) {
-        return create(mLeft, mKey, mValue, mRight.ins(key, value));
-      }
-      else {
-        return this;
-      }
-    }
-
 //    let remove k m =
 //    let rec remove_aux = function
 //      | Empty ->

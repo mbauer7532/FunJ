@@ -237,7 +237,7 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public Tree<K, V> insert(final K key, final V value) {
+    public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
       final int res = mKey.compareTo(key);
 
       if (res < 0) {
@@ -247,7 +247,7 @@ public final class AvlTreeModule {
         return rebalance(mLeft, mRight.insert(key, value), mKey, mValue);
       }
       else {
-        return create(mLeft, key, value, mRight, mHeight);
+        return create(mLeft, key, f.apply(mValue, value), mRight, mHeight);
       }
     }
 
@@ -415,28 +415,26 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public Tree<K, V> filteri(BiPredicate<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Tree<K, V> filteri(final BiPredicate<K, V> f) {
+      return fromStrictlyIncreasingArray(getElementsSatisfyingPredicate(f));
     }
 
     @Override
     public Pair<Tree<K, V>, Tree<K, V>> partitioni(BiPredicate<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      final Pair<ArrayList<Pair<K, V>>, ArrayList<Pair<K, V>>> elemsPair = splitElemsAccordingToPredicate(f);
+
+      return Pair.create(fromStrictlyIncreasingArray(elemsPair.mx1),
+                         fromStrictlyIncreasingArray(elemsPair.mx2));
     }
 
     @Override
     public <W> PersistentMap<K, W, ?> mapPartial(Function<V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return mapPartiali((k, v) -> f.apply(v));
     }
 
     @Override
     public <W> PersistentMap<K, W, ?> mapPartiali(BiFunction<K, V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Tree<K, V> insert(BiFunction<V, V, V> f, K key, V value) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return fromStrictlyIncreasingArray(selectNonEmptyOptionalElements(f));
     }
 
     @Override
