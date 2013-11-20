@@ -7,19 +7,15 @@
 package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
-import Utils.Functionals;
 import Utils.Functionals.TriFunction;
 import Utils.Numeric;
 import java.awt.Color;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import org.StructureGraphic.v1.DSTreeNode;
 import org.graphstream.graph.*;
 
@@ -39,6 +35,44 @@ public final class AvlTreeModule {
     @Override
     public final <W> Tree<K, W> map(final Function<V, W> f) {
       return mapi((k, v) -> f.apply(v));
+    }
+
+    @Override
+    public final Tree<K, V> filteri(final BiPredicate<K, V> f) {
+      return fromStrictlyIncreasingArray(getElementsSatisfyingPredicate(f));
+    }
+
+    @Override
+    public final Pair<Tree<K, V>, Tree<K, V>> partitioni(BiPredicate<K, V> f) {
+      final Pair<ArrayList<Pair<K, V>>, ArrayList<Pair<K, V>>> elemsPair = splitElemsAccordingToPredicate(f);
+
+      return Pair.create(fromStrictlyIncreasingArray(elemsPair.mx1),
+                         fromStrictlyIncreasingArray(elemsPair.mx2));
+    }
+
+    @Override
+    public final <W> PersistentMap<K, W, ?> mapPartial(Function<V, Optional<W>> f) {
+      return mapPartiali((k, v) -> f.apply(v));
+    }
+
+    @Override
+    public final Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
+      return fromStrictlyIncreasingArray(mergeArrays(f, keyValuePairs(), t.keyValuePairs()));
+    }
+
+    @Override
+    public final Optional<Pair<K, V>> lowerPair(final K key) {
+      return AvlTreeModule.lowerPair(this, key);
+    }
+
+    @Override
+    public final Optional<Pair<K, V>> higherPair(final K key) {
+      return AvlTreeModule.higherPair(this, key);
+    }
+
+    @Override
+    public final <W> PersistentMap<K, W, ?> mapPartiali(BiFunction<K, V, Optional<W>> f) {
+      return fromStrictlyIncreasingArray(selectNonEmptyOptionalElements(f));
     }
 
     public abstract String graph(final Graph g);
@@ -66,11 +100,6 @@ public final class AvlTreeModule {
 
     @Override
     public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
-      return Node.create(this, key, value, this, 1);
-    }
-
-    @Override
-    public Tree<K, V> insert(final K key, final V value) {
       return Node.create(this, key, value, this, 1);
     }
 
@@ -130,56 +159,18 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public Tree<K, V> filteri(final BiPredicate<K, V> f) {
-      return fromStrictlyIncreasingArray(getElementsSatisfyingPredicate(f));
-    }
-
-    @Override
-    public final Pair<Tree<K, V>, Tree<K, V>> partitioni(final BiPredicate<K, V> f) {
-      final Pair<ArrayList<Pair<K, V>>, ArrayList<Pair<K, V>>> elemsPair = splitElemsAccordingToPredicate(f);
-
-      return Pair.create(fromStrictlyIncreasingArray(elemsPair.mx1),
-                         fromStrictlyIncreasingArray(elemsPair.mx2));
-    }
-
-    @Override
-    public final <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
-      return mapPartiali((k, v) -> f.apply(v));
-    }
-
-    @Override
-    public final <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
-      return fromStrictlyIncreasingArray(selectNonEmptyOptionalElements(f));
-    }
-
-    @Override
     public Tree<K, V> remove(final K key) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Optional<Pair<K, V>> lowerPair(final K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Optional<Pair<K, V>> higherPair(final K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public <W> W foldli(final TriFunction<K, V, W, W> f, final W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return w;
     }
 
     @Override
     public <W> W foldri(final TriFunction<K, V, W, W> f, final W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return w;
     }
   }
 
@@ -415,56 +406,18 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public Tree<K, V> filteri(final BiPredicate<K, V> f) {
-      return fromStrictlyIncreasingArray(getElementsSatisfyingPredicate(f));
-    }
-
-    @Override
-    public Pair<Tree<K, V>, Tree<K, V>> partitioni(BiPredicate<K, V> f) {
-      final Pair<ArrayList<Pair<K, V>>, ArrayList<Pair<K, V>>> elemsPair = splitElemsAccordingToPredicate(f);
-
-      return Pair.create(fromStrictlyIncreasingArray(elemsPair.mx1),
-                         fromStrictlyIncreasingArray(elemsPair.mx2));
-    }
-
-    @Override
-    public <W> PersistentMap<K, W, ?> mapPartial(Function<V, Optional<W>> f) {
-      return mapPartiali((k, v) -> f.apply(v));
-    }
-
-    @Override
-    public <W> PersistentMap<K, W, ?> mapPartiali(BiFunction<K, V, Optional<W>> f) {
-      return fromStrictlyIncreasingArray(selectNonEmptyOptionalElements(f));
-    }
-
-    @Override
     public Tree<K, V> remove(K key) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public <W> W foldli(final TriFunction<K, V, W, W> f, final W w) {
+      return mRight.foldli(f, f.apply(mKey, mValue, mLeft.foldli(f, w)));
     }
 
     @Override
-    public Optional<Pair<K, V>> lowerPair(K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Optional<Pair<K, V>> higherPair(K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public <W> W foldli(TriFunction<K, V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public <W> W foldri(TriFunction<K, V, W, W> f, W w) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public <W> W foldri(final TriFunction<K, V, W, W> f, final W w) {
+      return mLeft.foldri(f, f.apply(mKey, mValue, mRight.foldri(f, w)));
     }
   }
 
@@ -528,6 +481,69 @@ public final class AvlTreeModule {
                     ((t, p) -> t.insert(p.mx1, p.mx2)),
                     ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
   }
+
+  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> makeBoundPair(final Node<K, V> candidate) {
+    return candidate == null
+            ? Optional.empty()
+            : Optional.of(Pair.create(candidate.mKey, candidate.mValue));
+  }
+
+  static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
+    Tree<K, V> tree = t;
+    Node<K, V> n, candidate = null;
+
+    while (! tree.isEmpty()) {
+      n = (Node<K, V>) tree;
+      int res = key.compareTo(n.mKey);
+      if (res > 0) {
+        tree = n.mRight;
+        candidate = n;
+      }
+      else if (res < 0) {
+        tree = n.mLeft;
+      }
+      else {
+         final Optional<Pair<K, V>> p = n.mLeft.maxElementPair();
+         if (p.isPresent()) {
+           return p;
+         }
+         else {
+           break;
+         }
+      }
+    }
+
+    return makeBoundPair(candidate);
+  }
+
+  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPair(final Tree<K, V> t, final K key) {
+    Tree<K, V> tree = t;
+    Node<K, V> n, candidate = null;
+
+    while (! tree.isEmpty()) {
+      n = (Node<K, V>) tree;
+      int res = key.compareTo(n.mKey);
+      if (res > 0) {
+        tree = n.mRight;
+      }
+      else if (res < 0) {
+        tree = n.mLeft;
+        candidate = n;
+      }
+      else {
+        final Optional<Pair<K, V>> p = n.mRight.minElementPair();
+        if (p.isPresent()) {
+           return p;
+         }
+         else {
+           break;
+         }
+      }
+    }
+
+    return makeBoundPair(candidate);
+  }
+
 
   public static double expectedDepth(final int n) {
     return sDepthCoefficient * Numeric.log(sSqrtOf5 * (double)(n + 2), 2.0) - 2.0;

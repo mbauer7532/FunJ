@@ -12,9 +12,9 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -28,7 +28,7 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
   }
 
   @Override
-  public M insert(final K key, final V value) {
+  public final M insert(final K key, final V value) {
     return insert((v0, v1) -> v1, key, value);
   }
 
@@ -147,5 +147,58 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
     });
 
     return vws;
+  }
+
+  protected static <K extends Comparable<K>, V> ArrayList<Pair<K, V>> mergeArrays(
+          final BiFunction<V, V, V> f,
+          final ArrayList<Pair<K, V>> v0,
+          final ArrayList<Pair<K, V>> v1) {
+    final int s0 = v0.size();
+    final int s1 = v1.size();
+    final int len = s0 + s1;
+
+    final ArrayList<Pair<K, V>> destVec = new ArrayList<>(len);
+
+    if (v0.get(s0 - 1).mx1.compareTo(v1.get(0).mx1) < 0) {
+      destVec.addAll(v0);
+      destVec.addAll(v1);
+    }
+    else if (v0.get(0).mx1.compareTo(v1.get(s1 - 1).mx1) > 0) {
+      destVec.addAll(v1);
+      destVec.addAll(v0);
+    }
+    else {
+      int idx0 = 0, idx1 = 0;
+      for (int i = 0; i != len; ++i) {
+        if (idx0 == s0) {
+          IntStream.range(idx1, s1).forEach(j -> { destVec.add(v1.get(j)); });
+          break;
+        }
+        else if (idx1 == s1) {
+          IntStream.range(idx0, s0).forEach(j -> { destVec.add(v0.get(j)); });
+          break;
+        }
+        else {
+          final Pair<K, V> e0 = v0.get(idx0), e1 = v1.get(idx1), e;
+          final int res = e0.mx1.compareTo(e1.mx1);
+
+          if (res < 0) {
+            e = e0;
+            ++idx0;
+          } else if (res > 0) {
+            e = e1;
+            ++idx1;
+          } else {
+            e = Pair.create(e0.mx1, f.apply(e0.mx2, e1.mx2));
+            ++idx0;
+            ++idx1;
+          }
+
+          destVec.add(e);
+        }
+      }
+    }
+
+    return destVec;
   }
 }
