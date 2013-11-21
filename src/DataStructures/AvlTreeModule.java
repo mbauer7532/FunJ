@@ -584,8 +584,34 @@ public final class AvlTreeModule {
     return (double)avlTreeHeight < expectedHeight;
   }
 
+  private static final class ControlExnAvlTreeProperty extends Exception {};
+
+  private static final ControlExnAvlTreeProperty sAvlTreeInvariantViolated = new ControlExnAvlTreeProperty();
+  
+  private static <K extends Comparable<K>, V> int avlTreePropertyHoldsAux(final Tree<K, V> t) throws ControlExnAvlTreeProperty {
+    if (t.isEmpty()) {
+      return 0;
+    }
+    else {
+      final Node<K, V> node = (Node<K, V>) t;
+      final int leftHeight  = avlTreePropertyHoldsAux(node.mLeft);
+      final int rightHeight = avlTreePropertyHoldsAux(node.mRight);
+      if (Math.abs(leftHeight - rightHeight) > 1) {
+        throw sAvlTreeInvariantViolated;
+      }
+
+      return Math.max(leftHeight, rightHeight) + 1;
+    }
+  }
+
   private static <K extends Comparable<K>, V> boolean avlTreePropertyHolds(final Tree<K, V> t) {
-    return true;
+    try {
+      avlTreePropertyHoldsAux(t);
+      return true;
+    }
+    catch (ControlExnAvlTreeProperty e) {
+      return false;
+    }
   }
 
   static <K extends Comparable<K>, V> Pair<Boolean, String> verifyAVLTreeProperties(final Tree<K, V> t) {
