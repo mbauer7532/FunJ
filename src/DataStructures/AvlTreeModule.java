@@ -41,7 +41,7 @@ public final class AvlTreeModule {
     @Override
     public final Tree<K, V> remove(final K key) {
       try {
-        return rem(key).mx1;
+        return rem(key);
       } catch (ControlExnNoSuchElement ex) {
         return this;
       }
@@ -85,7 +85,8 @@ public final class AvlTreeModule {
       return AvlTreeModule.higherPair(this, key);
     }
 
-    abstract Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement;
+    abstract Tree<K, V> rem(final K key) throws ControlExnNoSuchElement;
+    abstract int getBalance();
     public abstract String graph(final Graph g);
   }
 
@@ -170,7 +171,7 @@ public final class AvlTreeModule {
     }
 
     @Override
-    Pair<Tree<K, V>, Boolean> rem(final K key)  throws ControlExnNoSuchElement {
+    Tree<K, V> rem(final K key)  throws ControlExnNoSuchElement {
       // This exception is used for control purposes.
       // When removing non-existent elements we simply return the same input tree
       // no new allocations take place.  The alternative implementation that 
@@ -186,6 +187,11 @@ public final class AvlTreeModule {
     @Override
     public <W> W foldri(final TriFunction<K, V, W, W> f, final W w) {
       return w;
+    }
+
+    @Override
+    int getBalance() {
+      return 0;
     }
   }
 
@@ -421,8 +427,53 @@ public final class AvlTreeModule {
     }
 
     @Override
-    Pair<Tree<K, V>, Boolean> rem(K key)  throws ControlExnNoSuchElement {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    Tree<K, V> rem(final K key) throws ControlExnNoSuchElement {
+      final Tree<K, V> t;
+      final int res = key.compareTo(mKey);
+      if (res < 0) {
+        return Node.create(mLeft.rem(key), mKey, mValue, mRight);
+      }
+      else if (res > 0) {
+        return Node.create(mLeft, mKey, mValue, mRight.rem(key));
+      }
+      else {
+        final boolean leftIsEmpty  = mLeft.isEmpty();
+        final boolean rightIsEmpty = mRight.isEmpty();
+
+        if (leftIsEmpty && rightIsEmpty) {
+          return EmptyNode.create();
+        }
+        else if (leftIsEmpty) {
+          t = mRight;
+        }
+        else if (rightIsEmpty) {
+          t = mLeft;
+        }
+        else {
+          final Pair<K, V> successor = mRight.minElementPair().get(); // We know it is there.
+          t = Node.create(mLeft, successor.mx1, successor.mx2, mRight.rem(successor.mx1));
+        }
+      }
+
+      final Node<K, V> root = (Node<K, V>) t;
+      final int balance = root.getBalance();
+
+      if (balance > 1) {
+        if (root.mLeft.getBalance() >= 0) {
+          
+        }
+        else {
+          
+        }
+      }
+      else if (balance < -1) {
+        if (root.mRight.getBalance() <= 0) {
+          
+        }
+        else {
+          
+        }
+      }
     }
 
     @Override
@@ -433,6 +484,11 @@ public final class AvlTreeModule {
     @Override
     public <W> W foldri(final TriFunction<K, V, W, W> f, final W w) {
       return mLeft.foldri(f, f.apply(mKey, mValue, mRight.foldri(f, w)));
+    }
+
+    @Override
+    int getBalance() {
+      return mLeft.mHeight - mRight.mHeight;
     }
   }
 
@@ -476,7 +532,7 @@ public final class AvlTreeModule {
 
       return Node.create(lt, p.mx1, p.mx2, rt);
     }
-    
+
     public final Tree<K, V> doIt() {
       return workerFunc(0, mVector.size() - 1);
     }
@@ -509,7 +565,7 @@ public final class AvlTreeModule {
 
     while (! tree.isEmpty()) {
       n = (Node<K, V>) tree;
-      int res = key.compareTo(n.mKey);
+      final int res = key.compareTo(n.mKey);
       if (res > 0) {
         tree = n.mRight;
         candidate = n;
@@ -537,7 +593,7 @@ public final class AvlTreeModule {
 
     while (! tree.isEmpty()) {
       n = (Node<K, V>) tree;
-      int res = key.compareTo(n.mKey);
+      final int res = key.compareTo(n.mKey);
       if (res > 0) {
         tree = n.mRight;
       }
@@ -558,7 +614,6 @@ public final class AvlTreeModule {
 
     return makeBoundPair(candidate);
   }
-
 
   public static double expectedHeight(final int n) {
     return sDepthCoefficient * Numeric.log(sSqrtOf5 * (double)(n + 2), 2.0) - 2.0;
