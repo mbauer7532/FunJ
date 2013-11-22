@@ -624,12 +624,11 @@ public final class BrotherTreeModule {
   }
 
   private static <K extends Comparable<K>, V> Tree<K, V> n1_aux(final Tree<K,V> t, final boolean boxN1) {
-    final Tree<K, V> cn0 = N0.create();
-
     if (t instanceof L2) {
       final L2<K, V> l2t = (L2<K, V>) t;
       final K a1 = l2t.ma1;
       final V v1 = l2t.mv1;
+      final Tree<K, V> cn0 = N0.create();
 
       return N2.create(cn0, a1, v1, cn0);
     }
@@ -647,13 +646,12 @@ public final class BrotherTreeModule {
   }
 
   private static <K extends Comparable<K>, V> Tree<K, V> n2_ins(final Tree<K,V> left, final K a, final V v, final Tree<K, V> right) {
-    final Tree<K, V> cn0 = N0.create();
-
     if (left instanceof L2) {
       final L2<K, V> lt = (L2<K, V>) left;
       final Tree<K, V> t1 = right;
       final K a1 = lt.ma1, a2 = a;
       final V v1 = lt.mv1, v2 = v;
+      final Tree<K, V> cn0 = N0.create();
 
       return N3.create(cn0, a1, v1, cn0, a2, v2, t1);
     }
@@ -687,6 +685,7 @@ public final class BrotherTreeModule {
       final Tree<K, V> t1 = left;
       final K a1 = a, a2 = rt.ma1;
       final V v1 = v, v2 = rt.mv1;
+      final Tree<K, V> cn0 = N0.create();
 
       return N3.create(t1, a1, v1, cn0, a2, v2, cn0);
     }
