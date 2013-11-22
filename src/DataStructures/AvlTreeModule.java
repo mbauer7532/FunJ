@@ -426,15 +426,54 @@ public final class AvlTreeModule {
               || mRight.containsValue(value);
     }
 
+    private Tree<K, V> rightRotate(final Node<K, V> z) {
+      final Node<K, V> y = (Node<K, V>) z.mLeft;
+      return Node.create(
+              y.mLeft,
+              y.mKey,
+              y.mValue,
+              Node.create(y.mRight, z.mKey, z.mValue, z.mRight));
+    }
+
+    private Tree<K, V> leftRotate(final Node<K, V> z) {
+      final Node<K, V> y = (Node<K, V>) z.mRight;
+      return Node.create(
+              Node.create(z.mLeft, z.mKey, z.mValue, y.mLeft),
+              y.mKey,
+              y.mValue,
+              y.mRight);
+    }
+
+    private Tree<K, V> leftRightRotate(final Node<K, V> z) {
+      final Node<K, V> y = (Node<K, V>) z.mLeft;
+      final Node<K, V> x = (Node<K, V>) y.mRight;
+      return Node.create(
+              Node.create(y.mLeft, y.mKey, y.mValue, x.mLeft),
+              x.mKey,
+              x.mValue,
+              Node.create(x.mRight, z.mKey, z.mValue, z.mRight));
+    }
+
+    private Tree<K, V> rightLeftRotate(final Node<K, V> z) {
+      final Node<K, V> y = (Node<K, V>) z.mRight;
+      final Node<K, V> x = (Node<K, V>) y.mLeft;
+      return Node.create(
+              Node.create(z.mLeft, z.mKey, z.mValue, x.mLeft),
+              x.mKey,
+              x.mValue,
+              Node.create(x.mRight, y.mKey, y.mValue, y.mRight));
+    }
+
     @Override
     Tree<K, V> rem(final K key) throws ControlExnNoSuchElement {
-      final Tree<K, V> t;
+      final Node<K, V> root;
       final int res = key.compareTo(mKey);
+
       if (res < 0) {
-        return Node.create(mLeft.rem(key), mKey, mValue, mRight);
+        root = Node.create(mLeft.rem(key), mKey, mValue, mRight);
       }
       else if (res > 0) {
-        return Node.create(mLeft, mKey, mValue, mRight.rem(key));
+        root = Node.create(mLeft, mKey, mValue, mRight.rem(key));
       }
       else {
         final boolean leftIsEmpty  = mLeft.isEmpty();
@@ -444,35 +483,37 @@ public final class AvlTreeModule {
           return EmptyNode.create();
         }
         else if (leftIsEmpty) {
-          t = mRight;
+          root = (Node<K, V>) mRight;
         }
         else if (rightIsEmpty) {
-          t = mLeft;
+          root = (Node<K, V>) mLeft;
         }
         else {
           final Pair<K, V> successor = mRight.minElementPair().get(); // We know it is there.
-          t = Node.create(mLeft, successor.mx1, successor.mx2, mRight.rem(successor.mx1));
+          root = Node.create(mLeft, successor.mx1, successor.mx2, mRight.rem(successor.mx1));
         }
       }
 
-      final Node<K, V> root = (Node<K, V>) t;
       final int balance = root.getBalance();
 
       if (balance > 1) {
         if (root.mLeft.getBalance() >= 0) {
-          
+          return rightRotate(root);
         }
         else {
-          
+          return leftRightRotate(root);
         }
       }
       else if (balance < -1) {
         if (root.mRight.getBalance() <= 0) {
-          
+          return leftRotate(root);
         }
         else {
-          
+          return rightLeftRotate(root);
         }
+      }
+      else {
+        return root;
       }
     }
 
