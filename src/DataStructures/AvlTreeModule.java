@@ -190,7 +190,7 @@ public final class AvlTreeModule {
     }
 
     @Override
-    int getBalance() {
+    final int getBalance() {
       return 0;
     }
   }
@@ -487,7 +487,7 @@ public final class AvlTreeModule {
     }
 
     @Override
-    int getBalance() {
+    final int getBalance() {
       return mLeft.mHeight - mRight.mHeight;
     }
   }
