@@ -8,6 +8,7 @@ package DataStructures;
 
 import DataStructures.TuplesModule.Triple;
 import Utils.Functionals.TriFunction;
+import java.awt.Color;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
@@ -15,13 +16,15 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import org.StructureGraphic.v1.DSTreeNode;
 
 /**
  *
  * @author Neo
  */
 public final class BrotherTreeModule {
-  public abstract static class Tree<K extends Comparable<K>, V> {
+  public abstract static class Tree<K extends Comparable<K>, V>
+                                      implements DSTreeNode {
     public abstract boolean isEmpty();
 
     public final Tree<K, V> insert(final BiFunction<V, V, V> f, final K a, final V v) {
@@ -80,6 +83,11 @@ public final class BrotherTreeModule {
     protected abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K a, final V v);
     protected abstract Tree<K, V> del(final K a);
     protected abstract Optional<Triple<K, V, Tree<K, V>>> splitMin();
+    
+    @Override
+    public final Color DSgetColor() {
+      return Color.BLACK;
+    }
   }
 
   private static final class N0<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -156,6 +164,16 @@ public final class BrotherTreeModule {
     @Override
     public Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
       return t;
+    }
+
+    @Override
+    public DSTreeNode[] DSgetChildren() {
+      return new DSTreeNode[0];
+    }
+
+    @Override
+    public Object DSgetValue() {
+      return "N0";
     }
   }
 
@@ -241,6 +259,16 @@ public final class BrotherTreeModule {
     @Override
     public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
       throw new AssertionError("Internal error.  Can't merge against an N1 node.");
+    }
+
+    @Override
+    public DSTreeNode[] DSgetChildren() {
+      return new DSTreeNode[] { mt };
+    }
+
+    @Override
+    public Object DSgetValue() {
+      return "N1";
     }
   }
 
@@ -364,6 +392,16 @@ public final class BrotherTreeModule {
     public Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
       throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public DSTreeNode[] DSgetChildren() {
+      return new DSTreeNode[] { mt1, mt2 };
+    }
+
+    @Override
+    public Object DSgetValue() {
+      return String.format("N2(%s,%s)", ma1.toString(), mv1.toString());
+    }
   }
 
   private static final class N3<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -467,6 +505,18 @@ public final class BrotherTreeModule {
     public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
       throw sTreeStructureError;
     }
+
+    @Override
+    public DSTreeNode[] DSgetChildren() {
+      return new DSTreeNode[] { mt1, mt2, mt3 };
+    }
+
+    @Override
+    public Object DSgetValue() {
+      return String.format("N2(%s,%s,%s,%s)",
+              ma1.toString(), mv1.toString(),
+              ma2.toString(), mv2.toString());
+    }
   }
 
   private static final class L2<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -553,6 +603,16 @@ public final class BrotherTreeModule {
     public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
       throw sTreeStructureError;
     }
+
+    @Override
+    public DSTreeNode[] DSgetChildren() {
+      return new DSTreeNode[0];
+    }
+
+    @Override
+    public Object DSgetValue() {
+      return String.format("L2(%s,%s)", ma1.toString(), mv1.toString());
+    }
   }
 
   private static <K extends Comparable<K>, V> Tree<K, V> root_ins(final Tree<K,V> t) {
@@ -570,7 +630,7 @@ public final class BrotherTreeModule {
       final L2<K, V> l2t = (L2<K, V>) t;
       final K a1 = l2t.ma1;
       final V v1 = l2t.mv1;
-      
+
       return N2.create(cn0, a1, v1, cn0);
     }
     else if (t instanceof N3) {
