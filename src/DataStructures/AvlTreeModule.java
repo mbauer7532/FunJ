@@ -426,42 +426,42 @@ public final class AvlTreeModule {
               || mRight.containsValue(value);
     }
 
-    private Tree<K, V> rightRotate(final Node<K, V> z) {
+    private static <K extends Comparable<K>, V> Tree<K, V> rightRotate(final Node<K, V> z) {
       final Node<K, V> y = (Node<K, V>) z.mLeft;
-      return Node.create(
+      return create(
               y.mLeft,
               y.mKey,
               y.mValue,
-              Node.create(y.mRight, z.mKey, z.mValue, z.mRight));
+              create(y.mRight, z.mKey, z.mValue, z.mRight));
     }
 
-    private Tree<K, V> leftRotate(final Node<K, V> z) {
+    private static <K extends Comparable<K>, V> Tree<K, V> leftRotate(final Node<K, V> z) {
       final Node<K, V> y = (Node<K, V>) z.mRight;
-      return Node.create(
-              Node.create(z.mLeft, z.mKey, z.mValue, y.mLeft),
+      return create(
+              create(z.mLeft, z.mKey, z.mValue, y.mLeft),
               y.mKey,
               y.mValue,
               y.mRight);
     }
 
-    private Tree<K, V> leftRightRotate(final Node<K, V> z) {
+    private static <K extends Comparable<K>, V> Tree<K, V> leftRightRotate(final Node<K, V> z) {
       final Node<K, V> y = (Node<K, V>) z.mLeft;
       final Node<K, V> x = (Node<K, V>) y.mRight;
-      return Node.create(
-              Node.create(y.mLeft, y.mKey, y.mValue, x.mLeft),
+      return create(
+              create(y.mLeft, y.mKey, y.mValue, x.mLeft),
               x.mKey,
               x.mValue,
-              Node.create(x.mRight, z.mKey, z.mValue, z.mRight));
+              create(x.mRight, z.mKey, z.mValue, z.mRight));
     }
 
-    private Tree<K, V> rightLeftRotate(final Node<K, V> z) {
+    private static <K extends Comparable<K>, V> Tree<K, V> rightLeftRotate(final Node<K, V> z) {
       final Node<K, V> y = (Node<K, V>) z.mRight;
       final Node<K, V> x = (Node<K, V>) y.mLeft;
-      return Node.create(
-              Node.create(z.mLeft, z.mKey, z.mValue, x.mLeft),
+      return create(
+              create(z.mLeft, z.mKey, z.mValue, x.mLeft),
               x.mKey,
               x.mValue,
-              Node.create(x.mRight, y.mKey, y.mValue, y.mRight));
+              create(x.mRight, y.mKey, y.mValue, y.mRight));
     }
 
     @Override
@@ -470,10 +470,10 @@ public final class AvlTreeModule {
       final int res = key.compareTo(mKey);
 
       if (res < 0) {
-        root = Node.create(mLeft.rem(key), mKey, mValue, mRight);
+        root = create(mLeft.rem(key), mKey, mValue, mRight);
       }
       else if (res > 0) {
-        root = Node.create(mLeft, mKey, mValue, mRight.rem(key));
+        root = create(mLeft, mKey, mValue, mRight.rem(key));
       }
       else {
         final boolean leftIsEmpty  = mLeft.isEmpty();
@@ -490,7 +490,7 @@ public final class AvlTreeModule {
         }
         else {
           final Pair<K, V> successor = mRight.minElementPair().get(); // We know it is there.
-          root = Node.create(mLeft, successor.mx1, successor.mx2, mRight.rem(successor.mx1));
+          root = create(mLeft, successor.mx1, successor.mx2, mRight.rem(successor.mx1));
         }
       }
 
