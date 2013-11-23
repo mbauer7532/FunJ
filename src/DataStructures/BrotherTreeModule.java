@@ -6,16 +6,16 @@
 
 package DataStructures;
 
+import DataStructures.TuplesModule.Pair;
 import DataStructures.TuplesModule.Triple;
 import Utils.Functionals.TriFunction;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
-import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import org.StructureGraphic.v1.DSTreeNode;
 
 /**
@@ -24,61 +24,63 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public final class BrotherTreeModule {
   public abstract static class Tree<K extends Comparable<K>, V>
+                                      extends PersistentMapBase<K, V, Tree<K, V>>
                                       implements DSTreeNode {
-    public abstract boolean isEmpty();
-
-    public final Tree<K, V> insert(final BiFunction<V, V, V> f, final K a, final V v) {
-      return root_ins(ins(f, a, v));
+    @Override
+    public final Tree<K, V> filteri(final BiPredicate<K, V> f) {
+      return fromStrictlyIncreasingArray(getElementsSatisfyingPredicate(f));
     }
 
-    public final Tree<K, V> delete(final K a) {
-      return root_del(del(a));
+    @Override
+    public final Pair<Tree<K, V>, Tree<K, V>> partitioni(final BiPredicate<K, V> f) {
+      final Pair<ArrayList<Pair<K, V>>, ArrayList<Pair<K, V>>> elemsPair = splitElemsAccordingToPredicate(f);
+
+      return Pair.create(fromStrictlyIncreasingArray(elemsPair.mx1),
+                         fromStrictlyIncreasingArray(elemsPair.mx2));
     }
 
-    public final boolean contains(final K key) {
-      return get(key).isPresent();
-    }
-
-    public final V getWithDefault(final K key, final V def) {
-      return get(key).orElse(def);
-    }
-
-    public final <W> Tree<K, W> map(final Function<V, W> f) {
-      return mapi((k, v) -> f.apply(v));
-    }
-
-    public final void app(final Consumer<V> f) {
-      appi((k, v) -> f.accept(v));
-
-      return;
-    }
-
-    public final <W> W foldl(final BiFunction<V, W, W> f, final W w) {
-      return foldli((k, v, z) -> f.apply(v, z), w);
-    }
-
-    public final <W> W foldr(final BiFunction<V, W, W> f, final W w) {
-      return foldri((k, v, z) -> f.apply(v, z), w);
-    }
-
-    public final Tree<K, V> filter(final Predicate<V> f) {
-      return filteri((k, v) -> f.test(v));
-    }
-
+    @Override
     public final <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
       return mapPartiali((k, v) -> f.apply(v));
     }
 
-    public abstract Optional<V> get(final K key);
-    public abstract int size();
-    public abstract int depth();
-    public abstract void appi(final BiConsumer<K, V> f);
+    @Override
+    public final <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
+      return fromStrictlyIncreasingArray(selectNonEmptyOptionalElements(f));
+    }
+
+    @Override
+    public final Tree<K, V> insert(final BiFunction<V, V, V> f, final K a, final V v) {
+      return root_ins(ins(f, a, v));
+    }
+
+    @Override
+    public final Tree<K, V> remove(final K a) {
+      return root_del(del(a));
+    }
+
+    @Override
+    public final Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
+      return fromStrictlyIncreasingArray(mergeArrays(f, keyValuePairs(), t.keyValuePairs()));
+    }
+
+    @Override
+    public final Optional<Pair<K, V>> lowerPair(final K key) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public final Optional<Pair<K, V>> higherPair(final K key) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
     public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
-    public abstract <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f);
-    public abstract <W> W foldli(final TriFunction<K, V, W, W> f, final W w);
-    public abstract <W> W foldri(final TriFunction<K, V, W, W> f, final W w);
-    public abstract Tree<K, V> filteri(final BiPredicate<K, V> f);
-    public abstract Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t);
+
+    @Override
+    public final <W> Tree<K, W> map(final Function<V, W> f) {
+      return mapi((k, v) -> f.apply(v));
+    }
 
     protected abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K a, final V v);
     protected abstract Tree<K, V> del(final K a);
@@ -97,6 +99,11 @@ public final class BrotherTreeModule {
     static final N0<? extends Comparable<?>, ?> sN0 = new N0<>();
 
     @Override
+    public boolean isEmpty() {
+      return true;
+    }
+
+    @Override
     protected Tree<K, V> ins(final BiFunction<V, V, V> f, final K a, final V v) {
       return L2.create(a, v);
     }
@@ -112,11 +119,6 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public boolean isEmpty() {
-      return true;
-    }
-
-    @Override
     public Optional<V> get(final K key) {
       return Optional.empty();
     }
@@ -127,7 +129,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public int depth() {
+    public int height() {
       return 0;
     }
 
@@ -142,11 +144,6 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
-      return N0.create();
-    }
-
-    @Override
     public <W> W foldli(final TriFunction<K, V, W, W> f, final W w) {
       return w;
     }
@@ -157,13 +154,18 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public Tree<K, V> filteri(final BiPredicate<K, V> f) {
-      return this;
+    public boolean containsValue(V value) {
+      return false;
     }
 
     @Override
-    public Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
-      return t;
+    public Optional<Pair<K, V>> minElementPair() {
+      return Optional.empty();
+    }
+
+    @Override
+    public Optional<Pair<K, V>> maxElementPair() {
+      return Optional.empty();
     }
 
     @Override
@@ -220,8 +222,8 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public int depth() {
-      return mt.depth() + 1;
+    public int height() {
+      return mt.height() + 1;
     }
 
     @Override
@@ -237,11 +239,6 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    @Override
     public <W> W foldli(final TriFunction<K, V, W, W> f, final W w) {
       return mt.foldli(f, w);
     }
@@ -252,13 +249,18 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public Tree<K, V> filteri(BiPredicate<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+    public boolean containsValue(V value) {
+      return mt.containsValue(value);
     }
 
     @Override
-    public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
-      throw new AssertionError("Internal error.  Can't merge against an N1 node.");
+    public Optional<Pair<K, V>> minElementPair() {
+      return mt.minElementPair();
+    }
+
+    @Override
+    public Optional<Pair<K, V>> maxElementPair() {
+      return mt.maxElementPair();
     }
 
     @Override
@@ -350,9 +352,9 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public int depth() {
-      return 1 + mt1.depth();    // These trees are fully symmetric so all we need to do is find the
-    }                            // depth of one branch.
+    public int height() {
+      return 1 + mt1.height();   // These trees are fully symmetric so all we need to do is find the
+    }                            // height of one branch.
 
     @Override
     public void appi(final BiConsumer<K, V> f) {
@@ -365,12 +367,7 @@ public final class BrotherTreeModule {
 
     @Override
     public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
-      return N2.create(mt1.mapi(f), ma1, f.apply(ma1, mv1), mt2.mapi(f));
-    }
-
-    @Override
-    public <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      return create(mt1.mapi(f), ma1, f.apply(ma1, mv1), mt2.mapi(f));
     }
 
     @Override
@@ -384,13 +381,30 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public Tree<K, V> filteri(final BiPredicate<K, V> f) {
-      throw new UnsupportedOperationException("Not supported yet.");
+    public boolean containsValue(V value) {
+      return ma1.equals(value)
+              || mt1.containsValue(value)
+              || mt2.containsValue(value);
     }
 
     @Override
-    public Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
-      throw new UnsupportedOperationException("Not supported yet.");
+    public Optional<Pair<K, V>> minElementPair() {
+       if (mt1.isEmpty()) {
+        return Optional.of(Pair.create(ma1, mv1));
+      }
+      else {
+        return mt1.minElementPair();
+      }
+    }
+
+    @Override
+    public Optional<Pair<K, V>> maxElementPair() {
+      if (mt2.isEmpty()) {
+        return Optional.of(Pair.create(ma1, mv1));
+      }
+      else {
+        return mt2.maxElementPair();
+      }
     }
 
     @Override
@@ -467,7 +481,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public int depth() {
+    public int height() {
       throw sTreeStructureError;
     }
 
@@ -482,11 +496,6 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public <W> Tree<K, W> mapPartiali(BiFunction<K, V, Optional<W>> f) {
-      throw sTreeStructureError;
-    }
-
-    @Override
     public <W> W foldli(TriFunction<K, V, W, W> f, W w) {
       throw sTreeStructureError;
     }
@@ -497,12 +506,17 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public Tree<K, V> filteri(BiPredicate<K, V> f) {
+    public boolean containsValue(V value) {
       throw sTreeStructureError;
     }
 
     @Override
-    public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
+    public Optional<Pair<K, V>> minElementPair() {
+      throw sTreeStructureError;
+    }
+
+    @Override
+    public Optional<Pair<K, V>> maxElementPair() {
       throw sTreeStructureError;
     }
 
@@ -517,7 +531,7 @@ public final class BrotherTreeModule {
               ma1.toString(), mv1.toString(),
               ma2.toString(), mv2.toString());
     }
-  }
+}
 
   private static final class L2<K extends Comparable<K>, V> extends Tree<K, V> {
     private static <K extends Comparable<K>, V> L2<K, V> create(final K a1, final V v1) {
@@ -565,7 +579,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public int depth() {
+    public int height() {
       throw sTreeStructureError;
     }
 
@@ -580,11 +594,6 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public <W> Tree<K, W> mapPartiali(BiFunction<K, V, Optional<W>> f) {
-      throw sTreeStructureError;
-    }
-
-    @Override
     public <W> W foldli(TriFunction<K, V, W, W> f, W w) {
       throw sTreeStructureError;
     }
@@ -595,12 +604,17 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public Tree<K, V> filteri(BiPredicate<K, V> f) {
+    public boolean containsValue(V value) {
       throw sTreeStructureError;
     }
 
     @Override
-    public Tree<K, V> merge(BiFunction<V, V, V> f, Tree<K, V> t) {
+    public Optional<Pair<K, V>> minElementPair() {
+      throw sTreeStructureError;
+    }
+
+    @Override
+    public Optional<Pair<K, V>> maxElementPair() {
       throw sTreeStructureError;
     }
 
@@ -857,5 +871,71 @@ public final class BrotherTreeModule {
   // Case (8)
   private static <K extends Comparable<K>, V> Tree<K, V> c8(final Tree<K, V> t1, final K a, final V v, final Tree<K, V> t2) {
     return N2.create(t1, a, v, t2);
+  }
+
+  private static final class InitFromArrayWorker<K extends Comparable<K>, V> {
+    private final ArrayList<Pair<K, V>> mVector;
+    private final boolean mIncreasing;
+
+    public InitFromArrayWorker(final ArrayList<Pair<K, V>> vector,
+                               final boolean increasing) {
+      mVector = vector;
+      mIncreasing = increasing;
+    }
+
+    private Tree<K, V> workerFunc(final int left, final int right, final int depth) {
+      if (left > right)
+        return empty();
+
+      final int mid = (left + right) >>> 1;
+      final Pair<K, V> p = mVector.get(mid);
+
+      Tree<K, V> lt, rt;
+      final int newDepth = depth + 1;
+      lt = workerFunc(left, mid - 1, newDepth);
+      rt = workerFunc(mid + 1, right, newDepth);
+
+      if (! mIncreasing) {
+        Tree<K, V> t = lt;
+        lt = rt;
+        rt = t;
+      }
+
+      return null;
+//
+//      return depth == mRedLevel
+//              ? RedNode.create(lt, p.mx1, p.mx2, rt)
+//              : BlackNode.create(lt, p.mx1, p.mx2, rt);
+    }
+
+    public final Tree<K, V> doIt() {
+      return workerFunc(0, mVector.size() - 1, 0);
+    }
+  }
+
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+    return fromArray(v);
+//    return (new InitFromArrayWorker<>(v, true, computeRedDepth(v.size())).doIt());
+  }
+
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+    return fromArray(v);
+    //return (new InitFromArrayWorker<>(v, false, computeRedDepth(v.size())).doIt());
+  }
+
+  public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+    return v.stream()
+            .reduce(empty(),
+                    ((t, p) -> t.insert(p.mx1, p.mx2)),
+                    ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
+  }
+
+  public static <K extends Comparable<K>, V> Tree<K, V> empty() {
+    return N0.create();
+  }
+
+  public static <K extends Comparable<K>, V> Tree<K, V> singleton(final K a, final V v) {
+    Tree<K, V> e = empty();
+    return N2.create(e, a, v, e);
   }
 }
