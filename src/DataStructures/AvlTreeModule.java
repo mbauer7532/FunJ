@@ -18,7 +18,6 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
 import org.StructureGraphic.v1.DSTreeNode;
-import org.graphstream.graph.*;
 
 public final class AvlTreeModule {
   public static abstract class Tree<K extends Comparable<K>, V>
@@ -87,7 +86,6 @@ public final class AvlTreeModule {
 
     abstract Tree<K, V> rem(final K key) throws ControlExnNoSuchElement;
     abstract int getBalance();
-    public abstract String graph(final Graph g);
   }
 
   private final static class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -133,11 +131,6 @@ public final class AvlTreeModule {
     @Override
     public Optional<Pair<K, V>> maxElementPair() {
       throw new AssertionError("An empty tree does not have a maximum.");
-    }
-
-    @Override
-    public String graph(final Graph g) {
-      return null;
     }
 
     @Override
@@ -275,22 +268,6 @@ public final class AvlTreeModule {
     @Override
     public int height() {
       return Math.max(mLeft.height(), mRight.height()) + 1;
-    }
-
-    @Override
-    public String graph(final Graph g) {
-      final String nodeName = String.format("%s : %s", mKey.toString(), Integer.toString(mHeight));
-      g.addNode(nodeName).addAttribute("ui.label", nodeName);
-
-      final String leftName = mLeft.graph(g);
-      final String rightName = mRight.graph(g);
-
-      if (leftName != null)
-        g.addEdge(nodeName + "->" + leftName, nodeName, leftName, true);
-      if (rightName != null)
-        g.addEdge(nodeName + "->" + rightName, nodeName, rightName, true);
-
-      return nodeName;
     }
 
     @Override

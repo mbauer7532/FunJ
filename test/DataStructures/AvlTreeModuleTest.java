@@ -20,9 +20,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import org.graphstream.graph.*;
-import org.graphstream.graph.implementations.*;
-
 /**
  *
  * @author Neo
@@ -39,20 +36,6 @@ public class AvlTreeModuleTest {
 
   @After
   public void tearDown() {}
-
-  public void graphTree(AvlTreeModule.Tree<Integer, String> t) {
-    Graph graph = new SingleGraph("Graph");
-    graph.addAttribute("ui.stylesheet", "url('file:///D:\\Users\\Neo\\Documents\\NetBeansProjects\\FunJ\\src\\DataStructures\\graphNode.stylesheet')");
-
-    t.graph(graph);
-    graph.display();
-    final int sleepSeconds = 1;
-    try {
-      Thread.sleep(sleepSeconds * 1000);
-    } catch (InterruptedException ex) {
-      Logger.getLogger(AvlTreeModuleTest.class.getName()).log(Level.SEVERE, null, ex);
-    }
-  }
 
   /**
    * Test of empty method, of AvlTreeModulevlTree.
@@ -75,7 +58,6 @@ public class AvlTreeModuleTest {
       assertEquals(at.get(i).size(), i);
     }
 
-    graphTree(t);
     DSutils.show(t, 80, 60);
     DSutils.show(at.get(N-1), 80, 60);
     final int sleepSeconds = 1;
