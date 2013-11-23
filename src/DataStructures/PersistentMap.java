@@ -17,12 +17,14 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import org.StructureGraphic.v1.DSTreeNode;
 
 /**
  *
  * @author Neo
  */
-public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentMap<K, V, M>> {
+public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentMap<K, V, M>>
+         extends DSTreeNode {
   public boolean containsKey(final K key);
 
   public boolean containsValue(final V value);

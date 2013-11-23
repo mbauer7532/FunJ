@@ -21,8 +21,7 @@ import org.StructureGraphic.v1.DSTreeNode;
 
 public final class AvlTreeModule {
   public static abstract class Tree<K extends Comparable<K>, V>
-                               extends PersistentMapBase<K, V, Tree<K, V>>
-                               implements DSTreeNode {
+                               extends PersistentMapBase<K, V, Tree<K, V>> {
     private Tree(final int height) {
       mHeight = height;
     }

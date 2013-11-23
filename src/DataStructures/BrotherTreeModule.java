@@ -24,8 +24,7 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public final class BrotherTreeModule {
   public abstract static class Tree<K extends Comparable<K>, V>
-                                      extends PersistentMapBase<K, V, Tree<K, V>>
-                                      implements DSTreeNode {
+                                      extends PersistentMapBase<K, V, Tree<K, V>> {
     @Override
     public final Tree<K, V> filteri(final BiPredicate<K, V> f) {
       return fromStrictlyIncreasingArray(getElementsSatisfyingPredicate(f));
@@ -140,7 +139,7 @@ public final class BrotherTreeModule {
 
     @Override
     public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
-      return N0.create();
+      return create();
     }
 
     @Override
@@ -315,7 +314,9 @@ public final class BrotherTreeModule {
         return n2_del(mt1, ma1, mv1, mt2.del(a));
       }
       else {
-        return ((N2<K,V>) mt2).splitMin().map(p -> n2_del(mt1, p.mx1, p.mx2, p.mx3)).orElseGet(() -> N1.create(mt1));
+        return ((N2<K,V>) mt2).splitMin()
+                              .map(p -> n2_del(mt1, p.mx1, p.mx2, p.mx3))
+                              .orElseGet(() -> N1.create(mt1));
       }
     }
 
@@ -724,7 +725,8 @@ public final class BrotherTreeModule {
         final V v1 = v, v2 = n3t.mv1, v3 = n3t.mv2;
         final Tree<K, V> t1 = left;
 
-        return N3.create(N2.create(t1, a1, v1, t2), a2, v2, N1.create(t3), a3, v3, t4);
+        return N3.create(t1, a1, v1, N1.create(t2), a2, v2, N2.create(t3, a3, v3, t4));
+//                N2.create(t1, a1, v1, t2), a2, v2, N1.create(t3), a3, v3, t4);
       }
     }
 

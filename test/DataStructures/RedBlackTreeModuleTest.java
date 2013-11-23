@@ -16,11 +16,8 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.function.BiFunction;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import org.StructureGraphic.v1.DSutils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -46,26 +43,6 @@ public class RedBlackTreeModuleTest {
   
   @After
   public void tearDown() {}
-
-  final static int sLength = 44;
-  final static int sWidth = 20;
-
-  private static <K extends Comparable<K>, V> void showGraph(final Tree<K, V> t) {
-    DSutils.show(t, sLength, sWidth);
-
-    return;
-  }
-
-  private static void waitTime(final int secs) {
-    try {
-      Thread.sleep(secs * 1000);
-    }
-    catch (InterruptedException ex) {
-      Logger.getLogger(IntMapModuleTest.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-    return;
-  }
 
   private static <K extends Comparable<K>, V> void checkRedBlackTreeProperties(final Tree<K, V> t) {
     final Pair<Boolean, String> res = RedBlackTreeModule.verifyRedBlackProperties(t);

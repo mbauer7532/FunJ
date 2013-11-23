@@ -6,12 +6,16 @@
 
 package DataStructures;
 
+import DataStructures.BrotherTreeModule;
+import DataStructures.TuplesModule.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.StructureGraphic.v1.DSutils;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -103,5 +107,26 @@ public class AvlTreeModuleTest {
       assertEquals(expectedSize, avlTreeSize);
       assertTrue(((double) avlTreeHeight) < expectedHeight);
     }
+  }
+
+  @Test
+  public void testBrother() {
+    System.out.println("Brother");
+
+    final int low = 36;
+    final int high = 36;
+
+    IntStream.rangeClosed(low, high).forEach(n -> {
+      final ArrayList<Pair<Integer, Integer>> v =
+              IntStream.rangeClosed(1, n)
+                       .mapToObj(i -> Pair.create(n + 1 - i, n + 1 - i))
+                       .collect(Collectors.toCollection(ArrayList::new));
+      final PersistentMap<Integer, Integer, BrotherTreeModule.Tree<Integer,Integer>> pm
+              = BrotherTreeModule.fromArray(v);
+
+      GraphModule.showGraph(pm);
+      GraphModule.waitTime(1);
+    });
+    GraphModule.waitTime(1000);
   }
 }

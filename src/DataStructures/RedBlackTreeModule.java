@@ -29,8 +29,7 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public class RedBlackTreeModule {
   public static abstract class Tree<K extends Comparable<K>, V>
-                                extends PersistentMapBase<K, V, Tree<K, V>>
-                                implements DSTreeNode {
+                                extends PersistentMapBase<K, V, Tree<K, V>> {
     @Override
     public final Tree<K, V> filteri(final BiPredicate<K, V> f) {
       return fromStrictlyIncreasingArray(getElementsSatisfyingPredicate(f));
