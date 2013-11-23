@@ -85,7 +85,7 @@ public final class BrotherTreeModule {
     protected abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K a, final V v);
     protected abstract Tree<K, V> del(final K a);
     protected abstract Optional<Triple<K, V, Tree<K, V>>> splitMin();
-    
+
     @Override
     public final Color DSgetColor() {
       return Color.BLACK;

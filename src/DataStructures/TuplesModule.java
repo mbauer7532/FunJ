@@ -36,7 +36,8 @@ public final class TuplesModule {
       if (obj instanceof Pair) {
         @SuppressWarnings("unchecked")
         final Pair<T1, T2> p = (Pair<T1, T2>) obj;
-        return mx1.equals(p.mx1) && mx2.equals(p.mx2);
+        return mx1.equals(p.mx1)
+                && mx2.equals(p.mx2);
       }
       else {
         return false;
@@ -80,7 +81,9 @@ public final class TuplesModule {
       if (obj instanceof Triple) {
         @SuppressWarnings("unchecked")
         final Triple<T1, T2, T3> p = (Triple<T1, T2, T3>) obj;
-        return mx1.equals(p.mx1) && mx2.equals(p.mx2) && mx3.equals(p.mx3);
+        return mx1.equals(p.mx1)
+                && mx2.equals(p.mx2)
+                && mx3.equals(p.mx3);
       }
       else {
         return false;
@@ -89,7 +92,9 @@ public final class TuplesModule {
     
     @Override
     public int hashCode() {
-      return mx1.hashCode() + mx2.hashCode() + mx3.hashCode();
+      return mx1.hashCode()
+              + mx2.hashCode()
+              + mx3.hashCode();
     }
   }
 
@@ -136,7 +141,10 @@ public final class TuplesModule {
     
     @Override
     public int hashCode() {
-      return mx1.hashCode() + mx2.hashCode() + mx3.hashCode() + mx4.hashCode();
+      return mx1.hashCode()
+              + mx2.hashCode()
+              + mx3.hashCode()
+              + mx4.hashCode();
     }
   }
 
