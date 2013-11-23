@@ -151,21 +151,6 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public DSTreeNode[] DSgetChildren() {
-      return new DSTreeNode[0];
-    }
-
-    @Override
-    public Object DSgetValue() {
-      return "E";
-    }
-
-    @Override
-    public Color DSgetColor() {
-      return Color.GREEN;
-    }
-
-    @Override
     public boolean containsValue(final V value) {
       return false;
     }
@@ -192,6 +177,21 @@ public final class AvlTreeModule {
     @Override
     final int getBalance() {
       return 0;
+    }
+
+    @Override
+    public DSTreeNode[] DSgetChildren() {
+      return new DSTreeNode[0];
+    }
+
+    @Override
+    public Object DSgetValue() {
+      return "E";
+    }
+
+    @Override
+    public Color DSgetColor() {
+      return Color.GREEN;
     }
   }
 
@@ -251,97 +251,20 @@ public final class AvlTreeModule {
     @Override
     public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
       final int res = mKey.compareTo(key);
-
+      final Node<K, V> z;
       if (res < 0) {
-        return rebalance(mLeft.insert(key, value), mRight, mKey, mValue);
+        z = create(mLeft.insert(key, value), mKey, mValue, mRight);
       }
       else if (res > 0) {
-        return rebalance(mLeft, mRight.insert(key, value), mKey, mValue);
+        z = create(mLeft, mKey, mValue, mRight.insert(key, value));
       }
       else {
-        return create(mLeft, key, f.apply(mValue, value), mRight, mHeight);
+        z = create(mLeft, mKey, f.apply(mValue, value), mRight);
+        // No need to do the balance check.  We are not changing the tree structure in this case.
+        return z;
       }
-    }
 
-    private static <K extends Comparable<K>, V> Node<K, V> rotateLeft(
-            final K key,
-            final V value,
-            final Node<K, V> r,
-            final Tree<K, V> l,
-            final Tree<K, V> rr,
-            final Tree<K, V> rl) {
-      return create(rr, r.mKey, r.mValue, create(rl, key, value, l));
-    }
-
-    private static <K extends Comparable<K>, V> Node<K, V> rotateRight(
-            final K key,
-            final V value,
-            final Node<K, V> l,
-            final Tree<K, V> r,
-            final Tree<K, V> ll,
-            final Tree<K, V> lr) {
-      return create(ll, l.mKey, l.mValue, create(lr, key, value, r));
-    }
-
-    private static <K extends Comparable<K>, V> Tree<K, V> rebalance(
-            final Tree<K, V> left,
-            final Tree<K, V> right,
-            final K key,
-            final V value) {
-      final int leftHeight = left.mHeight;
-      final int rightHeight = right.mHeight;
-
-      if (leftHeight > rightHeight + 1) {
-        final Node<K, V> l = (Node<K, V>) left; // Cannot fail!
-        final Tree<K, V> r = right;             // Alias
-        final Tree<K, V> ll = l.mLeft;
-        final Tree<K, V> lr = l.mRight;
-
-        if (ll.mHeight < lr.mHeight) {
-          final Node<K, V> lrAsNode = (Node<K,V>) lr; // Cannot fail!
-
-          // This is equivalalent to:
-          //   final Node<K, V> newLeft = rotateLeft(l.mKey, l.mValue, lrAsNode, ll, lrAsNode.mRight, lrAsNode.mLeft);
-          //   return rotateRight(key, value, newLeft, r, newLeft.mLeft, newLeft.mRight);
-          // but creates one less node.
-
-          return create(
-                  create(ll, l.mKey, l.mValue, lrAsNode.mLeft),
-                  lrAsNode.mKey,
-                  lrAsNode.mValue,
-                  create(lrAsNode.mRight, key, value, r));
-        }
-        else {
-          return rotateRight(key, value, l, r, ll, lr);
-        }
-      }
-      else if (leftHeight + 1 < rightHeight) {
-        final Node<K, V> r = (Node<K, V>) right;  // Cannot fail!
-        final Tree<K, V> l = left;                // Alias
-        final Tree<K, V> rl = r.mLeft;
-        final Tree<K, V> rr = r.mRight;
-
-        if (rr.mHeight < rl.mHeight) {
-          final Node<K, V> rlAsNode = (Node<K,V>) rl; // Cannot fail!
-
-          // This is equivalalent to:
-          //   final Node<K, V> newRight = rotateRight(r.mKey, r.mValue, rlAsNode, rr, rlAsNode.mLeft, rlAsNode.mRight);
-          //   return rotateLeft(key, value, newRight, l, newRight.mRight, newRight.mLeft);
-          // but creates one less node.
-
-          return create(
-                  create(l, key, value, rlAsNode.mLeft),
-                  rlAsNode.mKey,
-                  rlAsNode.mValue,
-                  create(rlAsNode.mRight, r.mKey, r.mValue, rr));
-        }
-        else {
-          return rotateLeft(key, value, r, l, rr, rl);
-        }
-      }
-      else {
-        return create(left, key, value, right);
-      }
+      return rebalanceTree(z);
     }
 
     @Override
@@ -405,21 +328,6 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public DSTreeNode[] DSgetChildren() {
-      return new DSTreeNode[] { mLeft, mRight };
-    }
-
-    @Override
-    public Object DSgetValue() {
-      return mKey;
-    }
-
-    @Override
-    public Color DSgetColor() {
-      return Color.BLUE;
-    }
-
-    @Override
     public boolean containsValue(final V value) {
       return mValue.equals(value)
               || mLeft.containsValue(value)
@@ -464,16 +372,41 @@ public final class AvlTreeModule {
               create(x.mRight, y.mKey, y.mValue, y.mRight));
     }
 
+    private static <K extends Comparable<K>, V> Tree<K, V> rebalanceTree(final Node<K, V> z) {
+      final int balance = z.getBalance();
+      
+      if (balance > 1) {
+        final Node<K, V> y = (Node<K, V>) z.mLeft;
+        if (z.mLeft.mHeight > z.mRight.mHeight) {
+          return rightRotate(z);
+        }
+        else {
+          return leftRightRotate(z);
+        }
+      }
+      else if (balance < -1) {
+        final Node<K, V> y = (Node<K, V>) z.mRight;
+        if (z.mLeft.mHeight < z.mRight.mHeight) {
+          return leftRotate(z);
+        }
+        else {
+          return rightLeftRotate(z);
+        }
+      }
+
+      return z;
+    }
+
     @Override
     Tree<K, V> rem(final K key) throws ControlExnNoSuchElement {
-      final Node<K, V> root;
+      final Node<K, V> z;
       final int res = key.compareTo(mKey);
 
       if (res < 0) {
-        root = create(mLeft.rem(key), mKey, mValue, mRight);
+        z = create(mLeft.rem(key), mKey, mValue, mRight);
       }
       else if (res > 0) {
-        root = create(mLeft, mKey, mValue, mRight.rem(key));
+        z = create(mLeft, mKey, mValue, mRight.rem(key));
       }
       else {
         final boolean leftIsEmpty  = mLeft.isEmpty();
@@ -483,38 +416,18 @@ public final class AvlTreeModule {
           return EmptyNode.create();
         }
         else if (leftIsEmpty) {
-          root = (Node<K, V>) mRight;
+          z = (Node<K, V>) mRight;
         }
         else if (rightIsEmpty) {
-          root = (Node<K, V>) mLeft;
+          z = (Node<K, V>) mLeft;
         }
         else {
           final Pair<K, V> successor = mRight.minElementPair().get(); // We know it is there.
-          root = create(mLeft, successor.mx1, successor.mx2, mRight.rem(successor.mx1));
+          z = create(mLeft, successor.mx1, successor.mx2, mRight.rem(successor.mx1));
         }
       }
 
-      final int balance = root.getBalance();
-
-      if (balance > 1) {
-        if (root.mLeft.getBalance() >= 0) {
-          return rightRotate(root);
-        }
-        else {
-          return leftRightRotate(root);
-        }
-      }
-      else if (balance < -1) {
-        if (root.mRight.getBalance() <= 0) {
-          return leftRotate(root);
-        }
-        else {
-          return rightLeftRotate(root);
-        }
-      }
-      else {
-        return root;
-      }
+      return rebalanceTree(z);
     }
 
     @Override
@@ -530,6 +443,21 @@ public final class AvlTreeModule {
     @Override
     final int getBalance() {
       return mLeft.mHeight - mRight.mHeight;
+    }
+
+    @Override
+    public DSTreeNode[] DSgetChildren() {
+      return new DSTreeNode[] { mLeft, mRight };
+    }
+
+    @Override
+    public Object DSgetValue() {
+      return mKey;
+    }
+
+    @Override
+    public Color DSgetColor() {
+      return Color.BLUE;
     }
   }
 
