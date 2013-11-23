@@ -23,24 +23,19 @@ import static org.junit.Assert.*;
  */
 public class ArrayUtilsTest {
   
-  public ArrayUtilsTest() {
-  }
+  public ArrayUtilsTest() {}
 
   @BeforeClass
-  public static void setUpClass() {
-  }
+  public static void setUpClass() {}
 
   @AfterClass
-  public static void tearDownClass() {
-  }
+  public static void tearDownClass() {}
 
   @Before
-  public void setUp() {
-  }
+  public void setUp() {}
 
   @After
-  public void tearDown() {
-  }
+  public void tearDown() {}
 
   private static List<Integer> toBoxedList(final int[] a) {
     return Arrays.stream(a).boxed().collect(Collectors.toCollection(ArrayList::new));
