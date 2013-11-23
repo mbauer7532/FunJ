@@ -386,21 +386,21 @@ public final class AvlTreeModule {
         z = create(mLeft, mKey, mValue, mRight.rem(key));
       }
       else {
-        final boolean leftIsEmpty  = mLeft.isEmpty();
-        final boolean rightIsEmpty = mRight.isEmpty();
+        final boolean leftIsPresent  = ! mLeft.isEmpty();
+        final boolean rightIsPresent = ! mRight.isEmpty();
 
-        if (leftIsEmpty && rightIsEmpty) {
-          return EmptyNode.create();
-        }
-        else if (leftIsEmpty) {
-          z = (Node<K, V>) mRight;
-        }
-        else if (rightIsEmpty) {
-          z = (Node<K, V>) mLeft;
-        }
-        else {
+        if (leftIsPresent && rightIsPresent) {
           final Pair<K, V> successor = mRight.minElementPair().get(); // We know it is there.
           z = create(mLeft, successor.mx1, successor.mx2, mRight.rem(successor.mx1));
+        }
+        else if (leftIsPresent) {
+          z = (Node<K, V>) mLeft;
+        }
+        else if (rightIsPresent) {
+          z = (Node<K, V>) mRight;
+        }
+        else {
+          return EmptyNode.create();
         }
       }
 

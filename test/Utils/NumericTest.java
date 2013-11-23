@@ -15,15 +15,6 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartFrame;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.ui.ApplicationFrame;
-import org.jfree.ui.RefineryUtilities;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -37,25 +28,19 @@ import static org.junit.Assert.*;
  * @author Neo
  */
 public class NumericTest {
-
-  public NumericTest() {
-  }
+  public NumericTest() {}
 
   @BeforeClass
-  public static void setUpClass() {
-  }
+  public static void setUpClass() {}
 
   @AfterClass
-  public static void tearDownClass() {
-  }
+  public static void tearDownClass() {}
 
   @Before
-  public void setUp() {
-  }
+  public void setUp() {}
 
   @After
-  public void tearDown() {
-  }
+  public void tearDown() {}
 
   /**
    * Test of randomInt method, of class Numeric.
@@ -114,57 +99,6 @@ public class NumericTest {
           });
   }
 
- @Test
-  public void testJFreeChart() {
-    final int low = 1;
-    final int high = 4;
-    final int size = 3;
-    final int N = 18000;
-
-    final long seed = 12345678;
-    final Random rng = new Random(seed);
-
-    final Map<Integer, Integer> m = new TreeMap<>();
-    for (int i = 0; i != N; ++i) {
-      final Set<Integer> a = Numeric.randomSet(low, high, size, rng);
-      final int r = a.stream().reduce(0, (n, x) -> n * 10 + x);
-      final Integer ii = m.get(r);
-      m.put(r, ii == null ? 1 : ii + 1);
-    }
-
-    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-    m.entrySet().forEach(e -> {
-      dataset.addValue(e.getValue().doubleValue(), "R", e.getKey().toString());
-    });
-
-    final JFreeChart chart = ChartFactory.createBarChart(
-            "Bar Chart Demo", // chart title
-            "Category", // domain axis label
-            "Value", // range axis label
-            dataset, // data
-            PlotOrientation.VERTICAL, // orientation
-            true, // include legend
-            true, // tooltips?
-            false // URLs?
-    );
-    final ChartPanel chartPanel = new ChartPanel(chart, false);
-    chartPanel.setPreferredSize(new Dimension(500, 270));
-
-    ApplicationFrame demo = new ApplicationFrame("Bar Demo 1");
-    demo.setContentPane(chartPanel);
-
-    demo.pack();
-    RefineryUtilities.centerFrameOnScreen(demo);
-    demo.setVisible(true);
-
-    final int secs = 1;
-    try {
-      Thread.sleep(secs * 1000);
-    } catch (InterruptedException ex) {
-      Logger.getLogger(NumericTest.class.getName()).log(Level.SEVERE, null, ex);
-    }
-  }
-
   /**
    * Test of randomSet method, of class Numeric.
    */
@@ -205,38 +139,7 @@ public class NumericTest {
       final Integer ii = m.get(r);
       m.put(r, ii == null ? 1 : ii + 1);
     }
-
-    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-    m.entrySet().forEach(e -> {
-      dataset.addValue(e.getValue().doubleValue(), "R", e.getKey().toString());
-    });
-
-    final JFreeChart chart = ChartFactory.createBarChart(
-            "Bar Chart Demo", // chart title
-            "Category", // domain axis label
-            "Value", // range axis label
-            dataset, // data
-            PlotOrientation.VERTICAL, // orientation
-            true, // include legend
-            true, // tooltips?
-            false // URLs?
-    );
-    final ChartPanel chartPanel = new ChartPanel(chart, false);
-    chartPanel.setPreferredSize(new Dimension(500, 270));
-
-    final ApplicationFrame demo = new ApplicationFrame("Bar Demo 1");
-    demo.setContentPane(chartPanel);
-
-    demo.pack();
-    RefineryUtilities.centerFrameOnScreen(demo);
-    demo.setVisible(true);
-
-    final int secs = 1;
-    try {
-      Thread.sleep(secs * 1000);
-    } catch (InterruptedException ex) {
-      Logger.getLogger(NumericTest.class.getName()).log(Level.SEVERE, null, ex);
-    }
+    // more testing here...
   }
 
   /**
