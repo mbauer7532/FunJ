@@ -85,20 +85,6 @@ public final class BrotherTreeModule {
     protected abstract Tree<K, V> del(final K a);
     protected abstract Optional<Triple<K, V, Tree<K, V>>> splitMin();
 
-    private static final AssertionError sCannotBeCalledOnBrotherTrees
-            = new AssertionError("These operations are not implemented for this class.");
-
-    @Override
-    protected K getKey() { throw sCannotBeCalledOnBrotherTrees; }
-    @Override
-    protected V getValue() { throw sCannotBeCalledOnBrotherTrees; }
-    @Override
-    protected Pair<K, V> getKeyValuePair() { throw sCannotBeCalledOnBrotherTrees; }
-    @Override
-    protected Tree<K, V> getLeft() { throw sCannotBeCalledOnBrotherTrees; }
-    @Override
-    protected Tree<K, V> getRight() { throw sCannotBeCalledOnBrotherTrees; }
-
     @Override
     public final Color DSgetColor() {
       return Color.BLACK;

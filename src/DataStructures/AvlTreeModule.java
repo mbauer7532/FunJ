@@ -73,6 +73,16 @@ public final class AvlTreeModule {
       return fromStrictlyIncreasingArray(mergeArrays(f, keyValuePairs(), t.keyValuePairs()));
     }
 
+    @Override
+    public final Optional<Pair<K, V>> lowerPair(final K key) {
+      return AvlTreeModule.lowerPair(this, key);
+    }
+
+    @Override
+    public final Optional<Pair<K, V>> higherPair(final K key) {
+      return AvlTreeModule.higherPair(this, key);
+    }
+
     abstract Tree<K, V> rem(final K key) throws ControlExnNoSuchElement;
     abstract int getBalance();
   }
@@ -160,20 +170,6 @@ public final class AvlTreeModule {
     final int getBalance() {
       return 0;
     }
-
-    private static final AssertionError sCannotBeCalledOnEmptyNode
-            = new AssertionError("This operation is not allowed on an empty tree node.");
-
-    @Override
-    protected K getKey() { throw sCannotBeCalledOnEmptyNode; }
-    @Override
-    protected V getValue() { throw sCannotBeCalledOnEmptyNode; }
-    @Override
-    protected Pair<K, V> getKeyValuePair() { throw sCannotBeCalledOnEmptyNode; }
-    @Override
-    protected Tree<K, V> getLeft() { throw sCannotBeCalledOnEmptyNode; }
-    @Override
-    protected Tree<K, V> getRight() { throw sCannotBeCalledOnEmptyNode; }
 
     @Override
     public DSTreeNode[] DSgetChildren() {
@@ -426,17 +422,6 @@ public final class AvlTreeModule {
     }
 
     @Override
-    protected K getKey() { return mKey; }
-    @Override
-    protected V getValue() { return mValue; }
-    @Override
-    protected Pair<K, V> getKeyValuePair() { return Pair.create(mKey, mValue); }
-    @Override
-    protected Tree<K, V> getLeft() { return mLeft; }
-    @Override
-    protected Tree<K, V> getRight(){ return mRight; }
-
-    @Override
     public DSTreeNode[] DSgetChildren() {
       return new DSTreeNode[] { mLeft, mRight };
     }
@@ -460,6 +445,68 @@ public final class AvlTreeModule {
   public static <K extends Comparable<K>, V> Tree<K, V> singleton(final K key, final V value) {
     final Tree<K, V> e = empty();
     return Node.create(e, key, value, e, 1);
+  }
+
+  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> makeBoundPair(final Node<K, V> candidate) {
+    return candidate == null
+            ? Optional.empty()
+            : Optional.of(Pair.create(candidate.mKey, candidate.mValue));
+  }
+
+  static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
+    Tree<K, V> tree = t;
+    Node<K, V> n, candidate = null;
+
+    while (! tree.isEmpty()) {
+      n = (Node<K, V>) tree;
+      int res = key.compareTo(n.mKey);
+      if (res > 0) {
+        tree = n.mRight;
+        candidate = n;
+      }
+      else if (res < 0) {
+        tree = n.mLeft;
+      }
+      else {
+         final Optional<Pair<K, V>> p = n.mLeft.maxElementPair();
+         if (p.isPresent()) {
+           return p;
+         }
+         else {
+           break;
+         }
+      }
+    }
+
+    return makeBoundPair(candidate);
+  }
+
+  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPair(final Tree<K, V> t, final K key) {
+    Tree<K, V> tree = t;
+    Node<K, V> n, candidate = null;
+
+    while (! tree.isEmpty()) {
+      n = (Node<K, V>) tree;
+      int res = key.compareTo(n.mKey);
+      if (res > 0) {
+        tree = n.mRight;
+      }
+      else if (res < 0) {
+        tree = n.mLeft;
+        candidate = n;
+      }
+      else {
+        final Optional<Pair<K, V>> p = n.mRight.minElementPair();
+        if (p.isPresent()) {
+           return p;
+         }
+         else {
+           break;
+         }
+      }
+    }
+
+    return makeBoundPair(candidate);
   }
 
   private static final class InitFromArrayWorker<K extends Comparable<K>, V> {
