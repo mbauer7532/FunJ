@@ -958,7 +958,7 @@ public class RedBlackTreeModule {
             : Optional.of(Pair.create(candidate.mKey, candidate.mValue));
   }
 
-  static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
+  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
     Tree<K, V> tree = t;
     Node<K, V> n, candidate = null;
 
