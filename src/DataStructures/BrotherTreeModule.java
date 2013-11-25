@@ -65,12 +65,12 @@ public final class BrotherTreeModule {
 
     @Override
     public final Optional<Pair<K, V>> lowerPair(final K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return BrotherTreeModule.lowerPair(this, key);
     }
 
     @Override
     public final Optional<Pair<K, V>> higherPair(final K key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return BrotherTreeModule.higherPair(this, key);
     }
 
     @Override
@@ -390,7 +390,7 @@ public final class BrotherTreeModule {
 
     @Override
     public Optional<Pair<K, V>> minElementPair() {
-       if (mt1.isEmpty()) {
+       if (mt1.isEmpty() || (mt1 instanceof N1 && ((N1<K, V>) mt1).mt.isEmpty())) {
         return Optional.of(Pair.create(ma1, mv1));
       }
       else {
@@ -400,7 +400,7 @@ public final class BrotherTreeModule {
 
     @Override
     public Optional<Pair<K, V>> maxElementPair() {
-      if (mt2.isEmpty()) {
+      if (mt2.isEmpty() || (mt2 instanceof N1 && ((N1<K, V>) mt2).mt.isEmpty())) {
         return Optional.of(Pair.create(ma1, mv1));
       }
       else {
@@ -939,5 +939,81 @@ public final class BrotherTreeModule {
   public static <K extends Comparable<K>, V> Tree<K, V> singleton(final K a, final V v) {
     Tree<K, V> e = empty();
     return N2.create(e, a, v, e);
+  }
+
+  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> makeBoundPair(final N2<K, V> candidate) {
+    return candidate == null
+            ? Optional.empty()
+            : Optional.of(Pair.create(candidate.ma1, candidate.mv1));
+  }
+
+  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
+    Tree<K, V> tree = t;
+    N2<K, V> candidate = null;
+
+    while (! tree.isEmpty()) {
+      if (tree instanceof N1) {
+        tree = ((N1<K, V>) tree).mt;
+        if (tree.isEmpty()) {  // Here we could just continue; but that would cause us to check that mt is not an N1
+          break;               // and we already know from the brother condition that it cannot be.  So this is just a
+        }                      // small optimization.  Mt must be either N0 or N2 and not N1.
+      }
+
+      final N2<K, V> n2 = (N2<K, V>) tree;
+      int res = key.compareTo(n2.ma1);
+      if (res > 0) {
+        tree = n2.mt2;
+        candidate = n2;
+      }
+      else if (res < 0) {
+        tree = n2.mt1;
+      }
+      else {
+        final Optional<Pair<K, V>> p = n2.mt1.maxElementPair();
+        if (p.isPresent()) {
+          return p;
+        }
+        else {
+          break;
+        }
+      }
+    }
+
+    return makeBoundPair(candidate);
+  }
+
+  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPair(final Tree<K, V> t, final K key) {
+    Tree<K, V> tree = t;
+    N2<K, V> candidate = null;
+
+    while (! tree.isEmpty()) {
+      if (tree instanceof N1) {
+        tree = ((N1<K, V>) tree).mt;
+        if (tree.isEmpty()) {  // Here we could just continue; but that would cause us to check that mt is not an N1
+          break;               // and we already know from the brother condition that it cannot be.  So this is just a
+        }                      // small optimization.  Mt must be either N0 or N2 and not N1.
+      }
+
+      final N2<K, V> n2 = (N2<K, V>) tree;
+      int res = key.compareTo(n2.ma1);
+      if (res > 0) {
+        tree = n2.mt2;
+      }
+      else if (res < 0) {
+        tree = n2.mt1;
+        candidate = n2;
+      }
+      else {
+        final Optional<Pair<K, V>> p = n2.mt2.minElementPair();
+        if (p.isPresent()) {
+           return p;
+         }
+         else {
+           break;
+         }
+      }
+    }
+
+    return makeBoundPair(candidate);
   }
 }

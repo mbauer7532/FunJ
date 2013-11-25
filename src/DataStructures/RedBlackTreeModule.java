@@ -960,10 +960,10 @@ public class RedBlackTreeModule {
 
   private static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
     Tree<K, V> tree = t;
-    Node<K, V> n, candidate = null;
+    Node<K, V> candidate = null;
 
     while (! tree.isEmpty()) {
-      n = (Node<K, V>) tree;
+      final Node<K, V> n = (Node<K, V>) tree;
       int res = key.compareTo(n.mKey);
       if (res > 0) {
         tree = n.mRight;
@@ -988,10 +988,10 @@ public class RedBlackTreeModule {
 
   private static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPair(final Tree<K, V> t, final K key) {
     Tree<K, V> tree = t;
-    Node<K, V> n, candidate = null;
+    Node<K, V> candidate = null;
 
     while (! tree.isEmpty()) {
-      n = (Node<K, V>) tree;
+      final Node<K, V> n = (Node<K, V>) tree;
       int res = key.compareTo(n.mKey);
       if (res > 0) {
         tree = n.mRight;

@@ -8,10 +8,14 @@ package DataStructures;
 
 import DataStructures.BrotherTreeModule;
 import DataStructures.TuplesModule.Pair;
+import Utils.Numeric;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
+import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -128,5 +132,52 @@ public class AvlTreeModuleTest {
       //GraphModule.waitTime(1);
     });
     //GraphModule.waitTime(1);
+  }
+
+  private static <K, V> Optional<Pair<K, V>> toPair(final Map.Entry<K, V> e) {
+    return e == null ? Optional.empty() : Optional.of(Pair.create(e.getKey(), e.getValue()));
+  }
+
+  @Test
+  public void testLowerHigherPairRandomInputs() {
+    System.out.println("lowerHigherPairRandomInputs");
+
+    final long seed = 1253327;
+    final Random rng = new Random(seed);
+
+    final int N = 500;
+    final int low = -50, high = 600;
+    final int size = 180;
+
+    IntStream.range(0, N).forEach(x -> {
+      final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
+
+      final ArrayList<Pair<Integer, Integer>> v =
+              Arrays.stream(perm1)
+                    .mapToObj(i -> Pair.create(i, i))
+                    .collect(Collectors.toCollection(ArrayList::new));
+      final BrotherTreeModule.Tree<Integer, Integer> pm = BrotherTreeModule.fromArray(v);
+      final TreeMap<Integer, Integer> tm = new TreeMap<>();
+      v.stream().forEach(p -> tm.put(p.mx1, p.mx2));
+
+      Numeric.randomSet(low - 200, high + 200, 500, rng).forEach(n -> {
+        final Optional<Pair<Integer, Integer>>
+                tmlowerExpected  = toPair(tm.lowerEntry(n)),
+                pmLower          = pm.lowerPair(n),
+                tmHigherExpected = toPair(tm.higherEntry(n)),
+                pmHigher         = pm.higherPair(n);
+
+        if (! tmlowerExpected.equals(pmLower)) {
+ //         final Optional<Pair<Integer, Integer>> zz = pm.lowerPair(n);
+          GraphModule.showGraph(pm);
+          System.out.println("n = " + n);
+          System.out.println("Expected = " + tmlowerExpected);
+          System.out.println("Actual = " + pmLower);
+          GraphModule.waitTime(2000);
+        }
+        assertEquals(tmlowerExpected, pmLower);
+        assertEquals(tmHigherExpected, pmHigher);
+      });
+    });
   }
 }
