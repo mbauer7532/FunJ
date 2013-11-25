@@ -73,16 +73,6 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public final Optional<Pair<K, V>> lowerPair(final K key) {
-      return RedBlackTreeModule.lowerPair(this, key);
-    }
-
-    @Override
-    public final Optional<Pair<K, V>> higherPair(final K key) {
-      return RedBlackTreeModule.higherPair(this, key);
-    }
-
-    @Override
     public abstract <W> Tree<K, W> mapi(final BiFunction<K, V, W> f);
 
     @Override
@@ -177,6 +167,20 @@ public class RedBlackTreeModule {
     public Optional<Pair<K, V>> maxElementPair() {
       return Optional.empty();
     }
+
+    private static final AssertionError sCannotBeCalledOnEmptyNode
+            = new AssertionError("This operation is not allowed on an empty tree node.");
+
+    @Override
+    protected K getKey() { throw sCannotBeCalledOnEmptyNode; }
+    @Override
+    protected V getValue() { throw sCannotBeCalledOnEmptyNode; }
+    @Override
+    protected Pair<K, V> getKeyValuePair() { throw sCannotBeCalledOnEmptyNode; }
+    @Override
+    protected Tree<K, V> getLeft() { throw sCannotBeCalledOnEmptyNode; }
+    @Override
+    protected Tree<K, V> getRight() { throw sCannotBeCalledOnEmptyNode; }
 
     @Override
     public DSTreeNode[] DSgetChildren() {
@@ -282,6 +286,17 @@ public class RedBlackTreeModule {
       }
     }
 
+    @Override
+    protected K getKey() { return mKey; }
+    @Override
+    protected V getValue() { return mValue; }
+    @Override
+    protected Pair<K, V> getKeyValuePair() { return Pair.create(mKey, mValue); }
+    @Override
+    protected Tree<K, V> getLeft() { return mLeft; }
+    @Override
+    protected Tree<K, V> getRight(){ return mRight; }
+  
     @Override
     public DSTreeNode[] DSgetChildren() {
       return new DSTreeNode[] { mLeft, mRight };
@@ -815,68 +830,6 @@ public class RedBlackTreeModule {
     throw new AssertionError("The tree cannot be empty in this context.");
   }
 
-  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> makeBoundPair(final Node<K, V> candidate) {
-    return candidate == null
-            ? Optional.empty()
-            : Optional.of(Pair.create(candidate.mKey, candidate.mValue));
-  }
-
-  static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
-    Tree<K, V> tree = t;
-    Node<K, V> n, candidate = null;
-
-    while (! tree.isEmpty()) {
-      n = (Node<K, V>) tree;
-      int res = key.compareTo(n.mKey);
-      if (res > 0) {
-        tree = n.mRight;
-        candidate = n;
-      }
-      else if (res < 0) {
-        tree = n.mLeft;
-      }
-      else {
-         final Optional<Pair<K, V>> p = n.mLeft.maxElementPair();
-         if (p.isPresent()) {
-           return p;
-         }
-         else {
-           break;
-         }
-      }
-    }
-
-    return makeBoundPair(candidate);
-  }
-
-  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPair(final Tree<K, V> t, final K key) {
-    Tree<K, V> tree = t;
-    Node<K, V> n, candidate = null;
-
-    while (! tree.isEmpty()) {
-      n = (Node<K, V>) tree;
-      int res = key.compareTo(n.mKey);
-      if (res > 0) {
-        tree = n.mRight;
-      }
-      else if (res < 0) {
-        tree = n.mLeft;
-        candidate = n;
-      }
-      else {
-        final Optional<Pair<K, V>> p = n.mRight.minElementPair();
-        if (p.isPresent()) {
-           return p;
-         }
-         else {
-           break;
-         }
-      }
-    }
-
-    return makeBoundPair(candidate);
-  }
-
   static <K extends Comparable<K>, V> Pair<Boolean, String> verifyRedBlackProperties(final Tree<K, V> t) {
     if (! redChildrenPropertyHolds(t)) {
       return Pair.create(false, "There are red nodes that have red children.");
@@ -942,7 +895,7 @@ public class RedBlackTreeModule {
       if (b != null) {
         final Pair<Integer, Boolean> pleft  = blackNodeCountPropertyHolds(b.mLeft);
         final Pair<Integer, Boolean> pright = blackNodeCountPropertyHolds(b.mRight);
-      
+
         return Pair.create(pleft.mx1 + 1, pleft.mx2 && pright.mx2 && pleft.mx1.equals(pright.mx1));
       }
     }

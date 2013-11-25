@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
@@ -200,5 +201,71 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
     }
 
     return destVec;
+  }
+
+  protected abstract K getKey();
+  protected abstract V getValue();
+  protected abstract Pair<K, V> getKeyValuePair();
+  protected abstract M getLeft();
+  protected abstract M getRight();
+  
+  private static <K extends Comparable<K>, V, M extends PersistentMapBase<K, V, M>> Optional<Pair<K, V>> makeBoundPair(final PersistentMapBase<K, V, M> candidate) {
+    return candidate == null
+            ? Optional.empty()
+            : Optional.of(candidate.getKeyValuePair());
+  }
+
+  public Optional<Pair<K, V>> lowerPair(final K key) {
+    PersistentMapBase<K, V, M> node = this;
+    PersistentMapBase<K, V, M> candidate = null;
+
+    while (! node.isEmpty()) {
+      int res = key.compareTo(node.getKey());
+      if (res > 0) {
+        candidate = node;
+        node = node.getRight();
+      }
+      else if (res < 0) {
+        node = node.getLeft();
+      }
+      else {
+         final Optional<Pair<K, V>> p = node.getLeft().maxElementPair();
+         if (p.isPresent()) {
+           return p;
+         }
+         else {
+           break;
+         }
+      }
+    }
+
+    return makeBoundPair(candidate);
+  }
+
+  public Optional<Pair<K, V>> higherPair(final K key) {
+    PersistentMapBase<K, V, M> node = this;
+    PersistentMapBase<K, V, M> candidate = null;
+
+    while (! node.isEmpty()) {
+      int res = key.compareTo(node.getKey());
+      if (res > 0) {
+        node = node.getRight();
+      }
+      else if (res < 0) {
+        candidate = node;
+        node = node.getLeft();
+      }
+      else {
+        final Optional<Pair<K, V>> p = node.getRight().minElementPair();
+        if (p.isPresent()) {
+           return p;
+         }
+         else {
+           break;
+         }
+      }
+    }
+
+    return makeBoundPair(candidate);
   }
 }

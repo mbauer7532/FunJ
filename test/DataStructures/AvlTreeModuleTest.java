@@ -124,9 +124,9 @@ public class AvlTreeModuleTest {
       final PersistentMap<Integer, Integer, BrotherTreeModule.Tree<Integer,Integer>> pm
               = BrotherTreeModule.fromArray(v);
 
-      GraphModule.showGraph(pm);
-      GraphModule.waitTime(1);
+      //GraphModule.showGraph(pm);
+      //GraphModule.waitTime(1);
     });
-    GraphModule.waitTime(1000);
+    //GraphModule.waitTime(1);
   }
 }
