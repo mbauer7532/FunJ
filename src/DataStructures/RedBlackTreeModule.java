@@ -92,6 +92,11 @@ public class RedBlackTreeModule {
       return RedBlackTreeModule.higherPair(this, key);
     }
 
+    @Override
+    public Pair<Boolean, String> verifyMapProperties() {
+      return verifyRedBlackProperties(this);
+    }
+
     boolean isRed() { return false; }
     boolean isBlack() { return false; }
 

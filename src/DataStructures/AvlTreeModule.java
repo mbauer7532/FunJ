@@ -85,6 +85,11 @@ public final class AvlTreeModule {
       return AvlTreeModule.higherPair(this, key);
     }
 
+    @Override
+    public Pair<Boolean, String> verifyMapProperties() {
+      return verifyAVLTreeProperties(this);
+    }
+
     abstract Tree<K, V> rem(final K key) throws ControlExnNoSuchElement;
     abstract int getBalance();
   }

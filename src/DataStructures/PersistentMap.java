@@ -96,4 +96,7 @@ public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentM
   public Optional<Pair<K, V>> maxElementPair();
 
   public int height();
+  
+  // Each map has to do it's own verification.  Used in testing.
+  public Pair<Boolean, String> verifyMapProperties();
 }

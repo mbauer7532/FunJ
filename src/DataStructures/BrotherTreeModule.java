@@ -84,6 +84,11 @@ public final class BrotherTreeModule {
       return mapi((k, v) -> f.apply(v));
     }
 
+    @Override
+    public Pair<Boolean, String> verifyMapProperties() {
+      return verifyBrotherTreeProperties(this);
+    }
+
     protected abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K a, final V v);
     protected abstract Tree<K, V> del(final K a);
     protected abstract Optional<Triple<K, V, Tree<K, V>>> splitMin();
@@ -1077,5 +1082,9 @@ public final class BrotherTreeModule {
 
       return fromSpine(N2.create(t1, key, value, newTree), s);
     }
+  }
+
+  static <K extends Comparable<K>, V> Pair<Boolean, String> verifyBrotherTreeProperties(final Tree<K, V> t) {
+    throw new AssertionError("Not implemented yet.");
   }
 }
