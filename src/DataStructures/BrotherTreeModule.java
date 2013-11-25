@@ -16,6 +16,9 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.StructureGraphic.v1.DSTreeNode;
 
 /**
@@ -875,61 +878,34 @@ public final class BrotherTreeModule {
     return N2.create(t1, a, v, t2);
   }
 
-  private static final class InitFromArrayWorker<K extends Comparable<K>, V> {
-    private final ArrayList<Pair<K, V>> mVector;
-    private final boolean mIncreasing;
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+    return fromStrictlyIncreasingArray(stream.collect(Collectors.toCollection(ArrayList::new)));
+  }
 
-    public InitFromArrayWorker(final ArrayList<Pair<K, V>> vector,
-                               final boolean increasing) {
-      mVector = vector;
-      mIncreasing = increasing;
-    }
-
-    private Tree<K, V> workerFunc(final int left, final int right, final int depth) {
-      if (left > right)
-        return empty();
-
-      final int mid = (left + right) >>> 1;
-      final Pair<K, V> p = mVector.get(mid);
-
-      Tree<K, V> lt, rt;
-      final int newDepth = depth + 1;
-      lt = workerFunc(left, mid - 1, newDepth);
-      rt = workerFunc(mid + 1, right, newDepth);
-
-      if (! mIncreasing) {
-        Tree<K, V> t = lt;
-        lt = rt;
-        rt = t;
-      }
-
-      return null;
-//
-//      return depth == mRedLevel
-//              ? RedNode.create(lt, p.mx1, p.mx2, rt)
-//              : BlackNode.create(lt, p.mx1, p.mx2, rt);
-    }
-
-    public final Tree<K, V> doIt() {
-      return workerFunc(0, mVector.size() - 1, 0);
-    }
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+    return fromSpine(BrotherTreeModule.<K, V> empty(),
+                     stream.reduce(Nil.create(),
+                                   (s, p) -> cons(p.mx1, p.mx2, s),
+                                   (s1, s2) -> { throw new AssertionError("Should never be called."); }));
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
-    return fromArray(v);
-//    return (new InitFromArrayWorker<>(v, true, computeRedDepth(v.size())).doIt());
+    final int n = v.size();
+    return fromStrictlyDecreasingStream(IntStream.rangeClosed(1, n).mapToObj(idx -> v.get(n - idx)));
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
-    return fromArray(v);
-    //return (new InitFromArrayWorker<>(v, false, computeRedDepth(v.size())).doIt());
+    return fromStrictlyDecreasingStream(v.stream());
+  }
+
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+    return stream.reduce(empty(),
+                         ((t, p) -> t.insert(p.mx1, p.mx2)),
+                         ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
-    return v.stream()
-            .reduce(empty(),
-                    ((t, p) -> t.insert(p.mx1, p.mx2)),
-                    ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
+    return fromStream(v.stream());
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> empty() {
@@ -1015,5 +991,91 @@ public final class BrotherTreeModule {
     }
 
     return makeBoundPair(candidate);
+  }
+
+  private static enum SpineKind {
+    NIL,
+    HALF,
+    FULL
+  }
+
+  private static class Spine<K extends Comparable<K>, V> {
+    public Spine(final SpineKind spineKind) {
+      mSpineKind = spineKind;
+    }
+    public SpineKind mSpineKind;
+  }
+
+  private static class Nil<K extends Comparable<K>, V> extends Spine<K, V> {
+    @SuppressWarnings("unchecked")
+    public static final <K extends Comparable<K>, V> Spine<K, V> create() { return (Nil<K, V>) sNil; }
+
+    private Nil() { super(SpineKind.NIL); }
+    private static final Nil<? extends Comparable<?>, ?> sNil = new Nil<>();
+  }
+
+  private static class HF<K extends Comparable<K>, V> extends Spine<K, V> {
+    public K mKey;
+    public V mValue;
+    public Tree<K, V> mTree;
+    public Spine<K, V> mSpine;
+
+    public HF(final SpineKind spineKind, final K key, final V value, final Tree<K, V> tree, final Spine<K, V> spine) {
+      super(spineKind);
+      mKey = key;
+      mValue = value;
+      mTree = tree;
+      mSpine = spine;
+    }
+  }
+
+  private static <K extends Comparable<K>, V> Spine<K, V> cons(final K key, final V value, final Spine<K, V> spine) {
+    final Spine<K, V> newSpine;
+
+    if (spine.mSpineKind == SpineKind.FULL) {
+      final HF<K, V> fs = ((HF<K, V>) spine);
+      newSpine = half(fs.mKey, fs.mValue, fs.mTree, fs.mSpine);
+    }
+    else {
+      newSpine = Nil.create();
+    }
+
+    return new HF<>(SpineKind.FULL, key, value, N0.create(), newSpine);
+  }
+
+  private static <K extends Comparable<K>, V> Spine<K, V> half(final K key, final V value, final Tree<K, V> tree, Spine<K, V> spine) {
+    final SpineKind sKind = spine.mSpineKind;
+
+    if (sKind == SpineKind.NIL) {
+      return new HF<>(SpineKind.HALF, key, value, tree, Nil.create());
+    }
+    else {
+      final HF<K, V> hf = (HF<K, V>) spine;
+
+      if (sKind == SpineKind.HALF) {
+        return new HF<>(SpineKind.FULL, key, value, N2.create(tree, hf.mKey, hf.mValue, hf.mTree), hf.mSpine);
+      }
+      else {
+        return new HF<>(SpineKind.HALF, key, value, tree, half(hf.mKey, hf.mValue, hf.mTree, hf.mSpine));
+      }
+    }
+  }
+
+  private static <K extends Comparable<K>, V> Tree<K, V> fromSpine(final Tree<K, V> t1, final Spine<K, V> spine) {
+    final SpineKind sKind = spine.mSpineKind;
+
+    if (sKind == SpineKind.NIL) {
+      return t1;
+    }
+    else {
+      final HF<K, V> hf = (HF<K, V>) spine;
+      final K key         = hf.mKey;
+      final V value       = hf.mValue;
+      final Tree<K, V> t2 = hf.mTree;
+      final Spine<K, V> s = hf.mSpine;
+      final Tree<K, V> newTree = sKind == SpineKind.HALF ? N1.create(t2) : t2;
+
+      return fromSpine(N2.create(t1, key, value, newTree), s);
+    }
   }
 }

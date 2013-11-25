@@ -21,6 +21,8 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.StructureGraphic.v1.DSTreeNode;
 
 /**
@@ -1014,6 +1016,14 @@ public class RedBlackTreeModule {
     return makeBoundPair(candidate);
   }
 
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+    return fromStrictlyIncreasingArray(stream.collect(Collectors.toCollection(ArrayList::new)));
+  }
+
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+    return fromStrictlyDecreasingArray(stream.collect(Collectors.toCollection(ArrayList::new)));
+  }
+
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
     return (new InitFromArrayWorker<>(v, true, computeRedDepth(v.size())).doIt());
   }
@@ -1022,11 +1032,14 @@ public class RedBlackTreeModule {
     return (new InitFromArrayWorker<>(v, false, computeRedDepth(v.size())).doIt());
   }
 
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+    return stream.reduce(empty(),
+                         ((t, p) -> t.insert(p.mx1, p.mx2)),
+                         ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
+  }
+
   public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
-    return v.stream()
-            .reduce(empty(),
-                    ((t, p) -> t.insert(p.mx1, p.mx2)),
-                    ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
+    return fromStream(v.stream());
   }
 
   private static final class ControlExnNoSuchElement extends Exception {};
