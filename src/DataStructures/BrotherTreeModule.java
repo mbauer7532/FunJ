@@ -424,7 +424,8 @@ public final class BrotherTreeModule {
 
     @Override
     public Optional<Pair<K, V>> minElementPair() {
-       if (mt1.isEmpty() || (mt1 instanceof N1 && ((N1<K, V>) mt1).mt.isEmpty())) {
+      N1<K, V> n;
+      if (mt1.isN0() || ((n = mt1.asN1()) != null && n.mt.isN0())) {
         return Optional.of(Pair.create(ma1, mv1));
       }
       else {
@@ -434,7 +435,8 @@ public final class BrotherTreeModule {
 
     @Override
     public Optional<Pair<K, V>> maxElementPair() {
-      if (mt2.isEmpty() || (mt2 instanceof N1 && ((N1<K, V>) mt2).mt.isEmpty())) {
+      N1<K, V> n;
+      if (mt2.isN0() || ((n = mt2.asN1()) != null && n.mt.isN0())) {
         return Optional.of(Pair.create(ma1, mv1));
       }
       else {
@@ -691,16 +693,17 @@ public final class BrotherTreeModule {
   }
 
   private static <K extends Comparable<K>, V> Tree<K, V> n1_aux(final Tree<K,V> t, final boolean boxN1) {
-    if (t instanceof L2) {
-      final L2<K, V> l2t = (L2<K, V>) t;
+    final L2<K, V> l2t;
+    final N3<K, V> n3t;
+
+    if ((l2t = t.asL2()) != null) {
       final K a1 = l2t.ma1;
       final V v1 = l2t.mv1;
       final Tree<K, V> cn0 = N0.create();
 
       return N2.create(cn0, a1, v1, cn0);
     }
-    else if (t instanceof N3) {
-      final N3<K, V> n3t = (N3<K, V>) t;
+    else if ((n3t = t.asN3()) != null) {
       final Tree<K, V> t1 = n3t.mt1, t2 = n3t.mt2, t3 = n3t.mt3;
       final K a1 = n3t.ma1, a2 = n3t.ma2;
       final V v1 = n3t.mv1, v2 = n3t.mv2;
@@ -713,8 +716,9 @@ public final class BrotherTreeModule {
   }
 
   private static <K extends Comparable<K>, V> Tree<K, V> n2_ins(final Tree<K,V> left, final K a, final V v, final Tree<K, V> right) {
-    if (left instanceof L2) {
-      final L2<K, V> lt = (L2<K, V>) left;
+    final L2<K, V> lt;
+
+    if ((lt = left.asL2()) != null) {
       final Tree<K, V> t1 = right;
       final K a1 = lt.ma1, a2 = a;
       final V v1 = lt.mv1, v2 = v;
@@ -723,21 +727,20 @@ public final class BrotherTreeModule {
       return N3.create(cn0, a1, v1, cn0, a2, v2, t1);
     }
 
-    if (left instanceof N3) {
-      if (right instanceof N1) {
-         final N3<K, V> n3t = (N3<K, V>) left;
-         final Tree<K, V> t1 = n3t.mt1, t2 = n3t.mt2, t3 = n3t.mt3;
-         final K a1 = n3t.ma1, a2 = n3t.ma2, a3 = a;
-         final V v1 = n3t.mv1, v2 = n3t.mv2, v3 = v;
+    N3<K, V> n3t;
+    if ((n3t = left.asN3()) != null) {
+      final N1<K, V> n1t;
 
-         final N1<K, V> n1t = (N1<K, V>) right;
-         final Tree<K, V> t4 = n1t.mt;
+      if ((n1t = right.asN1()) != null) {
+        final Tree<K, V> t1 = n3t.mt1, t2 = n3t.mt2, t3 = n3t.mt3;
+        final K a1 = n3t.ma1, a2 = n3t.ma2, a3 = a;
+        final V v1 = n3t.mv1, v2 = n3t.mv2, v3 = v;
 
-         return N2.create(N2.create(t1, a1, v1, t2), a2, v2, N2.create(t3, a3, v3, t4));
+        final Tree<K, V> t4 = n1t.mt;
+
+        return N2.create(N2.create(t1, a1, v1, t2), a2, v2, N2.create(t3, a3, v3, t4));
       }
-      else if (right instanceof N2)
-      {
-        final N3<K, V> n3t = (N3<K, V>) left;
+      else if (right.isN2()) {
         final Tree<K, V> t1 = n3t.mt1, t2 = n3t.mt2, t3 = n3t.mt3;
         final K a1 = n3t.ma1, a2 = n3t.ma2, a3 = a;
         final V v1 = n3t.mv1, v2 = n3t.mv2, v3 = v;
@@ -747,8 +750,8 @@ public final class BrotherTreeModule {
       }
     }
 
-    if (right instanceof L2) {
-      final L2<K, V> rt = (L2<K, V>) right;
+    final L2<K, V> rt;
+    if ((rt = right.asL2()) != null) {
       final Tree<K, V> t1 = left;
       final K a1 = a, a2 = rt.ma1;
       final V v1 = v, v2 = rt.mv1;
@@ -757,21 +760,19 @@ public final class BrotherTreeModule {
       return N3.create(t1, a1, v1, cn0, a2, v2, cn0);
     }
 
-    if (right instanceof N3) {
-      if (left instanceof N1) {
-         final N3<K, V> n3t = (N3<K, V>) right;
+    if ((n3t = right.asN3()) != null) {
+      final N1<K, V> n1t;
+      if ((n1t = left.asN1()) != null) {
          final Tree<K, V> t2 = n3t.mt1, t3 = n3t.mt2, t4 = n3t.mt3;
          final K a1 = a, a2 = n3t.ma1, a3 = n3t.ma2;
          final V v1 = v, v2 = n3t.mv1, v3 = n3t.mv2;
 
-         final N1<K, V> n1t = (N1<K, V>) left;
          final Tree<K, V> t1 = n1t.mt;
 
          return N2.create(N2.create(t1, a1, v1, t2), a2, v2, N2.create(t3, a3, v3, t4));
       }
-      else if (left instanceof N2)
+      else if (left.isN2())
       {
-        final N3<K, V> n3t = (N3<K, V>) right;
         final Tree<K, V> t2 = n3t.mt1, t3 = n3t.mt2, t4 = n3t.mt3;
         final K a1 = a, a2 = n3t.ma1, a3 = n3t.ma2;
         final V v1 = v, v2 = n3t.mv1, v3 = n3t.mv2;
@@ -789,8 +790,9 @@ public final class BrotherTreeModule {
   }
 
   private static <K extends Comparable<K>, V> Tree<K, V> root_del(final Tree<K,V> t) {
-    if (t instanceof N1) {
-      return ((N1<K, V>) t).mt;
+    final N1<K, V> n = t.asN1();
+    if (n != null) {
+      return n.mt;
     }
     else {
       return t;
@@ -976,8 +978,9 @@ public final class BrotherTreeModule {
     N2<K, V> candidate = null;
 
     while (! tree.isEmpty()) {
-      if (tree instanceof N1) {
-        tree = ((N1<K, V>) tree).mt;
+      final N1<K, V> n = tree.asN1();
+      if (n != null) {
+        tree = n.mt;
         if (tree.isEmpty()) {  // Here we could just continue; but that would cause us to check that mt is not an N1
           break;               // and we already know from the brother condition that it cannot be.  So this is just a
         }                      // small optimization.  Mt must be either N0 or N2 and not N1.
@@ -1011,8 +1014,9 @@ public final class BrotherTreeModule {
     N2<K, V> candidate = null;
 
     while (! tree.isEmpty()) {
-      if (tree instanceof N1) {
-        tree = ((N1<K, V>) tree).mt;
+      final N1<K, V> n = tree.asN1();
+      if (n != null) {
+        tree = n.mt;
         if (tree.isEmpty()) {  // Here we could just continue; but that would cause us to check that mt is not an N1
           break;               // and we already know from the brother condition that it cannot be.  So this is just a
         }                      // small optimization.  Mt must be either N0 or N2 and not N1.
