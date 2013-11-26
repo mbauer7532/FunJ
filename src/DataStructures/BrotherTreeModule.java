@@ -95,6 +95,18 @@ public final class BrotherTreeModule {
     protected abstract Tree<K, V> del(final K a);
     protected abstract Optional<Triple<K, V, Tree<K, V>>> splitMin();
 
+    boolean isN0() { return false; }
+    boolean isN1() { return false; }
+    boolean isN2() { return false; }
+    boolean isN3() { return false; }
+    boolean isL2() { return false; }
+
+    N0<K, V> asN0() { return null; }
+    N1<K, V> asN1() { return null; }
+    N2<K, V> asN2() { return null; }
+    N3<K, V> asN3() { return null; }
+    L2<K, V> asL2() { return null; }
+
     @Override
     public final Color DSgetColor() {
       return Color.BLACK;
@@ -186,6 +198,12 @@ public final class BrotherTreeModule {
     public Object DSgetValue() {
       return "N0";
     }
+
+    @Override
+    boolean isN0() { return true; }
+
+    @Override
+    N0<K, V> asN0() { return this; }
   }
 
   private static final class N1<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -281,6 +299,12 @@ public final class BrotherTreeModule {
     public Object DSgetValue() {
       return "N1";
     }
+
+    @Override
+    boolean isN1() { return true; }
+
+    @Override
+    N1<K, V> asN1() { return this; }
   }
 
   private static final class N2<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -427,6 +451,12 @@ public final class BrotherTreeModule {
     public Object DSgetValue() {
       return String.format("N2(%s,%s)", ma1.toString(), mv1.toString());
     }
+
+    @Override
+    boolean isN2() { return true; }
+
+    @Override
+    N2<K, V> asN2() { return this; }
   }
 
   private static final class N3<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -542,6 +572,12 @@ public final class BrotherTreeModule {
               ma1.toString(), mv1.toString(),
               ma2.toString(), mv2.toString());
     }
+
+    @Override
+    boolean isN3() { return true; }
+
+    @Override
+    N3<K, V> asN3() { return this; }
 }
 
   private static final class L2<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -638,6 +674,12 @@ public final class BrotherTreeModule {
     public Object DSgetValue() {
       return String.format("L2(%s,%s)", ma1.toString(), mv1.toString());
     }
+
+    @Override
+    boolean isL2() { return true; }
+
+    @Override
+    L2<K, V> asL2() { return this; }
   }
 
   private static <K extends Comparable<K>, V> Tree<K, V> root_ins(final Tree<K,V> t) {
@@ -736,7 +778,6 @@ public final class BrotherTreeModule {
         final Tree<K, V> t1 = left;
 
         return N3.create(t1, a1, v1, N1.create(t2), a2, v2, N2.create(t3, a3, v3, t4));
-//                N2.create(t1, a1, v1, t2), a2, v2, N1.create(t3), a3, v3, t4);
       }
     }
 
