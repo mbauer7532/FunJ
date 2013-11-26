@@ -823,6 +823,10 @@ public class RedBlackTreeModule {
   }
 
   static <K extends Comparable<K>, V> Pair<Boolean, String> verifyRedBlackProperties(final Tree<K, V> t) {
+    if (! binaryTreePropertyHolds(t)) {
+      return Pair.create(false, "Binary Tree property does not hold.");
+    }
+
     if (! redChildrenPropertyHolds(t)) {
       return Pair.create(false, "There are red nodes that have red children.");
     }
@@ -831,13 +835,11 @@ public class RedBlackTreeModule {
       return Pair.create(false, "Number of black nodes to leaves of tree "
                                 + "from left and right subtree did not match.");
     }
-    if (! binaryTreePropertyHolds(t)) {
-      return Pair.create(false, "Binary Tree property does not hold.");
-    }
-
+    
     if (! heightOfRedBlackTreeConstraintHolds(t)) {
       return Pair.create(false, "The depth of the tree was much larger than the log(size).");
     }
+
     return Pair.create(true, "Success!");
   }
 

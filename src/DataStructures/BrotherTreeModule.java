@@ -8,6 +8,7 @@ package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
 import DataStructures.TuplesModule.Triple;
+import Utils.ArrayUtils;
 import Utils.Functionals.TriFunction;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -16,6 +17,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
+import java.util.function.IntBinaryOperator;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -1084,7 +1086,71 @@ public final class BrotherTreeModule {
     }
   }
 
+  private static <K extends Comparable<K>, V> boolean binaryTreePropertyHolds(final Tree<K, V> t) {
+    return ArrayUtils.isStrictlyIncreasing(t.keys());
+  }
+
+  private static <K extends Comparable<K>, V> int findDepthWithCombiningFunction(final IntBinaryOperator f, final Tree<K, V> t) {
+    if (t instanceof N0) {
+      return 0;
+    }
+    else if (t instanceof N1) {
+      return 1 + findDepthWithCombiningFunction(f, ((N1<K, V>) t).mt);
+    }
+    else if (t instanceof N2) {
+      final N2<K, V> n = (N2<K, V>) t;
+      return 1 + f.applyAsInt(findDepthWithCombiningFunction(f, n.mt1), findDepthWithCombiningFunction(f, n.mt2));
+    }
+    else {
+      throw new AssertionError("Badly formed tree.");
+    }
+  }
+
+  private static <K extends Comparable<K>, V> boolean depthOfN0NodesPropertyHolds(final Tree<K, V> t) {
+    final int maxN0Depth = findDepthWithCombiningFunction(Math::max, t);
+    final int minN0Depth = findDepthWithCombiningFunction(Math::min, t);
+
+    return maxN0Depth == minN0Depth;
+  }
+
+  private static <K extends Comparable<K>, V> boolean brotherPropertyHolds(final Tree<K, V> t) {
+    if (t instanceof N2) {
+      final N2<K, V> n2 = (N2<K, V>) t;
+      final Tree<K, V> left = n2.mt1, right = n2.mt2;
+      boolean isLeftN1  = left instanceof N1,  isLeftN2  = left instanceof N2;
+      boolean isRightN1 = right instanceof N1, isRightN2 = right instanceof N2;
+
+      if (isLeftN1 && ! isRightN2) {
+        return false;
+      }
+      else if (isRightN1 && ! isLeftN2) {
+        return false;
+      }
+      else {
+        return brotherPropertyHolds(left) && brotherPropertyHolds(right);
+      }
+    }
+    else if (t instanceof N1) {
+      return brotherPropertyHolds(((N1<K, V>) t).mt);
+    }
+    else {
+      return t instanceof N0;
+    }
+  }
+
   static <K extends Comparable<K>, V> Pair<Boolean, String> verifyBrotherTreeProperties(final Tree<K, V> t) {
-    throw new AssertionError("Not implemented yet.");
+    if (! binaryTreePropertyHolds(t)) {
+      return Pair.create(false, "Binary Tree property does not hold.");
+    }
+
+    if (! depthOfN0NodesPropertyHolds(t)) {
+      return Pair.create(false, "Depth no N0 nodes is not the same for all such nodes.");
+    }
+ 
+    if (! brotherPropertyHolds(t)) {
+      return Pair.create(false, "The brother tree property does not hald.");
+    }
+
+    return Pair.create(true, "Success!");
   }
 }
