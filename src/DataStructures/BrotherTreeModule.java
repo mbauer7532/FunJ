@@ -800,8 +800,6 @@ public final class BrotherTreeModule {
   }
 
   private static <K extends Comparable<K>, V> Tree<K, V> n2_del(final Tree<K,V> left, final K a, final V v, final Tree<K, V> right) {
-    final Tree<K, V> cn0 = N0.create();
-
     final boolean leftIsN1 = left instanceof N1;
     if (leftIsN1 && (right instanceof N1)) {
       final Tree<K, V> t1 = ((N1<K, V>) left).mt;
