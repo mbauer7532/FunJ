@@ -14,20 +14,22 @@ import java.util.stream.Stream;
  *
  * @author Neo
  */
-public interface PersistentMapFactory<K extends Comparable<K>, V, M extends PersistentMap<K, V, M>> {
-  public M empty();
+public interface PersistentMapFactory {
+  public String getMapName();
 
-  public M singleton(final K key, final V value);
+  public <K extends Comparable<K>, V> PersistentMap<K, V, ?> empty();
 
-  public M fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream);
+  public <K extends Comparable<K>, V> PersistentMap<K, V, ?> singleton(final K key, final V value);
 
-  public M fromStream(final Stream<Pair<K, V>> stream);
+  public <K extends Comparable<K>, V> PersistentMap<K, V, ?> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream);
 
-  public M fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream);
+  public <K extends Comparable<K>, V> PersistentMap<K, V, ?> fromStream(final Stream<Pair<K, V>> stream);
 
-  public M fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v);
+  public <K extends Comparable<K>, V> PersistentMap<K, V, ?> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream);
 
-  public M fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v);
+  public <K extends Comparable<K>, V> PersistentMap<K, V, ?> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v);
 
-  public M fromArray(final ArrayList<Pair<K, V>> v);
+  public <K extends Comparable<K>, V> PersistentMap<K, V, ?> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v);
+
+  public <K extends Comparable<K>, V> PersistentMap<K, V, ?> fromArray(final ArrayList<Pair<K, V>> v);
 }

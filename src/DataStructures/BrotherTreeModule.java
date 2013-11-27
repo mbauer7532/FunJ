@@ -1206,52 +1206,56 @@ public final class BrotherTreeModule {
     return Pair.create(true, "Success!");
   }
 
-  private static final class RedBlackTreeFactory<K extends Comparable<K>, V> implements PersistentMapFactory<K, V, Tree<K, V>> {
+  private static final class BrotherTreeFactory implements PersistentMapFactory {
     @Override
-    public Tree<K, V> empty() {
+    public String getMapName() {
+      return "BrotherTreeMap";
+    }
+
+    @Override
+    public <K extends Comparable<K>, V> Tree<K, V> empty() {
       return BrotherTreeModule.empty();
     }
 
     @Override
-    public Tree<K, V> singleton(final K key, final V value) {
+    public <K extends Comparable<K>, V> Tree<K, V> singleton(final K key, final V value) {
       return BrotherTreeModule.singleton(key, value);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
       return BrotherTreeModule.fromStrictlyIncreasingStream(stream);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
       return BrotherTreeModule.fromStrictlyDecreasingStream(stream);
     }
 
     @Override
-    public Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+    public <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
       return BrotherTreeModule.fromArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
       return BrotherTreeModule.fromStrictlyIncreasingArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
       return BrotherTreeModule.fromStrictlyDecreasingArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+    public <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
       return BrotherTreeModule.fromStream(stream);
     }
   }
 
-  private static final RedBlackTreeFactory<? extends Comparable<?>, ?> sBrotherTreeFactory = new RedBlackTreeFactory<>();
+  private static final BrotherTreeFactory sBrotherTreeFactory = new BrotherTreeFactory();
 
-  @SuppressWarnings("unchecked")
-  public static <K extends Comparable<K>, V> PersistentMapFactory<K, V, Tree<K, V>> makeFactory() {
-    return (PersistentMapFactory<K, V, Tree<K, V>>) sBrotherTreeFactory;
+  public static PersistentMapFactory makeFactory() {
+    return sBrotherTreeFactory;
   }
 }

@@ -1052,52 +1052,57 @@ public class RedBlackTreeModule {
 
   private static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
 
-  private static final class RedBlackTreeFactory<K extends Comparable<K>, V> implements PersistentMapFactory<K, V, Tree<K, V>> {
+  private static final class RedBlackTreeFactory implements PersistentMapFactory {
     @Override
-    public Tree<K, V> empty() {
+    public String getMapName() {
+      return "RedBlackTreeMap";
+    }
+
+    @Override
+    public <K extends Comparable<K>, V> Tree<K, V> empty() {
       return RedBlackTreeModule.empty();
     }
 
     @Override
-    public Tree<K, V> singleton(final K key, final V value) {
+    public <K extends Comparable<K>, V> Tree<K, V> singleton(final K key, final V value) {
       return RedBlackTreeModule.singleton(key, value);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
       return RedBlackTreeModule.fromStrictlyIncreasingStream(stream);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
       return RedBlackTreeModule.fromStrictlyDecreasingStream(stream);
     }
 
     @Override
-    public Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+    public <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
       return RedBlackTreeModule.fromArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
       return RedBlackTreeModule.fromStrictlyIncreasingArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
       return RedBlackTreeModule.fromStrictlyDecreasingArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+    public <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
       return RedBlackTreeModule.fromStream(stream);
     }
   }
 
-  private static final RedBlackTreeFactory<? extends Comparable<?>, ?> sRedBlackTreeFactory = new RedBlackTreeFactory<>();
+  private static final RedBlackTreeFactory sRedBlackTreeFactory = new RedBlackTreeFactory();
 
   @SuppressWarnings("unchecked")
-  public static <K extends Comparable<K>, V> PersistentMapFactory<K, V, Tree<K, V>> makeFactory() {
-    return (PersistentMapFactory<K, V, Tree<K, V>>) sRedBlackTreeFactory;
+  public static PersistentMapFactory makeFactory() {
+    return sRedBlackTreeFactory;
   }
 }

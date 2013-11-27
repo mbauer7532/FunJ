@@ -56,90 +56,13 @@ public class RedBlackTreeModuleTest {
    * Test of verifyRedBlackProperties method, of class RedBlackTreeModule.
    */
   @Test
-  public void testVerifyRedBlackProperties() {
-    System.out.println("verifyRedBlackProperties");
-    {
-      final Tree<String, Integer> t = RedBlackTreeModule.empty();
-      checkRedBlackTreeProperties(t);
-    }
-    {
-      final Tree<String, Integer> t = RedBlackTreeModule.singleton("hi", 2);
-      checkRedBlackTreeProperties(t);
-    }
-    {
-      final Tree<String, Integer> t = RedBlackTreeModule.singleton("hi", 2).insert((x, y) -> x, "there", 23);
-      checkRedBlackTreeProperties(t);
-    }
-    {
-      final Tree<String, Integer> t = RedBlackTreeModule.singleton("hi", 2).insert("there", 23);
-      checkRedBlackTreeProperties(t);
-    }
-    {
-      Tree<Integer, Integer> t = RedBlackTreeModule.empty();
-
-      final int N = 10;
-      ArrayList<Tree<Integer, Integer>> a = new ArrayList<>();
-      for (int i = 0; i != N; ++i) {
-        a.add(t);
-        t = t.insert(i, i);
-        assertEquals(i + 1, t.size());
-        checkRedBlackTreeProperties(t);
-      }
-      a.add(t);
- 
-      for (int i = 0; i != a.size(); ++i) {
-        final Tree<Integer, Integer> q = a.get(i);
-        
-        assertEquals(i, q.size());
-        checkRedBlackTreeProperties(t);
-        IntStream.range(0, i).forEach(n -> assertTrue(q.containsKey(n)));
-      }
-
-      for (int i = 0; i != N; ++i) {
-        t = t.remove(i);
-        
-        assertEquals(N - i - 1, t.size());
-        checkRedBlackTreeProperties(t);
-        // After each removal also check that none of the stored trees has it's size changed.
-        IntStream.range(0, a.size()).forEach(n -> assertEquals(n, a.get(n).size()));
-      }
-    }
+  public void testVerifyMapPropertiesForSimpleCases() {
+    PersistentMapTest.verifyMapPropertiesForSimpleCases(RedBlackTreeModule.makeFactory());
   }
 
   @Test
   public void testVerifyRedBlackPropertiesRandomSample() {
-    System.out.println("verifyRedBlackPropertiesRandomSample");
-
-    final long seed = 125332;
-    final Random rng = new Random(seed);
-
-    final int numIters = 20;
-    final int low = 1, high = 512;
-    final int size = high;
-    IntStream.range(0, numIters).forEach(x -> {
-      final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
-      assertEquals(size, perm1.length);
-
-      Tree<Integer, Integer> t = RedBlackTreeModule.empty();
-      for (int i = 0; i != size; ++i) {
-        assertEquals(i, t.size());
-        checkRedBlackTreeProperties(t);
-        t = t.insert(perm1[i], perm1[i]);
-      }
-      assertEquals(size, t.size());
-      checkRedBlackTreeProperties(t);
-
-      final int[] perm2 = Numeric.randomPermuation(low, high, size, rng);
-
-      for (int i = 0; i != size; ++i) {
-        assertTrue(t.containsKey(perm2[i]));
-        t = t.remove(perm2[i]);
-
-        checkRedBlackTreeProperties(t);
-        assertEquals(size - i - 1, t.size());
-      }
-      assertTrue(t.isEmpty());
-    });
+    PersistentMapTest.verifyMapPropertiesRandomSample(RedBlackTreeModule.makeFactory());
   }
   
   @Test
