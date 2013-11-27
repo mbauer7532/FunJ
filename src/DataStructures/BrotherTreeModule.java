@@ -1060,7 +1060,7 @@ public final class BrotherTreeModule {
 
   private static class Nil<K extends Comparable<K>, V> extends Spine<K, V> {
     @SuppressWarnings("unchecked")
-    public static final <K extends Comparable<K>, V> Spine<K, V> create() { return (Nil<K, V>) sNil; }
+    public static final <K extends Comparable<K>, V> Spine<K, V> create() { return (Spine<K, V>) sNil; }
 
     private Nil() { super(SpineKind.NIL); }
     private static final Nil<? extends Comparable<?>, ?> sNil = new Nil<>();
@@ -1136,15 +1136,18 @@ public final class BrotherTreeModule {
   }
 
   private static <K extends Comparable<K>, V> int findDepthWithCombiningFunction(final IntBinaryOperator f, final Tree<K, V> t) {
-    if (t instanceof N0) {
+    final N1<K, V> n1;
+    final N2<K, V> n2;
+    
+    if (t.isN0()) {
       return 0;
     }
-    else if (t instanceof N1) {
-      return 1 + findDepthWithCombiningFunction(f, ((N1<K, V>) t).mt);
+    else if ((n1 = t.asN1()) != null) {
+      return 1 + findDepthWithCombiningFunction(f, n1.mt);
     }
-    else if (t instanceof N2) {
-      final N2<K, V> n = (N2<K, V>) t;
-      return 1 + f.applyAsInt(findDepthWithCombiningFunction(f, n.mt1), findDepthWithCombiningFunction(f, n.mt2));
+    else if ((n2 = t.asN2()) != null) {
+      return 1 + f.applyAsInt(findDepthWithCombiningFunction(f, n2.mt1),
+                              findDepthWithCombiningFunction(f, n2.mt2));
     }
     else {
       throw new AssertionError("Badly formed tree.");
@@ -1159,11 +1162,11 @@ public final class BrotherTreeModule {
   }
 
   private static <K extends Comparable<K>, V> boolean brotherPropertyHolds(final Tree<K, V> t) {
-    if (t instanceof N2) {
-      final N2<K, V> n2 = (N2<K, V>) t;
+    final N2<K, V> n2 = t.asN2();
+    if (n2 != null) {
       final Tree<K, V> left = n2.mt1, right = n2.mt2;
-      boolean isLeftN1  = left instanceof N1,  isLeftN2  = left instanceof N2;
-      boolean isRightN1 = right instanceof N1, isRightN2 = right instanceof N2;
+      boolean isLeftN1  = left.isN1(),  isLeftN2  = left.isN2();
+      boolean isRightN1 = right.isN1(), isRightN2 = right.isN2();
 
       if (isLeftN1 && ! isRightN2) {
         return false;
