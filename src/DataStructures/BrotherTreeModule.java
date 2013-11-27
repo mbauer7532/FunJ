@@ -348,9 +348,9 @@ public final class BrotherTreeModule {
         return n2_del(mt1, ma1, mv1, mt2.del(a));
       }
       else {
-        return ((N2<K,V>) mt2).splitMin()
-                              .map(p -> n2_del(mt1, p.mx1, p.mx2, p.mx3))
-                              .orElseGet(() -> N1.create(mt1));
+        return mt2.splitMin()
+                  .map(p -> n2_del(mt1, p.mx1, p.mx2, p.mx3))
+                  .orElseGet(() -> N1.create(mt1));
       }
     }
 

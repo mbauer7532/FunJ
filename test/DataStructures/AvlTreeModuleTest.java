@@ -89,7 +89,7 @@ public class AvlTreeModuleTest {
     final int m = -1000;
     final int n = 1000;
     final int Experiments = 500;
-    final int N = 400;
+    final int N = 512;
 
     for (int i = 0; i != Experiments; ++i) {
       final int[] data = Utils.Numeric.randomPermuation(m, n, N, rng);
@@ -103,13 +103,13 @@ public class AvlTreeModuleTest {
                               ((AvlTreeModule.Tree<Integer, Integer> z1, AvlTreeModule.Tree<Integer, Integer> z2) -> null));
 
       final int expectedSize = N;
-      final double expectedHeight = AvlTreeModule.expectedHeight(N);
+      final double expectedHeight = 2 * 9;
 
       final int avlTreeSize = t.size();
       final int avlTreeHeight = t.height();
 
       assertEquals(expectedSize, avlTreeSize);
-      assertTrue(((double) avlTreeHeight) < expectedHeight);
+      assertTrue(avlTreeHeight < expectedHeight);
     }
   }
 

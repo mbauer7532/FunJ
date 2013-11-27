@@ -91,7 +91,7 @@ public final class AvlTreeModule {
     }
 
     abstract Tree<K, V> rem(final K key) throws ControlExnNoSuchElement;
-    abstract int getBalance();
+    abstract Tree<K, V> removeMinBinding();
   }
 
   private final static class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -174,8 +174,8 @@ public final class AvlTreeModule {
     }
 
     @Override
-    final int getBalance() {
-      return 0;
+    Tree<K, V> removeMinBinding() {
+      throw new AssertionError("The empty tree has not min binding.");
     }
 
     @Override
@@ -234,7 +234,7 @@ public final class AvlTreeModule {
 
     @Override
     public Optional<V> get(final K key) {
-      final int res = mKey.compareTo(key);
+      final int res = key.compareTo(mKey);
 
       if (res < 0) {
         return mLeft.get(key);
@@ -247,23 +247,30 @@ public final class AvlTreeModule {
       }
     }
 
+//     let rec add x data = function
+//        Empty ->
+//          Node(Empty, x, data, Empty, 1)
+//      | Node(l, v, d, r, h) ->
+//          let c = Ord.compare x v in
+//          if c = 0 then
+//            Node(l, x, data, r, h)
+//          else if c < 0 then
+//            bal (add x data l) v d r
+//          else
+//            bal l v d (add x data r)
+          
     @Override
     public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
-      final int res = mKey.compareTo(key);
-      final Node<K, V> z;
+      final int res = key.compareTo(mKey);
       if (res < 0) {
-        z = create(mLeft.insert(key, value), mKey, mValue, mRight);
+        return balance(mLeft.insert(key, value), mKey, mValue, mRight);
       }
       else if (res > 0) {
-        z = create(mLeft, mKey, mValue, mRight.insert(key, value));
+        return balance(mLeft, mKey, mValue, mRight.insert(key, value));
       }
       else {
-        z = create(mLeft, mKey, f.apply(mValue, value), mRight);
-        // No need to do the balance check.  We are not changing the tree structure in this case.
-        return z;
+        return create(mLeft, mKey, f.apply(mValue, value), mRight);
       }
-
-      return rebalanceTree(z);
     }
 
     @Override
@@ -355,62 +362,45 @@ public final class AvlTreeModule {
               create(x.mRight, y.mKey, y.mValue, y.mRight));
     }
 
-    private static <K extends Comparable<K>, V> Tree<K, V> rebalanceTree(final Node<K, V> z) {
-      final int balance = z.getBalance();
-      
-      if (balance > 1) {
-        final Node<K, V> y = (Node<K, V>) z.mLeft;
-        if (z.mLeft.mHeight > z.mRight.mHeight) {
-          return rightRotate(z);
-        }
-        else {
-          return leftRightRotate(z);
-        }
-      }
-      else if (balance < -1) {
-        final Node<K, V> y = (Node<K, V>) z.mRight;
-        if (z.mLeft.mHeight < z.mRight.mHeight) {
-          return leftRotate(z);
-        }
-        else {
-          return rightLeftRotate(z);
-        }
-      }
+//    let rec remove_min_binding = function
+//        Empty -> invalid_arg "Map.remove_min_elt"
+//      | Node(Empty, x, d, r, _) -> r
+//      | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
+//
+//    let merge t1 t2 =
+//      match (t1, t2) with
+//        (Empty, t) -> t
+//      | (t, Empty) -> t
+//      | (_, _) ->
+//          let (x, d) = min_binding t2 in
+//          bal t1 x d (remove_min_binding t2)
+//
+//    let rec remove x = function
+//        Empty ->
+//          Empty
+//      | Node(l, v, d, r, h) ->
+//          let c = Ord.compare x v in
+//          if c = 0 then
+//            merge l r
+//          else if c < 0 then
+//            bal (remove x l) v d r
+//          else
+//            bal l v d (remove x r)
 
-      return z;
-    }
 
     @Override
     Tree<K, V> rem(final K key) throws ControlExnNoSuchElement {
-      final Node<K, V> z;
       final int res = key.compareTo(mKey);
 
       if (res < 0) {
-        z = create(mLeft.rem(key), mKey, mValue, mRight);
+        return balance(mLeft.rem(key), mKey, mValue, mRight);
       }
       else if (res > 0) {
-        z = create(mLeft, mKey, mValue, mRight.rem(key));
+        return balance(mLeft, mKey, mValue, mRight.rem(key));
       }
       else {
-        final boolean leftIsPresent  = ! mLeft.isEmpty();
-        final boolean rightIsPresent = ! mRight.isEmpty();
-
-        if (leftIsPresent && rightIsPresent) {
-          final Pair<K, V> successor = mRight.minElementPair().get(); // We know it is there.
-          z = create(mLeft, successor.mx1, successor.mx2, mRight.rem(successor.mx1));
-        }
-        else if (leftIsPresent) {
-          z = (Node<K, V>) mLeft;
-        }
-        else if (rightIsPresent) {
-          z = (Node<K, V>) mRight;
-        }
-        else {
-          return EmptyNode.create();
-        }
+        return strictMerge(mLeft, mRight);
       }
-
-      return rebalanceTree(z);
     }
 
     @Override
@@ -424,8 +414,13 @@ public final class AvlTreeModule {
     }
 
     @Override
-    final int getBalance() {
-      return mLeft.mHeight - mRight.mHeight;
+    Tree<K, V> removeMinBinding() {
+      if (mLeft.isEmpty()) {
+        return mRight;
+      }
+      else {
+        return balance(mLeft.removeMinBinding(), mKey, mValue, mRight);
+      }
     }
 
     @Override
@@ -516,6 +511,66 @@ public final class AvlTreeModule {
     return makeBoundPair(candidate);
   }
 
+  private static final int sBalanceRelaxationAmount = 2;
+
+  private static <K extends Comparable<K>, V> Tree<K, V> balance(final Tree<K, V> l, final K key, final V value, final Tree<K, V> r) {
+    final int hl = l.mHeight, hr = r.mHeight;
+    
+    if (hl > hr + sBalanceRelaxationAmount) {
+      final Node<K, V> n = (Node<K, V>) l;
+      final Tree<K, V> ll = n.mLeft, lr = n.mRight;
+      final K lKey = n.mKey;
+      final V lValue = n.mValue;
+
+      if (ll.mHeight >= lr.mHeight) {
+        return Node.create(ll, lKey, lValue, Node.create(lr, key, value, r));
+      }
+      else {
+        final Node<K, V> nn = (Node<K, V>) lr;
+        final Tree<K, V> lrl = nn.mLeft, lrr = nn.mRight;
+        final K lrKey = nn.mKey;
+        final V lrValue = nn.mValue;
+
+        return Node.create(Node.create(ll, lKey, lValue, lrl), lrKey, lrValue, Node.create(lrr, key, value, r));
+      }
+    }
+    else if (hr > hl + sBalanceRelaxationAmount) {
+      final Node<K, V> n = (Node<K, V>) r;
+      final Tree<K, V> rl = n.mLeft, rr = n.mRight;
+      final K rKey = n.mKey;
+      final V rValue = n.mValue;
+
+      if (rr.mHeight >= rl.mHeight) {
+        return Node.create(Node.create(l, key, value, rl), rKey, rValue, rr);
+      }
+      else {
+        final Node<K, V> nn = (Node<K, V>) rl;
+        final Tree<K, V> rll = nn.mLeft, rlr = nn.mRight;
+        final K rlKey = nn.mKey;
+        final V rlValue = nn.mValue;
+
+        return Node.create(Node.create(l, key, value, rll), rlKey, rlValue, Node.create(rlr, rKey, rValue, rr));
+      }
+    }
+    else {
+      return Node.create(l, key, value, r);
+    }
+  }
+
+  // merge t1 t2 builds the union of t1 and t2 assuming all elements of t1 to be smaller than all elements of t2, and |height t1 - height t2| <= 2.
+  private static <K extends Comparable<K>, V> Tree<K, V> strictMerge(final Tree<K, V> t1, final Tree<K, V> t2) {
+    if (t1.isEmpty()) {
+      return t2;
+    }
+    else if (t2.isEmpty()) {
+        return t1;
+    }
+    else {
+      final Pair<K, V> mn = t2.minElementPair().get();
+      return balance(t1, mn.mx1, mn.mx2, t2.removeMinBinding());
+    }
+  }
+
   private static final class InitFromArrayWorker<K extends Comparable<K>, V> {
     private final ArrayList<Pair<K, V>> mVector;
     private final boolean mIncreasing;
@@ -578,28 +633,12 @@ public final class AvlTreeModule {
     return fromStream(v.stream());
   }
 
-  public static double expectedHeight(final int n) {
-    return sDepthCoefficient * Numeric.log(sSqrtOf5 * (double)(n + 2), 2.0) - 2.0;
-  }
-
-  private static final double sSqrtOf5 = Math.sqrt(5.0);
-  private static final double sDepthCoefficient = Numeric.log(2.0, Numeric.sGoldenRatio);
-
   private static final class ControlExnNoSuchElement extends Exception {};
 
   private static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
 
   private static <K extends Comparable<K>, V> boolean binaryTreePropertyHolds(final Tree<K, V> t) {
     return ArrayUtils.isStrictlyIncreasing(t.keys());
-  }
-
-  private static <K extends Comparable<K>, V> boolean heightOfAvlTreeConstraintHolds(final Tree<K, V> t) {
-    final int avlTreeSize   = t.size();
-    final int avlTreeHeight = t.height();
-    
-    final double expectedHeight = expectedHeight(avlTreeSize);
-    
-    return (double)avlTreeHeight < expectedHeight;
   }
 
   private static final class ControlExnAvlTreeProperty extends Exception {};
@@ -614,11 +653,16 @@ public final class AvlTreeModule {
       final Node<K, V> node = (Node<K, V>) t;
       final int leftHeight  = avlTreePropertyHoldsAux(node.mLeft);
       final int rightHeight = avlTreePropertyHoldsAux(node.mRight);
-      if (Math.abs(leftHeight - rightHeight) > 1) {
+      if (Math.abs(leftHeight - rightHeight) > sBalanceRelaxationAmount) {
         throw sAvlTreeInvariantViolated;
       }
 
-      return Math.max(leftHeight, rightHeight) + 1;
+      final int h = Math.max(leftHeight, rightHeight) + 1;
+      if (h != t.mHeight) {
+        throw sAvlTreeInvariantViolated;
+      }
+
+      return h;
     }
   }
 
@@ -637,10 +681,6 @@ public final class AvlTreeModule {
       return Pair.create(false, "Binary Tree property does not hold.");
     }
 
-    if (! heightOfAvlTreeConstraintHolds(t)) {
-      return Pair.create(false, "The depth of the tree was larger than the expected size.");
-    }
-
     if (! avlTreePropertyHolds(t)) {
       return Pair.create(false, "AVL property does not hold on this tree.");
     }
@@ -648,7 +688,7 @@ public final class AvlTreeModule {
     return Pair.create(true, "Success!");
   }
 
-  private static final class AvlTreeFactory<K extends Comparable<K>, V> implements PersistentMapFactory {
+  private static final class AvlTreeFactory implements PersistentMapFactory {
     @Override
     public String getMapName() {
       return "AvlTreeMap";

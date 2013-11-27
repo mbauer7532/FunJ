@@ -31,16 +31,16 @@ import static org.junit.Assert.*;
  */
 public class RedBlackTreeModuleTest {
   public RedBlackTreeModuleTest() {}
-  
+
   @BeforeClass
   public static void setUpClass() {}
-  
+
   @AfterClass
   public static void tearDownClass() {}
-  
+
   @Before
   public void setUp() {}
-  
+
   @After
   public void tearDown() {}
 
@@ -57,14 +57,14 @@ public class RedBlackTreeModuleTest {
    */
   @Test
   public void testVerifyMapPropertiesForSimpleCases() {
-    PersistentMapTest.verifyMapPropertiesForSimpleCases(RedBlackTreeModule.makeFactory());
+//    PersistentMapTest.verifyMapPropertiesForSimpleCases(sRedBlackTreeFactory);
   }
 
   @Test
   public void testVerifyRedBlackPropertiesRandomSample() {
-    PersistentMapTest.verifyMapPropertiesRandomSample(RedBlackTreeModule.makeFactory());
+//    PersistentMapTest.verifyMapPropertiesRandomSample(sRedBlackTreeFactory);
   }
-  
+
   @Test
   public void testRedBlackTreeInvariants() {
     System.out.println("redBlackTreeInvariants");

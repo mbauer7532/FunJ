@@ -1101,8 +1101,7 @@ public class RedBlackTreeModule {
 
   private static final RedBlackTreeFactory sRedBlackTreeFactory = new RedBlackTreeFactory();
 
-  @SuppressWarnings("unchecked")
-  public static PersistentMapFactory makeFactory() {
+  public static <K extends Comparable<K>, V> PersistentMapFactory makeFactory() {
     return sRedBlackTreeFactory;
   }
 }
