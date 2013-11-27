@@ -647,4 +647,53 @@ public final class AvlTreeModule {
  
     return Pair.create(true, "Success!");
   }
+
+  private static final class RedBlackTreeFactory<K extends Comparable<K>, V> implements PersistentMapFactory<K, V, Tree<K, V>> {
+    @Override
+    public Tree<K, V> empty() {
+      return AvlTreeModule.empty();
+    }
+
+    @Override
+    public Tree<K, V> singleton(final K key, final V value) {
+      return AvlTreeModule.singleton(key, value);
+    }
+
+    @Override
+    public Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+      return AvlTreeModule.fromStrictlyIncreasingStream(stream);
+    }
+
+    @Override
+    public Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+      return AvlTreeModule.fromStrictlyDecreasingStream(stream);
+    }
+
+    @Override
+    public Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+      return AvlTreeModule.fromStream(stream);
+    }
+
+    @Override
+    public Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+      return AvlTreeModule.fromStrictlyIncreasingArray(v);
+    }
+
+    @Override
+    public Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+      return AvlTreeModule.fromStrictlyDecreasingArray(v);
+    }
+
+    @Override
+    public Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+      return AvlTreeModule.fromArray(v);
+    }
+  }
+
+  private static final RedBlackTreeFactory<? extends Comparable<?>, ?> sAvlTreeFactory = new RedBlackTreeFactory<>();
+
+  @SuppressWarnings("unchecked")
+  public static <K extends Comparable<K>, V> PersistentMapFactory<K, V, Tree<K, V>> makeFactory() {
+    return (PersistentMapFactory<K, V, Tree<K, V>>) sAvlTreeFactory;
+  }
 }

@@ -22,6 +22,7 @@ public class Numeric {
    *
    * @param low
    * @param high
+   * @param rng
    * @return Function returns a random integer in the range [low, high].
    */
   public static int randomInt(final int low, final int high, final Random rng) {

@@ -800,29 +800,32 @@ public final class BrotherTreeModule {
   }
 
   private static <K extends Comparable<K>, V> Tree<K, V> n2_del(final Tree<K,V> left, final K a, final V v, final Tree<K, V> right) {
-    final boolean leftIsN1 = left instanceof N1;
-    if (leftIsN1 && (right instanceof N1)) {
-      final Tree<K, V> t1 = ((N1<K, V>) left).mt;
-      final Tree<K, V> t2 = ((N1<K, V>) right).mt;
+
+    N1<K, V> ln1 = left.asN1(), rn1;
+    final N2<K, V> ln2, rn2;
+
+    if (ln1 != null && ((rn1 = right.asN1()) != null)) {
+      final Tree<K, V> t1 = ln1.mt;
+      final Tree<K, V> t2 = rn1.mt;
 
       return c1(t1, a, v, t2);
     }
-    else if (leftIsN1 && (right instanceof N2)) {
-      final N1<K, V> ln1 = (N1<K, V>) left;
-      final N2<K, V> rn2 = (N2<K, V>) right;
+    else if (ln1 != null && ((rn2 = right.asN2()) != null)) {
+      final N1<K, V> ln1mtn1 = ln1.mt.asN1(), rn2mt2n1;
 
-      if (ln1.mt instanceof N1) {
-        if (rn2.mt2 instanceof N2) {
-          if (rn2.mt1 instanceof N1) {
-            final Tree<K, V> t1 = ((N1<K, V>) ln1.mt).mt;
-            final Tree<K, V> t2 = ((N1<K, V>) rn2.mt1).mt;
+      if (ln1mtn1 != null) {
+        if (rn2.mt2.isN2()) {
+          final N1<K, V> rn2mt1n1 = rn2.mt1.asN1();
+          if (rn2mt1n1 != null) {
+            final Tree<K, V> t1 = ln1mtn1.mt;
+            final Tree<K, V> t2 = rn2mt1n1.mt;
             final Tree<K, V> t3 = rn2.mt2;
             final K a1 = a, a2 = rn2.ma1;
             final V v1 = v, v2 = rn2.mv1;
 
             return c2(t1, a1, v1, t2, a2, v2, t3);
           }
-          else if (rn2.mt1 instanceof N2) {
+          else if (rn2.mt1.isN2()) {
             final Tree<K, V> t1 = ln1.mt;
             final Tree<K, V> t2 = rn2.mt1;
             final Tree<K, V> t3 = rn2.mt2;
@@ -832,10 +835,11 @@ public final class BrotherTreeModule {
             return c4(t1, a1, v1, t2, a2, v2, t3);
           }
         }
-        else if (rn2.mt2 instanceof N1) {
-          if (rn2.mt1 instanceof N2) {
-            final N2<K, V> z1 = (N2<K, V>) rn2.mt1;
-            final N1<K, V> z2 = (N1<K, V>) rn2.mt2;
+        else if ((rn2mt2n1 = rn2.mt2.asN1()) != null) {
+          final N2<K, V> rn2mt1n2 = rn2.mt1.asN2();
+          if (rn2mt1n2 != null) {
+            final N2<K, V> z1 = rn2mt1n2;
+            final N1<K, V> z2 = rn2mt2n1;
 
             final Tree<K, V> t1 = ((N1<K, V>) ln1.mt).mt;
             final Tree<K, V> t2 = z1.mt1;
@@ -849,35 +853,37 @@ public final class BrotherTreeModule {
         }
       }
     }
-    else if ((left instanceof N2) && (right instanceof N1)) {
-      final N2<K, V> ln2 = (N2<K, V>) left;
-      final N1<K, V> rn1 = (N1<K, V>) right;
+    else if ((ln2 = left.asN2()) != null && ((rn1 = right.asN1()) != null)) {
+      final N1<K, V> rn1mtn1 = rn1.mt.asN1();
+      final N2<K, V>ln2mt2n2;
 
-      if (rn1.mt instanceof N1) {
-        if (ln2.mt2 instanceof N1) {
-          if (ln2.mt1 instanceof N2) {
+      if (rn1mtn1 != null) {
+        final N1<K, V> ln2mt2n1 = ln2.mt2.asN1();
+        if (ln2mt2n1 != null) {
+          if (ln2.mt1.isN2()) {
             final Tree<K, V> t1 = ln2.mt1;
-            final Tree<K, V> t2 = ((N1<K, V>) ln2.mt2).mt;
-            final Tree<K, V> t3 = ((N1<K, V>) rn1.mt).mt;
+            final Tree<K, V> t2 = ln2mt2n1.mt;
+            final Tree<K, V> t3 = rn1mtn1.mt;
             final K a1 = ln2.ma1, a2 = a;
             final V v1 = ln2.mv1, v2 = v;
 
             return c6(t1, a1, v1, t2, a2, v2, t3);
           }
         }
-        else if (ln2.mt2 instanceof N2) {
-          if (ln2.mt1 instanceof N1) {
-            final N2<K, V> z = (N2<K, V>) ln2.mt2;
-            final Tree<K, V> t1 = ((N1<K, V>) ln2.mt1).mt;
+        else if ((ln2mt2n2 = ln2.mt2.asN2()) != null) {
+          final N1<K, V> ln2mt1n1 = ln2.mt1.asN1();
+          if (ln2mt1n1 != null) {
+            final N2<K, V> z = ln2mt2n2;
+            final Tree<K, V> t1 = ln2mt1n1.mt;
             final Tree<K, V> t2 = z.mt1;
             final Tree<K, V> t3 = z.mt2;
-            final Tree<K, V> t4 = ((N1<K, V>) rn1.mt).mt;
+            final Tree<K, V> t4 = rn1mtn1.mt;
             final K a1 = ln2.ma1, a2 = z.ma1, a3 = a;
             final V v1 = ln2.mv1, v2 = z.mv1, v3 = v;
 
             return c5(t1, a1, v1, t2, a2, v2, t3, a3, v3, t4);
           }
-          else if (ln2.mt1 instanceof N2) {
+          else if (ln2.mt1.isN2()) {
             final Tree<K, V> t1 = ln2.mt1;
             final Tree<K, V> t2 = ln2.mt2;
             final Tree<K, V> t3 = rn1.mt;
@@ -1176,11 +1182,11 @@ public final class BrotherTreeModule {
         return brotherPropertyHolds(left) && brotherPropertyHolds(right);
       }
     }
-    else if (t instanceof N1) {
+    else if (t.isN1()) {
       return brotherPropertyHolds(((N1<K, V>) t).mt);
     }
     else {
-      return t instanceof N0;
+      return t.isN0();
     }
   }
 
@@ -1198,5 +1204,54 @@ public final class BrotherTreeModule {
     }
 
     return Pair.create(true, "Success!");
+  }
+
+  private static final class RedBlackTreeFactory<K extends Comparable<K>, V> implements PersistentMapFactory<K, V, Tree<K, V>> {
+    @Override
+    public Tree<K, V> empty() {
+      return BrotherTreeModule.empty();
+    }
+
+    @Override
+    public Tree<K, V> singleton(final K key, final V value) {
+      return BrotherTreeModule.singleton(key, value);
+    }
+
+    @Override
+    public Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+      return BrotherTreeModule.fromStrictlyIncreasingStream(stream);
+    }
+
+    @Override
+    public Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+      return BrotherTreeModule.fromStrictlyDecreasingStream(stream);
+    }
+
+    @Override
+    public Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+      return BrotherTreeModule.fromArray(v);
+    }
+
+    @Override
+    public Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+      return BrotherTreeModule.fromStrictlyIncreasingArray(v);
+    }
+
+    @Override
+    public Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+      return BrotherTreeModule.fromStrictlyDecreasingArray(v);
+    }
+
+    @Override
+    public Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+      return BrotherTreeModule.fromStream(stream);
+    }
+  }
+
+  private static final RedBlackTreeFactory<? extends Comparable<?>, ?> sBrotherTreeFactory = new RedBlackTreeFactory<>();
+
+  @SuppressWarnings("unchecked")
+  public static <K extends Comparable<K>, V> PersistentMapFactory<K, V, Tree<K, V>> makeFactory() {
+    return (PersistentMapFactory<K, V, Tree<K, V>>) sBrotherTreeFactory;
   }
 }
