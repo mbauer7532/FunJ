@@ -9,7 +9,6 @@ package DataStructures;
 import DataStructures.TuplesModule.Pair;
 import Utils.ArrayUtils;
 import Utils.Functionals.TriFunction;
-import Utils.Numeric;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -247,18 +246,6 @@ public final class AvlTreeModule {
       }
     }
 
-//     let rec add x data = function
-//        Empty ->
-//          Node(Empty, x, data, Empty, 1)
-//      | Node(l, v, d, r, h) ->
-//          let c = Ord.compare x v in
-//          if c = 0 then
-//            Node(l, x, data, r, h)
-//          else if c < 0 then
-//            bal (add x data l) v d r
-//          else
-//            bal l v d (add x data r)
-          
     @Override
     public Tree<K, V> insert(final BiFunction<V, V, V> f, final K key, final V value) {
       final int res = key.compareTo(mKey);
@@ -361,32 +348,6 @@ public final class AvlTreeModule {
               x.mValue,
               create(x.mRight, y.mKey, y.mValue, y.mRight));
     }
-
-//    let rec remove_min_binding = function
-//        Empty -> invalid_arg "Map.remove_min_elt"
-//      | Node(Empty, x, d, r, _) -> r
-//      | Node(l, x, d, r, _) -> bal (remove_min_binding l) x d r
-//
-//    let merge t1 t2 =
-//      match (t1, t2) with
-//        (Empty, t) -> t
-//      | (t, Empty) -> t
-//      | (_, _) ->
-//          let (x, d) = min_binding t2 in
-//          bal t1 x d (remove_min_binding t2)
-//
-//    let rec remove x = function
-//        Empty ->
-//          Empty
-//      | Node(l, v, d, r, h) ->
-//          let c = Ord.compare x v in
-//          if c = 0 then
-//            merge l r
-//          else if c < 0 then
-//            bal (remove x l) v d r
-//          else
-//            bal l v d (remove x r)
-
 
     @Override
     Tree<K, V> rem(final K key) throws ControlExnNoSuchElement {
@@ -557,7 +518,7 @@ public final class AvlTreeModule {
     }
   }
 
-  // merge t1 t2 builds the union of t1 and t2 assuming all elements of t1 to be smaller than all elements of t2, and |height t1 - height t2| <= 2.
+  // Merge t1 t2: builds the union of t1 and t2 assuming all elements of t1 to be smaller than all elements of t2, and |height t1 - height t2| <= sBalanceRelaxationAmount.
   private static <K extends Comparable<K>, V> Tree<K, V> strictMerge(final Tree<K, V> t1, final Tree<K, V> t2) {
     if (t1.isEmpty()) {
       return t2;
