@@ -37,6 +37,10 @@ public final class AvlTreeModule {
       return mapi((k, v) -> f.apply(v));
     }
 
+    private static final class ControlExnNoSuchElement extends Exception {};
+
+    protected static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
+
     @Override
     public final Tree<K, V> remove(final K key) {
       try {
@@ -75,22 +79,84 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public final Optional<Pair<K, V>> lowerPair(final K key) {
-      return AvlTreeModule.lowerPair(this, key);
+      public final Optional<Pair<K, V>> lowerPair(final K key) {
+      return lowerPair(this, key);
     }
 
     @Override
-    public final Optional<Pair<K, V>> higherPair(final K key) {
-      return AvlTreeModule.higherPair(this, key);
+      public final Optional<Pair<K, V>> higherPair(final K key) {
+      return higherPair(this, key);
     }
 
     @Override
-    public Pair<Boolean, String> verifyMapProperties() {
+      public Pair<Boolean, String> verifyMapProperties() {
       return verifyAVLTreeProperties(this);
     }
 
     abstract Tree<K, V> rem(final K key) throws ControlExnNoSuchElement;
     abstract Tree<K, V> removeMinBinding();
+
+    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> makeBoundPair(final Node<K, V> candidate) {
+      return candidate == null
+        ? Optional.empty()
+        : Optional.of(Pair.create(candidate.mKey, candidate.mValue));
+    }
+
+    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
+      Tree<K, V> tree = t;
+      Node<K, V> n, candidate = null;
+
+      while (! tree.isEmpty()) {
+        n = (Node<K, V>) tree;
+        int res = key.compareTo(n.mKey);
+        if (res > 0) {
+          tree = n.mRight;
+          candidate = n;
+        }
+        else if (res < 0) {
+          tree = n.mLeft;
+        }
+        else {
+          final Optional<Pair<K, V>> p = n.mLeft.maxElementPair();
+          if (p.isPresent()) {
+            return p;
+          }
+          else {
+            break;
+          }
+        }
+      }
+
+      return makeBoundPair(candidate);
+    }
+
+    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPair(final Tree<K, V> t, final K key) {
+      Tree<K, V> tree = t;
+      Node<K, V> n, candidate = null;
+
+      while (! tree.isEmpty()) {
+        n = (Node<K, V>) tree;
+        int res = key.compareTo(n.mKey);
+        if (res > 0) {
+          tree = n.mRight;
+        }
+        else if (res < 0) {
+          tree = n.mLeft;
+          candidate = n;
+        }
+        else {
+          final Optional<Pair<K, V>> p = n.mRight.minElementPair();
+          if (p.isPresent()) {
+            return p;
+          }
+          else {
+            break;
+          }
+        }
+      }
+
+      return makeBoundPair(candidate);
+    }
   }
 
   private final static class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -154,12 +220,12 @@ public final class AvlTreeModule {
     }
 
     @Override
-    Tree<K, V> rem(final K key)  throws ControlExnNoSuchElement {
+    Tree<K, V> rem(final K key)  throws Tree.ControlExnNoSuchElement {
       // This exception is used for control purposes.
       // When removing non-existent elements we simply return the same input tree
       // no new allocations take place.  The alternative implementation that 
       // copies the path is: return Pair.create(this, false);
-      throw sNoSuchElement;
+      throw Tree.sNoSuchElement;
     }
 
     @Override
@@ -194,10 +260,10 @@ public final class AvlTreeModule {
   }
 
   private final static class Node<K extends Comparable<K>, V> extends Tree<K, V> {
-    private final Tree<K, V> mLeft;
-    private final K mKey;
-    private final V mValue;
-    private final Tree<K, V> mRight;
+    public final Tree<K, V> mLeft;
+    public final K mKey;
+    public final V mValue;
+    public final Tree<K, V> mRight;
 
     private Node(final Tree<K, V> left,
                  final K key,
@@ -350,7 +416,7 @@ public final class AvlTreeModule {
     }
 
     @Override
-    Tree<K, V> rem(final K key) throws ControlExnNoSuchElement {
+    Tree<K, V> rem(final K key) throws Tree.ControlExnNoSuchElement {
       final int res = key.compareTo(mKey);
 
       if (res < 0) {
@@ -470,68 +536,6 @@ public final class AvlTreeModule {
     return Node.create(e, key, value, e, 1);
   }
 
-  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> makeBoundPair(final Node<K, V> candidate) {
-    return candidate == null
-            ? Optional.empty()
-            : Optional.of(Pair.create(candidate.mKey, candidate.mValue));
-  }
-
-  static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
-    Tree<K, V> tree = t;
-    Node<K, V> n, candidate = null;
-
-    while (! tree.isEmpty()) {
-      n = (Node<K, V>) tree;
-      int res = key.compareTo(n.mKey);
-      if (res > 0) {
-        tree = n.mRight;
-        candidate = n;
-      }
-      else if (res < 0) {
-        tree = n.mLeft;
-      }
-      else {
-         final Optional<Pair<K, V>> p = n.mLeft.maxElementPair();
-         if (p.isPresent()) {
-           return p;
-         }
-         else {
-           break;
-         }
-      }
-    }
-
-    return makeBoundPair(candidate);
-  }
-
-  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPair(final Tree<K, V> t, final K key) {
-    Tree<K, V> tree = t;
-    Node<K, V> n, candidate = null;
-
-    while (! tree.isEmpty()) {
-      n = (Node<K, V>) tree;
-      int res = key.compareTo(n.mKey);
-      if (res > 0) {
-        tree = n.mRight;
-      }
-      else if (res < 0) {
-        tree = n.mLeft;
-        candidate = n;
-      }
-      else {
-        final Optional<Pair<K, V>> p = n.mRight.minElementPair();
-        if (p.isPresent()) {
-           return p;
-         }
-         else {
-           break;
-         }
-      }
-    }
-
-    return makeBoundPair(candidate);
-  }
-
   private static final class InitFromArrayWorker<K extends Comparable<K>, V> {
     private final ArrayList<Pair<K, V>> mVector;
     private final boolean mIncreasing;
@@ -593,10 +597,6 @@ public final class AvlTreeModule {
   public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
     return fromStream(v.stream());
   }
-
-  private static final class ControlExnNoSuchElement extends Exception {};
-
-  private static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
 
   private static <K extends Comparable<K>, V> boolean binaryTreePropertyHolds(final Tree<K, V> t) {
     return ArrayUtils.isStrictlyIncreasing(t.keys());
