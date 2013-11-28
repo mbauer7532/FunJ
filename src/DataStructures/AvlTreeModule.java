@@ -398,6 +398,66 @@ public final class AvlTreeModule {
     public Color DSgetColor() {
       return Color.BLUE;
     }
+
+    // Merge t1 t2: builds the union of t1 and t2 assuming all elements of t1 to be smaller than all elements of t2, and |height t1 - height t2| <= sBalanceRelaxationAmount.
+    private static <K extends Comparable<K>, V> Tree<K, V> strictMerge(final Tree<K, V> t1, final Tree<K, V> t2) {
+      if (t1.isEmpty()) {
+        return t2;
+      }
+      else if (t2.isEmpty()) {
+        return t1;
+      }
+      else {
+        final Pair<K, V> mn = t2.minElementPair().get();
+        return balance(t1, mn.mx1, mn.mx2, t2.removeMinBinding());
+      }
+    }
+
+    private static final int sBalanceRelaxationAmount = 2;
+
+    private static <K extends Comparable<K>, V> Tree<K, V> balance(final Tree<K, V> l, final K key, final V value, final Tree<K, V> r) {
+      final int hl = l.mHeight, hr = r.mHeight;
+
+      if (hl > hr + sBalanceRelaxationAmount) {
+        final Node<K, V> n = (Node<K, V>) l;
+        final Tree<K, V> ll = n.mLeft, lr = n.mRight;
+        final K lKey = n.mKey;
+        final V lValue = n.mValue;
+
+        if (ll.mHeight >= lr.mHeight) {
+          return Node.create(ll, lKey, lValue, Node.create(lr, key, value, r));
+        }
+        else {
+          final Node<K, V> nn = (Node<K, V>) lr;
+          final Tree<K, V> lrl = nn.mLeft, lrr = nn.mRight;
+          final K lrKey = nn.mKey;
+          final V lrValue = nn.mValue;
+
+          return Node.create(Node.create(ll, lKey, lValue, lrl), lrKey, lrValue, Node.create(lrr, key, value, r));
+        }
+      }
+      else if (hr > hl + sBalanceRelaxationAmount) {
+        final Node<K, V> n = (Node<K, V>) r;
+        final Tree<K, V> rl = n.mLeft, rr = n.mRight;
+        final K rKey = n.mKey;
+        final V rValue = n.mValue;
+
+        if (rr.mHeight >= rl.mHeight) {
+          return Node.create(Node.create(l, key, value, rl), rKey, rValue, rr);
+        }
+        else {
+          final Node<K, V> nn = (Node<K, V>) rl;
+          final Tree<K, V> rll = nn.mLeft, rlr = nn.mRight;
+          final K rlKey = nn.mKey;
+          final V rlValue = nn.mValue;
+
+          return Node.create(Node.create(l, key, value, rll), rlKey, rlValue, Node.create(rlr, rKey, rValue, rr));
+        }
+      }
+      else {
+        return Node.create(l, key, value, r);
+      }
+    }
   }
 
   // Public interface
@@ -470,66 +530,6 @@ public final class AvlTreeModule {
     }
 
     return makeBoundPair(candidate);
-  }
-
-  private static final int sBalanceRelaxationAmount = 2;
-
-  private static <K extends Comparable<K>, V> Tree<K, V> balance(final Tree<K, V> l, final K key, final V value, final Tree<K, V> r) {
-    final int hl = l.mHeight, hr = r.mHeight;
-    
-    if (hl > hr + sBalanceRelaxationAmount) {
-      final Node<K, V> n = (Node<K, V>) l;
-      final Tree<K, V> ll = n.mLeft, lr = n.mRight;
-      final K lKey = n.mKey;
-      final V lValue = n.mValue;
-
-      if (ll.mHeight >= lr.mHeight) {
-        return Node.create(ll, lKey, lValue, Node.create(lr, key, value, r));
-      }
-      else {
-        final Node<K, V> nn = (Node<K, V>) lr;
-        final Tree<K, V> lrl = nn.mLeft, lrr = nn.mRight;
-        final K lrKey = nn.mKey;
-        final V lrValue = nn.mValue;
-
-        return Node.create(Node.create(ll, lKey, lValue, lrl), lrKey, lrValue, Node.create(lrr, key, value, r));
-      }
-    }
-    else if (hr > hl + sBalanceRelaxationAmount) {
-      final Node<K, V> n = (Node<K, V>) r;
-      final Tree<K, V> rl = n.mLeft, rr = n.mRight;
-      final K rKey = n.mKey;
-      final V rValue = n.mValue;
-
-      if (rr.mHeight >= rl.mHeight) {
-        return Node.create(Node.create(l, key, value, rl), rKey, rValue, rr);
-      }
-      else {
-        final Node<K, V> nn = (Node<K, V>) rl;
-        final Tree<K, V> rll = nn.mLeft, rlr = nn.mRight;
-        final K rlKey = nn.mKey;
-        final V rlValue = nn.mValue;
-
-        return Node.create(Node.create(l, key, value, rll), rlKey, rlValue, Node.create(rlr, rKey, rValue, rr));
-      }
-    }
-    else {
-      return Node.create(l, key, value, r);
-    }
-  }
-
-  // Merge t1 t2: builds the union of t1 and t2 assuming all elements of t1 to be smaller than all elements of t2, and |height t1 - height t2| <= sBalanceRelaxationAmount.
-  private static <K extends Comparable<K>, V> Tree<K, V> strictMerge(final Tree<K, V> t1, final Tree<K, V> t2) {
-    if (t1.isEmpty()) {
-      return t2;
-    }
-    else if (t2.isEmpty()) {
-        return t1;
-    }
-    else {
-      final Pair<K, V> mn = t2.minElementPair().get();
-      return balance(t1, mn.mx1, mn.mx2, t2.removeMinBinding());
-    }
   }
 
   private static final class InitFromArrayWorker<K extends Comparable<K>, V> {
@@ -614,7 +614,7 @@ public final class AvlTreeModule {
       final Node<K, V> node = (Node<K, V>) t;
       final int leftHeight  = avlTreePropertyHoldsAux(node.mLeft);
       final int rightHeight = avlTreePropertyHoldsAux(node.mRight);
-      if (Math.abs(leftHeight - rightHeight) > sBalanceRelaxationAmount) {
+      if (Math.abs(leftHeight - rightHeight) > Node.sBalanceRelaxationAmount) {
         throw sAvlTreeInvariantViolated;
       }
 

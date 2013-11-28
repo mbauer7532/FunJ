@@ -1200,7 +1200,7 @@ public final class BrotherTreeModule {
     }
  
     if (! brotherPropertyHolds(t)) {
-      return Pair.create(false, "The brother tree property does not hald.");
+      return Pair.create(false, "The brother tree property does not hold.");
     }
 
     return Pair.create(true, "Success!");
