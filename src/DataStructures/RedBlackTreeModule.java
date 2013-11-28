@@ -59,6 +59,10 @@ public class RedBlackTreeModule {
       return blackify(ins(f, key, value));
     }
 
+    private static final class ControlExnNoSuchElement extends Exception {};
+
+    protected static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
+
     @Override
     public final Tree<K, V> remove(final K key) {
       try {
@@ -126,7 +130,7 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement {
+    Pair<Tree<K, V>, Boolean> rem(final K key) throws Tree.ControlExnNoSuchElement {
       // This exception is used for control purposes.
       // When removing non-existent elements we simply return the same input tree
       // no new allocations take place.  The alternative implementation that 
@@ -402,7 +406,7 @@ public class RedBlackTreeModule {
 //    in fst (remove_aux m)
 
     @Override
-    Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement {
+    Pair<Tree<K, V>, Boolean> rem(final K key) throws Tree.ControlExnNoSuchElement {
       final int c = key.compareTo(mKey);
       final Tree<K, V> l = mLeft, r = mRight;
       
@@ -521,7 +525,7 @@ public class RedBlackTreeModule {
 //              end
 
     @Override
-    Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement {
+    Pair<Tree<K, V>, Boolean> rem(final K key) throws Tree.ControlExnNoSuchElement {
       final int c = key.compareTo(mKey);
       final Tree<K, V> l = mLeft, r = mRight;
 
@@ -1047,10 +1051,6 @@ public class RedBlackTreeModule {
   public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
     return fromStream(v.stream());
   }
-
-  private static final class ControlExnNoSuchElement extends Exception {};
-
-  private static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
 
   private static final class RedBlackTreeFactory implements PersistentMapFactory {
     @Override

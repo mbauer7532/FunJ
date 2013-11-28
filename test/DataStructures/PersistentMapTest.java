@@ -31,7 +31,7 @@ public class PersistentMapTest {
                                {
                                  RedBlackTreeModule.makeFactory(),
                                  AvlTreeModule.makeFactory(),
-                                // BrotherTreeModule.makeFactory()
+                                 BrotherTreeModule.makeFactory()
                                });
   
   public PersistentMapTest() {}
@@ -122,26 +122,34 @@ public class PersistentMapTest {
 
     PersistentMap<Integer, Integer, RedBlackTreeModule.Tree<Integer, Integer>> q = RedBlackTreeModule.empty();
     
-    final long seed = 1253273;
+    final long seed = 12532731;
     final Random rng = new Random(seed);
 
-    final int numIters = 40;
-    final int low = 1, high = 800;
-    final int size = high / 2;
+    final int numIters = 20;
+    final int low = 1, high = 32*32*32*32/8;
+    final int size = high/2;
+
+    int[] s = new int[3];
+    s[1] = Integer.MIN_VALUE;
+    s[2] = Integer.MAX_VALUE;
 
     IntStream.range(0, numIters).forEach(x -> {
       final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
       assertEquals(size, perm1.length);
-      
+      System.out.println(x);
       PersistentMap<Integer, Integer, ?> t = mapFactory.empty();
       for (int i = 0; i != size; ++i) {
-        assertEquals(i, t.size());
-        checkMapProperties(t);
+        //assertEquals(i, t.size());
+        //checkMapProperties(t);
         t = t.insert(perm1[i], perm1[i]);
       }
-      assertEquals(size, t.size());
-      checkMapProperties(t);
-
+      //assertEquals(size, t.size());
+      //checkMapProperties(t);
+      final int h = t.height();
+      s[0] += h;
+      s[1] = Math.max(s[1], h);
+      s[2] = Math.min(s[2], h);
+      /*
       final int[] perm2 = Numeric.randomPermuation(0, size - 1, size, rng);
 
       for (int i = 0; i != size; ++i) {
@@ -152,8 +160,12 @@ public class PersistentMapTest {
         assertEquals(size - i - 1, t.size());
         checkMapProperties(t);
       }
-      assertTrue(t.isEmpty());
+              */
     });
+    
+    System.out.println("Average height: " + s[0] / (double) numIters);
+    System.out.println("Max height: " + s[1]);
+    System.out.println("Min height: " + s[2]);
   }
 
   @Test

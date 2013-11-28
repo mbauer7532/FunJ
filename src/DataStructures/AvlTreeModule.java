@@ -225,7 +225,7 @@ public final class AvlTreeModule {
       // When removing non-existent elements we simply return the same input tree
       // no new allocations take place.  The alternative implementation that 
       // copies the path is: return Pair.create(this, false);
-      throw Tree.sNoSuchElement;
+      throw sNoSuchElement;
     }
 
     @Override
