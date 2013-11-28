@@ -694,7 +694,7 @@ public final class BrotherTreeModule {
               final N2<K, V> z1 = rn2mt1n2;
               final N1<K, V> z2 = rn2mt2n1;
 
-              final Tree<K, V> t1 = ((N1<K, V>) ln1.mt).mt;
+              final Tree<K, V> t1 = ln1mtn1.mt;
               final Tree<K, V> t2 = z1.mt1;
               final Tree<K, V> t3 = z1.mt2;
               final Tree<K, V> t4 = z2.mt;
