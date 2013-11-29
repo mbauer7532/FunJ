@@ -491,7 +491,7 @@ public final class AvlTreeModule {
         final V lValue = n.mValue;
 
         if (ll.mHeight >= lr.mHeight) {
-          return Node.create(ll, lKey, lValue, Node.create(lr, key, value, r));
+          return create(ll, lKey, lValue, Node.create(lr, key, value, r));
         }
         else {
           final Node<K, V> nn = (Node<K, V>) lr;
@@ -499,7 +499,7 @@ public final class AvlTreeModule {
           final K lrKey = nn.mKey;
           final V lrValue = nn.mValue;
 
-          return Node.create(Node.create(ll, lKey, lValue, lrl), lrKey, lrValue, Node.create(lrr, key, value, r));
+          return create(create(ll, lKey, lValue, lrl), lrKey, lrValue, create(lrr, key, value, r));
         }
       }
       else if (hr > hl + sBalanceRelaxationAmount) {
@@ -509,7 +509,7 @@ public final class AvlTreeModule {
         final V rValue = n.mValue;
 
         if (rr.mHeight >= rl.mHeight) {
-          return Node.create(Node.create(l, key, value, rl), rKey, rValue, rr);
+          return create(create(l, key, value, rl), rKey, rValue, rr);
         }
         else {
           final Node<K, V> nn = (Node<K, V>) rl;
@@ -517,11 +517,11 @@ public final class AvlTreeModule {
           final K rlKey = nn.mKey;
           final V rlValue = nn.mValue;
 
-          return Node.create(Node.create(l, key, value, rll), rlKey, rlValue, Node.create(rlr, rKey, rValue, rr));
+          return create(create(l, key, value, rll), rlKey, rlValue, create(rlr, rKey, rValue, rr));
         }
       }
       else {
-        return Node.create(l, key, value, r);
+        return create(l, key, value, r);
       }
     }
   }
