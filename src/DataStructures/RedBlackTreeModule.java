@@ -322,7 +322,7 @@ public class RedBlackTreeModule {
 
         if ((ll = l.mLeft.asRed()) != null) {
           return RedNode.create(
-                  ll.convertToBlack(),
+                  r2b(ll),
                   l.mKey,
                   l.mValue,
                   BlackNode.create(l.mRight, key, value, right));
@@ -369,7 +369,7 @@ public class RedBlackTreeModule {
                   BlackNode.create(left, key, value, r.mLeft),
                   r.mKey,
                   r.mValue,
-                  rr.convertToBlack());
+                  r2b(rr));
         }
       }
 
@@ -396,7 +396,7 @@ public class RedBlackTreeModule {
       if ((red = t.asRed()) != null) {
         final BlackNode<K, V> rb = red.mLeft.asBlack();
         if (rb != null) {
-          return Pair.create(leftBalance(rb.convertToRed(), red.mKey, red.mValue, red.mRight), false);
+          return Pair.create(leftBalance(b2r(rb), red.mKey, red.mValue, red.mRight), false);
         }
       }
       else if ((black = t.asBlack()) != null) {
@@ -405,12 +405,12 @@ public class RedBlackTreeModule {
         final RedNode<K, V> br;
 
         if ((bb = left.asBlack()) != null) {
-          return Pair.create(leftBalance(bb.convertToRed(), black.mKey, black.mValue, black.mRight), true);
+          return Pair.create(leftBalance(b2r(bb), black.mKey, black.mValue, black.mRight), true);
         }
         else if ((br = left.asRed()) != null && (bb = br.mRight.asBlack()) != null) {
           return Pair.create(
                   BlackNode.create(br.mLeft, br.mKey, br.mValue,
-                                   leftBalance(bb.convertToRed(), black.mKey, black.mValue, black.mRight)),
+                                   leftBalance(b2r(bb), black.mKey, black.mValue, black.mRight)),
                   false);
         }
       }
@@ -436,7 +436,7 @@ public class RedBlackTreeModule {
         final BlackNode<K, V> rb = red.mRight.asBlack();
 
         if (rb != null) {
-          return Pair.create(rightBalance(red.mLeft, red.mKey, red.mValue, rb.convertToRed()), false);
+          return Pair.create(rightBalance(red.mLeft, red.mKey, red.mValue, b2r(rb)), false);
         }
       }
       else if ((black = t.asBlack()) != null) {
@@ -445,11 +445,11 @@ public class RedBlackTreeModule {
         final RedNode<K, V> br;
 
         if ((bb = right.asBlack()) != null) {
-          return Pair.create(rightBalance(black.mLeft, black.mKey, black.mValue, bb.convertToRed()), true);
+          return Pair.create(rightBalance(black.mLeft, black.mKey, black.mValue, b2r(bb)), true);
         }
         else if ((br = right.asRed()) != null && (bb = br.mLeft.asBlack()) != null) {
           return Pair.create(
-                  BlackNode.create(rightBalance(black.mLeft, black.mKey, black.mValue, bb.convertToRed()),
+                  BlackNode.create(rightBalance(black.mLeft, black.mKey, black.mValue, b2r(bb)),
                                    br.mKey, br.mValue, br.mRight),
                   false);
         }
@@ -502,7 +502,7 @@ public class RedBlackTreeModule {
 
           final RedNode<K, V> br = r.asRed();
           if (br != null) {
-            return Tuple4.create(br.convertToBlack(), black.mKey, black.mValue, false);
+            return Tuple4.create(r2b(br), black.mKey, black.mValue, false);
           }
 
           final BlackNode<K, V> bb = r.asBlack();
@@ -543,6 +543,14 @@ public class RedBlackTreeModule {
 
       throw new AssertionError("The tree cannot be empty in this context.");
     }
+    
+    public static <K extends Comparable<K>, V> RedNode<K, V> b2r(final BlackNode<K, V> b) {
+      return RedNode.create(b.mLeft, b.mKey, b.mValue, b.mRight);
+    }
+
+    public static <K extends Comparable<K>, V> BlackNode<K, V> r2b(final RedNode<K, V> r) {
+      return BlackNode.create(r.mLeft, r.mKey, r.mValue, r.mRight);
+    }
   }
 
   private static final class RedNode<K extends Comparable<K>, V> extends Node<K, V> {
@@ -556,10 +564,6 @@ public class RedBlackTreeModule {
             final V value,
             final Tree<K, V> right) {
       return new RedNode<>(left, key, value, right);
-    }
-
-    private BlackNode<K, V> convertToBlack() {
-      return BlackNode.create(mLeft, mKey, mValue, mRight);
     }
 
     @Override
@@ -697,10 +701,6 @@ public class RedBlackTreeModule {
       return new BlackNode<>(left, key, value, right);
     }
 
-    private RedNode<K, V> convertToRed() {
-      return RedNode.create(mLeft, mKey, mValue, mRight);
-    }
-
     @Override
     final boolean isBlack() { return true; }
 
@@ -811,14 +811,14 @@ public class RedBlackTreeModule {
 //      | Black _ as s -> s
 //      | Red (a, y, b) -> Black (a, y, b)
 //      | Empty -> assert false
-  private static <K extends Comparable<K>, V> Tree<K, V> blackify(final Tree<K, V> t) {
+  static <K extends Comparable<K>, V> Tree<K, V> blackify(final Tree<K, V> t) {
     final RedNode<K, V> red = t.asRed();
-    return (red != null) ? red.convertToBlack() : t;
+    return (red != null) ? RedNode.r2b(red) : t;
   }
 
-  private static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> blackifyRem(final Tree<K, V> t) {
+  static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> blackifyRem(final Tree<K, V> t) {
     final RedNode<K, V> red = t.asRed();
-    return (red != null) ? Pair.create(red.convertToBlack(), false)
+    return (red != null) ? Pair.create(RedNode.r2b(red), false)
                          : Pair.create(t, true);
   }
 
@@ -961,13 +961,13 @@ public class RedBlackTreeModule {
     return Numeric.ilog(size + 1);
   }
 
-  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> makeBoundPair(final Node<K, V> candidate) {
+  static <K extends Comparable<K>, V> Optional<Pair<K, V>> makeBoundPair(final Node<K, V> candidate) {
     return candidate == null
             ? Optional.empty()
             : Optional.of(Pair.create(candidate.mKey, candidate.mValue));
   }
 
-  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
+  static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
     Tree<K, V> tree = t;
     Node<K, V> candidate = null;
 
@@ -995,7 +995,7 @@ public class RedBlackTreeModule {
     return makeBoundPair(candidate);
   }
 
-  private static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPair(final Tree<K, V> t, final K key) {
+  static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPair(final Tree<K, V> t, final K key) {
     Tree<K, V> tree = t;
     Node<K, V> candidate = null;
 
