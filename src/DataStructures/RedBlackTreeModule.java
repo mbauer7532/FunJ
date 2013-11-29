@@ -14,6 +14,7 @@ import DataStructures.TuplesModule.Tuple4;
 import Utils.ArrayUtils;
 import Utils.Functionals.TriFunction;
 import Utils.Numeric;
+import Utils.Ref;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -66,7 +67,9 @@ public class RedBlackTreeModule {
     @Override
     public final Tree<K, V> remove(final K key) {
       try {
-        return rem(key).mx1;
+        Ref<Tree<K, V>> treeRef = new Ref();
+        rem(treeRef, key);
+        return treeRef.r;
       } catch (ControlExnNoSuchElement ex) {
         return this;
       }
@@ -107,7 +110,7 @@ public class RedBlackTreeModule {
     BlackNode<K, V> asBlack() { return null; }
 
     abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
-    abstract Pair<Tree<K, V>, Boolean> rem(final K key) throws ControlExnNoSuchElement;
+    abstract boolean rem(final Ref<Tree<K, V>> treeRef, final K key) throws ControlExnNoSuchElement;
   }
 
   private static final class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -130,7 +133,7 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    Pair<Tree<K, V>, Boolean> rem(final K key) throws Tree.ControlExnNoSuchElement {
+    boolean rem(final Ref<Tree<K, V>> treeRef, final K key) throws Tree.ControlExnNoSuchElement {
       // This exception is used for control purposes.
       // When removing non-existent elements we simply return the same input tree
       // no new allocations take place.  The alternative implementation that 
@@ -389,14 +392,15 @@ public class RedBlackTreeModule {
 //    | _ ->
 //        assert false
 
-    protected static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> unbalancedLeft(final Tree<K, V> t) {
+    protected static <K extends Comparable<K>, V> boolean unbalancedLeft(final Ref<Tree<K, V>> treeRef, final Tree<K, V> t) {
       final RedNode<K, V> red;
       final BlackNode<K, V> black;
 
       if ((red = t.asRed()) != null) {
         final BlackNode<K, V> rb = red.mLeft.asBlack();
         if (rb != null) {
-          return Pair.create(leftBalance(b2r(rb), red.mKey, red.mValue, red.mRight), false);
+          treeRef.r = leftBalance(b2r(rb), red.mKey, red.mValue, red.mRight);
+          return false;
         }
       }
       else if ((black = t.asBlack()) != null) {
@@ -405,13 +409,13 @@ public class RedBlackTreeModule {
         final RedNode<K, V> br;
 
         if ((bb = left.asBlack()) != null) {
-          return Pair.create(leftBalance(b2r(bb), black.mKey, black.mValue, black.mRight), true);
+          treeRef.r = leftBalance(b2r(bb), black.mKey, black.mValue, black.mRight);
+          return true;
         }
         else if ((br = left.asRed()) != null && (bb = br.mRight.asBlack()) != null) {
-          return Pair.create(
-                  BlackNode.create(br.mLeft, br.mKey, br.mValue,
-                                   leftBalance(b2r(bb), black.mKey, black.mValue, black.mRight)),
-                  false);
+          treeRef.r = BlackNode.create(br.mLeft, br.mKey, br.mValue,
+                                       leftBalance(b2r(bb), black.mKey, black.mValue, black.mRight));
+          return false;
         }
       }
 
@@ -428,7 +432,7 @@ public class RedBlackTreeModule {
 //    | _ ->
 //        assert false
 
-    protected static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> unbalancedRight(final Tree<K, V> t) {
+    protected static <K extends Comparable<K>, V> boolean unbalancedRight(final Ref<Tree<K, V>> treeRef, final Tree<K, V> t) {
       final RedNode<K, V> red;
       final BlackNode<K, V> black;
 
@@ -436,7 +440,8 @@ public class RedBlackTreeModule {
         final BlackNode<K, V> rb = red.mRight.asBlack();
 
         if (rb != null) {
-          return Pair.create(rightBalance(red.mLeft, red.mKey, red.mValue, b2r(rb)), false);
+          treeRef.r = rightBalance(red.mLeft, red.mKey, red.mValue, b2r(rb));
+          return false;
         }
       }
       else if ((black = t.asBlack()) != null) {
@@ -445,13 +450,13 @@ public class RedBlackTreeModule {
         final RedNode<K, V> br;
 
         if ((bb = right.asBlack()) != null) {
-          return Pair.create(rightBalance(black.mLeft, black.mKey, black.mValue, b2r(bb)), true);
+          treeRef.r = rightBalance(black.mLeft, black.mKey, black.mValue, b2r(bb));
+          return true;
         }
         else if ((br = right.asRed()) != null && (bb = br.mLeft.asBlack()) != null) {
-          return Pair.create(
-                  BlackNode.create(rightBalance(black.mLeft, black.mKey, black.mValue, b2r(bb)),
-                                   br.mKey, br.mValue, br.mRight),
-                  false);
+          treeRef.r = BlackNode.create(rightBalance(black.mLeft, black.mKey, black.mValue, b2r(bb)),
+                                   br.mKey, br.mValue, br.mRight);
+          return false;
         }
       }
 
@@ -515,8 +520,9 @@ public class RedBlackTreeModule {
         final Tree<K, V> t = BlackNode.create(res.mx1, black.mKey, black.mValue, r);
 
         if (res.mx4) {
-          final Pair<Tree<K, V>, Boolean> u = unbalancedRight(t);
-          return Tuple4.create(u.mx1, res.mx2, res.mx3, u.mx2);
+          final Ref<Tree<K, V>> treeRef = new Ref<>();
+          final boolean c = unbalancedRight(treeRef, t);
+          return Tuple4.create(treeRef.r, res.mx2, res.mx3, c);
         } else {
           return Tuple4.create(t, res.mx2, res.mx3, false);
         }
@@ -533,8 +539,9 @@ public class RedBlackTreeModule {
           final Tree<K, V> t = RedNode.create(res.mx1, red.mKey, red.mValue, r);
 
           if (res.mx4) {
-            final Pair<Tree<K, V>, Boolean> u = unbalancedRight(t);
-            return Tuple4.create(u.mx1, res.mx2, res.mx3, u.mx2);
+            final Ref<Tree<K, V>> treeRef = new Ref<>();
+            final boolean c = unbalancedRight(treeRef, t);
+            return Tuple4.create(treeRef.r, res.mx2, res.mx3, c);
           } else {
             return Tuple4.create(t, res.mx2, res.mx3, false);
           }
@@ -652,31 +659,50 @@ public class RedBlackTreeModule {
 //    in fst (remove_aux m)
 
     @Override
-    Pair<Tree<K, V>, Boolean> rem(final K key) throws Tree.ControlExnNoSuchElement {
-      final int c = key.compareTo(mKey);
+   boolean rem(final Ref<Tree<K, V>> treeRef, final K key) throws Tree.ControlExnNoSuchElement {
+      final int res = key.compareTo(mKey);
       final Tree<K, V> l = mLeft, r = mRight;
-      
-      if (c < 0) {
-        final Pair<Tree<K, V>, Boolean> p = l.rem(key);
-        final RedNode<K, V> m = RedNode.create(p.mx1, mKey, mValue, r);
 
-        return p.mx2 ? unbalancedRight(m) : Pair.create(m, false);
+      if (res < 0) {
+        final boolean c = l.rem(treeRef, key);
+        final RedNode<K, V> m = RedNode.create(treeRef.r, mKey, mValue, r);
+
+        if (c) {
+          return unbalancedRight(treeRef, m);
+        }
+        else {
+          treeRef.r = m;
+          return false;
+        }
       }
-      else if (c > 0) {
-        final Pair<Tree<K, V>, Boolean> p = r.rem(key);
-        final RedNode<K, V> m = RedNode.create(l, mKey, mValue, p.mx1);
+      else if (res > 0) {
+        final boolean c = r.rem(treeRef, key);
+        final RedNode<K, V> m = RedNode.create(l, mKey, mValue, treeRef.r);
 
-        return p.mx2 ? unbalancedLeft(m) : Pair.create(m, false);
+        if (c) {
+          return unbalancedLeft(treeRef, m);
+        }
+        else {
+          treeRef.r = m;
+          return false;
+        }
       }
       else {
         if (r.isEmpty()) {
-          return Pair.create(l, false);
+          treeRef.r = l;
+          return false;
         }
         else {
           final Tuple4<Tree<K, V>, K, V, Boolean> p = removeMin(r);
           final RedNode<K, V> m = RedNode.create(l, p.mx2, p.mx3, p.mx1);
 
-          return p.mx4 ? unbalancedLeft(m) : Pair.create(m, false);
+          if (p.mx4) {
+            return unbalancedLeft(treeRef, m);
+          }
+          else {
+            treeRef.r = m;
+            return false;
+          }
         }
       }
     }
@@ -767,31 +793,49 @@ public class RedBlackTreeModule {
 //              end
 
     @Override
-    Pair<Tree<K, V>, Boolean> rem(final K key) throws Tree.ControlExnNoSuchElement {
-      final int c = key.compareTo(mKey);
+    boolean rem(final Ref<Tree<K, V>> treeRef, final K key) throws Tree.ControlExnNoSuchElement {
+      final int res = key.compareTo(mKey);
       final Tree<K, V> l = mLeft, r = mRight;
 
-      if (c < 0) {
-        final Pair<Tree<K, V>, Boolean> p = l.rem(key);
-        final BlackNode<K, V> m = BlackNode.create(p.mx1, mKey, mValue, r);
+      if (res < 0) {
+        final boolean c = l.rem(treeRef, key);
+        final BlackNode<K, V> m = BlackNode.create(treeRef.r, mKey, mValue, r);
 
-        return p.mx2 ? unbalancedRight(m) : Pair.create(m, false);
+        if (c) {
+          return unbalancedRight(treeRef, m);
+        }
+        else {
+          treeRef.r = m;
+          return false;
+        }
       }
-      else if (c > 0) {
-        final Pair<Tree<K, V>, Boolean> p = r.rem(key);
-        final BlackNode<K, V> m = BlackNode.create(l, mKey, mValue, p.mx1);
+      else if (res > 0) {
+        final boolean c = r.rem(treeRef, key);
+        final BlackNode<K, V> m = BlackNode.create(l, mKey, mValue, treeRef.r);
 
-        return p.mx2 ? unbalancedLeft(m) : Pair.create(m, false);
+        if (c) {
+          return unbalancedLeft(treeRef, m);
+        }
+        else {
+          treeRef.r = m;
+          return false;
+        }
       }
       else {
         if (r.isEmpty()) {
-          return blackifyRem(l);
+          return blackifyRem(treeRef, l);
         }
         else {
           final Tuple4<Tree<K, V>, K, V, Boolean> p = removeMin(r);
           final BlackNode<K, V> m = BlackNode.create(l, p.mx2, p.mx3, p.mx1);
 
-          return p.mx4 ? unbalancedLeft(m) : Pair.create(m, false);
+          if (p.mx4) {
+            return unbalancedLeft(treeRef, m);
+          }
+          else {
+            treeRef.r = m;
+            return false;
+          }
         }
       }
     }
@@ -816,10 +860,16 @@ public class RedBlackTreeModule {
     return (red != null) ? RedNode.r2b(red) : t;
   }
 
-  static <K extends Comparable<K>, V> Pair<Tree<K, V>, Boolean> blackifyRem(final Tree<K, V> t) {
+  static <K extends Comparable<K>, V> boolean blackifyRem(final Ref<Tree<K, V>> treeRef, final Tree<K, V> t) {
     final RedNode<K, V> red = t.asRed();
-    return (red != null) ? Pair.create(RedNode.r2b(red), false)
-                         : Pair.create(t, true);
+    if (red != null) {
+      treeRef.r = RedNode.r2b(red);
+      return false;
+    }
+    else {
+      treeRef.r = t;
+      return true;
+    }
   }
 
   static <K extends Comparable<K>, V> Pair<Boolean, String> verifyRedBlackProperties(final Tree<K, V> t) {
