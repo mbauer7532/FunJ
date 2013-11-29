@@ -87,10 +87,22 @@ public class Numeric {
           final Random rng) {
     final int size = array.length;
     final int lastIdx = size - 1;
-    final Iterator<Integer> it = randomSet(low, high, size, rng).iterator();
+    final int span = high - low + 1;
+    
+    if (size == span) {
+      if (size <= 0) {
+        throw new AssertionError("array size must be greater than zero.");
+      }
 
-    IntStream.range(0, size).forEach(i -> { array[i] = it.next(); });
-    IntStream.range(0, lastIdx).forEach(n -> { swap(array, n, randomInt(n, lastIdx, rng)); });
+      IntStream.range(0, size).forEach(i -> array[i] = low + i);
+    }
+    else {
+      final Iterator<Integer> it = randomSet(low, high, size, rng).iterator();
+
+      IntStream.range(0, size).forEach(i -> { array[i] = it.next(); });
+    }
+
+    IntStream.range(0, lastIdx).forEach(i -> { swap(array, i, randomInt(i, lastIdx, rng)); });
 
     return;
   }
