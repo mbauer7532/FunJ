@@ -88,7 +88,7 @@ public class Numeric {
     final int size = array.length;
     final int lastIdx = size - 1;
     final int span = high - low + 1;
-    
+
     if (size == span) {
       if (size <= 0) {
         throw new AssertionError("array size must be greater than zero.");
