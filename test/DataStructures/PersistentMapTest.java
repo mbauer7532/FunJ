@@ -95,11 +95,11 @@ public class PersistentMapTest {
       a.add(t);
  
       for (int i = 0; i != a.size(); ++i) {
-        final PersistentMap<Integer, Integer, ?> q = a.get(i);
+        final PersistentMap<Integer, Integer, ?> m = a.get(i);
 
-        assertEquals(i, q.size());
+        assertEquals(i, m.size());
         checkMapProperties(t);
-        IntStream.range(0, i).forEach(n -> assertTrue(q.containsKey(n)));
+        IntStream.range(0, i).forEach(n -> assertTrue(m.containsKey(n)));
       }
 
       for (int i = 0; i != N; ++i) {
@@ -124,8 +124,8 @@ public class PersistentMapTest {
     final long seed = 12532731;
     final Random rng = new Random(seed);
 
-    final int numIters = 20;
-    final int low = 1, high = 32*32*32*32/8;
+    final int numIters = 10;
+    final int low = 1, high = 2 * 1024;
     final int size = high/2;
 
     int[] s = new int[3];
@@ -135,15 +135,15 @@ public class PersistentMapTest {
     IntStream.range(0, numIters).forEach(x -> {
       final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
       assertEquals(size, perm1.length);
-      System.out.println(x);
       PersistentMap<Integer, Integer, ?> t = mapFactory.empty();
       for (int i = 0; i != size; ++i) {
-        //assertEquals(i, t.size());
-        //checkMapProperties(t);
-        t = t.insert(perm1[i], perm1[i]);
+        assertEquals(i, t.size());
+        checkMapProperties(t);
+        final Integer n = perm1[i];
+        t = t.insert(n, n);
       }
-      //assertEquals(size, t.size());
-      //checkMapProperties(t);
+      assertEquals(size, t.size());
+      checkMapProperties(t);
       final int h = t.height();
       s[0] += h;
       s[1] = Math.max(s[1], h);
@@ -156,14 +156,26 @@ public class PersistentMapTest {
         assertTrue(t.containsKey(n));
         t = t.remove(n);
         assertTrue(! t.containsKey(n));
-//        assertEquals(size - i - 1, t.size());
-//        checkMapProperties(t);
+        assertEquals(size - i - 1, t.size());
+        checkMapProperties(t);
       }
     });
-    
-    System.out.println("Average height: " + s[0] / (double) numIters);
-    System.out.println("Max height: " + s[1]);
-    System.out.println("Min height: " + s[2]);
+
+    final double worstCaseHeight = 2.0 * Numeric.log((double)size, 2.0); // aproximately -- if larger I would worry.
+
+    final double averageHeight = s[0] / (double) numIters;
+    final double maxHeight = s[1];
+    final double minHeight = s[2];
+
+    assertTrue(averageHeight < worstCaseHeight);
+    assertTrue(maxHeight < worstCaseHeight);
+    assertTrue(minHeight < worstCaseHeight);
+/*
+    System.out.println("Worst case height: " + worstCaseHeight);
+    System.out.println("Average height: " + averageHeight);
+    System.out.println("Max height: " + maxHeight);
+    System.out.println("Min height: " + minHeight);
+*/
   }
 
   @Test
@@ -171,160 +183,160 @@ public class PersistentMapTest {
     performTest(PersistentMapTest::verifyMapPropertiesRandomSampleImpl);
   }
 
-  @Test
-  public void avlTest() {
-    long startTime = System.nanoTime();
-    
-    final PersistentMapFactory mapFactory = AvlTreeModule.makeFactory();
-    System.out.printf("%s\n", mapFactory.getMapName());
+  private static void verifyMapPropertiesMonotoneInputsImpl(final PersistentMapFactory mapFactory) {
+    System.out.printf("verifyMapPropertiesMonotoneInputs(%s)\n", mapFactory.getMapName());
 
     final long seed = 12532731;
     final Random rng = new Random(seed);
 
-    final int numIters = 20;
-    final int low = 1, high = 32*32*32*32/8;
+    final int numIters = 10;
+    final int low = 1, high = 2 * 1024;
     final int size = high/2;
 
-    int[] s = new int[3];
-    s[1] = Integer.MIN_VALUE;
-    s[2] = Integer.MAX_VALUE;
+    final int[] increasingVec = IntStream.range(0, size).toArray();
+    final int[] decreasingVec = IntStream.range(0, size).map(n -> size - 1 - n).toArray();
 
-    IntStream.range(0, numIters).forEach(x -> {
-      final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
-      assertEquals(size, perm1.length);
-      PersistentMap<Integer, Integer, ?> t = mapFactory.empty();
+    PersistentMap<Integer, Integer, ?> t0 = mapFactory.empty();
+    PersistentMap<Integer, Integer, ?> t1 = mapFactory.empty();
+
+    for (int i = 0; i != size; ++i) {
+      final Integer n0 = increasingVec[i];
+      final Integer n1 = decreasingVec[i];
+      t0 = t0.insert(n0, n0);
+      t1 = t1.insert(n1, n1);
+    }
+
+    assertEquals(size, t0.size());
+    assertEquals(size, t1.size());
+
+    checkMapProperties(t0);
+    checkMapProperties(t1);
+
+    final int h0 = t0.height();
+    final int h1 = t1.height();
+
+    final double worstCaseHeight = 2.0 * Numeric.log((double)size, 2.0);
+    assertTrue(h0 < worstCaseHeight);
+    assertTrue(h1 < worstCaseHeight);
+
+    final PersistentMap<Integer, Integer, ?> fullMap0 = t0;
+    final PersistentMap<Integer, Integer, ?> fullMap1 = t1;
+
+    // Let's remove all the elements from the two tables checking as we go.
+    { // First we remove the elements in an increasing fashion.
       for (int i = 0; i != size; ++i) {
-        t = t.insert(perm1[i], perm1[i]);
+        final int n = increasingVec[i];
+        
+        assertTrue(t0.containsKey(n));
+        assertTrue(t1.containsKey(n));
+
+        t0 = t0.remove(n);
+        t1 = t1.remove(n);
+
+        assertTrue(! t0.containsKey(n));
+        assertTrue(! t1.containsKey(n));
+
+        assertEquals(size - i - 1, t0.size());
+        assertEquals(size - i - 1, t1.size());
+        
+        checkMapProperties(t0);
+        checkMapProperties(t1);
       }
-
-      final int h = t.height();
-      s[0] += h;
-      s[1] = Math.max(s[1], h);
-      s[2] = Math.min(s[2], h);
-
-      final int[] perm2 = Numeric.randomPermuation(0, size - 1, size, rng);
-
+      assertTrue(t0.isEmpty());
+      assertTrue(t1.isEmpty());
+    }
+    t0 = fullMap0;
+    t1 = fullMap1;
+    { // And now we remove them in a decreasing fashion.
       for (int i = 0; i != size; ++i) {
-        final int n = perm1[perm2[i]];
-        assertTrue(t.containsKey(n));
-        t = t.remove(n);
-        assertTrue(! t.containsKey(n));
-//        assertEquals(size - i - 1, t.size());
-//        checkMapProperties(t);
-      }
-    });
+        final int n = increasingVec[i];
+        
+        assertTrue(t0.containsKey(n));
+        assertTrue(t1.containsKey(n));
 
-//    System.out.println("Average height: " + s[0] / (double) numIters);
-//    System.out.println("Max height: " + s[1]);
-//    System.out.println("Min height: " + s[2]);
-    
-    long stopTime = System.nanoTime();
-    long d = TimeUnit.SECONDS.convert((stopTime - startTime), TimeUnit.MILLISECONDS);
-    System.out.printf("TimeSpent = %d\n", d);
+        t0 = t0.remove(n);
+        t1 = t1.remove(n);
+
+        assertTrue(! t0.containsKey(n));
+        assertTrue(! t1.containsKey(n));
+
+        assertEquals(size - i - 1, t0.size());
+        assertEquals(size - i - 1, t1.size());
+        
+        checkMapProperties(t0);
+        checkMapProperties(t1);
+      }
+      assertTrue(t0.isEmpty());
+      assertTrue(t1.isEmpty());
+    }
+
+    System.out.println("Worst case height: " + worstCaseHeight);
+    System.out.println("Actual height (increasing): " + h0);
+    System.out.println("Actual height (decreasing): " + h1);
   }
 
   @Test
-  public void brotherTest() {
-    long startTime = System.nanoTime();
-    
-    final PersistentMapFactory mapFactory = BrotherTreeModule.makeFactory();
-    System.out.printf("%s\n", mapFactory.getMapName());
+  public void verifyMapPropertiesMonotoneInputs() {
+    performTest(PersistentMapTest::verifyMapPropertiesMonotoneInputsImpl);
+  }
+
+  private static void getBenchmarkImpl(final PersistentMapFactory mapFactory) {
+    //System.out.printf("%s\n", mapFactory.getMapName());
 
     final long seed = 12532731;
     final Random rng = new Random(seed);
 
-    final int numIters = 20;
-    final int low = 1, high = 32*32*32*32/8;
+    final int numIters = 200;
+    final int low = 1, high = 2*32*32*32;
     final int size = high/2;
 
-    int[] s = new int[3];
-    s[1] = Integer.MIN_VALUE;
-    s[2] = Integer.MAX_VALUE;
+    final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
+    assertEquals(size, perm1.length);
+    PersistentMap<Integer, Integer, ?> t = mapFactory.empty();
+    for (int i = 0; i != size; ++i) {
+      t = t.insert(perm1[i], perm1[i]);
+    }
 
-    IntStream.range(0, numIters).forEach(x -> {
-      final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
-      assertEquals(size, perm1.length);
-      PersistentMap<Integer, Integer, ?> t = mapFactory.empty();
-      for (int i = 0; i != size; ++i) {
-        t = t.insert(perm1[i], perm1[i]);
-      }
+    final PersistentMap<Integer, Integer, ?> t2 = t;
 
-      final int h = t.height();
-      s[0] += h;
-      s[1] = Math.max(s[1], h);
-      s[2] = Math.min(s[2], h);
-
+    IntStream.range(0, 50).forEach(x -> {
       final int[] perm2 = Numeric.randomPermuation(0, size - 1, size, rng);
 
       for (int i = 0; i != size; ++i) {
         final int n = perm1[perm2[i]];
-        assertTrue(t.containsKey(n));
-        t = t.remove(n);
-        assertTrue(! t.containsKey(n));
-//        assertEquals(size - i - 1, t.size());
-//        checkMapProperties(t);
+        assertTrue(t2.containsKey(n));
       }
     });
 
-//    System.out.println("Average height: " + s[0] / (double) numIters);
-//    System.out.println("Max height: " + s[1]);
-//    System.out.println("Min height: " + s[2]);
-    
-    long stopTime = System.nanoTime();
-    long d = TimeUnit.SECONDS.convert((stopTime - startTime), TimeUnit.MILLISECONDS);
-    System.out.printf("TimeSpent = %d\n", d);
-  }
-
-  @Test
-  public void rbTest() {
     long startTime = System.nanoTime();
-    
-    final PersistentMapFactory mapFactory = RedBlackTreeModule.makeFactory();
-    System.out.printf("%s\n", mapFactory.getMapName());
-
-    final long seed = 12532731;
-    final Random rng = new Random(seed);
-
-    final int numIters = 20;
-    final int low = 1, high = 32*32*32*32/8;
-    final int size = high/2;
-
-    int[] s = new int[3];
-    s[1] = Integer.MIN_VALUE;
-    s[2] = Integer.MAX_VALUE;
-
     IntStream.range(0, numIters).forEach(x -> {
-      final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
-      assertEquals(size, perm1.length);
-      PersistentMap<Integer, Integer, ?> t = mapFactory.empty();
-      for (int i = 0; i != size; ++i) {
-        t = t.insert(perm1[i], perm1[i]);
-      }
-
-      final int h = t.height();
-      s[0] += h;
-      s[1] = Math.max(s[1], h);
-      s[2] = Math.min(s[2], h);
-
       final int[] perm2 = Numeric.randomPermuation(0, size - 1, size, rng);
 
       for (int i = 0; i != size; ++i) {
         final int n = perm1[perm2[i]];
-        assertTrue(t.containsKey(n));
-        t = t.remove(n);
-        assertTrue(! t.containsKey(n));
-//        assertEquals(size - i - 1, t.size());
-//        checkMapProperties(t);
+        assertTrue(t2.containsKey(n));
       }
     });
-
-//    System.out.println("Average height: " + s[0] / (double) numIters);
-//    System.out.println("Max height: " + s[1]);
-//    System.out.println("Min height: " + s[2]);
-    
     long stopTime = System.nanoTime();
-    long d = TimeUnit.SECONDS.convert((stopTime - startTime), TimeUnit.MILLISECONDS);
-    System.out.printf("TimeSpent = %d\n", d);
-  }
 
+    long d = TimeUnit.MILLISECONDS.convert((stopTime - startTime), TimeUnit.NANOSECONDS);
+    System.out.printf("%d ", d);
+  }
+  
+  @Test
+  public void getBenchmark() {
+    System.out.println(" RB  Avl  Bro");
+    performTest(PersistentMapTest::getBenchmarkImpl);
+    System.out.println();
+    performTest(PersistentMapTest::getBenchmarkImpl);
+    System.out.println();
+    performTest(PersistentMapTest::getBenchmarkImpl);
+    System.out.println();
+    performTest(PersistentMapTest::getBenchmarkImpl);
+    System.out.println();
+    performTest(PersistentMapTest::getBenchmarkImpl);
+    System.out.println();
+    performTest(PersistentMapTest::getBenchmarkImpl);
+    System.out.println();
+  }
 }
