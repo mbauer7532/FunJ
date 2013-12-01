@@ -174,45 +174,6 @@ public class RedBlackTreeModuleTest {
   }
 
   @Test
-  public void testFilterAndFilteri() {
-    System.out.println("filterAndFilteri");
-
-    {
-      final int N = 40;
-      final int halfN = N / 2;
-      final Tree<Integer, Integer> t0 = RedBlackTreeModule.fromArray(
-              IntStream.range(0, N)
-                      .mapToObj(i -> Pair.create(i, i))
-                      .collect(Collectors.toCollection(ArrayList::new)));
-      final Tree<Integer, Integer> t1 = t0.filteri((k, v) -> (k & 1) == 1);
-
-      checkRedBlackTreeProperties(t0);
-      checkRedBlackTreeProperties(t1);
-
-      assertEquals(N, t0.size());
-      assertEquals(halfN, t1.size());
-    
-      IntStream.range(0, N).forEach(n -> {
-        if ((n & 1) == 0) {
-          assertTrue(t0.containsKey(n) && ! t1.containsKey(n));
-        }
-        else {
-          assertTrue(t0.containsKey(n) && t1.containsKey(n));
-        }
-      });
-    }
-    {
-      final PersistentMap<Integer, Integer, ?> pm0 = RedBlackTreeModule.singleton(10, 20);
-      final PersistentMap<Integer, Integer, ?> pm1 = pm0.filter(v -> v != 20);
-      final PersistentMap<Integer, Integer, ?> pm2 = pm0.filteri((k, v) -> k + v != 30);
-
-      assertTrue(! pm0.isEmpty());
-      assertTrue(pm1.isEmpty());
-      assertTrue(pm2.isEmpty());
-    }
-  }
-
-  @Test
   public void testPartitionAndPartitioni() {
     System.out.println("partitionAndPartitioni");
 

@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -325,6 +326,7 @@ public class PersistentMapTest {
   
   @Test
   public void getBenchmark() {
+    /*
     System.out.println(" RB  Avl  Bro");
     performTest(PersistentMapTest::getBenchmarkImpl);
     System.out.println();
@@ -338,5 +340,49 @@ public class PersistentMapTest {
     System.out.println();
     performTest(PersistentMapTest::getBenchmarkImpl);
     System.out.println();
+    */
+  }
+
+  private static void testFilterAndFilteriImpl(final PersistentMapFactory mapFactory) {
+    System.out.printf("FilterAndFilteri(%s)\n", mapFactory.getMapName());
+
+    {
+      final int N = 40;
+      final int halfN = N / 2;
+      final PersistentMap<Integer, Integer, ?> t0 = mapFactory.fromArray(
+              IntStream.range(0, N)
+                      .mapToObj(i -> Pair.create(i, i))
+                      .collect(Collectors.toCollection(ArrayList::new)));
+      final PersistentMap<Integer, Integer, ?> t1 = t0.filteri((k, v) -> (k & 1) == 1);
+
+      checkMapProperties(t0);
+      checkMapProperties(t1);
+
+      assertEquals(N, t0.size());
+      assertEquals(halfN, t1.size());
+    
+      IntStream.range(0, N).forEach(n -> {
+        if ((n & 1) == 0) {
+          assertTrue(t0.containsKey(n) && ! t1.containsKey(n));
+        }
+        else {
+          assertTrue(t0.containsKey(n) && t1.containsKey(n));
+        }
+      });
+    }
+    {
+      final PersistentMap<Integer, Integer, ?> pm0 = mapFactory.singleton(10, 20);
+      final PersistentMap<Integer, Integer, ?> pm1 = pm0.filter(v -> v != 20);
+      final PersistentMap<Integer, Integer, ?> pm2 = pm0.filteri((k, v) -> k + v != 30);
+
+      assertTrue(! pm0.isEmpty());
+      assertTrue(pm1.isEmpty());
+      assertTrue(pm2.isEmpty());
+    }
+  }
+
+  @Test
+  public void testFilterAndFilteri() {
+    performTest(PersistentMapTest::testFilterAndFilteriImpl);
   }
 }
