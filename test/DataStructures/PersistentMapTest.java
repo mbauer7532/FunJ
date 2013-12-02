@@ -8,6 +8,7 @@ package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
 import Utils.Numeric;
+import Utils.Ref;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -213,6 +214,42 @@ public class PersistentMapTest {
   @Test
   public void verifyMapPropertiesRandomSample() {
     performTest(PersistentMapTest::verifyMapPropertiesRandomSampleImpl);
+  }
+
+  private static void testGetOrElseImpl(final Class<?> c) {
+    System.out.printf("GetOrElse(%s)\n", c.getName());
+
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+
+    final PersistentMap<Integer, Integer, ?> m = mapFactory.singleton(1, 2);
+
+    final Optional<Integer> k0 = m.get(1);
+    final Optional<Integer> k1 = m.get(2);
+    
+    assertTrue(k0.isPresent());
+    assertTrue(k0.get().equals(2));
+    assertFalse(k1.isPresent());
+    
+    final Integer k2 = m.getOrElse(1, 3);
+    final Integer k3 = m.getOrElse(2, 3);
+    
+    assertEquals(k2, new Integer(2));
+    assertEquals(k3, new Integer(3));
+    
+    final Ref<Boolean> ref = new Ref<>();
+
+    final Integer k4 = m.getOrElseSupplier(1, () -> { ref.r = Boolean.TRUE; return 3; });
+    assertTrue(ref.r == null);
+    assertEquals(k4, new Integer(2));
+    final Integer k5 = m.getOrElseSupplier(2, () -> { ref.r = Boolean.TRUE; return 3; });
+    assertTrue(ref.r != null);
+    assertTrue(ref.r);
+    assertEquals(k5, new Integer(3));
+  }
+
+  @Test
+  public void testGetOrElse() {
+    performTest(PersistentMapTest::testGetOrElseImpl);
   }
 
   private static void verifyMapPropertiesMonotoneInputsImpl(final Class<?> c) {
