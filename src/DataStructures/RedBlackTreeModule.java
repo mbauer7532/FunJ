@@ -10,7 +10,6 @@
 package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
-import DataStructures.TuplesModule.Tuple4;
 import Utils.ArrayUtils;
 import Utils.Functionals.TriFunction;
 import Utils.Numeric;
@@ -67,8 +66,9 @@ public class RedBlackTreeModule {
     @Override
     public final Tree<K, V> remove(final K key) {
       try {
-        Ref<Tree<K, V>> treeRef = new Ref();
-        rem(treeRef, key);
+        final Ref<Tree<K, V>> treeRef = new Ref<>();
+        final RemoveMinRes<K, V> rmRes = new RemoveMinRes<>();
+        rem(treeRef, rmRes, key);
         return treeRef.r;
       } catch (ControlExnNoSuchElement ex) {
         return this;
@@ -76,7 +76,7 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public final Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
+    public final Tree<K, V> merge(final BiFunction<V, V, V> f, final PersistentMap<K, V, Tree<K, V>> t) {
       return fromStrictlyIncreasingArray(mergeArrays(f, keyValuePairs(), t.keyValuePairs()));
     }
 
@@ -110,7 +110,7 @@ public class RedBlackTreeModule {
     BlackNode<K, V> asBlack() { return null; }
 
     abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K key, final V value);
-    abstract boolean rem(final Ref<Tree<K, V>> treeRef, final K key) throws ControlExnNoSuchElement;
+    abstract boolean rem(final Ref<Tree<K, V>> treeRef, final RemoveMinRes<K, V> rmRes, final K key) throws ControlExnNoSuchElement;
   }
 
   private static final class EmptyNode<K extends Comparable<K>, V> extends Tree<K, V> {
@@ -133,7 +133,7 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    boolean rem(final Ref<Tree<K, V>> treeRef, final K key) throws Tree.ControlExnNoSuchElement {
+    boolean rem(final Ref<Tree<K, V>> treeRef, final RemoveMinRes<K, V> rmRes, final K key) throws Tree.ControlExnNoSuchElement {
       // This exception is used for control purposes.
       // When removing non-existent elements we simply return the same input tree
       // no new allocations take place.  The alternative implementation that 
@@ -455,7 +455,7 @@ public class RedBlackTreeModule {
         }
         else if ((br = right.asRed()) != null && (bb = br.mLeft.asBlack()) != null) {
           treeRef.r = BlackNode.create(rightBalance(black.mLeft, black.mKey, black.mValue, b2r(bb)),
-                                   br.mKey, br.mValue, br.mRight);
+                                       br.mKey, br.mValue, br.mRight);
           return false;
         }
       }
@@ -463,7 +463,7 @@ public class RedBlackTreeModule {
       throw new AssertionError("Should never get here.");
     }
 
-    // (* [remove_min s = (s',m,b)] extracts the minimum [m] of [s], [s'] being the
+// (* [remove_min s = (s',m,b)] extracts the minimum [m] of [s], [s'] being the
 //      resulting set, and indicates with [b] whether the black height has
 //      decreased *)
 
@@ -495,19 +495,25 @@ public class RedBlackTreeModule {
 //         else
 //           t, m, false
 
-    protected static <K extends Comparable<K>, V> Tuple4<Tree<K, V>, K, V, Boolean> removeMin(final Tree<K, V> tree) {
+    protected static <K extends Comparable<K>, V> boolean removeMin(final Ref<Tree<K, V>> treeRef, final RemoveMinRes<K, V> rmRes, final Tree<K, V> tree) {
       final BlackNode<K, V> black = tree.asBlack();
       if (black != null) {
         final Tree<K, V> l = black.mLeft, r = black.mRight;
 
         if (l.isEmpty()) {
           if (r.isEmpty()) {
-            return Tuple4.create(l, black.mKey, black.mValue, true);
+            rmRes.mTree = l;
+            rmRes.mMinKey = black.mKey;
+            rmRes.mMinValue = black.mValue;
+            return true;
           }
 
           final RedNode<K, V> br = r.asRed();
           if (br != null) {
-            return Tuple4.create(r2b(br), black.mKey, black.mValue, false);
+            rmRes.mTree = r2b(br);
+            rmRes.mMinKey = black.mKey;
+            rmRes.mMinValue = black.mValue;
+            return false;
           }
 
           final BlackNode<K, V> bb = r.asBlack();
@@ -516,15 +522,16 @@ public class RedBlackTreeModule {
           }
         }
 
-        final Tuple4<Tree<K, V>, K, V, Boolean> res = removeMin(l);
-        final Tree<K, V> t = BlackNode.create(res.mx1, black.mKey, black.mValue, r);
+        final boolean cr = removeMin(treeRef, rmRes, l);
+        final Tree<K, V> t = BlackNode.create(rmRes.mTree, black.mKey, black.mValue, r);
 
-        if (res.mx4) {
-          final Ref<Tree<K, V>> treeRef = new Ref<>();
+        if (cr) {
           final boolean c = unbalancedRight(treeRef, t);
-          return Tuple4.create(treeRef.r, res.mx2, res.mx3, c);
+          rmRes.mTree = treeRef.r;
+          return c;
         } else {
-          return Tuple4.create(t, res.mx2, res.mx3, false);
+          rmRes.mTree = t;
+          return false;
         }
       }
 
@@ -533,17 +540,22 @@ public class RedBlackTreeModule {
         final Tree<K, V> l = red.mLeft, r = red.mRight;
 
         if (l.isEmpty()) {
-          return Tuple4.create(red.mRight, red.mKey, red.mValue, false);
+          rmRes.mTree = red.mRight;
+          rmRes.mMinKey = red.mKey;
+          rmRes.mMinValue = red.mValue;
+          
+          return false;
         } else {
-          final Tuple4<Tree<K, V>, K, V, Boolean> res = removeMin(l);
-          final Tree<K, V> t = RedNode.create(res.mx1, red.mKey, red.mValue, r);
+          final boolean cr = removeMin(treeRef, rmRes, l);
+          final Tree<K, V> t = RedNode.create(rmRes.mTree, red.mKey, red.mValue, r);
 
-          if (res.mx4) {
-            final Ref<Tree<K, V>> treeRef = new Ref<>();
+          if (cr) {
             final boolean c = unbalancedRight(treeRef, t);
-            return Tuple4.create(treeRef.r, res.mx2, res.mx3, c);
+            rmRes.mTree = treeRef.r;
+            return c;
           } else {
-            return Tuple4.create(t, res.mx2, res.mx3, false);
+            rmRes.mTree = t;
+            return false;
           }
         }
       }
@@ -659,12 +671,12 @@ public class RedBlackTreeModule {
 //    in fst (remove_aux m)
 
     @Override
-   boolean rem(final Ref<Tree<K, V>> treeRef, final K key) throws Tree.ControlExnNoSuchElement {
+   boolean rem(final Ref<Tree<K, V>> treeRef, final RemoveMinRes<K, V> rmRes, final K key) throws Tree.ControlExnNoSuchElement {
       final int res = key.compareTo(mKey);
       final Tree<K, V> l = mLeft, r = mRight;
 
       if (res < 0) {
-        final boolean c = l.rem(treeRef, key);
+        final boolean c = l.rem(treeRef, rmRes, key);
         final RedNode<K, V> m = RedNode.create(treeRef.r, mKey, mValue, r);
 
         if (c) {
@@ -676,7 +688,7 @@ public class RedBlackTreeModule {
         }
       }
       else if (res > 0) {
-        final boolean c = r.rem(treeRef, key);
+        final boolean c = r.rem(treeRef, rmRes, key);
         final RedNode<K, V> m = RedNode.create(l, mKey, mValue, treeRef.r);
 
         if (c) {
@@ -693,10 +705,10 @@ public class RedBlackTreeModule {
           return false;
         }
         else {
-          final Tuple4<Tree<K, V>, K, V, Boolean> p = removeMin(r);
-          final RedNode<K, V> m = RedNode.create(l, p.mx2, p.mx3, p.mx1);
+          final boolean c = removeMin(treeRef, rmRes, r);
+          final RedNode<K, V> m = RedNode.create(l, rmRes.mMinKey, rmRes.mMinValue, rmRes.mTree);
 
-          if (p.mx4) {
+          if (c) {
             return unbalancedLeft(treeRef, m);
           }
           else {
@@ -793,12 +805,12 @@ public class RedBlackTreeModule {
 //              end
 
     @Override
-    boolean rem(final Ref<Tree<K, V>> treeRef, final K key) throws Tree.ControlExnNoSuchElement {
+    boolean rem(final Ref<Tree<K, V>> treeRef, final RemoveMinRes<K, V> rmRes, final K key) throws Tree.ControlExnNoSuchElement {
       final int res = key.compareTo(mKey);
       final Tree<K, V> l = mLeft, r = mRight;
 
       if (res < 0) {
-        final boolean c = l.rem(treeRef, key);
+        final boolean c = l.rem(treeRef, rmRes, key);
         final BlackNode<K, V> m = BlackNode.create(treeRef.r, mKey, mValue, r);
 
         if (c) {
@@ -810,7 +822,7 @@ public class RedBlackTreeModule {
         }
       }
       else if (res > 0) {
-        final boolean c = r.rem(treeRef, key);
+        final boolean c = r.rem(treeRef, rmRes, key);
         final BlackNode<K, V> m = BlackNode.create(l, mKey, mValue, treeRef.r);
 
         if (c) {
@@ -826,10 +838,10 @@ public class RedBlackTreeModule {
           return blackifyRem(treeRef, l);
         }
         else {
-          final Tuple4<Tree<K, V>, K, V, Boolean> p = removeMin(r);
-          final BlackNode<K, V> m = BlackNode.create(l, p.mx2, p.mx3, p.mx1);
+          final boolean c = removeMin(treeRef, rmRes, r);
+          final BlackNode<K, V> m = BlackNode.create(l, rmRes.mMinKey, rmRes.mMinValue, rmRes.mTree);
 
-          if (p.mx4) {
+          if (c) {
             return unbalancedLeft(treeRef, m);
           }
           else {
@@ -1099,56 +1111,63 @@ public class RedBlackTreeModule {
     return fromStream(v.stream());
   }
 
-  private static final class RedBlackTreeFactory implements PersistentMapFactory {
+  private static final class RemoveMinRes<K extends Comparable<K>, V> {
+    public Tree<K, V> mTree;
+    public K mMinKey;
+    public V mMinValue;
+  }
+
+  public static final class RedBlackTreeFactory<K extends Comparable<K>, V> implements PersistentMapFactory<K, V, Tree<K, V>> {
     @Override
     public String getMapName() {
       return "RedBlackTreeMap";
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> empty() {
+    public Tree<K, V> empty() {
       return RedBlackTreeModule.empty();
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> singleton(final K key, final V value) {
+    public Tree<K, V> singleton(final K key, final V value) {
       return RedBlackTreeModule.singleton(key, value);
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
       return RedBlackTreeModule.fromStrictlyIncreasingStream(stream);
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
       return RedBlackTreeModule.fromStrictlyDecreasingStream(stream);
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
       return RedBlackTreeModule.fromArray(v);
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
       return RedBlackTreeModule.fromStrictlyIncreasingArray(v);
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
       return RedBlackTreeModule.fromStrictlyDecreasingArray(v);
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
       return RedBlackTreeModule.fromStream(stream);
     }
   }
 
-  private static final RedBlackTreeFactory sRedBlackTreeFactory = new RedBlackTreeFactory();
+  private static final RedBlackTreeFactory<? extends Comparable<?>, ?> sRedBlackTreeFactory = new RedBlackTreeFactory<>();
 
-  public static <K extends Comparable<K>, V> PersistentMapFactory makeFactory() {
-    return sRedBlackTreeFactory;
+  @SuppressWarnings("unchecked")
+  public static <K extends Comparable<K>, V> RedBlackTreeFactory<K, V> makeFactory() {
+    return (RedBlackTreeFactory<K, V>) sRedBlackTreeFactory;
   }
 }

@@ -210,7 +210,7 @@ public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentM
    * @param t
    * @return
    */
-  public M merge(final BiFunction<V, V, V> f, final M t);
+  public M merge(final BiFunction<V, V, V> f, final PersistentMap<K, V, M> t);
 
   /**
    *

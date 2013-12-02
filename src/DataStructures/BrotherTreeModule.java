@@ -60,11 +60,12 @@ public final class BrotherTreeModule {
 
     @Override
     public final Tree<K, V> remove(final K a) {
-      return root_del(del(a));
+      final Pair<K, V> minPair = Pair.create(null, null);
+      return root_del(del(minPair, a));
     }
 
     @Override
-    public final Tree<K, V> merge(final BiFunction<V, V, V> f, final Tree<K, V> t) {
+    public final Tree<K, V> merge(final BiFunction<V, V, V> f, final PersistentMap<K, V, Tree<K, V>> t) {
       return fromStrictlyIncreasingArray(mergeArrays(f, keyValuePairs(), t.keyValuePairs()));
     }
 
@@ -92,8 +93,8 @@ public final class BrotherTreeModule {
     }
 
     protected abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K a, final V v);
-    protected abstract Tree<K, V> del(final K a);
-    protected abstract Optional<Triple<K, V, Tree<K, V>>> splitMin();
+    protected abstract Tree<K, V> del(final Pair<K, V> minPair, final K a);
+    protected abstract Tree<K, V> splitMin(final Pair<K, V> minPair);
 
     boolean isN0() { return false; }
     boolean isN1() { return false; }
@@ -245,13 +246,13 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    protected Tree<K, V> del(final K a) {
+    protected Tree<K, V> del(final Pair<K, V> minPair, final K a) {
       return this;
     }
 
     @Override
-    protected Optional<Triple<K, V, Tree<K, V>>> splitMin() {
-      return Optional.empty();
+    protected Tree<K, V> splitMin(final Pair<K, V> minPair) {
+      return null;
     }
 
     @Override
@@ -290,7 +291,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public boolean containsValue(V value) {
+    public boolean containsValue(final V value) {
       return false;
     }
 
@@ -338,14 +339,16 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    protected Tree<K, V> del(final K a) {
-      final Tree<K, V> t = mt.del(a);
+    protected Tree<K, V> del(final Pair<K, V> minPair, final K a) {
+      final Tree<K, V> t = mt.del(minPair, a);
       return t != mt ? create(t) : this;
     }
 
     @Override
-    protected Optional<Triple<K, V, Tree<K, V>>> splitMin() {
-      return mt.splitMin().map(p -> Triple.create(p.mx1, p.mx2, create(p.mx3)));
+    protected Tree<K, V> splitMin(final Pair<K, V> minPair) {
+      final Tree<K, V> mtTree = mt.splitMin(minPair);
+
+      return mtTree == null ? null : create(mtTree);
     }
 
     @Override
@@ -391,7 +394,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public boolean containsValue(V value) {
+    public boolean containsValue(final V value) {
       return mt.containsValue(value);
     }
 
@@ -458,26 +461,34 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    protected Tree<K, V> del(final K a) {
+    protected Tree<K, V> del(final Pair<K, V> minPair, final K a) {
       final int res = a.compareTo(this.ma1);
       if (res < 0) {
-        return n2_del(mt1.del(a), ma1, mv1, mt2);
+        return n2_del(mt1.del(minPair, a), ma1, mv1, mt2);
       }
       else if (res > 0) {
-        return n2_del(mt1, ma1, mv1, mt2.del(a));
+        return n2_del(mt1, ma1, mv1, mt2.del(minPair, a));
       }
       else {
-        return mt2.splitMin()
-                  .map(p -> n2_del(mt1, p.mx1, p.mx2, p.mx3))
-                  .orElseGet(() -> N1.create(mt1));
+        final Tree<K, V> minTree = mt2.splitMin(minPair);
+
+        return minTree == null
+               ? N1.create(mt1)
+               : n2_del(mt1, minPair.mx1, minPair.mx2, minTree);
       }
     }
 
     @Override
-    protected Optional<Triple<K, V, Tree<K, V>>> splitMin() {
-      return Optional.of(mt1.splitMin()
-                            .map(p -> Triple.<K, V, Tree<K, V>> create(p.mx1, p.mx2, n2_del(p.mx3, ma1, mv1, mt2)))
-                            .orElseGet(() -> Triple.create(ma1, mv1, N1.create(mt2))));
+    protected Tree<K, V> splitMin(final Pair<K, V> minPair) {
+      final Tree<K, V> minTree = mt1.splitMin(minPair);
+      if (minTree == null) {
+        minPair.mx1 = ma1;
+        minPair.mx2 = mv1;
+        return N1.create(mt2);
+      }
+      else {
+        return n2_del(minTree, ma1, mv1, mt2);
+      }
     }
 
     @Override
@@ -535,8 +546,8 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public boolean containsValue(V value) {
-      return ma1.equals(value)
+    public boolean containsValue(final V value) {
+      return mv1.equals(value)
               || mt1.containsValue(value)
               || mt2.containsValue(value);
     }
@@ -824,12 +835,12 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    protected Tree<K, V> del(final K a) {
+    protected Tree<K, V> del(final Pair<K, V> minPair, final K a) {
       throw sTreeStructureError;
     }
 
     @Override
-    protected Optional<Triple<K, V, Tree<K, V>>> splitMin() {
+    protected Tree<K, V> splitMin(final Pair<K, V> minPair) {
       throw sTreeStructureError;
     }
 
@@ -874,7 +885,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public boolean containsValue(V value) {
+    public boolean containsValue(final V value) {
       throw sTreeStructureError;
     }
 
@@ -928,12 +939,12 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    protected Tree<K, V> del(K a) {
+    protected Tree<K, V> del(final Pair<K, V> minPair, K a) {
       throw sTreeStructureError;
     }
 
     @Override
-    protected Optional<Triple<K, V, Tree<K, V>>> splitMin() {
+    protected Tree<K, V> splitMin(final Pair<K, V> minPair) {
       throw sTreeStructureError;
     }
 
@@ -978,7 +989,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public boolean containsValue(V value) {
+    public boolean containsValue(final V value) {
       throw sTreeStructureError;
     }
 
@@ -1205,56 +1216,57 @@ public final class BrotherTreeModule {
     return Pair.create(true, "Success!");
   }
 
-  private static final class BrotherTreeFactory implements PersistentMapFactory {
+  public static final class BrotherTreeFactory<K extends Comparable<K>, V> implements PersistentMapFactory<K, V, Tree<K, V>> {
     @Override
     public String getMapName() {
       return "BrotherTreeMap";
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> empty() {
+    public Tree<K, V> empty() {
       return BrotherTreeModule.empty();
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> singleton(final K key, final V value) {
+    public Tree<K, V> singleton(final K key, final V value) {
       return BrotherTreeModule.singleton(key, value);
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
       return BrotherTreeModule.fromStrictlyIncreasingStream(stream);
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
       return BrotherTreeModule.fromStrictlyDecreasingStream(stream);
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
       return BrotherTreeModule.fromArray(v);
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
       return BrotherTreeModule.fromStrictlyIncreasingArray(v);
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
       return BrotherTreeModule.fromStrictlyDecreasingArray(v);
     }
 
     @Override
-    public <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
       return BrotherTreeModule.fromStream(stream);
     }
   }
 
-  private static final BrotherTreeFactory sBrotherTreeFactory = new BrotherTreeFactory();
+  private static final BrotherTreeFactory<? extends Comparable<?>, ?> sBrotherTreeFactory = new BrotherTreeFactory<>();
 
-  public static PersistentMapFactory makeFactory() {
-    return sBrotherTreeFactory;
+  @SuppressWarnings("unchecked")
+  public static <K extends Comparable<K>, V> BrotherTreeFactory<K, V> makeFactory() {
+    return (BrotherTreeFactory<K, V>) sBrotherTreeFactory;
   }
 }
