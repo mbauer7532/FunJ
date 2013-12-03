@@ -819,7 +819,7 @@ public class PersistentMapTest {
   }
 
   private static void testTreeHeightOfMapImpl(final Class<?> c) {
-    System.out.printf("TreeHeightOfMapImpl(%s)\n", c.getName());
+    System.out.printf("TreeHeightOfMap(%s)\n", c.getName());
 
     final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
     // Small trees
@@ -861,5 +861,49 @@ public class PersistentMapTest {
   @Test
   public void testTreeHeightOfMap() {
     TestUtils.performTest(PersistentMapTest::testTreeHeightOfMapImpl);
+  }
+
+  private static void testFoldliFoldriImpl(final Class<?> c) {
+    System.out.printf("FoldliFoldri(%s)\n", c.getName());
+
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
+    
+    {
+      final int N = 40;
+      final PersistentMap<Integer, Integer, ?> m = TestUtils.makeMapfromIncreasing(mapFactory, IntStream.range(0, N).toArray(), n -> Pair.create(n, 2 * n));
+
+      final Integer resFoldl  = m.foldl((n, acc) -> n + acc, 0);
+      final Integer resFoldli = m.foldli((idx, n, acc) -> idx + n + acc, 0);
+
+      final Integer resFoldr  = m.foldr((n, acc) -> n + acc, 0);
+      final Integer resFoldri = m.foldri((idx, n, acc) -> idx + n + acc, 0);
+
+      assertEquals(resFoldl,  new Integer((0 + 2 * N - 2) * N / 2));  // Sum of arithmetic progresssion (first + last) * n / 2
+      assertEquals(resFoldli, new Integer((0 + 3 * N - 3) * N / 2));
+
+      assertEquals(resFoldr,  new Integer((0 + 2 * N - 2) * N / 2));  // Sum of arithmetic progresssion (first + last) * n / 2
+      assertEquals(resFoldri, new Integer((0 + 3 * N - 3) * N / 2));
+    }
+    {
+      final int N = 40;
+      final PersistentMap<Integer, Integer, ?> m = TestUtils.makeMapfromIncreasing(mapFactory, IntStream.rangeClosed(1, N).toArray(), n -> Pair.create(n, 2 * n));
+
+      final Optional<Integer> resFoldl  = m.foldl((n, acc) -> acc.isPresent() ? acc : Optional.of(n), Optional.empty());
+      final Optional<Integer> resFoldli = m.foldli((idx, n, acc) -> acc.isPresent() ? acc : Optional.of(idx + n), Optional.empty());
+
+      final Optional<Integer> resFoldr  = m.foldr((n, acc) -> acc.isPresent() ? acc : Optional.of(n), Optional.empty());
+      final Optional<Integer> resFoldri = m.foldri((idx, n, acc) -> acc.isPresent() ? acc : Optional.of(idx + n), Optional.empty());
+
+      assertEquals(resFoldl,  Optional.of(2 * 1));
+      assertEquals(resFoldli, Optional.of(1 + 2 * 1));
+
+      assertEquals(resFoldr,  Optional.of(2 * N));
+      assertEquals(resFoldri, Optional.of(N + 2 * N));
+    }
+}
+
+  @Test
+  public void testFoldliFoldri() {
+    TestUtils.performTest(PersistentMapTest::testFoldliFoldriImpl);
   }
 }
