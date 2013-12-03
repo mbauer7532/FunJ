@@ -20,6 +20,7 @@ import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.IntFunction;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -72,6 +73,12 @@ public class PersistentMapTest {
     return factory;
   }
 
+  private static PersistentMap<Integer, Integer, ?> makeMap(final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory,
+                         final int[] perm,
+                         final IntFunction<Pair<Integer, Integer>> f) {
+    return mapFactory.fromStream(Arrays.stream(perm).mapToObj(f));
+  }
+ 
   private static final Class<?>[] sMapClasses = {
     RedBlackTreeModule.class,
     AvlTreeModule.class,
@@ -112,8 +119,9 @@ public class PersistentMapTest {
       final PersistentMap<String, Integer, ?> t = stringMapFactory.singleton("hi", 2).insert("there", 23);
       checkMapProperties(t);
     }
+
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> intMapFactory = makeFactory(c);
     {
-      final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> intMapFactory = makeFactory(c);
       PersistentMap<Integer, Integer, ?> t = intMapFactory.empty();
 
       final int N = 10;
@@ -749,14 +757,16 @@ public class PersistentMapTest {
     final int size = 180;
 
     IntStream.range(0, N).forEach(x -> {
-      final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
+      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
 
       final ArrayList<Pair<Integer, Integer>> v =
-              Arrays.stream(perm1)
+              Arrays.stream(perm)
                     .mapToObj(i -> Pair.create(i, i))
                     .collect(Collectors.toCollection(ArrayList::new));
+
       final PersistentMap<Integer, Integer, ?> pm = mapFactory.fromArray(v);
       final TreeMap<Integer, Integer> tm = new TreeMap<>();
+
       v.stream().forEach(p -> tm.put(p.mx1, p.mx2));
 
       Numeric.randomSet(low - 200, high + 200, 500, rng).forEach(n -> {
@@ -790,11 +800,9 @@ public class PersistentMapTest {
     final int size = 180;
     
     IntStream.range(0, N).forEach(x -> {
-      final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
+      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
 
-      final PersistentMap<Integer, Integer, ?> t = mapFactory.fromStream(
-              Arrays.stream(perm1)
-                    .mapToObj(i -> Pair.create(i, i)));
+      final PersistentMap<Integer, Integer, ?> t = makeMap(mapFactory, perm, i -> Pair.create(i, i));
 
       final PersistentMap<Integer, Integer, ?> tEven = t.mapPartial(n -> Optional.ofNullable((n & 1) == 0 ? n : null));
       final PersistentMap<Integer, Integer, ?> tOdd  = t.mapPartial(n -> Optional.ofNullable((n & 1) == 1 ? n : null));
@@ -806,7 +814,7 @@ public class PersistentMapTest {
       assertEquals(size, tSize);
       assertEquals(tSize, tEvenSize + tOddSize);
 
-      Arrays.stream(perm1).forEach(n -> {
+      Arrays.stream(perm).forEach(n -> {
         assertTrue(t.containsKey(n));
         if ((n & 1) == 0) {
           assertTrue(tEven.containsKey(n) && ! tOdd.containsKey(n));
@@ -838,9 +846,7 @@ public class PersistentMapTest {
     IntStream.range(0, N).forEach(x -> {
       final int[] perm = Numeric.randomPermuation(low, high, size, rng);
 
-      final PersistentMap<Integer, Integer, ?> t = mapFactory.fromStream(
-              Arrays.stream(perm)
-                    .mapToObj(i -> Pair.create(i, i)));
+      final PersistentMap<Integer, Integer, ?> t = makeMap(mapFactory, perm, i -> Pair.create(i, i));
 
       final int minExpected = Arrays.stream(perm).min().getAsInt();
       final int maxExpected = Arrays.stream(perm).max().getAsInt();
@@ -873,9 +879,7 @@ public class PersistentMapTest {
     IntStream.range(0, N).forEach(x -> {
       final int[] perm = Numeric.randomPermuation(low, high, size, rng);
 
-      final PersistentMap<Integer, Integer, ?> t = mapFactory.fromStream(
-              Arrays.stream(perm)
-                    .mapToObj(i -> Pair.create(i, 2 * i)));
+      final PersistentMap<Integer, Integer, ?> t = makeMap(mapFactory, perm, i -> Pair.create(i, 2 * i));
 
       final int minExpected = Arrays.stream(perm).min().getAsInt();
       final int maxExpected = Arrays.stream(perm).max().getAsInt();
