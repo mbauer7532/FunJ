@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -235,10 +234,11 @@ public class PersistentMapTest {
       assertTrue(t0.isEmpty());
       assertTrue(t1.isEmpty());
     }
-
+/*
     System.out.println("Worst case height: " + worstCaseHeight);
     System.out.println("Actual height (increasing): " + h0);
     System.out.println("Actual height (decreasing): " + h1);
+*/
   }
 
   @Test
@@ -605,7 +605,7 @@ public class PersistentMapTest {
     final PersistentMap<Integer, Integer, ?> t = mapFactory.fromStream(
             IntStream.range(0, N)
                      .mapToObj(i -> Pair.create(2 * i, 2 * i)));
-  
+
     IntStream.range(1, 2 * N - 2).forEach(n -> {
       assertEquals(n + 1 + (1 - (n & 1)), t.higherKey(n).get().intValue());
     });
@@ -615,9 +615,11 @@ public class PersistentMapTest {
 
     assertEquals(2 * N - 2, t.higherKey(2 * N - 4).get().intValue());
     assertEquals(2 * N - 2, t.higherKey(2 * N - 3).get().intValue());
-    assertEquals(Optional.empty(), t.higherKey(2 * N - 2));
-    assertEquals(Optional.empty(), t.higherKey(2 * N - 1));
-    assertEquals(Optional.empty(), t.higherKey(2 * N - 0));
+
+    final Optional<Integer> e = Optional.empty();
+    assertEquals(e, t.higherKey(2 * N - 2));
+    assertEquals(e, t.higherKey(2 * N - 1));
+    assertEquals(e, t.higherKey(2 * N - 0));
   }
 
   @Test
