@@ -555,11 +555,8 @@ public class PersistentMapTest {
     final int low = 1, high = 40;
     final int gap = high - low;
 
-    final PersistentMap<Integer, Integer, ?> t = mapFactory.fromStrictlyIncreasingStream(
-            IntStream.range(low, high).mapToObj(i -> Pair.create(i, 2 * i)));
+    final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMapfromIncreasing(mapFactory, IntStream.range(low, high).toArray(), i -> Pair.create(i, 2 * i));
 
-    System.out.println(t.toString());
-    boolean z = t.containsValue(20);
     IntStream.range(low, high).forEach(n -> { assertTrue(t.containsValue(2 * n)); });
     IntStream.range(low, high).forEach(n -> { assertFalse(t.containsValue(-2 * n)); });
     IntStream.range(high, high + gap).forEach(n -> { assertFalse(t.containsValue(-2 * n)); });

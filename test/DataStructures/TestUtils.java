@@ -56,10 +56,18 @@ public class TestUtils {
     return factory;
   }
 
-  static PersistentMap<Integer, Integer, ?> makeMap(final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory,
-                                                    final int[] perm,
-                                                    final IntFunction<TuplesModule.Pair<Integer, Integer>> f) {
+  static PersistentMap<Integer, Integer, ?> makeMap(
+          final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory,
+          final int[] perm,
+          final IntFunction<TuplesModule.Pair<Integer, Integer>> f) {
     return mapFactory.fromStream(Arrays.stream(perm).mapToObj(f));
+  }
+
+  static PersistentMap<Integer, Integer, ?> makeMapfromIncreasing(
+          final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory,
+          final int[] perm,
+          final IntFunction<TuplesModule.Pair<Integer, Integer>> f) {
+    return mapFactory.fromStrictlyIncreasingStream(Arrays.stream(perm).mapToObj(f));
   }
 
   static <K extends Comparable<K>, V> void checkMapProperties(final PersistentMap<K, V, ?> t) {
