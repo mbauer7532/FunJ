@@ -46,66 +46,7 @@ public class PersistentMapTest {
   @After
   public void tearDown() {}
 
-  private static void verifyMapPropertiesForSimpleCasesImpl(final Class<?> c) {
-    System.out.printf("verifyBasicMapProperties(%s)\n", c.getName());
-    
-    final PersistentMapFactory<String, Integer, ? extends PersistentMap<String, Integer, ?>> stringMapFactory = TestUtils.makeFactory(c);
-    {
-      final PersistentMap<String, Integer, ?> t = stringMapFactory.empty();
-      TestUtils.checkMapProperties(t);
-    }
-    {
-      final PersistentMap<String, Integer, ?> t = stringMapFactory.singleton("hi", 2);
-      TestUtils.checkMapProperties(t);
-    }
-    {
-      final PersistentMap<String, Integer, ?> t = stringMapFactory.singleton("hi", 2).insert((x, y) -> x, "there", 23);
-      TestUtils.checkMapProperties(t);
-    }
-    {
-      final PersistentMap<String, Integer, ?> t = stringMapFactory.singleton("hi", 2).insert("there", 23);
-      TestUtils.checkMapProperties(t);
-    }
-
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> intMapFactory = TestUtils.makeFactory(c);
-    {
-      PersistentMap<Integer, Integer, ?> t = intMapFactory.empty();
-
-      final int N = 10;
-      ArrayList<PersistentMap<Integer, Integer, ?>> a = new ArrayList<>();
-      for (int i = 0; i != N; ++i) {
-        a.add(t);
-        t = t.insert(i, i);
-        assertEquals(i + 1, t.size());
-        TestUtils.checkMapProperties(t);
-      }
-      a.add(t);
- 
-      for (int i = 0; i != a.size(); ++i) {
-        final PersistentMap<Integer, Integer, ?> m = a.get(i);
-
-        assertEquals(i, m.size());
-        TestUtils.checkMapProperties(t);
-        IntStream.range(0, i).forEach(n -> assertTrue(m.containsKey(n)));
-      }
-
-      for (int i = 0; i != N; ++i) {
-        t = t.remove(i);
-        
-        assertEquals(N - i - 1, t.size());
-        TestUtils.checkMapProperties(t);
-        // After each removal also check that none of the stored trees has it's size changed.
-        IntStream.range(0, a.size()).forEach(n -> assertEquals(n, a.get(n).size()));
-      }
-    }
-  }
-
-  @Test
-  public void verifyMapPropertiesForSimpleCases() {
-    TestUtils.performTest(PersistentMapTest::verifyMapPropertiesForSimpleCasesImpl);
-  }
-
-  private static void verifyMapPropertiesRandomSampleImpl(final Class<?> c) {
+  private static void testMapPropertiesRandomSampleImpl(final Class<?> c) {
     System.out.printf("verifyMapPropertiesRandomSample(%s)\n", c.getName());
 
     final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
@@ -158,17 +99,17 @@ public class PersistentMapTest {
     assertTrue(averageHeight < worstCaseHeight);
     assertTrue(maxHeight < worstCaseHeight);
     assertTrue(minHeight < worstCaseHeight);
-
+/*
     System.out.println("Worst case height: " + worstCaseHeight);
     System.out.println("Average height: " + averageHeight);
     System.out.println("Max height: " + maxHeight);
     System.out.println("Min height: " + minHeight);
-
+*/
   }
 
   @Test
-  public void verifyMapPropertiesRandomSample() {
-    TestUtils.performTest(PersistentMapTest::verifyMapPropertiesRandomSampleImpl);
+  public void testMapPropertiesRandomSample() {
+    TestUtils.performTest(PersistentMapTest::testMapPropertiesRandomSampleImpl);
   }
 
   private static void testGetOrElseImpl(final Class<?> c) {
@@ -845,5 +786,83 @@ public class PersistentMapTest {
   @Test
   public void testMinElementPairMaxElementPair() {
     TestUtils.performTest(PersistentMapTest::testMinElementPairMaxElementPairImpl);
+  }
+
+  private static void testRemoveImpl(final Class<?> c) {
+    System.out.printf("Remove(%s)\n", c.getName());
+
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
+
+    final PersistentMap<Integer, Integer, ?> t1 = mapFactory.singleton(10, 10);
+    assertFalse(t1.isEmpty());
+    TestUtils.checkMapProperties(t1);
+
+    final PersistentMap<Integer, Integer, ?> t2 = t1.remove(10);
+    assertFalse(t1.isEmpty());
+    assertTrue(t2.isEmpty());
+    TestUtils.checkMapProperties(t2);
+
+    final PersistentMap<Integer, Integer,?> t3 = t1.remove(11);
+    assertFalse(t1.isEmpty());
+    assertTrue(t2.isEmpty());
+    assertFalse(t3.isEmpty());
+    TestUtils.checkMapProperties(t3);
+
+    assertTrue(t1.containsKey(10));
+    assertFalse(t2.containsKey(10));
+    assertTrue(t3.containsKey(10));
+
+    assertTrue(t1 == t3);
+    assertTrue(t1 != t2);
+  }
+
+  @Test
+  public void testRemove() {
+    TestUtils.performTest(PersistentMapTest::testRemoveImpl);
+  }
+
+  private static void testTreeHeightOfMapImpl(final Class<?> c) {
+    System.out.printf("TreeHeightOfMapImpl(%s)\n", c.getName());
+
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
+    // Small trees
+    {
+      final PersistentMap<Integer, Integer, ?> t0 = mapFactory.empty();
+      final PersistentMap<Integer, Integer, ?> t1 = mapFactory.singleton(1, 1);
+      final PersistentMap<Integer, Integer, ?> t2 = t1.insert(2, 2);
+
+      assertEquals(0, t0.size());
+      assertEquals(1, t1.size());
+      assertEquals(2, t2.size());
+
+      assertEquals(0, t0.height());
+      assertEquals(1, t1.height());
+      assertEquals(2, t2.height());
+    }
+    // Let's try some large trees
+    {
+      final long seed = 125332;
+      final Random rng = new Random(seed);
+
+      final int numIters = 20;
+      final int low = -3000, high = 2000;
+      final int size = 4000;
+
+      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
+      IntStream.range(0, numIters).forEach(x -> {
+        final PersistentMap<Integer, Integer, ?> t =
+                mapFactory.fromStream(
+                        Arrays.stream(perm).mapToObj(i -> Pair.create(i, i)));
+        // Checking tree validity also checks its height.
+        TestUtils.checkMapProperties(t);
+
+        assertTrue(Arrays.stream(perm).allMatch(t::containsKey));
+      });
+    }
+  }
+
+  @Test
+  public void testTreeHeightOfMap() {
+    TestUtils.performTest(PersistentMapTest::testTreeHeightOfMapImpl);
   }
 }

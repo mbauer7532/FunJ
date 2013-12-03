@@ -63,6 +63,65 @@ public class PersistentMapFactoryTest {
 
   private static final int sMapSize = 600;
 
+   private static void testSimpleConstructorsImpl(final Class<?> c) {
+    System.out.printf("verifyBasicMapProperties(%s)\n", c.getName());
+    
+    final PersistentMapFactory<String, Integer, ? extends PersistentMap<String, Integer, ?>> stringMapFactory = TestUtils.makeFactory(c);
+    {
+      final PersistentMap<String, Integer, ?> t = stringMapFactory.empty();
+      TestUtils.checkMapProperties(t);
+    }
+    {
+      final PersistentMap<String, Integer, ?> t = stringMapFactory.singleton("hi", 2);
+      TestUtils.checkMapProperties(t);
+    }
+    {
+      final PersistentMap<String, Integer, ?> t = stringMapFactory.singleton("hi", 2).insert((x, y) -> x, "there", 23);
+      TestUtils.checkMapProperties(t);
+    }
+    {
+      final PersistentMap<String, Integer, ?> t = stringMapFactory.singleton("hi", 2).insert("there", 23);
+      TestUtils.checkMapProperties(t);
+    }
+
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> intMapFactory = TestUtils.makeFactory(c);
+    {
+      PersistentMap<Integer, Integer, ?> t = intMapFactory.empty();
+
+      final int N = 10;
+      ArrayList<PersistentMap<Integer, Integer, ?>> a = new ArrayList<>();
+      for (int i = 0; i != N; ++i) {
+        a.add(t);
+        t = t.insert(i, i);
+        assertEquals(i + 1, t.size());
+        TestUtils.checkMapProperties(t);
+      }
+      a.add(t);
+ 
+      for (int i = 0; i != a.size(); ++i) {
+        final PersistentMap<Integer, Integer, ?> m = a.get(i);
+
+        assertEquals(i, m.size());
+        TestUtils.checkMapProperties(t);
+        IntStream.range(0, i).forEach(n -> assertTrue(m.containsKey(n)));
+      }
+
+      for (int i = 0; i != N; ++i) {
+        t = t.remove(i);
+        
+        assertEquals(N - i - 1, t.size());
+        TestUtils.checkMapProperties(t);
+        // After each removal also check that none of the stored trees has it's size changed.
+        IntStream.range(0, a.size()).forEach(n -> assertEquals(n, a.get(n).size()));
+      }
+    }
+  }
+
+  @Test
+  public void verifyMapPropertiesForSimpleCases() {
+    TestUtils.performTest(PersistentMapFactoryTest::testSimpleConstructorsImpl);
+  }
+
   /**
    * Test of fromArray method, of class PersistentMapFactory.
    */

@@ -7,7 +7,6 @@
 package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
-import DataStructures.TuplesModule.Triple;
 import Utils.ArrayUtils;
 import Utils.Functionals.TriFunction;
 import java.awt.Color;
@@ -58,10 +57,19 @@ public final class BrotherTreeModule {
       return root_ins(ins(f, a, v));
     }
 
+    private static final class ControlExnNoSuchElement extends Exception {};
+
+    protected static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
+
     @Override
     public final Tree<K, V> remove(final K a) {
-      final Pair<K, V> minPair = Pair.create(null, null);
-      return root_del(del(minPair, a));
+      try {
+        final Pair<K, V> minPair = Pair.create(null, null);
+        return root_del(del(minPair, a));
+      }
+      catch (ControlExnNoSuchElement ex) {
+        return this;
+      }
     }
 
     @Override
@@ -93,7 +101,7 @@ public final class BrotherTreeModule {
     }
 
     protected abstract Tree<K, V> ins(final BiFunction<V, V, V> f, final K a, final V v);
-    protected abstract Tree<K, V> del(final Pair<K, V> minPair, final K a);
+    protected abstract Tree<K, V> del(final Pair<K, V> minPair, final K a) throws ControlExnNoSuchElement;
     protected abstract Tree<K, V> splitMin(final Pair<K, V> minPair);
 
     boolean isN0() { return false; }
@@ -246,8 +254,11 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    protected Tree<K, V> del(final Pair<K, V> minPair, final K a) {
-      return this;
+    protected Tree<K, V> del(final Pair<K, V> minPair, final K a) throws Tree.ControlExnNoSuchElement {
+      // This exception is used for control purposes.
+      // When removing non-existent elements we simply return the same input tree
+      // no new allocations take place.
+      throw Tree.sNoSuchElement;
     }
 
     @Override
@@ -339,9 +350,9 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    protected Tree<K, V> del(final Pair<K, V> minPair, final K a) {
+    protected Tree<K, V> del(final Pair<K, V> minPair, final K a)  throws Tree.ControlExnNoSuchElement {
       final Tree<K, V> t = mt.del(minPair, a);
-      return t != mt ? create(t) : this;
+      return create(t);
     }
 
     @Override
@@ -461,7 +472,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    protected Tree<K, V> del(final Pair<K, V> minPair, final K a) {
+    protected Tree<K, V> del(final Pair<K, V> minPair, final K a) throws Tree.ControlExnNoSuchElement {
       final int res = a.compareTo(this.ma1);
       if (res < 0) {
         return n2_del(mt1.del(minPair, a), ma1, mv1, mt2);
@@ -835,7 +846,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    protected Tree<K, V> del(final Pair<K, V> minPair, final K a) {
+    protected Tree<K, V> del(final Pair<K, V> minPair, final K a) throws Tree.ControlExnNoSuchElement {
       throw sTreeStructureError;
     }
 
@@ -939,7 +950,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    protected Tree<K, V> del(final Pair<K, V> minPair, K a) {
+    protected Tree<K, V> del(final Pair<K, V> minPair, K a) throws Tree.ControlExnNoSuchElement {
       throw sTreeStructureError;
     }
 
