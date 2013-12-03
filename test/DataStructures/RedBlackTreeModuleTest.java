@@ -11,11 +11,7 @@ import DataStructures.TuplesModule.Pair;
 import Utils.Numeric;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
-import java.util.TreeMap;
-import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.After;
@@ -80,48 +76,13 @@ public class RedBlackTreeModuleTest {
     assertFalse(t1.isEmpty());
     assertTrue(t2.isEmpty());
     assertFalse(t3.isEmpty());
-    
+
     assertTrue(t1.containsKey(10));
     assertFalse(t2.containsKey(10));
     assertTrue(t3.containsKey(10));
 
     assertTrue(t1 == t3);
     assertTrue(t1 != t2);
-  }
-
-  @Test
-  public void testFromStrictlyIncreasingArray() {
-    System.out.println("fromStrictlyIncreasingArray");
-
-    final int N = 42;
-    IntStream.rangeClosed(0, N).forEach(y -> {
-      final ArrayList<Pair<Integer, Integer>> v =
-              IntStream.rangeClosed(1, y)
-                       .mapToObj(x -> Pair.create(x, x))
-                       .collect(Collectors.toCollection(ArrayList::new));
-
-      final Tree<Integer, Integer> resTree = RedBlackTreeModule.fromStrictlyIncreasingArray(v);
-
-      checkRedBlackTreeProperties(resTree);
-    });
-  }
-
-  @Test
-  public void testFromStrictlyDecreasingArray() {
-    System.out.println("fromStrictlyDecreasingArray");
-
-    final int N = 42;
-    IntStream.rangeClosed(0, N).forEach(y -> {
-      final ArrayList<Pair<Integer, Integer>> v =
-              IntStream.rangeClosed(1, y)
-                       .map(x -> y + 1 - x)
-                       .mapToObj(x -> Pair.create(x, x))
-                       .collect(Collectors.toCollection(ArrayList::new));
-
-      final Tree<Integer, Integer> resTree = RedBlackTreeModule.fromStrictlyDecreasingArray(v);
-
-      checkRedBlackTreeProperties(resTree);
-    });
   }
 
   @Test
@@ -172,5 +133,4 @@ public class RedBlackTreeModuleTest {
       });
     }
   }
-
 }

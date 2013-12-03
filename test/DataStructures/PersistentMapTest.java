@@ -9,8 +9,6 @@ package DataStructures;
 import DataStructures.TuplesModule.Pair;
 import Utils.Numeric;
 import Utils.Ref;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -19,12 +17,9 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.IntFunction;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -51,76 +46,28 @@ public class PersistentMapTest {
   @After
   public void tearDown() {}
 
-  @SuppressWarnings("unchecked")
-  private static <K extends Comparable<K>, V, M extends PersistentMap<K, V, M>>
-  PersistentMapFactory<K, V, M> makeFactory(final Class<?> c) {
-    final Method m;
-    try {
-      m = c.getMethod("makeFactory");
-    } catch (NoSuchMethodException | SecurityException ex) {
-      Logger.getLogger(PersistentMapTest.class.getName()).log(Level.SEVERE, null, ex);
-      throw new AssertionError("Should never happen: " + ex);
-    }
-
-    final PersistentMapFactory<K, V, M> factory;
-    try {
-      factory = (PersistentMapFactory<K, V, M>) m.invoke(null);
-    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-      Logger.getLogger(PersistentMapTest.class.getName()).log(Level.SEVERE, null, ex);
-      throw new AssertionError("Should never happen: " + ex);
-    }
-
-    return factory;
-  }
-
-  private static PersistentMap<Integer, Integer, ?> makeMap(final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory,
-                         final int[] perm,
-                         final IntFunction<Pair<Integer, Integer>> f) {
-    return mapFactory.fromStream(Arrays.stream(perm).mapToObj(f));
-  }
- 
-  private static final Class<?>[] sMapClasses = {
-    RedBlackTreeModule.class,
-    AvlTreeModule.class,
-    BrotherTreeModule.class
-  };
-
-  private static <K extends Comparable<K>, V> void performTest(final Consumer<Class<?>> testFn) {
-    Arrays.stream(sMapClasses).forEach(testFn);
-  }
-
-  private static <K extends Comparable<K>, V> void checkMapProperties(final PersistentMap<K, V, ?> t) {
-    final Pair<Boolean, String> res = t.verifyMapProperties();
-
-    if (! res.mx1) {
-//      GraphModule.showGraph(t);
-//      GraphModule.waitTime(1000);
-      assertTrue(res.mx2, false);
-    }
-  }
-
   private static void verifyMapPropertiesForSimpleCasesImpl(final Class<?> c) {
     System.out.printf("verifyBasicMapProperties(%s)\n", c.getName());
     
-    final PersistentMapFactory<String, Integer, ? extends PersistentMap<String, Integer, ?>> stringMapFactory = makeFactory(c);
+    final PersistentMapFactory<String, Integer, ? extends PersistentMap<String, Integer, ?>> stringMapFactory = TestUtils.makeFactory(c);
     {
       final PersistentMap<String, Integer, ?> t = stringMapFactory.empty();
-      checkMapProperties(t);
+      TestUtils.checkMapProperties(t);
     }
     {
       final PersistentMap<String, Integer, ?> t = stringMapFactory.singleton("hi", 2);
-      checkMapProperties(t);
+      TestUtils.checkMapProperties(t);
     }
     {
       final PersistentMap<String, Integer, ?> t = stringMapFactory.singleton("hi", 2).insert((x, y) -> x, "there", 23);
-      checkMapProperties(t);
+      TestUtils.checkMapProperties(t);
     }
     {
       final PersistentMap<String, Integer, ?> t = stringMapFactory.singleton("hi", 2).insert("there", 23);
-      checkMapProperties(t);
+      TestUtils.checkMapProperties(t);
     }
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> intMapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> intMapFactory = TestUtils.makeFactory(c);
     {
       PersistentMap<Integer, Integer, ?> t = intMapFactory.empty();
 
@@ -130,7 +77,7 @@ public class PersistentMapTest {
         a.add(t);
         t = t.insert(i, i);
         assertEquals(i + 1, t.size());
-        checkMapProperties(t);
+        TestUtils.checkMapProperties(t);
       }
       a.add(t);
  
@@ -138,7 +85,7 @@ public class PersistentMapTest {
         final PersistentMap<Integer, Integer, ?> m = a.get(i);
 
         assertEquals(i, m.size());
-        checkMapProperties(t);
+        TestUtils.checkMapProperties(t);
         IntStream.range(0, i).forEach(n -> assertTrue(m.containsKey(n)));
       }
 
@@ -146,7 +93,7 @@ public class PersistentMapTest {
         t = t.remove(i);
         
         assertEquals(N - i - 1, t.size());
-        checkMapProperties(t);
+        TestUtils.checkMapProperties(t);
         // After each removal also check that none of the stored trees has it's size changed.
         IntStream.range(0, a.size()).forEach(n -> assertEquals(n, a.get(n).size()));
       }
@@ -155,13 +102,13 @@ public class PersistentMapTest {
 
   @Test
   public void verifyMapPropertiesForSimpleCases() {
-    performTest(PersistentMapTest::verifyMapPropertiesForSimpleCasesImpl);
+    TestUtils.performTest(PersistentMapTest::verifyMapPropertiesForSimpleCasesImpl);
   }
 
   private static void verifyMapPropertiesRandomSampleImpl(final Class<?> c) {
     System.out.printf("verifyMapPropertiesRandomSample(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
     final long seed = 12532731;
     final Random rng = new Random(seed);
 
@@ -179,12 +126,12 @@ public class PersistentMapTest {
       PersistentMap<Integer, Integer, ?> t = mapFactory.empty();
       for (int i = 0; i != size; ++i) {
         assertEquals(i, t.size());
-        checkMapProperties(t);
+        TestUtils.checkMapProperties(t);
         final Integer n = perm1[i];
         t = t.insert(n, n);
       }
       assertEquals(size, t.size());
-      checkMapProperties(t);
+      TestUtils.checkMapProperties(t);
       final int h = t.height();
       s[0] += h;
       s[1] = Math.max(s[1], h);
@@ -198,7 +145,7 @@ public class PersistentMapTest {
         t = t.remove(n);
         assertTrue(! t.containsKey(n));
         assertEquals(size - i - 1, t.size());
-        checkMapProperties(t);
+        TestUtils.checkMapProperties(t);
       }
     });
 
@@ -221,13 +168,13 @@ public class PersistentMapTest {
 
   @Test
   public void verifyMapPropertiesRandomSample() {
-    performTest(PersistentMapTest::verifyMapPropertiesRandomSampleImpl);
+    TestUtils.performTest(PersistentMapTest::verifyMapPropertiesRandomSampleImpl);
   }
 
   private static void testGetOrElseImpl(final Class<?> c) {
     System.out.printf("GetOrElse(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
 
     final PersistentMap<Integer, Integer, ?> m = mapFactory.singleton(1, 2);
 
@@ -257,13 +204,13 @@ public class PersistentMapTest {
 
   @Test
   public void testGetOrElse() {
-    performTest(PersistentMapTest::testGetOrElseImpl);
+    TestUtils.performTest(PersistentMapTest::testGetOrElseImpl);
   }
 
   private static void verifyMapPropertiesMonotoneInputsImpl(final Class<?> c) {
     System.out.printf("verifyMapPropertiesMonotoneInputs(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
     final long seed = 12532731;
     final Random rng = new Random(seed);
 
@@ -287,8 +234,8 @@ public class PersistentMapTest {
     assertEquals(size, t0.size());
     assertEquals(size, t1.size());
 
-    checkMapProperties(t0);
-    checkMapProperties(t1);
+    TestUtils.checkMapProperties(t0);
+    TestUtils.checkMapProperties(t1);
 
     final int h0 = t0.height();
     final int h1 = t1.height();
@@ -317,8 +264,8 @@ public class PersistentMapTest {
         assertEquals(size - i - 1, t0.size());
         assertEquals(size - i - 1, t1.size());
         
-        checkMapProperties(t0);
-        checkMapProperties(t1);
+        TestUtils.checkMapProperties(t0);
+        TestUtils.checkMapProperties(t1);
       }
       assertTrue(t0.isEmpty());
       assertTrue(t1.isEmpty());
@@ -341,8 +288,8 @@ public class PersistentMapTest {
         assertEquals(size - i - 1, t0.size());
         assertEquals(size - i - 1, t1.size());
         
-        checkMapProperties(t0);
-        checkMapProperties(t1);
+        TestUtils.checkMapProperties(t0);
+        TestUtils.checkMapProperties(t1);
       }
       assertTrue(t0.isEmpty());
       assertTrue(t1.isEmpty());
@@ -355,7 +302,7 @@ public class PersistentMapTest {
 
   @Test
   public void verifyMapPropertiesMonotoneInputs() {
-    performTest(PersistentMapTest::verifyMapPropertiesMonotoneInputsImpl);
+    TestUtils.performTest(PersistentMapTest::verifyMapPropertiesMonotoneInputsImpl);
   }
 
   private static void getBenchmarkImpl(final Class<?> c) {
@@ -368,7 +315,7 @@ public class PersistentMapTest {
     final int low = 1, high = 2*32*32*32;
     final int size = high/2;
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
 
     final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
     assertEquals(size, perm1.length);
@@ -406,24 +353,24 @@ public class PersistentMapTest {
   @Test
   public void getBenchmark() {
 //    System.out.println(" RB  Avl  Bro");
-//    performTest(PersistentMapTest::getBenchmarkImpl);
+//    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
 //    System.out.println();
-//    performTest(PersistentMapTest::getBenchmarkImpl);
+//    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
 //    System.out.println();
-//    performTest(PersistentMapTest::getBenchmarkImpl);
+//    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
 //    System.out.println();
-//    performTest(PersistentMapTest::getBenchmarkImpl);
+//    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
 //    System.out.println();
-//    performTest(PersistentMapTest::getBenchmarkImpl);
+//    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
 //    System.out.println();
-//    performTest(PersistentMapTest::getBenchmarkImpl);
+//    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
 //    System.out.println();
   }
 
   private static void testFilterAndFilteriImpl(final Class<?> c) {
     System.out.printf("FilterAndFilteri(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
     {
       final int N = 40;
       final int halfN = N / 2;
@@ -432,8 +379,8 @@ public class PersistentMapTest {
                       .mapToObj(i -> Pair.create(i, i)));
       final PersistentMap<Integer, Integer, ?> t1 = t0.filteri((k, v) -> (k & 1) == 1);
 
-      checkMapProperties(t0);
-      checkMapProperties(t1);
+      TestUtils.checkMapProperties(t0);
+      TestUtils.checkMapProperties(t1);
 
       assertEquals(N, t0.size());
       assertEquals(halfN, t1.size());
@@ -460,13 +407,13 @@ public class PersistentMapTest {
 
   @Test
   public void testFilterAndFilteri() {
-    performTest(PersistentMapTest::testFilterAndFilteriImpl);
+    TestUtils.performTest(PersistentMapTest::testFilterAndFilteriImpl);
   }
 
   private static <M extends PersistentMap<Integer, Integer, M>> void testPartitionAndPartitioniImpl(final Class<?> c) {
     System.out.printf("PartitionAndPartitioni(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
     {
       final int N = 40;
       final int halfN = N / 2;
@@ -477,9 +424,9 @@ public class PersistentMapTest {
       final Pair<? extends PersistentMap<Integer, Integer, ?>, ? extends PersistentMap<Integer, Integer, ?>> p = t0.partitioni((k, v) -> (k & 1) == 1);
       final PersistentMap<Integer, Integer, ?> t1 = p.mx1, t2 = p.mx2;
 
-      checkMapProperties(t0);
-      checkMapProperties(t1);
-      checkMapProperties(t2);
+      TestUtils.checkMapProperties(t0);
+      TestUtils.checkMapProperties(t1);
+      TestUtils.checkMapProperties(t2);
 
       assertEquals(N, t0.size());
       assertEquals(halfN, t1.size());
@@ -507,13 +454,13 @@ public class PersistentMapTest {
 
   @Test
   public void testPartitionAndPartitioni() {
-    performTest(PersistentMapTest::testPartitionAndPartitioniImpl);
+    TestUtils.performTest(PersistentMapTest::testPartitionAndPartitioniImpl);
   }
 
   private static void testMinMaxElementImpl(final Class<?> c) {
     System.out.printf("MinMaxElement(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
     {
       final int N = 40;
       final PersistentMap<Integer, Integer, ?> t = mapFactory.fromStream(
@@ -549,7 +496,7 @@ public class PersistentMapTest {
 
   @Test
   public void testMinMaxElement() {
-    performTest(PersistentMapTest::testMinMaxElementImpl);
+    TestUtils.performTest(PersistentMapTest::testMinMaxElementImpl);
   }
 
   private static <M extends PersistentMap<Integer, Integer, M>>
@@ -579,7 +526,7 @@ public class PersistentMapTest {
     assertEquals(numElems1, t1.size());
     assertEquals(numElemsMerged, tres.size());
 
-    checkMapProperties(tres);
+    TestUtils.checkMapProperties(tres);
 
     final ArrayList<Pair<Integer, Integer>> kv0 = t0.keyValuePairs();
     final ArrayList<Pair<Integer, Integer>> kv1 = t1.keyValuePairs();
@@ -602,7 +549,7 @@ public class PersistentMapTest {
   private static void testMerge1Impl(final Class<?> c) {
     System.out.printf("Merge1(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
     final int N = 6;
     // Assume the two ranges are r1, r2
     // Case 1: r1 < r2
@@ -621,13 +568,13 @@ public class PersistentMapTest {
 
   @Test
   public void testMerge1() {
-    performTest(PersistentMapTest::testMerge1Impl);
+    TestUtils.performTest(PersistentMapTest::testMerge1Impl);
   }
 
   private static void testMerge2Impl(final Class<?> c) {
     System.out.printf("Merge2(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
     final long seed = 125332;
     final Random rng = new Random(seed);
 
@@ -656,13 +603,13 @@ public class PersistentMapTest {
   
   @Test
   public void testMerge2() {
-    performTest(PersistentMapTest::testMerge2Impl);
+    TestUtils.performTest(PersistentMapTest::testMerge2Impl);
   }
 
   private static void testContainsValueImpl(final Class<?> c) {
     System.out.printf("ContainsValue(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
 
     final int low = 1, high = 40;
     final int gap = high - low;
@@ -679,13 +626,13 @@ public class PersistentMapTest {
 
   @Test
   public void testContainsValue() {
-    performTest(PersistentMapTest::testContainsValueImpl);
+    TestUtils.performTest(PersistentMapTest::testContainsValueImpl);
   }
 
   private static void testLowerPairImpl(final Class<?> c) {
     System.out.printf("LowerPair(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
 
     final int N = 40;
     final PersistentMap<Integer, Integer, ?> t = mapFactory.fromStream(
@@ -708,13 +655,13 @@ public class PersistentMapTest {
 
   @Test
   public void testLowerPair() {
-    performTest(PersistentMapTest::testLowerPairImpl);
+    TestUtils.performTest(PersistentMapTest::testLowerPairImpl);
   }
   
   private static void testHigherPairImpl(final Class<?> c) {
     System.out.printf("HigherPair(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
 
     final int N = 40;
     final PersistentMap<Integer, Integer, ?> t = mapFactory.fromStream(
@@ -737,7 +684,7 @@ public class PersistentMapTest {
 
   @Test
   public void testHigherPair() {
-    performTest(PersistentMapTest::testHigherPairImpl);
+    TestUtils.performTest(PersistentMapTest::testHigherPairImpl);
   }
 
   private static <K, V> Optional<Pair<K, V>> toPair(final Map.Entry<K, V> e) {
@@ -747,7 +694,7 @@ public class PersistentMapTest {
   private static void testLowerHigherPairRandomInputsImpl(final Class<?> c) {
     System.out.printf("LowerHigherPairRandomInputs(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
 
     final long seed = 1253327;
     final Random rng = new Random(seed);
@@ -784,13 +731,13 @@ public class PersistentMapTest {
 
   @Test
   public void testLowerHigherPairRandomInputs() {
-    performTest(PersistentMapTest::testLowerHigherPairRandomInputsImpl);
+    TestUtils.performTest(PersistentMapTest::testLowerHigherPairRandomInputsImpl);
   }
 
   private static void testMapPartialPartialiImpl(final Class<?> c) {
     System.out.printf("MapPartialPartiali(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
 
     final long seed = 12332713;
     final Random rng = new Random(seed);
@@ -802,7 +749,7 @@ public class PersistentMapTest {
     IntStream.range(0, N).forEach(x -> {
       final int[] perm = Numeric.randomPermuation(low, high, size, rng);
 
-      final PersistentMap<Integer, Integer, ?> t = makeMap(mapFactory, perm, i -> Pair.create(i, i));
+      final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMap(mapFactory, perm, i -> Pair.create(i, i));
 
       final PersistentMap<Integer, Integer, ?> tEven = t.mapPartial(n -> Optional.ofNullable((n & 1) == 0 ? n : null));
       final PersistentMap<Integer, Integer, ?> tOdd  = t.mapPartial(n -> Optional.ofNullable((n & 1) == 1 ? n : null));
@@ -828,13 +775,13 @@ public class PersistentMapTest {
 
   @Test
   public void testMapPartialPartiali() {
-    performTest(PersistentMapTest::testMapPartialPartialiImpl);
+    TestUtils.performTest(PersistentMapTest::testMapPartialPartialiImpl);
   }
 
   private static void testMinKeyMaxKeyImpl(final Class<?> c) {
     System.out.printf("MinKeyMaxKey(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
 
     final long seed = 12332713;
     final Random rng = new Random(seed);
@@ -846,7 +793,7 @@ public class PersistentMapTest {
     IntStream.range(0, N).forEach(x -> {
       final int[] perm = Numeric.randomPermuation(low, high, size, rng);
 
-      final PersistentMap<Integer, Integer, ?> t = makeMap(mapFactory, perm, i -> Pair.create(i, i));
+      final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMap(mapFactory, perm, i -> Pair.create(i, i));
 
       final int minExpected = Arrays.stream(perm).min().getAsInt();
       final int maxExpected = Arrays.stream(perm).max().getAsInt();
@@ -861,13 +808,13 @@ public class PersistentMapTest {
 
   @Test
   public void testMinKeyMaxKey() {
-    performTest(PersistentMapTest::testMinKeyMaxKeyImpl);
+    TestUtils.performTest(PersistentMapTest::testMinKeyMaxKeyImpl);
   }
 
   private static void testMinElementPairMaxElementPairImpl(final Class<?> c) {
     System.out.printf("MinElementPairMaxElementPair(%s)\n", c.getName());
 
-    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = makeFactory(c);
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
 
     final long seed = 12332713;
     final Random rng = new Random(seed);
@@ -879,7 +826,7 @@ public class PersistentMapTest {
     IntStream.range(0, N).forEach(x -> {
       final int[] perm = Numeric.randomPermuation(low, high, size, rng);
 
-      final PersistentMap<Integer, Integer, ?> t = makeMap(mapFactory, perm, i -> Pair.create(i, 2 * i));
+      final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMap(mapFactory, perm, i -> Pair.create(i, 2 * i));
 
       final int minExpected = Arrays.stream(perm).min().getAsInt();
       final int maxExpected = Arrays.stream(perm).max().getAsInt();
@@ -897,6 +844,6 @@ public class PersistentMapTest {
 
   @Test
   public void testMinElementPairMaxElementPair() {
-    performTest(PersistentMapTest::testMinElementPairMaxElementPairImpl);
+    TestUtils.performTest(PersistentMapTest::testMinElementPairMaxElementPairImpl);
   }
 }
