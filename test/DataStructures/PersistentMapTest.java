@@ -255,7 +255,7 @@ public class PersistentMapTest {
 
     final int numIters = 200;
     final int low = 1, high = 2*32*32*32;
-    final int size = high/2;
+    final int size = high;
 
     final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
 
@@ -276,7 +276,7 @@ public class PersistentMapTest {
       }
     });
 
-    long startTime = System.nanoTime();
+    final long startTime = System.nanoTime();
     IntStream.range(0, numIters).forEach(x -> {
       final int[] perm2 = Numeric.randomPermutation(0, size - 1, size, rng);
 
@@ -285,27 +285,31 @@ public class PersistentMapTest {
         assertTrue(t2.containsKey(n));
       }
     });
-    long stopTime = System.nanoTime();
+    final long stopTime = System.nanoTime();
 
-    long d = TimeUnit.MILLISECONDS.convert((stopTime - startTime), TimeUnit.NANOSECONDS);
+    final long d = TimeUnit.MILLISECONDS.convert((stopTime - startTime), TimeUnit.NANOSECONDS);
     System.out.printf("%d ", d);
   }
-  
+
   @Test
   public void getBenchmark() {
-//    System.out.println(" RB  Avl  Bro");
-//    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
-//    System.out.println();
-//    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
-//    System.out.println();
-//    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
-//    System.out.println();
-//    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
-//    System.out.println();
-//    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
-//    System.out.println();
-//    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
-//    System.out.println();
+    /*
+    System.out.println(" RB  Avl  Bro");
+    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
+    System.out.println();
+    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
+    System.out.println();
+    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
+    System.out.println();
+    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
+    System.out.println();
+    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
+    System.out.println();
+    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
+    System.out.println();
+    TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
+    System.out.println();
+    */
   }
 
   private static void testFilterAndFilteriImpl(final Class<?> c) {
