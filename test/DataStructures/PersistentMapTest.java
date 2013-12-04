@@ -61,7 +61,7 @@ public class PersistentMapTest {
     s[2] = Integer.MAX_VALUE;
 
     IntStream.range(0, numIters).forEach(x -> {
-      final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
+      final int[] perm1 = Numeric.randomPermutation(low, high, size, rng);
       PersistentMap<Integer, Integer, ?> t = mapFactory.empty();
 
       for (int i = 0; i != size; ++i) {
@@ -78,7 +78,7 @@ public class PersistentMapTest {
       s[1] = Math.max(s[1], h);
       s[2] = Math.min(s[2], h);
 
-      final int[] perm2 = Numeric.randomPermuation(0, size - 1, size, rng);
+      final int[] perm2 = Numeric.randomPermutation(0, size - 1, size, rng);
 
       for (int i = 0; i != size; ++i) {
         final int n = perm1[perm2[i]];
@@ -259,7 +259,7 @@ public class PersistentMapTest {
 
     final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
 
-    final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
+    final int[] perm1 = Numeric.randomPermutation(low, high, size, rng);
     PersistentMap<Integer, Integer, ?> t = mapFactory.empty();
     for (int i = 0; i != size; ++i) {
       t = t.insert(perm1[i], perm1[i]);
@@ -268,7 +268,7 @@ public class PersistentMapTest {
     final PersistentMap<Integer, Integer, ?> t2 = t;
 
     IntStream.range(0, 50).forEach(x -> {
-      final int[] perm2 = Numeric.randomPermuation(0, size - 1, size, rng);
+      final int[] perm2 = Numeric.randomPermutation(0, size - 1, size, rng);
 
       for (int i = 0; i != size; ++i) {
         final int n = perm1[perm2[i]];
@@ -278,7 +278,7 @@ public class PersistentMapTest {
 
     long startTime = System.nanoTime();
     IntStream.range(0, numIters).forEach(x -> {
-      final int[] perm2 = Numeric.randomPermuation(0, size - 1, size, rng);
+      final int[] perm2 = Numeric.randomPermutation(0, size - 1, size, rng);
 
       for (int i = 0; i != size; ++i) {
         final int n = perm1[perm2[i]];
@@ -644,7 +644,7 @@ public class PersistentMapTest {
     final int size = 180;
 
     IntStream.range(0, N).forEach(x -> {
-      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
+      final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
       final ArrayList<Pair<Integer, Integer>> v =
               Arrays.stream(perm)
@@ -687,7 +687,7 @@ public class PersistentMapTest {
     final int size = 180;
     
     IntStream.range(0, N).forEach(x -> {
-      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
+      final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
       final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMap(mapFactory, perm, i -> Pair.create(i, i));
 
@@ -731,7 +731,7 @@ public class PersistentMapTest {
     final int size = 180;
 
     IntStream.range(0, N).forEach(x -> {
-      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
+      final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
       final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMap(mapFactory, perm, i -> Pair.create(i, i));
 
@@ -764,7 +764,7 @@ public class PersistentMapTest {
     final int size = 180;
 
     IntStream.range(0, N).forEach(x -> {
-      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
+      final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
       final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMap(mapFactory, perm, i -> Pair.create(i, 2 * i));
 
@@ -847,7 +847,7 @@ public class PersistentMapTest {
       final int low = -3000, high = 2000;
       final int size = 4000;
 
-      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
+      final int[] perm = Numeric.randomPermutation(low, high, size, rng);
       IntStream.range(0, numIters).forEach(x -> {
         final PersistentMap<Integer, Integer, ?> t =
                 mapFactory.fromStream(
@@ -878,7 +878,7 @@ public class PersistentMapTest {
 
     IntStream.range(0, N).forEach(x -> {
       final int size = Numeric.randomInt(10, 200, rng);
-      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
+      final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
       final ArrayList<Pair<Integer, Integer>> vRes =
             Arrays.stream(perm)
@@ -899,7 +899,7 @@ public class PersistentMapTest {
 
     IntStream.range(0, N).forEach(x -> {
       final int size = Numeric.randomInt(10, 200, rng);
-      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
+      final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
       final ArrayList<Pair<Integer, Integer>> vRes =
             Arrays.stream(perm)
@@ -966,5 +966,113 @@ public class PersistentMapTest {
   @Test
   public void testFoldliFoldri() {
     TestUtils.performTest(PersistentMapTest::testFoldliFoldriImpl);
+  }
+
+  @Test
+  public void testEqualsHashCodeSmallTrees() {
+    System.out.println("EqualsHashCodeSmallTrees");
+
+    // Test empty maps
+    final PersistentMap<Integer, Integer, RedBlackTreeModule.Tree<Integer, Integer>> me0 = RedBlackTreeModule.<Integer, Integer> makeFactory().empty();
+    final PersistentMap<Integer, Integer, AvlTreeModule.Tree<Integer, Integer>>      me1 = AvlTreeModule.<Integer, Integer> makeFactory().empty();
+    final PersistentMap<Integer, Integer, BrotherTreeModule.Tree<Integer, Integer>>  me2 = BrotherTreeModule.<Integer, Integer> makeFactory().empty();
+
+    assertTrue(me0.equals(me0));
+    assertTrue(me0.equals(me1));
+    assertTrue(me0.equals(me2));
+    assertTrue(me1.equals(me0));
+    assertTrue(me1.equals(me1));
+    assertTrue(me1.equals(me2));
+    assertTrue(me2.equals(me0));
+    assertTrue(me2.equals(me1));
+    assertTrue(me2.equals(me2));
+
+    final int he0 = me0.hashCode();
+    final int he1 = me1.hashCode();
+    final int he2 = me2.hashCode();
+    
+    assertEquals(he0, he1);
+    assertEquals(he1, he2);
+
+    // Test singleton maps
+    final PersistentMap<Integer, Integer, RedBlackTreeModule.Tree<Integer, Integer>> ms0 = RedBlackTreeModule.<Integer, Integer> makeFactory().singleton(11, 11);
+    final PersistentMap<Integer, Integer, AvlTreeModule.Tree<Integer, Integer>>      ms1 = AvlTreeModule.<Integer, Integer> makeFactory().singleton(11, 11);
+    final PersistentMap<Integer, Integer, BrotherTreeModule.Tree<Integer, Integer>>  ms2 = BrotherTreeModule.<Integer, Integer> makeFactory().singleton(11, 11);
+
+    assertTrue(ms0.equals(ms0));
+    assertTrue(ms0.equals(ms1));
+    assertTrue(ms0.equals(ms2));
+    assertTrue(ms1.equals(ms0));
+    assertTrue(ms1.equals(ms1));
+    assertTrue(ms1.equals(ms2));
+    assertTrue(ms2.equals(ms0));
+    assertTrue(ms2.equals(ms1));
+    assertTrue(ms2.equals(ms2));
+
+    final int hs0 = ms0.hashCode();
+    final int hs1 = ms1.hashCode();
+    final int hs2 = ms2.hashCode();
+
+    assertEquals(hs0, hs1);
+    assertEquals(hs1, hs2);
+    
+    assertFalse(ms0.equals(me0));
+    assertFalse(ms0.equals(me1));
+    assertFalse(ms0.equals(me2));
+
+    assertFalse(ms1.equals(me0));
+    assertFalse(ms1.equals(me1));
+    assertFalse(ms1.equals(me2));
+
+    assertFalse(ms2.equals(me0));
+    assertFalse(ms2.equals(me1));
+    assertFalse(ms2.equals(me2));
+
+    assertTrue(hs0 != he0);
+    assertTrue(hs0 != he1);
+    assertTrue(hs0 != he2);
+    assertTrue(hs1 != he0);
+    assertTrue(hs1 != he1);
+    assertTrue(hs1 != he2);
+    assertTrue(hs2 != he0);
+    assertTrue(hs2 != he1);
+    assertTrue(hs2 != he2);
+  }
+
+  @Test
+  public void testEqualsHashCodeLargeTrees() {
+    System.out.println("EqualsHashCodeLargeTrees");
+
+    final long seed = 12532731;
+    final Random rng = new Random(seed);
+
+    final int low = 1, high = 64 * 1024;
+    final int size = high - low + 1;
+    final ArrayList<Pair<Integer, Integer>> v =
+            Arrays.stream(Numeric.randomPermutation(low, high, size, rng))
+                  .mapToObj(i -> Pair.create(i, i))
+                  .collect(Collectors.toCollection(ArrayList::new));
+
+    // Test empty maps
+    final PersistentMap<Integer, Integer, RedBlackTreeModule.Tree<Integer, Integer>> m0 = RedBlackTreeModule.<Integer, Integer> makeFactory().fromArray(v);
+    final PersistentMap<Integer, Integer, AvlTreeModule.Tree<Integer, Integer>>      m1 = AvlTreeModule.<Integer, Integer> makeFactory().fromArray(v);
+    final PersistentMap<Integer, Integer, BrotherTreeModule.Tree<Integer, Integer>>  m2 = BrotherTreeModule.<Integer, Integer> makeFactory().fromArray(v);
+
+    assertTrue(m0.equals(m0));
+    assertTrue(m0.equals(m1));
+    assertTrue(m0.equals(m2));
+    assertTrue(m1.equals(m0));
+    assertTrue(m1.equals(m1));
+    assertTrue(m1.equals(m2));
+    assertTrue(m2.equals(m0));
+    assertTrue(m2.equals(m1));
+    assertTrue(m2.equals(m2));
+
+    final int h0 = m0.hashCode();
+    final int h1 = m1.hashCode();
+    final int h2 = m2.hashCode();
+    
+    assertEquals(h0, h1);
+    assertEquals(h1, h2);
   }
 }

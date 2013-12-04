@@ -121,8 +121,8 @@ public class NumericTest {
    * Test of randomPermuation method, of class Numeric.
    */
   @Test
-  public void testRandomPermuation() {
-    System.out.println("randomPermuation");
+  public void testRandomPermutation() {
+    System.out.println("randomPermutation");
 
     final int low = 1;
     final int high = 4;
@@ -134,7 +134,7 @@ public class NumericTest {
 
     final Map<Integer, Integer> m = new TreeMap<>();
     for (int i = 0; i != N; ++i) {
-      final int[] a = Numeric.randomPermuation(low, high, size, rng);
+      final int[] a = Numeric.randomPermutation(low, high, size, rng);
       final int r = Arrays.stream(a).reduce(0, (n, x) -> n * 10 + x);
       final Integer ii = m.get(r);
       m.put(r, ii == null ? 1 : ii + 1);

@@ -92,7 +92,7 @@ public class AvlTreeModuleTest {
     final int N = 512;
 
     for (int i = 0; i != Experiments; ++i) {
-      final int[] data = Utils.Numeric.randomPermuation(m, n, N, rng);
+      final int[] data = Utils.Numeric.randomPermutation(m, n, N, rng);
       AvlTreeModule.Tree<Integer, Integer> t0 = AvlTreeModule.empty();
 
       AvlTreeModule.Tree<Integer, Integer> t
@@ -150,7 +150,7 @@ public class AvlTreeModuleTest {
     final int size = 180;
 
     IntStream.range(0, N).forEach(x -> {
-      final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
+      final int[] perm1 = Numeric.randomPermutation(low, high, size, rng);
 
       final ArrayList<Pair<Integer, Integer>> v =
               Arrays.stream(perm1)

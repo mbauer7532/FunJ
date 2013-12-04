@@ -136,7 +136,7 @@ public class PersistentMapFactoryTest {
     final int N = sMapSize;
     IntStream.rangeClosed(0, N).forEach(y -> {
 
-      final int[] perm = Numeric.randomPermuation(0, y, y + 1, rng);
+      final int[] perm = Numeric.randomPermutation(0, y, y + 1, rng);
 
       final Stream<TuplesModule.Pair<Integer, Integer>> streamIncreasing  = IntStream.rangeClosed(0, y).mapToObj(x -> TuplesModule.Pair.create(x, x));
       final Stream<TuplesModule.Pair<Integer, Integer>> streamDecreasing  = IntStream.rangeClosed(0, y).mapToObj(x -> TuplesModule.Pair.create(y - x, y - x));

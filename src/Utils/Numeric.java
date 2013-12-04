@@ -69,7 +69,7 @@ public class Numeric {
     arr[j] = t;
   }
 
-  public static int[] randomPermuation(
+  public static int[] randomPermutation(
           final int low,
           final int high,
           final int size,
@@ -91,7 +91,7 @@ public class Numeric {
 
     if (size == span) {
       if (size <= 0) {
-        throw new AssertionError("array size must be greater than zero.");
+        throw new AssertionError("Array size must be greater than zero.");
       }
 
       IntStream.range(0, size).forEach(i -> array[i] = low + i);
