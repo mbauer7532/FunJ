@@ -1071,7 +1071,7 @@ public class PersistentMapTest {
     final int h0 = m0.hashCode();
     final int h1 = m1.hashCode();
     final int h2 = m2.hashCode();
-    
+
     assertEquals(h0, h1);
     assertEquals(h1, h2);
   }

@@ -293,6 +293,7 @@ public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentM
    * @param m
    * @return
    */
+  @Override
   public boolean equals(final Object m);
 
   // Each map has to do it's own verification.  Used in testing.

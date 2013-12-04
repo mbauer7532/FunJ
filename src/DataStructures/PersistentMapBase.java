@@ -139,7 +139,7 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
     final ArrayList<Pair<K, V>> keyValues = keyValuePairs();
     final int emptyMapHashCode = 11;
 
-    return keyValues.parallelStream().reduce(emptyMapHashCode, (acc, p) -> acc + p.hashCode(), (u1, u2) -> u1 ^ u2);
+    return keyValues.parallelStream().reduce(emptyMapHashCode, (acc, p) -> acc + p.hashCode(), (u1, u2) -> u1 + u2);
   }
 
   protected ArrayList<Pair<K, V>> getElementsSatisfyingPredicate(final BiPredicate<K, V> f) {
