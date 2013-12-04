@@ -62,8 +62,8 @@ public class PersistentMapTest {
 
     IntStream.range(0, numIters).forEach(x -> {
       final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
-      assertEquals(size, perm1.length);
       PersistentMap<Integer, Integer, ?> t = mapFactory.empty();
+
       for (int i = 0; i != size; ++i) {
         assertEquals(i, t.size());
         TestUtils.checkMapProperties(t);
@@ -72,6 +72,7 @@ public class PersistentMapTest {
       }
       assertEquals(size, t.size());
       TestUtils.checkMapProperties(t);
+
       final int h = t.height();
       s[0] += h;
       s[1] = Math.max(s[1], h);
@@ -127,7 +128,7 @@ public class PersistentMapTest {
     
     final Integer k2 = m.getOrElse(1, 3);
     final Integer k3 = m.getOrElse(2, 3);
-    
+
     assertEquals(k2, new Integer(2));
     assertEquals(k3, new Integer(3));
     
@@ -259,7 +260,6 @@ public class PersistentMapTest {
     final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
 
     final int[] perm1 = Numeric.randomPermuation(low, high, size, rng);
-    assertEquals(size, perm1.length);
     PersistentMap<Integer, Integer, ?> t = mapFactory.empty();
     for (int i = 0; i != size; ++i) {
       t = t.insert(perm1[i], perm1[i]);
@@ -865,11 +865,70 @@ public class PersistentMapTest {
     TestUtils.performTest(PersistentMapTest::testTreeHeightOfMapImpl);
   }
 
+  private static void testMapMapiImpl(final Class<?> c) {
+    System.out.printf("MapMapi(%s)\n", c.getName());
+
+    final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
+
+    final long seed = 1253327;
+    final Random rng = new Random(seed);
+
+    final int N = 50;
+    final int low = -50, high = 600;
+
+    IntStream.range(0, N).forEach(x -> {
+      final int size = Numeric.randomInt(10, 200, rng);
+      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
+
+      final ArrayList<Pair<Integer, Integer>> vRes =
+            Arrays.stream(perm)
+                  .mapToObj(i -> Pair.create(i, 2 * i))
+                  .collect(Collectors.toCollection(ArrayList::new));
+
+      final ArrayList<Pair<Integer, Integer>> v =
+            Arrays.stream(perm)
+                  .mapToObj(i -> Pair.create(i, i))
+                  .collect(Collectors.toCollection(ArrayList::new));
+
+      final PersistentMap<Integer, Integer, ?> mRes = mapFactory.fromArray(vRes);
+      final PersistentMap<Integer, Integer, ?> m = mapFactory.fromArray(v);
+    
+      final PersistentMap<Integer, Integer, ?> mapedM = m.map(w -> 2 * w);
+      assertTrue(mRes.equals(mapedM));
+    });
+
+    IntStream.range(0, N).forEach(x -> {
+      final int size = Numeric.randomInt(10, 200, rng);
+      final int[] perm = Numeric.randomPermuation(low, high, size, rng);
+
+      final ArrayList<Pair<Integer, Integer>> vRes =
+            Arrays.stream(perm)
+                  .mapToObj(i -> Pair.create(i, 5 * i))
+                  .collect(Collectors.toCollection(ArrayList::new));
+
+      final ArrayList<Pair<Integer, Integer>> v =
+            Arrays.stream(perm)
+                  .mapToObj(i -> Pair.create(i, 2 * i))
+                  .collect(Collectors.toCollection(ArrayList::new));
+
+      final PersistentMap<Integer, Integer, ?> mRes = mapFactory.fromArray(vRes);
+      final PersistentMap<Integer, Integer, ?> m = mapFactory.fromArray(v);
+    
+      final PersistentMap<Integer, Integer, ?> mapedM = m.mapi((idx, w) -> idx + 2 * w);
+      assertTrue(mRes.equals(mapedM));
+    });
+  }
+
+  @Test
+  public void testMapMapi() {
+    TestUtils.performTest(PersistentMapTest::testMapMapiImpl);
+  }
+
   private static void testFoldliFoldriImpl(final Class<?> c) {
     System.out.printf("FoldliFoldri(%s)\n", c.getName());
 
     final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
-    
+
     {
       final int N = 40;
       final PersistentMap<Integer, Integer, ?> m = TestUtils.makeMapfromIncreasing(mapFactory, IntStream.range(0, N).toArray(), n -> Pair.create(n, 2 * n));

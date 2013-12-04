@@ -287,7 +287,14 @@ public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentM
    * @return
    */
   public int height();
-  
+
+  /**
+   *
+   * @param m
+   * @return
+   */
+  public boolean equals(final Object m);
+
   // Each map has to do it's own verification.  Used in testing.
   /**
    *

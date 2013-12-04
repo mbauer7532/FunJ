@@ -108,6 +108,27 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
     return filteri((k, v) -> f.test(v));
   }
 
+  @Override
+  public final boolean equals(final Object m) {
+    if (this == m) {
+      return true;
+    }
+    if (! (m instanceof PersistentMapBase)) {
+      return false;
+    }
+    // This is probably not the best implentation.  I need to rewrite this when I do the one-node rewrite of the maps...
+    // It does too much allocation.
+    // One possibility is to use iterators or streams which I don't have yet.
+    final PersistentMapBase<K, V, ?> m1 = this;
+    @SuppressWarnings("unchecked")
+    final PersistentMapBase<K, V, ?> m2 = (PersistentMapBase<K, V, ?>) m;
+
+    final ArrayList<Pair<K, V>> keyValues1 = m1.keyValuePairs(), keyValues2 = m2.keyValuePairs();
+    final int l1 = m1.size(), l2 = m2.size();
+
+    return l1 == l2 && IntStream.range(0, l1).allMatch(idx -> keyValues1.get(idx).equals(keyValues2.get(idx)));
+  }
+
   protected ArrayList<Pair<K, V>> getElementsSatisfyingPredicate(final BiPredicate<K, V> f) {
     final ArrayList<Pair<K, V>> kvs = new ArrayList<>();
 
