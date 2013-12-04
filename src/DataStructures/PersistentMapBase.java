@@ -123,10 +123,22 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
     @SuppressWarnings("unchecked")
     final PersistentMapBase<K, V, ?> m2 = (PersistentMapBase<K, V, ?>) m;
 
-    final ArrayList<Pair<K, V>> keyValues1 = m1.keyValuePairs(), keyValues2 = m2.keyValuePairs();
-    final int l1 = m1.size(), l2 = m2.size();
+    final ArrayList<Pair<K, V>> keyValues1 = m1.keyValuePairs();
+    final ArrayList<Pair<K, V>> keyValues2 = m2.keyValuePairs();
+    final int l1 = m1.size();
+    final int l2 = m2.size();
 
-    return l1 == l2 && IntStream.range(0, l1).allMatch(idx -> keyValues1.get(idx).equals(keyValues2.get(idx)));
+    return l1 == l2 && IntStream.range(0, l1).parallel().allMatch(idx -> keyValues1.get(idx).equals(keyValues2.get(idx)));
+  }
+
+  // This is probably not the best implentation.  I need to rewrite this when I do the one-node rewrite of the maps...
+  // It does too much allocation.
+  // One possibility is to use iterators or streams which I don't have yet.
+  @Override
+  public int hashCode() {
+    final ArrayList<Pair<K, V>> keyValues = keyValuePairs();
+    Integer n;
+    return keyValues.parallelStream().reduce(0, (acc, p) -> acc + p.hashCode(), (u1, u2) -> u1 ^ u2);
   }
 
   protected ArrayList<Pair<K, V>> getElementsSatisfyingPredicate(final BiPredicate<K, V> f) {
