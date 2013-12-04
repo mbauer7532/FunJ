@@ -959,7 +959,7 @@ public class RedBlackTreeModule {
       final RedNode<K, V> r = t.asRed();
       final Pair<Integer, Boolean> pleft  = blackNodeCountPropertyHolds(r.mLeft);
       final Pair<Integer, Boolean> pright = blackNodeCountPropertyHolds(r.mRight);
-
+      
       return Pair.create(pleft.mx1, pleft.mx2 && pright.mx2 && pleft.mx1.equals(pright.mx1));
     }
   }

@@ -9,6 +9,7 @@ package Utils;
 /**
  *
  * @author Neo
+ * @param <A>
  */
 public class Ref<A> {
   public A r;
