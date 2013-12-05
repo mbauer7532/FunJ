@@ -10,6 +10,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  *
@@ -29,4 +30,7 @@ public class RedBlackTreeModuleTest {
 
   @After
   public void tearDown() {}
+  
+  @Test
+  public void testNoTest() {}
 }

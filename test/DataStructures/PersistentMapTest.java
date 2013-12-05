@@ -69,6 +69,7 @@ public class PersistentMapTest {
         TestUtils.checkMapProperties(t);
         final Integer n = perm1[i];
         t = t.insert(n, n);
+//        GraphModule.showGraph(t);
       }
       assertEquals(size, t.size());
       TestUtils.checkMapProperties(t);
@@ -293,8 +294,8 @@ public class PersistentMapTest {
 
   @Test
   public void getBenchmark() {
-    /*
-    System.out.println(" RB  Avl  Bro");
+/*
+    System.out.println(" RB2  RB  Avl  Bro");
     TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
     System.out.println();
     TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
@@ -309,7 +310,7 @@ public class PersistentMapTest {
     System.out.println();
     TestUtils.performTest(PersistentMapTest::getBenchmarkImpl);
     System.out.println();
-    */
+*/
   }
 
   private static void testFilterAndFilteriImpl(final Class<?> c) {

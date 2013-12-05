@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 public class TestUtils {
 
   private static final Class<?>[] sMapClasses = {
+    RedBlackTreeModule2.class,
     RedBlackTreeModule.class,
     AvlTreeModule.class,
     BrotherTreeModule.class

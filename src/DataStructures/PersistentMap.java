@@ -301,5 +301,5 @@ public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentM
    *
    * @return
    */
-    public Pair<Boolean, String> verifyMapProperties();
+  public Pair<Boolean, String> verifyMapProperties();
 }

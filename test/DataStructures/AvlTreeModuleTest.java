@@ -10,12 +10,15 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  *
  * @author Neo
  */
 public class AvlTreeModuleTest {
+  public AvlTreeModuleTest() {}
+
   @BeforeClass
   public static void setUpClass() {}
 
@@ -27,4 +30,7 @@ public class AvlTreeModuleTest {
 
   @After
   public void tearDown() {}
+  
+  @Test
+  public void testNoTest() {}
 }

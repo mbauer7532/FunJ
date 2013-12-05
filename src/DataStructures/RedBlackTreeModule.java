@@ -998,10 +998,9 @@ public class RedBlackTreeModule {
       final int mid = (left + right) >>> 1;
       final Pair<K, V> p = mVector.get(mid);
 
-      Tree<K, V> lt, rt;
       final int newDepth = depth + 1;
-      lt = workerFunc(left, mid - 1, newDepth);
-      rt = workerFunc(mid + 1, right, newDepth);
+      Tree<K, V> lt = workerFunc(left, mid - 1, newDepth);
+      Tree<K, V> rt = workerFunc(mid + 1, right, newDepth);
 
       if (! mIncreasing) {
         Tree<K, V> t = lt;
@@ -1010,10 +1009,10 @@ public class RedBlackTreeModule {
       }
 
       return depth == mRedLevel
-              ? RedNode.create(lt, p.mx1, p.mx2, rt)
-              : BlackNode.create(lt, p.mx1, p.mx2, rt);
+               ? RedNode.create(lt, p.mx1, p.mx2, rt)
+               : BlackNode.create(lt, p.mx1, p.mx2, rt);
     }
-    
+
     public final Tree<K, V> doIt() {
       return workerFunc(0, mVector.size() - 1, 0);
     }
