@@ -134,9 +134,8 @@ public class RedBlackTreeModule2 {
                                                                        final Tree<K, V> right) {
       if (left.isRed()) {
         if (left.mLeft.isRed()) {
-          final Tree<K, V> ll = left.mLeft;
 
-          return createRedNode(r2b(ll),
+          return createRedNode(r2b(left.mLeft),
                                left.mKey,
                                left.mValue,
                                createBlackNode(left.mRight, key, value, right));
@@ -177,13 +176,11 @@ public class RedBlackTreeModule2 {
                   createBlackNode(rl.mRight, right.mKey, right.mValue, right.mRight));
         }
         else if (right.mRight.isRed()) {
-          final Tree<K, V> rr = right.mRight;
-
           return createRedNode(
                   createBlackNode(left, key, value, right.mLeft),
                   right.mKey,
                   right.mValue,
-                  r2b(rr));
+                  r2b(right.mRight));
         }
       }
 
@@ -352,9 +349,8 @@ public class RedBlackTreeModule2 {
       return maxElementPairImpl();
     }
 
-    @Override
-    public Optional<V> get(final K key) {
-      Tree<K, V> t = this;
+    private static <K extends Comparable<K>, V> Optional<V> getImpl(final Tree<K, V> tree, final K key) {
+      Tree<K, V> t = tree;
 
       while (! t.isNull()) {
         final int res = key.compareTo(t.mKey);
@@ -373,13 +369,17 @@ public class RedBlackTreeModule2 {
     }
 
     @Override
-    public boolean containsValue(final V value) {
-      if (isNull()) {
+    public Optional<V> get(final K key) {
+      return getImpl(this, key);
+    }
+
+    private static <K extends Comparable<K>, V> boolean containsValueImpl(final Tree<K, V> tree, final V value) {
+      if (tree.isNull()) {
         return false;
       }
 
       final ArrayDeque<Tree<K, V>> dq = new ArrayDeque<>();
-      dq.addFirst(this);
+      dq.addFirst(tree);
 
       do {
         final Tree<K, V> t = dq.removeFirst();
@@ -393,6 +393,11 @@ public class RedBlackTreeModule2 {
       } while (! dq.isEmpty());
 
       return false;
+    }
+
+    @Override
+    public boolean containsValue(final V value) {
+      return containsValueImpl(this, value);
     }
 
     @Override
@@ -472,7 +477,7 @@ public class RedBlackTreeModule2 {
 
     @Override
     public final <W> Tree<K, W> map(final Function<V, W> f) {
-      return mapi((k, v) -> f.apply(v));
+      return mapiImpl((k, v) -> f.apply(v));
     }
 
     private static <K extends Comparable<K>, V> Optional<Pair<K, V>> makeBoundPair(final Tree<K, V> candidate) {
@@ -481,22 +486,21 @@ public class RedBlackTreeModule2 {
         : Optional.of(Pair.create(candidate.mKey, candidate.mValue));
     }
 
-    @Override
-    public final Optional<Pair<K, V>> lowerPair(final K key) {
-      Tree<K, V> tree = this;
+    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPairImpl(final Tree<K, V> tree, final K key) {
+      Tree<K, V> t = tree;
       Tree<K, V> candidate = null;
 
-      while (! tree.isNull()) {
-        final int res = key.compareTo(tree.mKey);
+      while (! t.isNull()) {
+        final int res = key.compareTo(t.mKey);
         if (res > 0) {
-          candidate = tree;
-          tree = tree.mRight;
+          candidate = t;
+          t = t.mRight;
         }
         else if (res < 0) {
-          tree = tree.mLeft;
+          t = t.mLeft;
         }
         else {
-          final Optional<Pair<K, V>> p = tree.mLeft.maxElementPair();
+          final Optional<Pair<K, V>> p = t.mLeft.maxElementPair();
           if (p.isPresent()) {
             return p;
           }
@@ -510,21 +514,25 @@ public class RedBlackTreeModule2 {
     }
 
     @Override
-    public final Optional<Pair<K, V>> higherPair(final K key) {
-      Tree<K, V> tree = this;
+    public final Optional<Pair<K, V>> lowerPair(final K key) {
+      return lowerPairImpl(this, key);
+    }
+
+    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPairImpl(final Tree<K, V> tree, final K key) {
+      Tree<K, V> t = tree;
       Tree<K, V> candidate = null;
 
-      while (! tree.isNull()) {
-        final int res = key.compareTo(tree.mKey);
+      while (! t.isNull()) {
+        final int res = key.compareTo(t.mKey);
         if (res > 0) {
-          tree = tree.mRight;
+          t = t.mRight;
         }
         else if (res < 0) {
-          candidate = tree;
-          tree = tree.mLeft;
+          candidate = t;
+          t = t.mLeft;
         }
         else {
-          final Optional<Pair<K, V>> p = tree.mRight.minElementPair();
+          final Optional<Pair<K, V>> p = t.mRight.minElementPair();
           if (p.isPresent()) {
             return p;
           }
@@ -535,6 +543,11 @@ public class RedBlackTreeModule2 {
       }
 
       return makeBoundPair(candidate);
+    }
+
+    @Override
+    public final Optional<Pair<K, V>> higherPair(final K key) {
+      return higherPairImpl(this, key);
     }
 
     @Override
