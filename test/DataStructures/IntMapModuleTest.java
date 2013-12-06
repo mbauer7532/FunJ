@@ -79,7 +79,7 @@ public class IntMapModuleTest {
     
     final int low = 0;
     final int high = 16;
-    
+
     final IntMapModule.Tree<Integer> t0 = IntMapModule.empty();
 
     final IntMapModule.Tree<Integer> t1
@@ -95,16 +95,5 @@ public class IntMapModuleTest {
                      (IntMapModule.Tree<Integer> tree, int i) -> { refToTree.set(refToTree.get().insert((z1, z2) -> z1, i, i)); },
                      (tt1, tt2) -> {});
     final IntMapModule.Tree<Integer> t2 = refToTree.get();
-
-    final int length = 44;
-    final int width = 20;
-    DSutils.show(t1, length, width);
-    DSutils.show(t2, length, width);
-    final int sleepSeconds = 1;
-    try {
-      Thread.sleep(sleepSeconds * 1000);
-    } catch (InterruptedException ex) {
-      Logger.getLogger(IntMapModuleTest.class.getName()).log(Level.SEVERE, null, ex);
-    }
   }
 }
