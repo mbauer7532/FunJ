@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.IntBinaryOperator;
 import java.util.stream.Collectors;
@@ -28,7 +29,8 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public final class BrotherTreeModule {
   public abstract static class Tree<K extends Comparable<K>, V>
-                                      extends PersistentMapBase<K, V, Tree<K, V>> {
+                                      extends PersistentMapBase<K, V, Tree<K, V>>
+                                      implements PersistentMapEntry<K, V> {
     @Override
     public final Tree<K, V> filteri(final BiPredicate<K, V> f) {
       return fromStrictlyIncreasingArray(getElementsSatisfyingPredicate(f));
@@ -36,7 +38,7 @@ public final class BrotherTreeModule {
 
     @Override
     public final Pair<Tree<K, V>, Tree<K, V>> partitioni(final BiPredicate<K, V> f) {
-      final Pair<ArrayList<Pair<K, V>>, ArrayList<Pair<K, V>>> elemsPair = splitElemsAccordingToPredicate(f);
+      final Pair<ArrayList<PersistentMapEntry<K, V>>, ArrayList<PersistentMapEntry<K, V>>> elemsPair = splitElemsAccordingToPredicate(f);
 
       return Pair.create(fromStrictlyIncreasingArray(elemsPair.mx1),
                          fromStrictlyIncreasingArray(elemsPair.mx2));
@@ -78,12 +80,12 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public final Optional<Pair<K, V>> lowerPair(final K key) {
+    public final Optional<PersistentMapEntry<K, V>> lowerPair(final K key) {
       return lowerPair(this, key);
     }
 
     @Override
-    public final Optional<Pair<K, V>> higherPair(final K key) {
+    public final Optional<PersistentMapEntry<K, V>> higherPair(final K key) {
       return higherPair(this, key);
     }
 
@@ -130,13 +132,7 @@ public final class BrotherTreeModule {
       return n1_aux(t, false);
     }
 
-    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> makeBoundPair(final N2<K, V> candidate) {
-      return candidate == null
-        ? Optional.empty()
-        : Optional.of(Pair.create(candidate.ma1, candidate.mv1));
-    }
-
-    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
+    private static <K extends Comparable<K>, V> Optional<PersistentMapEntry<K, V>> lowerPair(final Tree<K, V> t, final K key) {
       Tree<K, V> tree = t;
       N2<K, V> candidate = null;
 
@@ -159,7 +155,7 @@ public final class BrotherTreeModule {
           tree = n2.mt1;
         }
         else {
-          final Optional<Pair<K, V>> p = n2.mt1.maxElementPair();
+          final Optional<PersistentMapEntry<K, V>> p = n2.mt1.maxElementPair();
           if (p.isPresent()) {
             return p;
           }
@@ -169,10 +165,10 @@ public final class BrotherTreeModule {
         }
       }
 
-      return makeBoundPair(candidate);
+      return Optional.ofNullable(candidate);
     }
 
-    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPair(final Tree<K, V> t, final K key) {
+    private static <K extends Comparable<K>, V> Optional<PersistentMapEntry<K, V>> higherPair(final Tree<K, V> t, final K key) {
       Tree<K, V> tree = t;
       N2<K, V> candidate = null;
 
@@ -195,7 +191,7 @@ public final class BrotherTreeModule {
           candidate = n2;
         }
         else {
-          final Optional<Pair<K, V>> p = n2.mt2.minElementPair();
+          final Optional<PersistentMapEntry<K, V>> p = n2.mt2.minElementPair();
           if (p.isPresent()) {
             return p;
           }
@@ -205,7 +201,7 @@ public final class BrotherTreeModule {
         }
       }
 
-      return makeBoundPair(candidate);
+      return Optional.ofNullable(candidate);
     }
 
     private static <K extends Comparable<K>, V> Tree<K, V> n1_aux(final Tree<K,V> t, final boolean boxN1) {
@@ -229,6 +225,16 @@ public final class BrotherTreeModule {
       else {
         return boxN1 ? N1.create(t) : t;
       }
+    }
+
+    @Override
+    public K getKey() {
+      throw new AssertionError("The empty tree has no key.");
+    }
+
+    @Override
+    public V getValue() {
+      throw new AssertionError("The empty tree has no value.");
     }
 
     @Override
@@ -287,6 +293,11 @@ public final class BrotherTreeModule {
     }
 
     @Override
+    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+      return;
+    }
+
+    @Override
     public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
       return create();
     }
@@ -307,12 +318,12 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public Optional<Pair<K, V>> minElementPair() {
+    public Optional<PersistentMapEntry<K, V>> minElementPair() {
       return Optional.empty();
     }
 
     @Override
-    public Optional<Pair<K, V>> maxElementPair() {
+    public Optional<PersistentMapEntry<K, V>> maxElementPair() {
       return Optional.empty();
     }
 
@@ -390,6 +401,11 @@ public final class BrotherTreeModule {
     }
 
     @Override
+    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+      mt.appEntry(f);
+    }
+
+    @Override
     public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
       return N1.create(mt.mapi(f));
     }
@@ -410,12 +426,12 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public Optional<Pair<K, V>> minElementPair() {
+    public Optional<PersistentMapEntry<K, V>> minElementPair() {
       return mt.minElementPair();
     }
 
     @Override
-    public Optional<Pair<K, V>> maxElementPair() {
+    public Optional<PersistentMapEntry<K, V>> maxElementPair() {
       return mt.maxElementPair();
     }
 
@@ -456,6 +472,16 @@ public final class BrotherTreeModule {
     public final K ma1;
     public final V mv1;
     public final Tree<K, V> mt2;
+
+    @Override
+    public K getKey() {
+      return ma1;
+    }
+
+    @Override
+    public V getValue() {
+      return mv1;
+    }
 
     @Override
     protected Tree<K, V> ins(final BiFunction<V, V, V> f, final K a, final V v) {
@@ -542,6 +568,15 @@ public final class BrotherTreeModule {
     }
 
     @Override
+    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+      mt1.appEntry(f);
+      f.accept(this);
+      mt2.appEntry(f);
+
+      return;
+    }
+
+    @Override
     public <W> Tree<K, W> mapi(final BiFunction<K, V, W> f) {
       return create(mt1.mapi(f), ma1, f.apply(ma1, mv1), mt2.mapi(f));
     }
@@ -564,10 +599,10 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public Optional<Pair<K, V>> minElementPair() {
+    public Optional<PersistentMapEntry<K, V>> minElementPair() {
       N1<K, V> n;
       if (mt1.isN0() || ((n = mt1.asN1()) != null && n.mt.isN0())) {
-        return Optional.of(Pair.create(ma1, mv1));
+        return Optional.of(this);
       }
       else {
         return mt1.minElementPair();
@@ -575,10 +610,10 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public Optional<Pair<K, V>> maxElementPair() {
+    public Optional<PersistentMapEntry<K, V>> maxElementPair() {
       N1<K, V> n;
       if (mt2.isN0() || ((n = mt2.asN1()) != null && n.mt.isN0())) {
-        return Optional.of(Pair.create(ma1, mv1));
+        return Optional.of(this);
       }
       else {
         return mt2.maxElementPair();
@@ -881,6 +916,11 @@ public final class BrotherTreeModule {
     }
 
     @Override
+    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+      throw sTreeStructureError;
+    }
+
+    @Override
     public <W> Tree<K, W> mapi(BiFunction<K, V, W> f) {
       throw sTreeStructureError;
     }
@@ -901,12 +941,12 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public Optional<Pair<K, V>> minElementPair() {
+    public Optional<PersistentMapEntry<K, V>> minElementPair() {
       throw sTreeStructureError;
     }
 
     @Override
-    public Optional<Pair<K, V>> maxElementPair() {
+    public Optional<PersistentMapEntry<K, V>> maxElementPair() {
       throw sTreeStructureError;
     }
 
@@ -985,6 +1025,11 @@ public final class BrotherTreeModule {
     }
 
     @Override
+    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+      throw sTreeStructureError;
+    }
+
+    @Override
     public <W> Tree<K, W> mapi(BiFunction<K, V, W> f) {
       throw sTreeStructureError;
     }
@@ -1005,12 +1050,12 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public Optional<Pair<K, V>> minElementPair() {
+    public Optional<PersistentMapEntry<K, V>> minElementPair() {
       throw sTreeStructureError;
     }
 
     @Override
-    public Optional<Pair<K, V>> maxElementPair() {
+    public Optional<PersistentMapEntry<K, V>> maxElementPair() {
       throw sTreeStructureError;
     }
 
@@ -1031,33 +1076,33 @@ public final class BrotherTreeModule {
     L2<K, V> asL2() { return this; }
   }
 
-  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
     return fromStrictlyIncreasingArray(stream.collect(Collectors.toCollection(ArrayList::new)));
   }
 
-  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
     return fromSpine(BrotherTreeModule.<K, V> empty(),
                      stream.reduce(Nil.create(),
-                                   (s, p) -> cons(p.mx1, p.mx2, s),
-                                   (s1, s2) -> { throw new AssertionError("Should never be called."); }));
+                                   (s, p) -> cons(p.getKey(), p.getValue(), s),
+                                   (s1, s2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
   }
 
-  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
     final int n = v.size();
     return fromStrictlyDecreasingStream(IntStream.rangeClosed(1, n).mapToObj(idx -> v.get(n - idx)));
   }
 
-  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
     return fromStrictlyDecreasingStream(v.stream());
   }
 
-  public static <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<PersistentMapEntry<K, V>> stream) {
     return stream.reduce(empty(),
-                         ((t, p) -> t.insert(p.mx1, p.mx2)),
+                         ((t, p) -> t.insert(p.getKey(), p.getValue())),
                          ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
   }
 
-  public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+  public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<PersistentMapEntry<K, V>> v) {
     return fromStream(v.stream());
   }
 
@@ -1244,32 +1289,32 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStrictlyIncreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
       return BrotherTreeModule.fromStrictlyIncreasingStream(stream);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStrictlyDecreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
       return BrotherTreeModule.fromStrictlyDecreasingStream(stream);
     }
 
     @Override
-    public Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromArray(final ArrayList<PersistentMapEntry<K, V>> v) {
       return BrotherTreeModule.fromArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
       return BrotherTreeModule.fromStrictlyIncreasingArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
       return BrotherTreeModule.fromStrictlyDecreasingArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStream(final Stream<PersistentMapEntry<K, V>> stream) {
       return BrotherTreeModule.fromStream(stream);
     }
   }

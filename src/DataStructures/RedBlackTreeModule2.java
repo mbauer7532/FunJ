@@ -21,6 +21,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,7 +33,8 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public class RedBlackTreeModule2 {
   public static final class Tree<K extends Comparable<K>, V>
-                                extends PersistentMapBase<K, V, Tree<K, V>> {
+                                 extends PersistentMapBase<K, V, Tree<K, V>>
+                                 implements PersistentMapEntry<K, V> {
     private static final int sEmptyTag = 0;
     private static final int sRedTag   = 1;
     private static final int sBlackTag = 2;
@@ -45,6 +47,24 @@ public class RedBlackTreeModule2 {
       mTag   = tag;
     }
 
+    @Override
+    public K getKey() {
+      if (isNull()) {
+        throw new AssertionError("The empty tree has no key.");
+      }
+
+      return mKey;
+    }
+
+    @Override
+    public V getValue() {
+      if (isNull()) {
+        throw new AssertionError("The empty tree has no value.");
+      }
+
+      return mValue;
+    }
+
     public static <K extends Comparable<K>, V> Tree<K, V> empty() {
       return createEmptyNode();
     }
@@ -54,29 +74,29 @@ public class RedBlackTreeModule2 {
       return createBlackNode(e, key, value, e);
     }
 
-    public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+    public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
       return fromStrictlyIncreasingArray(stream.collect(Collectors.toCollection(ArrayList::new)));
     }
 
-    public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+    public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
       return fromStrictlyDecreasingArray(stream.collect(Collectors.toCollection(ArrayList::new)));
     }
 
-    public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+    public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
       return (new InitFromArrayWorker<>(v, true, computeRedDepth(v.size())).doIt());
     }
 
-    public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+    public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
       return (new InitFromArrayWorker<>(v, false, computeRedDepth(v.size())).doIt());
     }
 
-    public static <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+    public static <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<PersistentMapEntry<K, V>> stream) {
       return stream.reduce(empty(),
-                           ((t, p) -> t.insert(p.mx1, p.mx2)),
+                           ((t, p) -> t.insert(p.getKey(), p.getValue())),
                            ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
     }
 
-    public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+    public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<PersistentMapEntry<K, V>> v) {
       return fromStream(v.stream());
     }
 
@@ -281,6 +301,15 @@ public class RedBlackTreeModule2 {
       return heightImpl();
     }
 
+    @Override
+    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+      if (! isNull()) {
+        mLeft.appEntry(f);
+        f.accept(this);
+        mRight.appEntry(f);
+      }
+    }
+
     private void appiImpl(final BiConsumer<K, V> f) {
       if (! isNull()) {
         mLeft.appiImpl(f);
@@ -311,13 +340,13 @@ public class RedBlackTreeModule2 {
       return foldriImpl(f, w);
     }
 
-    private Optional<Pair<K, V>> minElementPairImpl() {
+    private Optional<PersistentMapEntry<K, V>> minElementPairImpl() {
       if (isNull()) {
         return Optional.empty();
       }
       else {
         if (mLeft.isNull()) {
-          return Optional.of(Pair.create(mKey, mValue));
+          return Optional.of(this);
         }
         else {
           return mLeft.minElementPairImpl();
@@ -326,17 +355,17 @@ public class RedBlackTreeModule2 {
     }
 
     @Override
-    public Optional<Pair<K, V>> minElementPair() {
+    public Optional<PersistentMapEntry<K, V>> minElementPair() {
       return minElementPairImpl();
     }
 
-    private Optional<Pair<K, V>> maxElementPairImpl() {
+    private Optional<PersistentMapEntry<K, V>> maxElementPairImpl() {
       if (isNull()) {
         return Optional.empty();
       }
       else {
         if (mRight.isNull()) {
-          return Optional.of(Pair.create(mKey, mValue));
+          return Optional.of(this);
         }
         else {
           return mRight.maxElementPairImpl();
@@ -345,7 +374,7 @@ public class RedBlackTreeModule2 {
     }
 
     @Override
-    public Optional<Pair<K, V>> maxElementPair() {
+    public Optional<PersistentMapEntry<K, V>> maxElementPair() {
       return maxElementPairImpl();
     }
 
@@ -407,7 +436,7 @@ public class RedBlackTreeModule2 {
 
     @Override
     public final Pair<Tree<K, V>, Tree<K, V>> partitioni(final BiPredicate<K, V> f) {
-      final Pair<ArrayList<Pair<K, V>>, ArrayList<Pair<K, V>>> elemsPair = splitElemsAccordingToPredicate(f);
+      final Pair<ArrayList<PersistentMapEntry<K, V>>, ArrayList<PersistentMapEntry<K, V>>> elemsPair = splitElemsAccordingToPredicate(f);
 
       return Pair.create(fromStrictlyIncreasingArray(elemsPair.mx1),
                          fromStrictlyIncreasingArray(elemsPair.mx2));
@@ -480,13 +509,7 @@ public class RedBlackTreeModule2 {
       return mapiImpl((k, v) -> f.apply(v));
     }
 
-    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> makeBoundPair(final Tree<K, V> candidate) {
-      return candidate == null
-        ? Optional.empty()
-        : Optional.of(Pair.create(candidate.mKey, candidate.mValue));
-    }
-
-    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPairImpl(final Tree<K, V> tree, final K key) {
+    private static <K extends Comparable<K>, V> Optional<PersistentMapEntry<K, V>> lowerPairImpl(final Tree<K, V> tree, final K key) {
       Tree<K, V> t = tree;
       Tree<K, V> candidate = null;
 
@@ -500,7 +523,7 @@ public class RedBlackTreeModule2 {
           t = t.mLeft;
         }
         else {
-          final Optional<Pair<K, V>> p = t.mLeft.maxElementPair();
+          final Optional<PersistentMapEntry<K, V>> p = t.mLeft.maxElementPair();
           if (p.isPresent()) {
             return p;
           }
@@ -510,15 +533,15 @@ public class RedBlackTreeModule2 {
         }
       }
 
-      return makeBoundPair(candidate);
+      return Optional.ofNullable(candidate);
     }
 
     @Override
-    public final Optional<Pair<K, V>> lowerPair(final K key) {
+    public final Optional<PersistentMapEntry<K, V>> lowerPair(final K key) {
       return lowerPairImpl(this, key);
     }
 
-    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPairImpl(final Tree<K, V> tree, final K key) {
+    private static <K extends Comparable<K>, V> Optional<PersistentMapEntry<K, V>> higherPairImpl(final Tree<K, V> tree, final K key) {
       Tree<K, V> t = tree;
       Tree<K, V> candidate = null;
 
@@ -532,7 +555,7 @@ public class RedBlackTreeModule2 {
           t = t.mLeft;
         }
         else {
-          final Optional<Pair<K, V>> p = t.mRight.minElementPair();
+          final Optional<PersistentMapEntry<K, V>> p = t.mRight.minElementPair();
           if (p.isPresent()) {
             return p;
           }
@@ -542,11 +565,11 @@ public class RedBlackTreeModule2 {
         }
       }
 
-      return makeBoundPair(candidate);
+      return Optional.ofNullable(candidate);
     }
 
     @Override
-    public final Optional<Pair<K, V>> higherPair(final K key) {
+    public final Optional<PersistentMapEntry<K, V>> higherPair(final K key) {
       return higherPairImpl(this, key);
     }
 
@@ -899,11 +922,11 @@ public class RedBlackTreeModule2 {
     }
 
     private static final class InitFromArrayWorker<K extends Comparable<K>, V> {
-      private final ArrayList<Pair<K, V>> mVector;
+      private final ArrayList<PersistentMapEntry<K, V>> mVector;
       private final boolean mIncreasing;
       private final int mRedLevel;
 
-      public InitFromArrayWorker(final ArrayList<Pair<K, V>> vector,
+      public InitFromArrayWorker(final ArrayList<PersistentMapEntry<K, V>> vector,
                                  final boolean increasing,
                                  final int redLevel) {
         mVector = vector;
@@ -916,7 +939,7 @@ public class RedBlackTreeModule2 {
           return createEmptyNode();
 
         final int mid = (left + right) >>> 1;
-        final Pair<K, V> p = mVector.get(mid);
+        final PersistentMapEntry<K, V> p = mVector.get(mid);
 
         final int newDepth = depth + 1;
         Tree<K, V> lt = workerFunc(left, mid - 1, newDepth);
@@ -929,8 +952,8 @@ public class RedBlackTreeModule2 {
         }
 
         return depth == mRedLevel
-                ? createRedNode(lt, p.mx1, p.mx2, rt)
-                : createBlackNode(lt, p.mx1, p.mx2, rt);
+                ? createRedNode(lt, p.getKey(), p.getValue(), rt)
+                : createBlackNode(lt, p.getKey(), p.getValue(), rt);
       }
 
       public final Tree<K, V> doIt() {
@@ -956,32 +979,32 @@ public class RedBlackTreeModule2 {
     }
 
     @Override
-    public Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStrictlyIncreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
       return Tree.fromStrictlyIncreasingStream(stream);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStrictlyDecreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
       return Tree.fromStrictlyDecreasingStream(stream);
     }
 
     @Override
-    public Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromArray(final ArrayList<PersistentMapEntry<K, V>> v) {
       return Tree.fromArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
       return Tree.fromStrictlyIncreasingArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
       return Tree.fromStrictlyDecreasingArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStream(final Stream<PersistentMapEntry<K, V>> stream) {
       return Tree.fromStream(stream);
     }
   }

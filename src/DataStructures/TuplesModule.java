@@ -148,15 +148,53 @@ public final class TuplesModule {
     }
   }
 
-  public static final class AssocPair<T1 extends Comparable<T1>, T2> {
-    public T1 mKey;
-    public T2 mValue;
+  public static final class AssocPair<T1 extends Comparable<T1>, T2>
+                                                 implements PersistentMapEntry<T1, T2> {
+    public static <T1 extends Comparable<T1>, T2> AssocPair<T1, T2> create(final T1 x1, final T2 x2) {
+      return new AssocPair<>(x1, x2);
+    }
+
+    private AssocPair(final T1 x1, final T2 x2) {
+      mKey   = x1;
+      mValue = x2;
+    }
+
+    private final T1 mKey;
+    private final T2 mValue;
 
     @Override
     public String toString() {
       return String.format("(%s, %s)",
                            mKey.toString(),
                            mValue.toString());
+    }
+
+    @Override
+    public T1 getKey() {
+      return mKey;
+    }
+
+    @Override
+    public T2 getValue() {
+      return mValue;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+      if (obj instanceof PersistentMapEntry) {
+        @SuppressWarnings("unchecked")
+        final PersistentMapEntry<T1, T2> p = (PersistentMapEntry<T1, T2>) obj;
+        return mKey.equals(p.getKey())
+                && mValue.equals(p.getValue());
+      }
+      else {
+        return false;
+      }
+    }
+
+    @Override
+    public int hashCode() {
+      return mKey.hashCode() + mValue.hashCode();
     }
   }
 }

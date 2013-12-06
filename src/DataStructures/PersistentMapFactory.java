@@ -6,13 +6,15 @@
 
 package DataStructures;
 
-import DataStructures.TuplesModule.Pair;
 import java.util.ArrayList;
 import java.util.stream.Stream;
 
 /**
  *
  * @author Neo
+ * @param <K>
+ * @param <V>
+ * @param <M>
  */
 public interface PersistentMapFactory<K extends Comparable<K>, V, M extends PersistentMap<K, V, M>> {
   public String getMapName();
@@ -21,15 +23,15 @@ public interface PersistentMapFactory<K extends Comparable<K>, V, M extends Pers
 
   public PersistentMap<K, V, M> singleton(final K key, final V value);
 
-  public PersistentMap<K, V, M> fromStream(final Stream<Pair<K, V>> stream);
+  public PersistentMap<K, V, M> fromStream(final Stream<PersistentMapEntry<K, V>> stream);
 
-  public PersistentMap<K, V, M> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream);
+  public PersistentMap<K, V, M> fromStrictlyIncreasingStream(final Stream<PersistentMapEntry<K, V>> stream);
 
-  public PersistentMap<K, V, M> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream);
+  public PersistentMap<K, V, M> fromStrictlyDecreasingStream(final Stream<PersistentMapEntry<K, V>> stream);
 
-  public PersistentMap<K, V, M> fromArray(final ArrayList<Pair<K, V>> v);
+  public PersistentMap<K, V, M> fromArray(final ArrayList<PersistentMapEntry<K, V>> v);
 
-  public PersistentMap<K, V, M> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v);
+  public PersistentMap<K, V, M> fromStrictlyIncreasingArray(final ArrayList<PersistentMapEntry<K, V>> v);
 
-  public PersistentMap<K, V, M> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v);
+  public PersistentMap<K, V, M> fromStrictlyDecreasingArray(final ArrayList<PersistentMapEntry<K, V>> v);
 }

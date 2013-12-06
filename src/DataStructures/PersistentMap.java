@@ -26,9 +26,7 @@ import org.StructureGraphic.v1.DSTreeNode;
  * @param <V>
  * @param <M>
  */
-public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentMap<K, V, M>>
-         extends DSTreeNode {
-
+public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentMap<K, V, M>> extends DSTreeNode {
   /**
    *
    * @param key
@@ -202,7 +200,7 @@ public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentM
    *
    * @return
    */
-  public ArrayList<Pair<K, V>> keyValuePairs();
+  public ArrayList<PersistentMapEntry<K, V>> keyValuePairs();
 
   /**
    *
@@ -224,7 +222,7 @@ public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentM
    * @param key
    * @return
    */
-  public Optional<Pair<K, V>> lowerPair(final K key);
+  public Optional<PersistentMapEntry<K, V>> lowerPair(final K key);
 
   /**
    *
@@ -238,7 +236,7 @@ public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentM
    * @param key
    * @return
    */
-  public Optional<Pair<K, V>> higherPair(final K key);
+  public Optional<PersistentMapEntry<K, V>> higherPair(final K key);
 
   /**
    *
@@ -274,13 +272,13 @@ public interface PersistentMap<K extends Comparable<K>, V, M extends PersistentM
    *
    * @return
    */
-  public Optional<Pair<K, V>> minElementPair();
+  public Optional<PersistentMapEntry<K, V>> minElementPair();
 
   /**
    *
    * @return
    */
-  public Optional<Pair<K, V>> maxElementPair();
+  public Optional<PersistentMapEntry<K, V>> maxElementPair();
 
   /**
    *

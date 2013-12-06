@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,7 +23,8 @@ import org.StructureGraphic.v1.DSTreeNode;
 
 public final class AvlTreeModule {
   public static abstract class Tree<K extends Comparable<K>, V>
-                               extends PersistentMapBase<K, V, Tree<K, V>> {
+                               extends PersistentMapBase<K, V, Tree<K, V>>
+                               implements PersistentMapEntry<K, V> {
     private Tree(final int height) {
       mHeight = height;
     }
@@ -56,20 +58,20 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public final Pair<Tree<K, V>, Tree<K, V>> partitioni(BiPredicate<K, V> f) {
-      final Pair<ArrayList<Pair<K, V>>, ArrayList<Pair<K, V>>> elemsPair = splitElemsAccordingToPredicate(f);
+    public final Pair<Tree<K, V>, Tree<K, V>> partitioni(final BiPredicate<K, V> f) {
+      final Pair<ArrayList<PersistentMapEntry<K, V>>, ArrayList<PersistentMapEntry<K, V>>> elemsPair = splitElemsAccordingToPredicate(f);
 
       return Pair.create(fromStrictlyIncreasingArray(elemsPair.mx1),
                          fromStrictlyIncreasingArray(elemsPair.mx2));
     }
 
     @Override
-    public final <W> Tree<K, W> mapPartial(Function<V, Optional<W>> f) {
+    public final <W> Tree<K, W> mapPartial(final Function<V, Optional<W>> f) {
       return mapPartiali((k, v) -> f.apply(v));
     }
 
     @Override
-    public final <W> Tree<K, W> mapPartiali(BiFunction<K, V, Optional<W>> f) {
+    public final <W> Tree<K, W> mapPartiali(final BiFunction<K, V, Optional<W>> f) {
       return fromStrictlyIncreasingArray(selectNonEmptyOptionalElements(f));
     }
 
@@ -79,12 +81,12 @@ public final class AvlTreeModule {
     }
 
     @Override
-      public final Optional<Pair<K, V>> lowerPair(final K key) {
+    public final Optional<PersistentMapEntry<K, V>> lowerPair(final K key) {
       return lowerPair(this, key);
     }
 
     @Override
-      public final Optional<Pair<K, V>> higherPair(final K key) {
+    public final Optional<PersistentMapEntry<K, V>> higherPair(final K key) {
       return higherPair(this, key);
     }
 
@@ -96,13 +98,7 @@ public final class AvlTreeModule {
     abstract Tree<K, V> rem(final K key) throws ControlExnNoSuchElement;
     abstract Tree<K, V> removeMinBinding();
 
-    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> makeBoundPair(final Node<K, V> candidate) {
-      return candidate == null
-        ? Optional.empty()
-        : Optional.of(Pair.create(candidate.mKey, candidate.mValue));
-    }
-
-    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> lowerPair(final Tree<K, V> t, final K key) {
+    private static <K extends Comparable<K>, V> Optional<PersistentMapEntry<K, V>> lowerPair(final Tree<K, V> t, final K key) {
       Tree<K, V> tree = t;
       Node<K, V> n, candidate = null;
 
@@ -117,7 +113,7 @@ public final class AvlTreeModule {
           tree = n.mLeft;
         }
         else {
-          final Optional<Pair<K, V>> p = n.mLeft.maxElementPair();
+          final Optional<PersistentMapEntry<K, V>> p = n.mLeft.maxElementPair();
           if (p.isPresent()) {
             return p;
           }
@@ -127,10 +123,10 @@ public final class AvlTreeModule {
         }
       }
 
-      return makeBoundPair(candidate);
+      return Optional.ofNullable(candidate);
     }
 
-    private static <K extends Comparable<K>, V> Optional<Pair<K, V>> higherPair(final Tree<K, V> t, final K key) {
+    private static <K extends Comparable<K>, V> Optional<PersistentMapEntry<K, V>> higherPair(final Tree<K, V> t, final K key) {
       Tree<K, V> tree = t;
       Node<K, V> n, candidate = null;
 
@@ -145,7 +141,7 @@ public final class AvlTreeModule {
           candidate = n;
         }
         else {
-          final Optional<Pair<K, V>> p = n.mRight.minElementPair();
+          final Optional<PersistentMapEntry<K, V>> p = n.mRight.minElementPair();
           if (p.isPresent()) {
             return p;
           }
@@ -155,7 +151,7 @@ public final class AvlTreeModule {
         }
       }
 
-      return makeBoundPair(candidate);
+      return Optional.ofNullable(candidate);
     }
   }
 
@@ -169,6 +165,16 @@ public final class AvlTreeModule {
 
     private EmptyNode() {
       super(0);
+    }
+
+    @Override
+    public K getKey() {
+      throw new AssertionError("The empty tree has no key.");
+    }
+
+    @Override
+    public V getValue() {
+      throw new AssertionError("The empty tree has no value.");
     }
 
     @Override
@@ -195,12 +201,12 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public Optional<Pair<K, V>> minElementPair() {
+    public Optional<PersistentMapEntry<K, V>> minElementPair() {
       return Optional.empty();
     }
 
     @Override
-    public Optional<Pair<K, V>> maxElementPair() {
+    public Optional<PersistentMapEntry<K, V>> maxElementPair() {
       return Optional.empty();
     }
 
@@ -211,6 +217,11 @@ public final class AvlTreeModule {
 
     @Override
     public void appi(final BiConsumer<K, V> f) {
+      return;
+    }
+
+    @Override
+    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
       return;
     }
 
@@ -295,6 +306,16 @@ public final class AvlTreeModule {
     }
 
     @Override
+    public K getKey() {
+      return mKey;
+    }
+
+    @Override
+    public V getValue() {
+      return mValue;
+    }
+
+    @Override
     public final boolean isEmpty() { return false; }
 
     @Override
@@ -337,9 +358,9 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public Optional<Pair<K, V>> minElementPair() {
+    public Optional<PersistentMapEntry<K, V>> minElementPair() {
       if (mLeft.isEmpty()) {
-        return Optional.of(Pair.create(mKey, mValue));
+        return Optional.of(this);
       }
       else {
         return mLeft.minElementPair();
@@ -347,9 +368,9 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public Optional<Pair<K, V>> maxElementPair() {
+    public Optional<PersistentMapEntry<K, V>> maxElementPair() {
       if (mRight.isEmpty()) {
-        return Optional.of(Pair.create(mKey, mValue));
+        return Optional.of(this);
       }
       else {
         return mRight.maxElementPair();
@@ -366,6 +387,15 @@ public final class AvlTreeModule {
       mLeft.appi(f);
       f.accept(mKey, mValue);
       mRight.appi(f);
+
+      return;
+    }
+
+    @Override
+    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+      mLeft.appEntry(f);
+      f.accept(this);
+      mRight.appEntry(f);
 
       return;
     }
@@ -474,8 +504,8 @@ public final class AvlTreeModule {
         return t1;
       }
       else {
-        final Pair<K, V> mn = t2.minElementPair().get();
-        return balance(t1, mn.mx1, mn.mx2, t2.removeMinBinding());
+        final PersistentMapEntry<K, V> mn = t2.minElementPair().get();
+        return balance(t1, mn.getKey(), mn.getValue(), t2.removeMinBinding());
       }
     }
 
@@ -537,11 +567,11 @@ public final class AvlTreeModule {
   }
 
   private static final class InitFromArrayWorker<K extends Comparable<K>, V> {
-    private final ArrayList<Pair<K, V>> mVector;
+    private final ArrayList<PersistentMapEntry<K, V>> mVector;
     private final boolean mIncreasing;
 
     
-    public InitFromArrayWorker(final ArrayList<Pair<K, V>> vector,
+    public InitFromArrayWorker(final ArrayList<PersistentMapEntry<K, V>> vector,
                                final boolean increasing) {
       mVector = vector;
       mIncreasing = increasing;
@@ -552,7 +582,7 @@ public final class AvlTreeModule {
         return empty();
 
       final int mid = (left + right) >>> 1;
-      final Pair<K, V> p = mVector.get(mid);
+      final PersistentMapEntry<K, V> p = mVector.get(mid);
 
       Tree<K, V> lt, rt;
       lt = workerFunc(left, mid - 1);
@@ -564,7 +594,7 @@ public final class AvlTreeModule {
         rt = t;
       }
 
-      return Node.create(lt, p.mx1, p.mx2, rt);
+      return Node.create(lt, p.getKey(), p.getValue(), rt);
     }
 
     public final Tree<K, V> doIt() {
@@ -572,29 +602,29 @@ public final class AvlTreeModule {
     }
   }
 
-  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
     return fromStrictlyIncreasingArray(stream.collect(Collectors.toCollection(ArrayList::new)));
   }
 
-  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
     return fromStrictlyDecreasingArray(stream.collect(Collectors.toCollection(ArrayList::new)));
   }
 
-  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
     return (new InitFromArrayWorker<>(v, true).doIt());
   }
 
-  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
     return (new InitFromArrayWorker<>(v, false).doIt());
   }
   
-  public static <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+  public static <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<PersistentMapEntry<K, V>> stream) {
     return stream.reduce(empty(),
-                         ((t, p) -> t.insert(p.mx1, p.mx2)),
+                         ((t, p) -> t.insert(p.getKey(), p.getValue())),
                          ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
   }
 
-  public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+  public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<PersistentMapEntry<K, V>> v) {
     return fromStream(v.stream());
   }
 
@@ -666,32 +696,32 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public Tree<K, V> fromStrictlyIncreasingStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStrictlyIncreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
       return AvlTreeModule.fromStrictlyIncreasingStream(stream);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyDecreasingStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStrictlyDecreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
       return AvlTreeModule.fromStrictlyDecreasingStream(stream);
     }
 
     @Override
-    public Tree<K, V> fromArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromArray(final ArrayList<PersistentMapEntry<K, V>> v) {
       return AvlTreeModule.fromArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
       return AvlTreeModule.fromStrictlyIncreasingArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<Pair<K, V>> v) {
+    public Tree<K, V> fromStrictlyDecreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
       return AvlTreeModule.fromStrictlyDecreasingArray(v);
     }
 
     @Override
-    public Tree<K, V> fromStream(final Stream<Pair<K, V>> stream) {
+    public Tree<K, V> fromStream(final Stream<PersistentMapEntry<K, V>> stream) {
       return AvlTreeModule.fromStream(stream);
     }
   }

@@ -6,6 +6,7 @@
 
 package DataStructures;
 
+import DataStructures.TuplesModule.AssocPair;
 import Utils.Numeric;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,40 +27,25 @@ import static org.junit.Assert.*;
  */
 public class PersistentMapFactoryTest {
   
-  public PersistentMapFactoryTest() {
-  }
+  public PersistentMapFactoryTest() {}
   
   @BeforeClass
-  public static void setUpClass() {
-  }
+  public static void setUpClass() {}
   
   @AfterClass
-  public static void tearDownClass() {
-  }
+  public static void tearDownClass() {}
   
   @Before
-  public void setUp() {
-  }
+  public void setUp() {}
   
   @After
-  public void tearDown() {
-  }
+  public void tearDown() {}
 
   /**
    * Test of empty method, of class PersistentMapFactory.
    */
   @Test
-  public void testEmpty() {
-
-  }
-
-  /**
-   * Test of singleton method, of class PersistentMapFactory.
-   */
-  @Test
-  public void testSingleton() {
-
-  }
+  public void testEmpty() {}
 
   private static final int sMapSize = 600;
 
@@ -138,13 +124,13 @@ public class PersistentMapFactoryTest {
 
       final int[] perm = Numeric.randomPermutation(0, y, y + 1, rng);
 
-      final Stream<TuplesModule.Pair<Integer, Integer>> streamIncreasing  = IntStream.rangeClosed(0, y).mapToObj(x -> TuplesModule.Pair.create(x, x));
-      final Stream<TuplesModule.Pair<Integer, Integer>> streamDecreasing  = IntStream.rangeClosed(0, y).mapToObj(x -> TuplesModule.Pair.create(y - x, y - x));
-      final Stream<TuplesModule.Pair<Integer, Integer>> streamPermutation = Arrays.stream(perm).mapToObj(x -> TuplesModule.Pair.create(x, x));
-      
-      final ArrayList<TuplesModule.Pair<Integer, Integer>> arrayIncreasing  = IntStream.rangeClosed(0, y).mapToObj(x -> TuplesModule.Pair.create(x, x)).collect(Collectors.toCollection(ArrayList::new));
-      final ArrayList<TuplesModule.Pair<Integer, Integer>> arrayDecreasing  = IntStream.rangeClosed(0, y).mapToObj(x -> TuplesModule.Pair.create(y - x, y - x)).collect(Collectors.toCollection(ArrayList::new));
-      final ArrayList<TuplesModule.Pair<Integer, Integer>> arrayPermutation = Arrays.stream(perm).mapToObj(x -> TuplesModule.Pair.create(x, x)).collect(Collectors.toCollection(ArrayList::new));
+      final Stream<PersistentMapEntry<Integer, Integer>> streamIncreasing  = IntStream.rangeClosed(0, y).mapToObj(x -> AssocPair.create(x, x));
+      final Stream<PersistentMapEntry<Integer, Integer>> streamDecreasing  = IntStream.rangeClosed(0, y).mapToObj(x -> AssocPair.create(y - x, y - x));
+      final Stream<PersistentMapEntry<Integer, Integer>> streamPermutation = Arrays.stream(perm).mapToObj(x -> AssocPair.create(x, x));
+
+      final ArrayList<PersistentMapEntry<Integer, Integer>> arrayIncreasing  = IntStream.rangeClosed(0, y).mapToObj(x -> AssocPair.create(x, x)).collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<PersistentMapEntry<Integer, Integer>> arrayDecreasing  = IntStream.rangeClosed(0, y).mapToObj(x -> AssocPair.create(y - x, y - x)).collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<PersistentMapEntry<Integer, Integer>> arrayPermutation = Arrays.stream(perm).mapToObj(x -> AssocPair.create(x, x)).collect(Collectors.toCollection(ArrayList::new));
 
       final PersistentMap<Integer, Integer, ?> mapFromStreamIncreasing  = mapFactory.fromStream(streamIncreasing);
       final PersistentMap<Integer, Integer, ?> mapFromStreamDecreasing  = mapFactory.fromStream(streamDecreasing);
@@ -177,11 +163,11 @@ public class PersistentMapFactoryTest {
     final int N = sMapSize;
     IntStream.rangeClosed(0, N).forEach(y -> {
 
-      final Stream<TuplesModule.Pair<Integer, Integer>> stream = IntStream.rangeClosed(0, y).mapToObj(x -> TuplesModule.Pair.create(x, x));
+      final Stream<PersistentMapEntry<Integer, Integer>> stream = IntStream.rangeClosed(0, y).mapToObj(x -> AssocPair.create(x, x));
 
-      final ArrayList<TuplesModule.Pair<Integer, Integer>> v =
+      final ArrayList<PersistentMapEntry<Integer, Integer>> v =
               IntStream.rangeClosed(0, y)
-                       .mapToObj(x -> TuplesModule.Pair.create(x, x))
+                       .mapToObj(x -> AssocPair.create(x, x))
                        .collect(Collectors.toCollection(ArrayList::new));
 
       final PersistentMap<Integer, Integer, ?> mapFromStream = mapFactory.fromStrictlyIncreasingStream(stream);
@@ -201,19 +187,19 @@ public class PersistentMapFactoryTest {
     System.out.printf("FromStrictlyDecreasingStreamArray(%s)\n", c.getName());
 
     final PersistentMapFactory<Integer, Integer, ? extends PersistentMap<Integer, Integer, ?>> mapFactory = TestUtils.makeFactory(c);
-    
+
     final int N = sMapSize;
     IntStream.rangeClosed(0, N).forEach(y -> {
 
-      final Stream<TuplesModule.Pair<Integer, Integer>> stream =
+      final Stream<PersistentMapEntry<Integer, Integer>> stream =
               IntStream.rangeClosed(0, y)
                        .map(x -> y + 1 - x)
-                       .mapToObj(x -> TuplesModule.Pair.create(x, x));
+                       .mapToObj(x -> AssocPair.create(x, x));
 
-      final ArrayList<TuplesModule.Pair<Integer, Integer>> v =
+      final ArrayList<PersistentMapEntry<Integer, Integer>> v =
               IntStream.rangeClosed(0, y)
                        .map(x -> y + 1 - x)
-                       .mapToObj(x -> TuplesModule.Pair.create(x, x))
+                       .mapToObj(x -> AssocPair.create(x, x))
                        .collect(Collectors.toCollection(ArrayList::new));
 
       final PersistentMap<Integer, Integer, ?> mapFromStream = mapFactory.fromStrictlyDecreasingStream(stream);

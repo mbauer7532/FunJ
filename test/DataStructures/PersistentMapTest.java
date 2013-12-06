@@ -6,6 +6,7 @@
 
 package DataStructures;
 
+import DataStructures.TuplesModule.AssocPair;
 import DataStructures.TuplesModule.Pair;
 import Utils.Numeric;
 import Utils.Ref;
@@ -322,7 +323,7 @@ public class PersistentMapTest {
       final int halfN = N / 2;
       final PersistentMap<Integer, Integer, ?> t0 = mapFactory.fromStream(
               IntStream.range(0, N)
-                      .mapToObj(i -> Pair.create(i, i)));
+                      .mapToObj(i -> AssocPair.create(i, i)));
       final PersistentMap<Integer, Integer, ?> t1 = t0.filteri((k, v) -> (k & 1) == 1);
 
       TestUtils.checkMapProperties(t0);
@@ -365,7 +366,7 @@ public class PersistentMapTest {
       final int halfN = N / 2;
       final PersistentMap<Integer, Integer, ?> t0 = mapFactory.fromStream(
               IntStream.range(0, N)
-                       .mapToObj(i -> Pair.create(i, i)));
+                       .mapToObj(i -> AssocPair.create(i, i)));
 
       final Pair<? extends PersistentMap<Integer, Integer, ?>, ? extends PersistentMap<Integer, Integer, ?>> p = t0.partitioni((k, v) -> (k & 1) == 1);
       final PersistentMap<Integer, Integer, ?> t1 = p.mx1, t2 = p.mx2;
@@ -411,30 +412,30 @@ public class PersistentMapTest {
       final int N = 40;
       final PersistentMap<Integer, Integer, ?> t = mapFactory.fromStream(
               IntStream.rangeClosed(-N, N)
-                      .mapToObj(i -> Pair.create(i, i)));
+                      .mapToObj(i -> AssocPair.create(i, i)));
 
-      assertEquals(Pair.create(-N, -N), t.minElementPair().get());
-      assertEquals(Pair.create(N, N), t.maxElementPair().get());
+      assertEquals(AssocPair.create(-N, -N), t.minElementPair().get());
+      assertEquals(AssocPair.create(N, N), t.maxElementPair().get());
     }
     { // And one assymetric one.
       final int N = 40;
       final PersistentMap<Integer, Integer, ?> t = mapFactory.fromStream(
               IntStream.rangeClosed(-N, 2 * N)
-                      .mapToObj(i -> Pair.create(i, i)));
+                      .mapToObj(i -> AssocPair.create(i, i)));
 
-      assertEquals(Pair.create(-N, -N), t.minElementPair().get());
-      assertEquals(Pair.create(2 * N, 2 * N), t.maxElementPair().get());
+      assertEquals(AssocPair.create(-N, -N), t.minElementPair().get());
+      assertEquals(AssocPair.create(2 * N, 2 * N), t.maxElementPair().get());
     }
 
     final PersistentMap<Integer, Integer, ?> t0 = mapFactory.empty();
     try {
-      final Optional<Pair<Integer, Integer>> p = t0.minElementPair();
+      final Optional<PersistentMapEntry<Integer, Integer>> p = t0.minElementPair();
       fail("Internal error.  The empty tree must not have a minimum element.");
     }
     catch (AssertionError e) {}
 
     try {
-      final Optional<Pair<Integer, Integer>> p = t0.maxElementPair();
+      final Optional<PersistentMapEntry<Integer, Integer>> p = t0.maxElementPair();
       fail("Internal error.  The empty tree must not have a maximum element.");
     }
     catch (AssertionError e) {}
@@ -449,11 +450,11 @@ public class PersistentMapTest {
   void mergeAux(final int i0, final int i1, final int j0, final int j1, final PersistentMapFactory<Integer, Integer, M> mapFactory) {
     final PersistentMap<Integer, Integer, M> t0 = mapFactory.fromStrictlyIncreasingStream(
             IntStream.rangeClosed(i0, i1)
-                     .mapToObj(i -> Pair.create(i, 7 * i)));
+                     .mapToObj(i -> AssocPair.create(i, 7 * i)));
 
     final PersistentMap<Integer, Integer, M> t1 = mapFactory.fromStrictlyIncreasingStream(
             IntStream.rangeClosed(j0, j1)
-                     .mapToObj(i -> Pair.create(i, 13 * i)));
+                     .mapToObj(i -> AssocPair.create(i, 13 * i)));
 
     final BiFunction<Integer, Integer, Integer> f = (x1, x2) -> x1 - x2;
     final PersistentMap<Integer, Integer, M> tres = t0.merge(f, t1);
@@ -474,21 +475,21 @@ public class PersistentMapTest {
 
     TestUtils.checkMapProperties(tres);
 
-    final ArrayList<Pair<Integer, Integer>> kv0 = t0.keyValuePairs();
-    final ArrayList<Pair<Integer, Integer>> kv1 = t1.keyValuePairs();
+    final ArrayList<PersistentMapEntry<Integer, Integer>> kv0 = t0.keyValuePairs();
+    final ArrayList<PersistentMapEntry<Integer, Integer>> kv1 = t1.keyValuePairs();
 
-    kv0.stream().forEach((final Pair<Integer, Integer> p) -> {
-      final Optional<Integer> p1 = t1.get(p.mx1);
+    kv0.stream().forEach(p -> {
+      final Optional<Integer> p1 = t1.get(p.getKey());
 
-      final Integer expectedRes = p1.isPresent() ? f.apply(p.mx2, p1.get()) : p.mx2;
-      assertEquals(expectedRes, tres.get(p.mx1).get());
+      final Integer expectedRes = p1.isPresent() ? f.apply(p.getValue(), p1.get()) : p.getValue();
+      assertEquals(expectedRes, tres.get(p.getKey()).get());
     });
 
-    kv1.stream().forEach((final Pair<Integer, Integer> p) -> {
-      final Optional<Integer> p0 = t0.get(p.mx1);
+    kv1.stream().forEach(p -> {
+      final Optional<Integer> p0 = t0.get(p.getKey());
 
-      final Integer expectedRes = p0.isPresent() ? f.apply(p0.get(), p.mx2) : p.mx2;
-      assertEquals(expectedRes, tres.get(p.mx1).get());
+      final Integer expectedRes = p0.isPresent() ? f.apply(p0.get(), p.getValue()) : p.getValue();
+      assertEquals(expectedRes, tres.get(p.getKey()).get());
     });
   }
 
@@ -560,7 +561,7 @@ public class PersistentMapTest {
     final int low = 1, high = 40;
     final int gap = high - low;
 
-    final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMapfromIncreasing(mapFactory, IntStream.range(low, high).toArray(), i -> Pair.create(i, 2 * i));
+    final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMapfromIncreasing(mapFactory, IntStream.range(low, high).toArray(), i -> AssocPair.create(i, 2 * i));
 
     IntStream.range(low, high).forEach(n -> { assertTrue(t.containsValue(2 * n)); });
     IntStream.range(low, high).forEach(n -> { assertFalse(t.containsValue(-2 * n)); });
@@ -580,7 +581,7 @@ public class PersistentMapTest {
     final int N = 40;
     final PersistentMap<Integer, Integer, ?> t = mapFactory.fromStream(
             IntStream.range(0, N)
-                     .mapToObj(i -> Pair.create(2 * i, 2 * i)));
+                     .mapToObj(i -> AssocPair.create(2 * i, 2 * i)));
 
     IntStream.range(1, 2 * N - 2).forEach(n -> {
       assertEquals(n - 1 - (1 - (n & 1)), t.lowerKey(n).get().intValue());
@@ -609,7 +610,7 @@ public class PersistentMapTest {
     final int N = 40;
     final PersistentMap<Integer, Integer, ?> t = mapFactory.fromStream(
             IntStream.range(0, N)
-                     .mapToObj(i -> Pair.create(2 * i, 2 * i)));
+                     .mapToObj(i -> AssocPair.create(2 * i, 2 * i)));
 
     IntStream.range(1, 2 * N - 2).forEach(n -> {
       assertEquals(n + 1 + (1 - (n & 1)), t.higherKey(n).get().intValue());
@@ -632,8 +633,12 @@ public class PersistentMapTest {
     TestUtils.performTest(PersistentMapTest::testHigherPairImpl);
   }
 
-  private static <K, V> Optional<Pair<K, V>> toPair(final Map.Entry<K, V> e) {
-    return e == null ? Optional.empty() : Optional.of(Pair.create(e.getKey(), e.getValue()));
+  private static <K extends Comparable<K>, V> Optional<AssocPair<K, V>> toAssocPair(final Map.Entry<K, V> e) {
+    return e == null ? Optional.empty() : Optional.of(AssocPair.create(e.getKey(), e.getValue()));
+  }
+
+  private static <K extends Comparable<K>, V> Optional<AssocPair<K, V>> toAssocPair(final Optional<PersistentMapEntry<K, V>> e) {
+    return e.map(x -> AssocPair.create(x.getKey(), x.getValue()));
   }
 
   private static void testLowerHigherPairRandomInputsImpl(final Class<?> c) {
@@ -651,22 +656,22 @@ public class PersistentMapTest {
     IntStream.range(0, N).forEach(x -> {
       final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
-      final ArrayList<Pair<Integer, Integer>> v =
+      final ArrayList<PersistentMapEntry<Integer, Integer>> v =
               Arrays.stream(perm)
-                    .mapToObj(i -> Pair.create(i, i))
+                    .mapToObj(i -> AssocPair.create(i, i))
                     .collect(Collectors.toCollection(ArrayList::new));
 
       final PersistentMap<Integer, Integer, ?> pm = mapFactory.fromArray(v);
       final TreeMap<Integer, Integer> tm = new TreeMap<>();
 
-      v.stream().forEach(p -> tm.put(p.mx1, p.mx2));
+      v.stream().forEach(p -> tm.put(p.getKey(), p.getValue()));
 
       Numeric.randomSet(low - 200, high + 200, 500, rng).forEach(n -> {
-        final Optional<Pair<Integer, Integer>>
-                tmlowerExpected  = toPair(tm.lowerEntry(n)),
-                pmLower          = pm.lowerPair(n),
-                tmHigherExpected = toPair(tm.higherEntry(n)),
-                pmHigher         = pm.higherPair(n);
+        final Optional<AssocPair<Integer, Integer>>
+                tmlowerExpected  = toAssocPair(tm.lowerEntry(n)),
+                pmLower          = toAssocPair(pm.lowerPair(n)),
+                tmHigherExpected = toAssocPair(tm.higherEntry(n)),
+                pmHigher         = toAssocPair(pm.higherPair(n));
 
         assertEquals(tmlowerExpected, pmLower);
         assertEquals(tmHigherExpected, pmHigher);
@@ -694,7 +699,7 @@ public class PersistentMapTest {
     IntStream.range(0, N).forEach(x -> {
       final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
-      final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMap(mapFactory, perm, i -> Pair.create(i, i));
+      final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMap(mapFactory, perm, i -> AssocPair.create(i, i));
 
       final PersistentMap<Integer, Integer, ?> tEven = t.mapPartial(n -> Optional.ofNullable((n & 1) == 0 ? n : null));
       final PersistentMap<Integer, Integer, ?> tOdd  = t.mapPartial(n -> Optional.ofNullable((n & 1) == 1 ? n : null));
@@ -738,7 +743,7 @@ public class PersistentMapTest {
     IntStream.range(0, N).forEach(x -> {
       final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
-      final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMap(mapFactory, perm, i -> Pair.create(i, i));
+      final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMap(mapFactory, perm, i -> AssocPair.create(i, i));
 
       final int minExpected = Arrays.stream(perm).min().getAsInt();
       final int maxExpected = Arrays.stream(perm).max().getAsInt();
@@ -771,19 +776,19 @@ public class PersistentMapTest {
     IntStream.range(0, N).forEach(x -> {
       final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
-      final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMap(mapFactory, perm, i -> Pair.create(i, 2 * i));
+      final PersistentMap<Integer, Integer, ?> t = TestUtils.makeMap(mapFactory, perm, i -> AssocPair.create(i, 2 * i));
 
       final int minExpected = Arrays.stream(perm).min().getAsInt();
       final int maxExpected = Arrays.stream(perm).max().getAsInt();
 
-      final Pair<Integer, Integer> min = t.minElementPair().get();
-      final Pair<Integer, Integer> max = t.maxElementPair().get();
+      final PersistentMapEntry<Integer, Integer> min = t.minElementPair().get();
+      final PersistentMapEntry<Integer, Integer> max = t.maxElementPair().get();
 
-      assertEquals(minExpected, min.mx1.intValue());
-      assertEquals(2 * minExpected, min.mx2.intValue());
+      assertEquals(minExpected, min.getKey().intValue());
+      assertEquals(2 * minExpected, min.getValue().intValue());
 
-      assertEquals(maxExpected, max.mx1.intValue());
-      assertEquals(2 * maxExpected, max.mx2.intValue());
+      assertEquals(maxExpected, max.getKey().intValue());
+      assertEquals(2 * maxExpected, max.getValue().intValue());
     });
   }
 
@@ -856,7 +861,7 @@ public class PersistentMapTest {
       IntStream.range(0, numIters).forEach(x -> {
         final PersistentMap<Integer, Integer, ?> t =
                 mapFactory.fromStream(
-                        Arrays.stream(perm).mapToObj(i -> Pair.create(i, i)));
+                        Arrays.stream(perm).mapToObj(i -> AssocPair.create(i, i)));
         // Checking tree validity also checks its height.
         TestUtils.checkMapProperties(t);
 
@@ -885,14 +890,14 @@ public class PersistentMapTest {
       final int size = Numeric.randomInt(10, 200, rng);
       final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
-      final ArrayList<Pair<Integer, Integer>> vRes =
+      final ArrayList<PersistentMapEntry<Integer, Integer>> vRes =
             Arrays.stream(perm)
-                  .mapToObj(i -> Pair.create(i, 2 * i))
+                  .mapToObj(i -> AssocPair.create(i, 2 * i))
                   .collect(Collectors.toCollection(ArrayList::new));
 
-      final ArrayList<Pair<Integer, Integer>> v =
+      final ArrayList<PersistentMapEntry<Integer, Integer>> v =
             Arrays.stream(perm)
-                  .mapToObj(i -> Pair.create(i, i))
+                  .mapToObj(i -> AssocPair.create(i, i))
                   .collect(Collectors.toCollection(ArrayList::new));
 
       final PersistentMap<Integer, Integer, ?> mRes = mapFactory.fromArray(vRes);
@@ -906,14 +911,14 @@ public class PersistentMapTest {
       final int size = Numeric.randomInt(10, 200, rng);
       final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
-      final ArrayList<Pair<Integer, Integer>> vRes =
+      final ArrayList<PersistentMapEntry<Integer, Integer>> vRes =
             Arrays.stream(perm)
-                  .mapToObj(i -> Pair.create(i, 5 * i))
+                  .mapToObj(i -> AssocPair.create(i, 5 * i))
                   .collect(Collectors.toCollection(ArrayList::new));
 
-      final ArrayList<Pair<Integer, Integer>> v =
+      final ArrayList<PersistentMapEntry<Integer, Integer>> v =
             Arrays.stream(perm)
-                  .mapToObj(i -> Pair.create(i, 2 * i))
+                  .mapToObj(i -> AssocPair.create(i, 2 * i))
                   .collect(Collectors.toCollection(ArrayList::new));
 
       final PersistentMap<Integer, Integer, ?> mRes = mapFactory.fromArray(vRes);
@@ -936,7 +941,7 @@ public class PersistentMapTest {
 
     {
       final int N = 40;
-      final PersistentMap<Integer, Integer, ?> m = TestUtils.makeMapfromIncreasing(mapFactory, IntStream.range(0, N).toArray(), n -> Pair.create(n, 2 * n));
+      final PersistentMap<Integer, Integer, ?> m = TestUtils.makeMapfromIncreasing(mapFactory, IntStream.range(0, N).toArray(), n -> AssocPair.create(n, 2 * n));
 
       final Integer resFoldl  = m.foldl((n, acc) -> n + acc, 0);
       final Integer resFoldli = m.foldli((idx, n, acc) -> idx + n + acc, 0);
@@ -952,7 +957,7 @@ public class PersistentMapTest {
     }
     {
       final int N = 40;
-      final PersistentMap<Integer, Integer, ?> m = TestUtils.makeMapfromIncreasing(mapFactory, IntStream.rangeClosed(1, N).toArray(), n -> Pair.create(n, 2 * n));
+      final PersistentMap<Integer, Integer, ?> m = TestUtils.makeMapfromIncreasing(mapFactory, IntStream.rangeClosed(1, N).toArray(), n -> AssocPair.create(n, 2 * n));
 
       final Optional<Integer> resFoldl  = m.foldl((n, acc) -> acc.isPresent() ? acc : Optional.of(n), Optional.empty());
       final Optional<Integer> resFoldli = m.foldli((idx, n, acc) -> acc.isPresent() ? acc : Optional.of(idx + n), Optional.empty());
@@ -1053,9 +1058,9 @@ public class PersistentMapTest {
 
     final int low = 1, high = 64 * 1024;
     final int size = high - low + 1;
-    final ArrayList<Pair<Integer, Integer>> v =
+    final ArrayList<PersistentMapEntry<Integer, Integer>> v =
             Arrays.stream(Numeric.randomPermutation(low, high, size, rng))
-                  .mapToObj(i -> Pair.create(i, i))
+                  .mapToObj(i -> AssocPair.create(i, i))
                   .collect(Collectors.toCollection(ArrayList::new));
 
     // Test empty maps
