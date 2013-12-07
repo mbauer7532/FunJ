@@ -23,8 +23,7 @@ import org.StructureGraphic.v1.DSTreeNode;
 
 public final class AvlTreeModule {
   public static abstract class Tree<K extends Comparable<K>, V>
-                               extends PersistentMapBase<K, V, Tree<K, V>>
-                               implements PersistentMapEntry<K, V> {
+                               extends PersistentMapBase<K, V, Tree<K, V>> {
     private Tree(final int height) {
       mHeight = height;
     }
@@ -123,7 +122,7 @@ public final class AvlTreeModule {
         }
       }
 
-      return Optional.ofNullable(candidate);
+      return Optional.ofNullable(candidate == null ? null : new EntryRef<>(candidate));
     }
 
     private static <K extends Comparable<K>, V> Optional<PersistentMapEntry<K, V>> higherPair(final Tree<K, V> t, final K key) {
@@ -151,7 +150,7 @@ public final class AvlTreeModule {
         }
       }
 
-      return Optional.ofNullable(candidate);
+      return Optional.ofNullable(candidate == null ? null : new EntryRef<>(candidate));
     }
   }
 
@@ -221,7 +220,7 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+    public void appEntry(final Consumer<PersistentMapBase<K, V, Tree<K, V>>> f) {
       return;
     }
 
@@ -360,7 +359,7 @@ public final class AvlTreeModule {
     @Override
     public Optional<PersistentMapEntry<K, V>> minElementPair() {
       if (mLeft.isEmpty()) {
-        return Optional.of(this);
+        return Optional.of(new EntryRef<>(this));
       }
       else {
         return mLeft.minElementPair();
@@ -370,7 +369,7 @@ public final class AvlTreeModule {
     @Override
     public Optional<PersistentMapEntry<K, V>> maxElementPair() {
       if (mRight.isEmpty()) {
-        return Optional.of(this);
+        return Optional.of(new EntryRef<>(this));
       }
       else {
         return mRight.maxElementPair();
@@ -392,7 +391,7 @@ public final class AvlTreeModule {
     }
 
     @Override
-    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+    public void appEntry(final Consumer<PersistentMapBase<K, V, Tree<K, V>>> f) {
       mLeft.appEntry(f);
       f.accept(this);
       mRight.appEntry(f);

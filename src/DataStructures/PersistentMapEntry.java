@@ -14,13 +14,13 @@ import java.util.Objects;
  *
  * @author Neo
  */
-public interface PersistentMapEntry<K, V> {
+public abstract class PersistentMapEntry<K, V> {
   /**
    * Returns the key corresponding to this entry.
    *
    * @return the key corresponding to this entry
    */
-  K getKey();
+  public abstract K getKey();
 
   /**
    * Returns the value corresponding to this entry.
@@ -30,7 +30,7 @@ public interface PersistentMapEntry<K, V> {
    *         required to, throw this exception if the entry has been
    *         removed from the backing map.
    */
-  V getValue();
+  public abstract V getValue();
 
   /**
    * Compares the specified object with this entry for equality.
@@ -42,7 +42,18 @@ public interface PersistentMapEntry<K, V> {
    *         entry
    */
   @Override
-  boolean equals(Object o);
+  public boolean equals(final Object obj) {
+    if (obj instanceof PersistentMapEntry) {
+      @SuppressWarnings("unchecked")
+      final PersistentMapEntry<K, V> p = (PersistentMapEntry<K, V>) obj;
+
+      return getKey().equals(p.getKey())
+              && getValue().equals(p.getValue());
+    }
+    else {
+      return false;
+    }
+  }
 
   /**
    * Returns the hash code value for this map entry.  The hash code
@@ -61,7 +72,9 @@ public interface PersistentMapEntry<K, V> {
    * @see #equals(Object)
    */
   @Override
-  int hashCode();
+  public int hashCode() {
+    return getKey().hashCode() + getValue().hashCode();
+  }
 
   /**
    * Returns a comparator that compares {@link Entry} in natural order on key.

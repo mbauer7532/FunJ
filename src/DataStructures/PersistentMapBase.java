@@ -121,13 +121,7 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
     final int l1 = m1.size();
     final int l2 = m2.size();
 
-    return l1 == l2 && IntStream.range(0, l1).parallel().allMatch(idx -> {
-      final PersistentMapEntry<K, V> p1 = keyValues1.get(idx);
-      final PersistentMapEntry<K, V> p2 = keyValues2.get(idx);
-
-      return p1.getKey().equals(p2.getKey())
-            && p1.getValue().equals(p2.getValue());
-    });
+    return l1 == l2 && IntStream.range(0, l1).parallel().allMatch(idx -> keyValues1.get(idx).equals(keyValues2.get(idx)));
   }
 
   // This is probably not the best implentation.  I need to rewrite this when I do the one-node rewrite of the maps...
@@ -139,7 +133,7 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
     final int emptyMapHashCode = 11;
 
     return keyValues.parallelStream().reduce(emptyMapHashCode,
-                                             (acc, p) -> acc + p.getKey().hashCode() + p.getValue().hashCode(),
+                                             (acc, p) -> acc + p.hashCode(),
                                              (u1, u2) -> u1 + u2);
   }
 
@@ -201,7 +195,7 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
 
     appEntry(n -> {
       if (f.test(n.getKey(), n.getValue())) {
-        kvs.add(n);
+        kvs.add(new EntryRef<>(n));
       }
     });
     
@@ -211,14 +205,7 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
   protected Pair<ArrayList<PersistentMapEntry<K, V>>, ArrayList<PersistentMapEntry<K, V>>> splitElemsAccordingToPredicate(final BiPredicate<K, V> f) {
     final ArrayList<PersistentMapEntry<K, V>> v0 = new ArrayList<>(), v1 = new ArrayList<>();
 
-    appEntry(n -> {
-      if (f.test(n.getKey(), n.getValue())) {
-        v0.add(n);
-      }
-      else {
-        v1.add(n);
-      }
-    });
+    appEntry(n -> { (f.test(n.getKey(), n.getValue()) ? v0 : v1).add(new EntryRef<>(n)); });
 
     return Pair.create(v0, v1);
   }
@@ -238,10 +225,26 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
   @Override
   public final ArrayList<PersistentMapEntry<K, V>> keyValuePairs() {
     final ArrayList<PersistentMapEntry<K, V>> kvs = new ArrayList<>();
-    appEntry(n -> { kvs.add(n); });
+    appEntry(n -> { kvs.add(new EntryRef<>(n)); });
 
     return kvs;
   }
 
-  public abstract void appEntry(final Consumer<PersistentMapEntry<K, V>> f);
+  public abstract void appEntry(final Consumer<PersistentMapBase<K, V, M>> f);
+  protected abstract K getKey();
+  protected abstract V getValue();
+  
+  public static final class EntryRef<K extends Comparable<K>, V, M extends PersistentMapBase<K, V, M>> extends PersistentMapEntry<K, V> {
+    public EntryRef(final PersistentMapBase<K, V, M> node) {
+      mNode = node;
+    }
+
+    @Override
+    public K getKey() { return mNode.getKey(); }
+
+    @Override
+    public V getValue() { return mNode.getValue(); }
+
+    private final PersistentMapBase<K, V, M> mNode;
+  }
 }

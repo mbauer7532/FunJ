@@ -9,6 +9,7 @@
 
 package DataStructures;
 
+import DataStructures.PersistentMapBase.EntryRef;
 import DataStructures.TuplesModule.Pair;
 import Utils.ArrayUtils;
 import Utils.Functionals.TriFunction;
@@ -31,8 +32,7 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public class RedBlackTreeModule {
   public static abstract class Tree<K extends Comparable<K>, V>
-                                extends PersistentMapBase<K, V, Tree<K, V>>
-                                implements PersistentMapEntry<K, V> {
+                                extends PersistentMapBase<K, V, Tree<K, V>> {
     @Override
     public final Tree<K, V> filteri(final BiPredicate<K, V> f) {
       return fromStrictlyIncreasingArray(getElementsSatisfyingPredicate(f));
@@ -179,7 +179,7 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+    public void appEntry(final Consumer<PersistentMapBase<K, V, Tree<K, V>>> f) {
       return;
     }
 
@@ -293,7 +293,7 @@ public class RedBlackTreeModule {
     }
 
     @Override
-    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+    public void appEntry(final Consumer<PersistentMapBase<K, V, Tree<K, V>>> f) {
       mLeft.appEntry(f);
       f.accept(this);
       mRight.appEntry(f);
@@ -314,7 +314,7 @@ public class RedBlackTreeModule {
     @Override
     public Optional<PersistentMapEntry<K, V>> minElementPair() {
       if (mLeft.isEmpty()) {
-        return Optional.of(this);
+        return Optional.of(new EntryRef(this));
       }
       else {
         return mLeft.minElementPair();
@@ -324,7 +324,7 @@ public class RedBlackTreeModule {
     @Override
     public Optional<PersistentMapEntry<K, V>> maxElementPair() {
       if (mRight.isEmpty()) {
-        return Optional.of(this);
+        return Optional.of(new EntryRef(this));
       }
       else {
         return mRight.maxElementPair();
@@ -1083,7 +1083,7 @@ public class RedBlackTreeModule {
       }
     }
 
-    return Optional.ofNullable(candidate);
+    return Optional.ofNullable(candidate == null ? null : new EntryRef<>(candidate));
   }
 
   static <K extends Comparable<K>, V> Optional<PersistentMapEntry<K, V>> higherPair(final Tree<K, V> t, final K key) {
@@ -1111,7 +1111,7 @@ public class RedBlackTreeModule {
       }
     }
 
-    return Optional.ofNullable(candidate);
+    return Optional.ofNullable(candidate == null ? null : new EntryRef<>(candidate));
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {

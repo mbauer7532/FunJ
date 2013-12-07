@@ -29,8 +29,7 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public final class BrotherTreeModule {
   public abstract static class Tree<K extends Comparable<K>, V>
-                                      extends PersistentMapBase<K, V, Tree<K, V>>
-                                      implements PersistentMapEntry<K, V> {
+                                      extends PersistentMapBase<K, V, Tree<K, V>> {
     @Override
     public final Tree<K, V> filteri(final BiPredicate<K, V> f) {
       return fromStrictlyIncreasingArray(getElementsSatisfyingPredicate(f));
@@ -165,7 +164,7 @@ public final class BrotherTreeModule {
         }
       }
 
-      return Optional.ofNullable(candidate);
+      return Optional.ofNullable(candidate == null ? null : new EntryRef<>(candidate));
     }
 
     private static <K extends Comparable<K>, V> Optional<PersistentMapEntry<K, V>> higherPair(final Tree<K, V> t, final K key) {
@@ -201,7 +200,7 @@ public final class BrotherTreeModule {
         }
       }
 
-      return Optional.ofNullable(candidate);
+      return Optional.ofNullable(candidate == null ? null : new EntryRef<>(candidate));
     }
 
     private static <K extends Comparable<K>, V> Tree<K, V> n1_aux(final Tree<K,V> t, final boolean boxN1) {
@@ -293,7 +292,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+    public void appEntry(final Consumer<PersistentMapBase<K, V, Tree<K, V>>> f) {
       return;
     }
 
@@ -401,7 +400,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+    public void appEntry(final Consumer<PersistentMapBase<K, V, Tree<K, V>>> f) {
       mt.appEntry(f);
     }
 
@@ -568,7 +567,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+    public void appEntry(final Consumer<PersistentMapBase<K, V, Tree<K, V>>> f) {
       mt1.appEntry(f);
       f.accept(this);
       mt2.appEntry(f);
@@ -602,7 +601,7 @@ public final class BrotherTreeModule {
     public Optional<PersistentMapEntry<K, V>> minElementPair() {
       N1<K, V> n;
       if (mt1.isN0() || ((n = mt1.asN1()) != null && n.mt.isN0())) {
-        return Optional.of(this);
+        return Optional.of(new EntryRef<>(this));
       }
       else {
         return mt1.minElementPair();
@@ -613,7 +612,7 @@ public final class BrotherTreeModule {
     public Optional<PersistentMapEntry<K, V>> maxElementPair() {
       N1<K, V> n;
       if (mt2.isN0() || ((n = mt2.asN1()) != null && n.mt.isN0())) {
-        return Optional.of(this);
+        return Optional.of(new EntryRef<>(this));
       }
       else {
         return mt2.maxElementPair();
@@ -916,7 +915,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+    public void appEntry(final Consumer<PersistentMapBase<K, V, Tree<K, V>>> f) {
       throw sTreeStructureError;
     }
 
@@ -1025,7 +1024,7 @@ public final class BrotherTreeModule {
     }
 
     @Override
-    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+    public void appEntry(final Consumer<PersistentMapBase<K, V, Tree<K, V>>> f) {
       throw sTreeStructureError;
     }
 

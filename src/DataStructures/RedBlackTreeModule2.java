@@ -33,8 +33,7 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public class RedBlackTreeModule2 {
   public static final class Tree<K extends Comparable<K>, V>
-                                 extends PersistentMapBase<K, V, Tree<K, V>>
-                                 implements PersistentMapEntry<K, V> {
+                                 extends PersistentMapBase<K, V, Tree<K, V>> {
     private static final int sEmptyTag = 0;
     private static final int sRedTag   = 1;
     private static final int sBlackTag = 2;
@@ -302,7 +301,7 @@ public class RedBlackTreeModule2 {
     }
 
     @Override
-    public void appEntry(final Consumer<PersistentMapEntry<K, V>> f) {
+    public void appEntry(final Consumer<PersistentMapBase<K, V, Tree<K, V>>> f) {
       if (! isNull()) {
         mLeft.appEntry(f);
         f.accept(this);
@@ -336,6 +335,7 @@ public class RedBlackTreeModule2 {
       return isNull() ? w : mLeft.foldriImpl(f, f.apply(mKey, mValue, mRight.foldriImpl(f, w)));
     }
 
+    @Override
     public <W> W foldri(final TriFunction<K, V, W, W> f, final W w) {
       return foldriImpl(f, w);
     }
@@ -346,7 +346,7 @@ public class RedBlackTreeModule2 {
       }
       else {
         if (mLeft.isNull()) {
-          return Optional.of(this);
+          return Optional.of(new EntryRef<>(this));
         }
         else {
           return mLeft.minElementPairImpl();
@@ -365,7 +365,7 @@ public class RedBlackTreeModule2 {
       }
       else {
         if (mRight.isNull()) {
-          return Optional.of(this);
+          return Optional.of(new EntryRef<>(this));
         }
         else {
           return mRight.maxElementPairImpl();
@@ -533,7 +533,7 @@ public class RedBlackTreeModule2 {
         }
       }
 
-      return Optional.ofNullable(candidate);
+      return Optional.ofNullable(candidate == null ? null : new EntryRef<>(candidate));
     }
 
     @Override
@@ -565,7 +565,7 @@ public class RedBlackTreeModule2 {
         }
       }
 
-      return Optional.ofNullable(candidate);
+      return Optional.ofNullable(candidate == null ? null : new EntryRef<>(candidate));
     }
 
     @Override
