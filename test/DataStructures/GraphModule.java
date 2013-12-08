@@ -15,7 +15,6 @@ import org.StructureGraphic.v1.DSutils;
  * @author Neo
  */
 public final class GraphModule {
-  
   final static int sLength = 44;
   final static int sWidth = 20;
 

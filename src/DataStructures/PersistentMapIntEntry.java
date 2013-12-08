@@ -6,6 +6,8 @@
 
 package DataStructures;
 
+
+import Utils.Functionals.IntComparator;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
@@ -13,14 +15,15 @@ import java.util.Objects;
 /**
  *
  * @author Neo
+ * @param <V>
  */
-public abstract class PersistentMapEntry<K, V> {
+public abstract class PersistentMapIntEntry<V> {
   /**
    * Returns the key corresponding to this entry.
    *
    * @return the key corresponding to this entry
    */
-  public abstract K getKey();
+  public abstract int getKey();
 
   /**
    * Returns the value corresponding to this entry.
@@ -45,10 +48,9 @@ public abstract class PersistentMapEntry<K, V> {
   public boolean equals(final Object obj) {
     if (obj instanceof PersistentMapEntry) {
       @SuppressWarnings("unchecked")
-      final PersistentMapEntry<K, V> p = (PersistentMapEntry<K, V>) obj;
+      final PersistentMapIntEntry<V> p = (PersistentMapIntEntry<V>) obj;
 
-      return getKey().equals(p.getKey())
-              && getValue().equals(p.getValue());
+      return getKey() == p.getKey() && getValue().equals(p.getValue());
     }
     else {
       return false;
@@ -73,7 +75,7 @@ public abstract class PersistentMapEntry<K, V> {
    */
   @Override
   public int hashCode() {
-    return getKey().hashCode() + getValue().hashCode();
+    return getKey() + getValue().hashCode();
   }
 
   /**
@@ -88,9 +90,9 @@ public abstract class PersistentMapEntry<K, V> {
    * @see Comparable
    * @since 1.8
    */
-  public static <K extends Comparable<? super K>, V> Comparator<PersistentMapEntry<K, V>> comparingByKey() {
-    return (Comparator<PersistentMapEntry<K, V>> & Serializable)
-            (c1, c2) -> c1.getKey().compareTo(c2.getKey());
+  public static <K extends Comparable<? super K>, V> Comparator<PersistentMapIntEntry<V>> comparingByKey() {
+    return (Comparator<PersistentMapIntEntry<V>> & Serializable)
+            (c1, c2) -> c1.getKey() -  c2.getKey();
   }
 
   /**
@@ -105,8 +107,8 @@ public abstract class PersistentMapEntry<K, V> {
    * @see Comparable
    * @since 1.8
    */
-  public static <K, V extends Comparable<? super V>> Comparator<PersistentMapEntry<K, V>> comparingByValue() {
-    return (Comparator<PersistentMapEntry<K, V>> & Serializable)
+  public static <K, V extends Comparable<? super V>> Comparator<PersistentMapIntEntry<V>> comparingByValue() {
+    return (Comparator<PersistentMapIntEntry<V>> & Serializable)
             (c1, c2) -> c1.getValue().compareTo(c2.getValue());
   }
 
@@ -117,15 +119,14 @@ public abstract class PersistentMapEntry<K, V> {
    * <p>The returned comparator is serializable if the specified comparator
    * is also serializable.
    *
-   * @param  <K> the type of the map keys
    * @param  <V> the type of the map values
    * @param  cmp the key {@link Comparator}
    * @return a comparator that compares {@link Entry} by the key.
    * @since 1.8
    */
-  public static <K, V> Comparator<PersistentMapEntry<K, V>> comparingByKey(Comparator<? super K> cmp) {
+  public static <V> Comparator<PersistentMapIntEntry<V>> comparingByKey(IntComparator cmp) {
     Objects.requireNonNull(cmp);
-    return (Comparator<PersistentMapEntry<K, V>> & Serializable)
+    return (Comparator<PersistentMapIntEntry<V>> & Serializable)
             (c1, c2) -> cmp.compare(c1.getKey(), c2.getKey());
   }
 
@@ -142,9 +143,9 @@ public abstract class PersistentMapEntry<K, V> {
    * @return a comparator that compares {@link Entry} by the value.
    * @since 1.8
    */
-  public static <K, V> Comparator<PersistentMapEntry<K, V>> comparingByValue(Comparator<? super V> cmp) {
+  public static <K, V> Comparator<PersistentMapIntEntry<V>> comparingByValue(Comparator<? super V> cmp) {
     Objects.requireNonNull(cmp);
-    return (Comparator<PersistentMapEntry<K, V>> & Serializable)
+    return (Comparator<PersistentMapIntEntry<V>> & Serializable)
             (c1, c2) -> cmp.compare(c1.getValue(), c2.getValue());
   }
 }
