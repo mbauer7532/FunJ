@@ -1,2 +1,27 @@
 1. The filter function in IntMapModule needs to be checked for correctness.
 2. The Brother delete module needs a code review -- correctness of n2_del() etc.
+3.
+ @Override
+    public Optional<PersistentMapIntEntry<V>> lowerPair(int key) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Optional<PersistentMapIntEntry<V>> higherPair(int key) {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Optional<PersistentMapIntEntry<V>> minElementPair() {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Optional<PersistentMapIntEntry<V>> maxElementPair() {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public TuplesModule.Pair<Boolean, String> verifyMapProperties() {
+      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
