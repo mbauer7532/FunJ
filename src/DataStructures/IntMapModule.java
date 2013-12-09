@@ -161,26 +161,6 @@ public final class IntMapModule {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static <V> Pair<ArrayList<LeafNode<V>>, ArrayList<LeafNode<V>>> splitElemsAccordingToPredicate(final Tree<V> t, final IntBiPredicate<V> f) {
-      final ArrayList<LeafNode<V>> v0 = new ArrayList<>(), v1 = new ArrayList<>();
-      t.appEntry(n -> { (f.test(n.mKey, n.mValue) ? v0 : v1).add(n); });
-
-      return Pair.create(v0, v1);
-    }
-
-    private static <V> Tree<V> fromLeafNodes(final ArrayList<LeafNode<V>> leafNodes) {
-      return leafNodes.stream()
-                      .reduce(empty(),
-                              (t, e) -> t.insert(e.mKey, e.mValue),
-                              (t1, t2) -> { throw new AssertionError("Must not be called.  The stream was sequential."); });
-    }
-
-    public final Pair<Tree<V>, Tree<V>> partitioniAlternativeImpl(final IntBiPredicate<V> f) {
-      final Pair<ArrayList<LeafNode<V>>, ArrayList<LeafNode<V>>> elemsPair = splitElemsAccordingToPredicate(this, f);
-
-      return Pair.create(fromLeafNodes(elemsPair.mx1), fromLeafNodes(elemsPair.mx2));
-    }
-
     protected abstract void partitioniImpl(final IntBiPredicate<V> f, final Ref<Tree<V>> t0, final Ref<Tree<V>> t1);
 
     @Override
@@ -782,6 +762,10 @@ public final class IntMapModule {
     return fromStream(v.stream());
   }
 
+  /**
+   *
+   * @param <V>
+   */
   public static final class IntMapFactory<V> implements PersistentMapIntFactory<V, Tree<V>> {
     @Override
     public String getMapName() {

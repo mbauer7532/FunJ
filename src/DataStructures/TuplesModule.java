@@ -179,4 +179,33 @@ public final class TuplesModule {
       return mValue;
     }
   }
+
+  public static final class AssocIntPair<V> extends PersistentMapIntEntry<V> {
+    public static <T> AssocIntPair<T> create(final int i, final T x) {
+      return new AssocIntPair<>(i, x);
+    }
+
+    private AssocIntPair(final int i, final V x) {
+      mKey   = i;
+      mValue = x;
+    }
+
+    private final int mKey;
+    private final V mValue;
+
+    @Override
+    public String toString() {
+      return String.format("(%d, %s)", mKey, mValue.toString());
+    }
+
+    @Override
+    public int getKey() {
+      return mKey;
+    }
+
+    @Override
+    public V getValue() {
+      return mValue;
+    }
+  }
 }

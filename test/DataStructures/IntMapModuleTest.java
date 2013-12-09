@@ -6,6 +6,10 @@
 
 package DataStructures;
 
+import DataStructures.IntMapModule.IntMapFactory;
+import DataStructures.TuplesModule.AssocIntPair;
+import DataStructures.TuplesModule.Pair;
+import Utils.Functionals;
 import Utils.Ref;
 import java.util.Optional;
 import java.util.stream.IntStream;
@@ -69,13 +73,13 @@ public class IntMapModuleTest {
 
     assertEquals(500, (int)res0.get());
   }
-  
+
   @Test
   public void testInsert() {
     System.out.println("insert");
     
     final int low = 0;
-    final int high = 16;
+    final int high = 160;
 
     final IntMapModule.Tree<Integer> t0 = IntMapModule.empty();
 
@@ -92,5 +96,73 @@ public class IntMapModuleTest {
                      (IntMapModule.Tree<Integer> tree, int i) -> { refToTree.r = refToTree.r.insert((z1, z2) -> z1, i, i); },
                      (tt1, tt2) -> {});
     final IntMapModule.Tree<Integer> t2 = refToTree.r;
+//    GraphModule.showGraph(t1);
+//    GraphModule.showGraph(t2);
+//    GraphModule.waitTime(2000);
+  }
+
+  @Test
+  public void testPartitionAndPartitioni1() {
+    System.out.printf("PartitionAndPartitioni\n");
+
+    final boolean xx = false;
+    
+    final IntMapFactory<Integer> mapFactory = IntMapModule.makeFactory();
+    {
+      final int N = 3200000;
+      final int halfN = N / 2;
+      final IntMapModule.Tree<Integer> t0 = mapFactory.fromStream(
+              IntStream.range(0, N)
+                       .mapToObj(i -> AssocIntPair.create(i, i)));
+
+      final Pair<IntMapModule.Tree<Integer>, IntMapModule.Tree<Integer>> p = t0.partitioni((k, v) -> (k & 1) == 1);
+      final IntMapModule.Tree<Integer> t1 = p.mx1, t2 = p.mx2;
+
+      assertEquals(N, t0.size());
+      assertEquals(halfN, t1.size());
+      assertEquals(halfN, t2.size());
+
+      IntStream.range(0, N).forEach(n -> {
+        if ((n & 1) == 1) {
+          assertTrue(t0.containsKey(n) && t1.containsKey(n) && ! t2.containsKey(n));
+        }
+        else {
+          assertTrue(t0.containsKey(n) && ! t1.containsKey(n) && t2.containsKey(n));
+        }
+      });
+    }
+    {
+      final IntMapModule.Tree<Integer> pm = mapFactory.singleton(10, 20);
+      final Pair<IntMapModule.Tree<Integer>, IntMapModule.Tree<Integer>> ms = pm.partitioni((k, v) -> v != 20);
+
+      final IntMapModule.Tree<Integer> pm1 = ms.mx1, pm2 = ms.mx2;
+
+      assertTrue(! pm.isEmpty());
+      assertTrue(pm1.isEmpty());
+      assertTrue(! pm2.isEmpty());
+    }
+  }
+
+  @Test
+  public void testPartitionAndPartitioni2() {
+    System.out.printf("PartitionAndPartitioni2\n");
+
+    final IntMapFactory<Integer> mapFactory = IntMapModule.makeFactory();
+    {
+      final int N = 10; //3200000;
+
+      final IntMapModule.Tree<Integer> t0 = mapFactory.fromStream(
+              IntStream.range(0, N)
+                       .mapToObj(i -> AssocIntPair.create(i, i)));
+
+      final Functionals.IntBiPredicate<Integer> pred = (k, v) -> k > N - 4;
+
+      final Pair<IntMapModule.Tree<Integer>, IntMapModule.Tree<Integer>> p = t0.partitioni(pred);
+
+      final IntMapModule.Tree<Integer> t1 = p.mx1, t2 = p.mx2;
+      
+      System.out.printf("size0 = %d\n", t1.size());
+      System.out.printf("size1 = %d\n", t2.size());
+    }
   }
 }
