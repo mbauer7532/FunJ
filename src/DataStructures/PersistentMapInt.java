@@ -28,7 +28,6 @@ import org.StructureGraphic.v1.DSTreeNode;
  * @param <M>
  */
 public interface PersistentMapInt<V, M extends PersistentMapInt<V, M>> extends DSTreeNode {
-
   /**
    *
    * @param key
@@ -77,6 +76,13 @@ public interface PersistentMapInt<V, M extends PersistentMapInt<V, M>> extends D
    * @return
    */
   public int size();
+
+  
+  /**
+   *
+   * @return
+   */
+  public int height();
 
   /**
    *
@@ -210,7 +216,7 @@ public interface PersistentMapInt<V, M extends PersistentMapInt<V, M>> extends D
    * @param t
    * @return
    */
-  public M merge(final IntBiFunction<V, V> f, final PersistentMapInt<V, M> t);
+  public M merge(final BiFunction<V, V, V> f, final PersistentMapInt<V, M> t);
 
   /**
    *
@@ -281,12 +287,6 @@ public interface PersistentMapInt<V, M extends PersistentMapInt<V, M>> extends D
    * @return
    */
   public Optional<PersistentMapIntEntry<V>> maxElementPair();
-
-  /**
-   *
-   * @return
-   */
-  public int height();
 
   /**
    *
