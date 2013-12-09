@@ -340,42 +340,44 @@ public class RedBlackTreeModule2 {
       return foldriImpl(f, w);
     }
 
-    private Optional<PersistentMapEntry<K, V>> minElementPairImpl() {
-      if (isNull()) {
-        return Optional.empty();
-      }
-      else {
-        if (mLeft.isNull()) {
-          return Optional.of(new EntryRef<>(this));
+    private static <K extends Comparable<K>, V> Optional<PersistentMapEntry<K, V>> minElementPairImpl(final Tree<K, V> t) {
+      Tree<K, V> m = t;
+
+      while (! m.isNull()) {
+        if (m.mLeft.isNull()) {
+          return Optional.of(new EntryRef<>(m));
         }
         else {
-          return mLeft.minElementPairImpl();
+          m = m.mLeft;
         }
       }
+
+      return Optional.empty();
     }
 
     @Override
     public Optional<PersistentMapEntry<K, V>> minElementPair() {
-      return minElementPairImpl();
+      return minElementPairImpl(this);
     }
 
-    private Optional<PersistentMapEntry<K, V>> maxElementPairImpl() {
-      if (isNull()) {
-        return Optional.empty();
-      }
-      else {
-        if (mRight.isNull()) {
-          return Optional.of(new EntryRef<>(this));
+    private static <K extends Comparable<K>, V> Optional<PersistentMapEntry<K, V>> maxElementPairImpl(final Tree<K, V> t) {
+      Tree<K, V> m = t;
+
+      while (! m.isNull()) {
+        if (m.mRight.isNull()) {
+          return Optional.of(new EntryRef<>(m));
         }
         else {
-          return mRight.maxElementPairImpl();
+          m = m.mRight;
         }
       }
+
+      return Optional.empty();
     }
 
     @Override
     public Optional<PersistentMapEntry<K, V>> maxElementPair() {
-      return maxElementPairImpl();
+      return maxElementPairImpl(this);
     }
 
     private static <K extends Comparable<K>, V> Optional<V> getImpl(final Tree<K, V> tree, final K key) {
