@@ -12,6 +12,7 @@ import Utils.Functionals.IntBiFunction;
 import Utils.Functionals.IntBiPredicate;
 import Utils.Functionals.IntTriFunction;
 import Utils.Numeric;
+import Utils.Ref;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -174,11 +175,20 @@ public final class IntMapModule {
                               (t1, t2) -> { throw new AssertionError("Must not be called.  The stream was sequential."); });
     }
 
-    @Override
-    public final Pair<Tree<V>, Tree<V>> partitioni(final IntBiPredicate<V> f) {
+    public final Pair<Tree<V>, Tree<V>> partitioniAlternativeImpl(final IntBiPredicate<V> f) {
       final Pair<ArrayList<LeafNode<V>>, ArrayList<LeafNode<V>>> elemsPair = splitElemsAccordingToPredicate(this, f);
 
       return Pair.create(fromLeafNodes(elemsPair.mx1), fromLeafNodes(elemsPair.mx2));
+    }
+
+    protected abstract void partitioniImpl(final IntBiPredicate<V> f, final Ref<Tree<V>> t0, final Ref<Tree<V>> t1);
+
+    @Override
+    public final Pair<Tree<V>, Tree<V>> partitioni(final IntBiPredicate<V> f) {
+      final Ref<Tree<V>> r0 = new Ref<>(), r1 = new Ref<>();
+      partitioniImpl(f, r0, r1);
+      
+      return Pair.create(r0.r, r1.r);
     }
 
     @Override
@@ -278,6 +288,14 @@ public final class IntMapModule {
       return (Tree<V>) t;
     }
 
+    @Override
+    protected void partitioniImpl(final IntBiPredicate<V> f, final Ref<Tree<V>> t0, final Ref<Tree<V>> t1)
+    {
+      t0.r = t1.r = create();
+
+      return;
+    }
+    
     @Override
     public DSTreeNode[] DSgetChildren() {
       return new DSTreeNode[0];
@@ -393,6 +411,22 @@ public final class IntMapModule {
     @Override
     public Tree<V> merge(final BiFunction<V, V, V> f, final PersistentMapInt<V, Tree<V>> t) {
       return t.insert((x, y) -> f.apply(y, x), mKey, mValue);
+    }
+
+    @Override
+    protected void partitioniImpl(final IntBiPredicate<V> f, final Ref<Tree<V>> t0, final Ref<Tree<V>> t1)
+    {
+      final Tree<V> e = EmptyNode.create();
+
+      if (f.test(mKey, mValue)) {
+        t0.r = this;
+        t1.r = e;
+      }
+      else {
+        t0.r = e;
+        t1.r = this;
+      }
+      return;
     }
 
     private <W> Tree<W> compOptMapedValue(final Optional<W> opt) {
@@ -603,6 +637,20 @@ public final class IntMapModule {
           return join(p, s, q, t);
         }
       }
+    }
+
+    @Override
+    protected void partitioniImpl(final IntBiPredicate<V> f, final Ref<Tree<V>> t0, final Ref<Tree<V>> t1)
+    {
+      mLeft.partitioniImpl(f, t0, t1);
+      final Tree<V> l0 = t0.r, l1 = t1.r;
+      mRight.partitioniImpl(f, t0, t1);
+      final Tree<V> r0 = t0.r, r1 = t1.r;
+
+      t0.r = smartBranchNodeConstructor(mPrefix, mBranchingBit, l0, r0);
+      t1.r = smartBranchNodeConstructor(mPrefix, mBranchingBit, l1, r1);
+
+      return;
     }
 
     @Override
