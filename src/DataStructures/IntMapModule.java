@@ -368,8 +368,6 @@ public final class IntMapModule {
 
     @Override
     public <W> Tree<W> mapPartiali(final IntBiFunction<V, Optional<W>> f) {
-      Objects.requireNonNull(f);
-
       return compOptMapedValue(f.apply(mKey, mValue));
     }
 
@@ -412,7 +410,7 @@ public final class IntMapModule {
     private <W> Tree<W> compOptMapedValue(final Optional<W> opt) {
       if (opt.isPresent()) {
         return create(mKey, opt.get());
-      }
+      } 
       else {
         return EmptyNode.create();
       }
