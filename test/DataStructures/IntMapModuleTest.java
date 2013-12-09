@@ -6,12 +6,9 @@
 
 package DataStructures;
 
+import Utils.Ref;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.IntStream;
-import org.StructureGraphic.v1.DSutils;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -89,11 +86,11 @@ public class IntMapModuleTest {
                                ((t, ii) -> t.insert((z1, z2) -> z1, ii, ii)),
                                (tt1, tt2) -> null);
 
-    AtomicReference<IntMapModule.Tree<Integer>> refToTree = new AtomicReference<>(t0);
+    Ref<IntMapModule.Tree<Integer>> refToTree = new Ref<>(t0);
     IntStream.rangeClosed(low, high)
              .collect((() -> null),
-                     (IntMapModule.Tree<Integer> tree, int i) -> { refToTree.set(refToTree.get().insert((z1, z2) -> z1, i, i)); },
+                     (IntMapModule.Tree<Integer> tree, int i) -> { refToTree.r = refToTree.r.insert((z1, z2) -> z1, i, i); },
                      (tt1, tt2) -> {});
-    final IntMapModule.Tree<Integer> t2 = refToTree.get();
+    final IntMapModule.Tree<Integer> t2 = refToTree.r;
   }
 }
