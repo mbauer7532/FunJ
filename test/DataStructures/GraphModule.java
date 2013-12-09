@@ -8,6 +8,7 @@ package DataStructures;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.StructureGraphic.v1.DSTreeNode;
 import org.StructureGraphic.v1.DSutils;
 
 /**
@@ -18,7 +19,7 @@ public final class GraphModule {
   final static int sLength = 44;
   final static int sWidth = 20;
 
-  public static <K extends Comparable<K>, V> void showGraph(final PersistentMap<K, V, ?> pm) {
+  public static void showGraph(final DSTreeNode pm) {
     DSutils.show(pm, sLength, sWidth);
 
     return;
