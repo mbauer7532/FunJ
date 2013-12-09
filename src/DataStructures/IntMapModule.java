@@ -90,18 +90,6 @@ public final class IntMapModule {
     }
 
     @Override
-    public abstract Tree<V> insert(final BiFunction<V, V, V> f, final int key, final V value);
-
-    @Override
-    public abstract Tree<V> insert(final int key, final V value);
-
-    @Override
-    public abstract Tree<V> remove(final int key);
-
-    @Override
-    public abstract int height();
-
-    @Override
     public abstract <W> Tree<W> mapi(final IntBiFunction<V, W> f);
 
     @Override
@@ -559,14 +547,14 @@ public final class IntMapModule {
 
     @Override
     public Tree<V> filteri(final IntBiPredicate<V> f) {
-      final Tree<V> newL = mLeft.filteri(f);
-      final Tree<V> newR = mRight.filteri(f);
+      final Tree<V> newLeft  = mLeft.filteri(f);
+      final Tree<V> newRight = mRight.filteri(f);
 
-      if (newL == mLeft && newR == mRight) {
+      if (newLeft == mLeft && newRight == mRight) {
         return this;
       }
       else {
-        return smartBranchNodeConstructor(mPrefix, mBranchingBit, newL, newR);
+        return smartBranchNodeConstructor(mPrefix, mBranchingBit, newLeft, newRight);
       }
     }
 
