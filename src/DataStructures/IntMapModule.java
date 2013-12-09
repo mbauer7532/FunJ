@@ -132,16 +132,16 @@ public final class IntMapModule {
 
     @Override
     public OptionalInt maxKey() {
-      return  getOptInt(maxElementPair());
+      return getOptInt(maxElementPair());
     }
 
     @Override
-    public Optional<PersistentMapIntEntry<V>> lowerPair(int key) {
+    public Optional<PersistentMapIntEntry<V>> lowerPair(final int key) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Optional<PersistentMapIntEntry<V>> higherPair(int key) {
+    public Optional<PersistentMapIntEntry<V>> higherPair(final int key) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -156,24 +156,29 @@ public final class IntMapModule {
     }
 
     @Override
-    public TuplesModule.Pair<Boolean, String> verifyMapProperties() {
+    public Pair<Boolean, String> verifyMapProperties() {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private Pair<ArrayList<PersistentMapIntEntry<V>>, ArrayList<PersistentMapIntEntry<V>>> splitElemsAccordingToPredicate(final IntBiPredicate<V> f) {
-      final ArrayList<PersistentMapIntEntry<V>> v0 = new ArrayList<>(), v1 = new ArrayList<>();
-
-      appEntry(n -> { (f.test(n.getKey(), n.getValue()) ? v0 : v1).add(new EntryRef<>(n)); });
+    private static <V> Pair<ArrayList<LeafNode<V>>, ArrayList<LeafNode<V>>> splitElemsAccordingToPredicate(final Tree<V> t, final IntBiPredicate<V> f) {
+      final ArrayList<LeafNode<V>> v0 = new ArrayList<>(), v1 = new ArrayList<>();
+      t.appEntry(n -> { (f.test(n.mKey, n.mValue) ? v0 : v1).add(n); });
 
       return Pair.create(v0, v1);
     }
 
+    private static <V> Tree<V> fromLeafNodes(final ArrayList<LeafNode<V>> leafNodes) {
+      return leafNodes.stream()
+                      .reduce(empty(),
+                              (t, e) -> t.insert(e.mKey, e.mValue),
+                              (t1, t2) -> { throw new AssertionError("Must not be called.  The stream was sequential."); });
+    }
+
     @Override
     public final Pair<Tree<V>, Tree<V>> partitioni(final IntBiPredicate<V> f) {
-      final Pair<ArrayList<PersistentMapIntEntry<V>>, ArrayList<PersistentMapIntEntry<V>>> elemsPair = splitElemsAccordingToPredicate(f);
+      final Pair<ArrayList<LeafNode<V>>, ArrayList<LeafNode<V>>> elemsPair = splitElemsAccordingToPredicate(this, f);
 
-      return Pair.create(fromStrictlyIncreasingArray(elemsPair.mx1),
-                         fromStrictlyIncreasingArray(elemsPair.mx2));
+      return Pair.create(fromLeafNodes(elemsPair.mx1), fromLeafNodes(elemsPair.mx2));
     }
 
     @Override
@@ -604,6 +609,7 @@ public final class IntMapModule {
     protected final void appEntry(final Consumer<LeafNode<V>> c) {
       mLeft.appEntry(c);
       mRight.appEntry(c);
+
       return;
     }
 
