@@ -314,7 +314,7 @@ public class RedBlackTreeModule {
     @Override
     public Optional<PersistentMapEntry<K, V>> minElementPair() {
       if (mLeft.isEmpty()) {
-        return Optional.of(new EntryRef(this));
+        return Optional.of(new EntryRef<>(this));
       }
       else {
         return mLeft.minElementPair();
@@ -324,7 +324,7 @@ public class RedBlackTreeModule {
     @Override
     public Optional<PersistentMapEntry<K, V>> maxElementPair() {
       if (mRight.isEmpty()) {
-        return Optional.of(new EntryRef(this));
+        return Optional.of(new EntryRef<>(this));
       }
       else {
         return mRight.maxElementPair();
