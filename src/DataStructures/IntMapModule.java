@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 import org.StructureGraphic.v1.DSTreeNode;
 
 /**
@@ -169,16 +170,6 @@ public final class IntMapModule {
     @Override
     public TuplesModule.Pair<Boolean, String> verifyMapProperties() {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    private Tree<V> fromArray(final ArrayList<PersistentMapIntEntry<V>> v) {
-      return v.stream().reduce(EmptyNode.<V> create(),
-                               (final Tree<V> t, final PersistentMapIntEntry<V> e) -> t.insert(e.getKey(), e.getValue()),
-                               (t1, t2) -> { throw new AssertionError("Must not be called.  The stream was sequential."); });
-    }
-
-    private Tree<V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapIntEntry<V>> v) {
-      return fromArray(v);
     }
 
     private Pair<ArrayList<PersistentMapIntEntry<V>>, ArrayList<PersistentMapIntEntry<V>>> splitElemsAccordingToPredicate(final IntBiPredicate<V> f) {
@@ -721,5 +712,85 @@ public final class IntMapModule {
 
   public static <V> Tree<V> singleton(final int key, final V value) {
     return LeafNode.create(key, value);
+  }
+
+  public static <V> Tree<V> fromStrictlyIncreasingStream(final Stream<PersistentMapIntEntry<V>> stream) {
+    return fromStream(stream);
+  }
+
+  public static <V> Tree<V> fromStrictlyDecreasingStream(final Stream<PersistentMapIntEntry<V>> stream) {
+    return fromStream(stream);
+  }
+
+  public static <V> Tree<V> fromStream(final Stream<PersistentMapIntEntry<V>> stream) {
+    return stream.reduce(EmptyNode.<V> create(),
+                         (final Tree<V> t, final PersistentMapIntEntry<V> e) -> t.insert(e.getKey(), e.getValue()),
+                         (t1, t2) -> { throw new AssertionError("Must not be called.  The stream was sequential."); });
+  }
+
+  public static <V> Tree<V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapIntEntry<V>> v) {
+    return fromArray(v);
+  }
+
+  public static <V> Tree<V> fromStrictlyDecreasingArray(final ArrayList<PersistentMapIntEntry<V>> v) {
+    return fromArray(v);
+  }
+
+  public static <V> Tree<V> fromArray(final ArrayList<PersistentMapIntEntry<V>> v) {
+    return fromStream(v.stream());
+  }
+
+  public static final class IntMapFactory<V> implements PersistentMapIntFactory<V, Tree<V>> {
+    @Override
+    public String getMapName() {
+      return "IntMap";
+    }
+
+    @Override
+    public Tree<V> empty() {
+      return IntMapModule.empty();
+    }
+
+    @Override
+    public Tree<V> singleton(final int key, final V value) {
+      return IntMapModule.singleton(key, value);
+    }
+
+    @Override
+    public Tree<V> fromStrictlyIncreasingStream(final Stream<PersistentMapIntEntry<V>> stream) {
+      return IntMapModule.fromStrictlyIncreasingStream(stream);
+    }
+
+    @Override
+    public Tree<V> fromStrictlyDecreasingStream(final Stream<PersistentMapIntEntry<V>> stream) {
+      return IntMapModule.fromStrictlyDecreasingStream(stream);
+    }
+
+    @Override
+    public Tree<V> fromStream(final Stream<PersistentMapIntEntry<V>> stream) {
+      return IntMapModule.fromStream(stream);
+    }
+
+    @Override
+    public Tree<V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapIntEntry<V>> v) {
+      return IntMapModule.fromStrictlyIncreasingArray(v);
+    }
+
+    @Override
+    public Tree<V> fromStrictlyDecreasingArray(final ArrayList<PersistentMapIntEntry<V>> v) {
+      return IntMapModule.fromStrictlyDecreasingArray(v);
+    }
+
+    @Override
+    public Tree<V> fromArray(final ArrayList<PersistentMapIntEntry<V>> v) {
+      return IntMapModule.fromArray(v);
+    }
+  }
+
+  private static final IntMapFactory<?> sIntMapFactory = new IntMapFactory<>();
+
+  @SuppressWarnings("unchecked")
+  public static <K extends Comparable<K>, V> IntMapFactory<V> makeFactory() {
+    return (IntMapFactory<V>) sIntMapFactory;
   }
 }
