@@ -12,5 +12,8 @@ package Utils;
  * @param <A>
  */
 public class Ref<A> {
+  public Ref() { r= null; }
+  public Ref(final A a) { r = a; }
+
   public A r;
 }
