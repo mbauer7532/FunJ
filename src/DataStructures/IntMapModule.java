@@ -142,12 +142,14 @@ public final class IntMapModule {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    private static <V> Optional<PersistentMapIntEntry<V>> minElementPairUnsignedImpl(final Tree<V> t) {
+    private static <V> Optional<PersistentMapIntEntry<V>> findElementPairUnsignedImpl(
+            final Tree<V> t,
+            final Function<BranchNode<V>, Tree<V>> spineDirection) {
       Tree<V> m = t;
 
       while (true) {
         if (m instanceof BranchNode) {
-          m = ((BranchNode<V>) m).mLeft;
+          m = spineDirection.apply((BranchNode<V>) m);
         }
         else {
           return Optional.of(new EntryRef<>((LeafNode<V>) m));
@@ -155,14 +157,17 @@ public final class IntMapModule {
       }
     }
 
-    private static <V> Optional<PersistentMapIntEntry<V>> minElementPairImpl(final Tree<V> t) {
+    private static <V> Optional<PersistentMapIntEntry<V>> findElementPairImpl(
+            final Tree<V> t,
+            final Function<BranchNode<V>, Tree<V>> topDirectionifNegative,
+            final Function<BranchNode<V>, Tree<V>> spineDirection) {
       if (t instanceof BranchNode) {
         final BranchNode<V> bn = (BranchNode<V>) t;
         if (bn.mBranchingBit < 0) {
-          return minElementPairUnsignedImpl(bn.mRight);
+          return findElementPairUnsignedImpl(topDirectionifNegative.apply(bn), spineDirection);
         }
         else {
-          return minElementPairUnsignedImpl(bn.mLeft);
+          return findElementPairUnsignedImpl(spineDirection.apply(bn), spineDirection);
         }
       }
       else if (t instanceof LeafNode) {
@@ -172,46 +177,15 @@ public final class IntMapModule {
         return Optional.empty();
       }
     }
-
+    
     @Override
     public Optional<PersistentMapIntEntry<V>> minElementPair() {
-      return minElementPairImpl(this);
-    }
-
-    private static <V> Optional<PersistentMapIntEntry<V>> maxElementPairUnsignedImpl(final Tree<V> t) {
-      Tree<V> m = t;
-
-      while (true) {
-        if (m instanceof BranchNode) {
-          m = ((BranchNode<V>) m).mRight;
-        }
-        else {
-          return Optional.of(new EntryRef<>((LeafNode<V>) m));
-        }
-      }
-    }
-
-    private static <V> Optional<PersistentMapIntEntry<V>> maxElementPairImpl(final Tree<V> t) {
-      if (t instanceof BranchNode) {
-        final BranchNode<V> bn = (BranchNode<V>) t;
-        if (bn.mBranchingBit < 0) {
-          return maxElementPairUnsignedImpl(bn.mLeft);
-        }
-        else {
-          return maxElementPairUnsignedImpl(bn.mRight);
-        }
-      }
-      else if (t instanceof LeafNode) {
-        return Optional.of(new EntryRef<>((LeafNode<V>) t));
-      }
-      else {
-        return Optional.empty();
-      }
+      return findElementPairImpl(this, n -> n.mRight, n -> n.mLeft);
     }
 
     @Override
     public Optional<PersistentMapIntEntry<V>> maxElementPair() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return findElementPairImpl(this, n -> n.mLeft, n -> n.mRight);
     }
 
     @Override
