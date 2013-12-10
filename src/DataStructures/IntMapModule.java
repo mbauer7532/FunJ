@@ -177,7 +177,7 @@ public final class IntMapModule {
         return Optional.empty();
       }
     }
-    
+
     @Override
     public Optional<PersistentMapIntEntry<V>> minElementPair() {
       return findElementPairImpl(this, n -> n.mRight, n -> n.mLeft);
