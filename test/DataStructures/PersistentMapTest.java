@@ -8,6 +8,7 @@ package DataStructures;
 
 import DataStructures.TuplesModule.AssocPair;
 import DataStructures.TuplesModule.Pair;
+import Utils.Functionals;
 import Utils.Numeric;
 import Utils.Ref;
 import java.util.ArrayList;
@@ -480,15 +481,15 @@ public class PersistentMapTest {
 
     kv0.stream().forEach(p -> {
       final Optional<Integer> p1 = t1.get(p.getKey());
+      final Integer expectedRes = Functionals.mapOptOrElse(p1, x -> f.apply(p.getValue(), x), p::getValue);
 
-      final Integer expectedRes = p1.isPresent() ? f.apply(p.getValue(), p1.get()) : p.getValue();
       assertEquals(expectedRes, tres.get(p.getKey()).get());
     });
 
     kv1.stream().forEach(p -> {
       final Optional<Integer> p0 = t0.get(p.getKey());
+      final Integer expectedRes = Functionals.mapOptOrElse(p0, x -> f.apply(x, p.getValue()), p::getValue);
 
-      final Integer expectedRes = p0.isPresent() ? f.apply(p0.get(), p.getValue()) : p.getValue();
       assertEquals(expectedRes, tres.get(p.getKey()).get());
     });
   }

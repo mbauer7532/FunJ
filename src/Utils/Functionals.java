@@ -7,7 +7,9 @@
 package Utils;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  *
@@ -163,5 +165,14 @@ public class Functionals {
   @FunctionalInterface
   public interface IntComparator {
     int compare(final int i0, final int i1);
+  }
+
+  public static <T, U> U mapOptOrElse(final Optional<T> opt, final Function<T, U> f, final Supplier<U> g) {
+    if (opt.isPresent()) {
+      return f.apply(opt.get());
+    }
+    else {
+      return g.get();
+    }
   }
 }

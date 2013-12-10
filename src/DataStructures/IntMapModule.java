@@ -7,6 +7,7 @@
 package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
+import Utils.Functionals;
 import Utils.Functionals.IntBiConsumer;
 import Utils.Functionals.IntBiFunction;
 import Utils.Functionals.IntBiPredicate;
@@ -108,12 +109,7 @@ public final class IntMapModule {
     }
     
     private static <V> OptionalInt getOptInt(final Optional<PersistentMapIntEntry<V>> opt) {
-      if (opt.isPresent()) {
-        return OptionalInt.of(opt.get().getKey());
-      }
-      else {
-        return OptionalInt.empty();
-      }
+      return Functionals.mapOptOrElse(opt, n -> OptionalInt.of(n.getKey()), OptionalInt::empty);
     }
 
     @Override
@@ -408,12 +404,7 @@ public final class IntMapModule {
     }
 
     private <W> Tree<W> compOptMapedValue(final Optional<W> opt) {
-      if (opt.isPresent()) {
-        return create(mKey, opt.get());
-      } 
-      else {
-        return EmptyNode.create();
-      }
+      return Functionals.mapOptOrElse(opt, w -> create(mKey, w), EmptyNode::create);
     }
 
     @Override
@@ -437,7 +428,7 @@ public final class IntMapModule {
       return Color.BLUE;
     }
 
-    private static <V> LeafNode<V> create(final int key, final V value) {
+    public static <V> LeafNode<V> create(final int key, final V value) {
       Objects.requireNonNull(value);
 
       return new LeafNode<>(key, value);
@@ -622,6 +613,7 @@ public final class IntMapModule {
     {
       mLeft.partitioniImpl(f, t0, t1);
       final Tree<V> l0 = t0.r, l1 = t1.r;
+
       mRight.partitioniImpl(f, t0, t1);
       final Tree<V> r0 = t0.r, r1 = t1.r;
 
@@ -664,10 +656,10 @@ public final class IntMapModule {
       mRight        = right;
     }
 
-    private static <V> BranchNode<V> create(final int prefix,
-                                            final int branchingBit,
-                                            final Tree<V> left,
-                                            final Tree<V> right) {
+    public static <V> BranchNode<V> create(final int prefix,
+                                           final int branchingBit,
+                                           final Tree<V> left,
+                                           final Tree<V> right) {
       return new BranchNode<>(prefix, branchingBit, left, right);
     }
 
