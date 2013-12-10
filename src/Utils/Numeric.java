@@ -158,7 +158,7 @@ public class Numeric {
     }
   }
 
-  private static final int[] sHighestBitCache = createHighestBitCache();
+  private static int[] sHighestBitCache = null;
 
   private static final int sHighestBitCacheSize = 0x10000;
   private static final int sLog2HighestBitCacheSize = 16;
@@ -169,18 +169,28 @@ public class Numeric {
                     .toArray();
   }
 
+  private static int[] getHighestBitCache() {
+    if (sHighestBitCache == null) { // Not exactly thread safe but I can live with it for now.
+      sHighestBitCache = createHighestBitCache();
+    }
+
+    return sHighestBitCache;
+  }
+
   public static int highestBit(final int y) {
+    final int[] cache = getHighestBitCache();
+
     final int high = y >>> sLog2HighestBitCacheSize;
 
     if (high > 0) {
-      return sHighestBitCache[high] << 16;
+      return cache[high] << 16;
     }
     else {
       if (y == 0) {
         throw new AssertionError("Zero does not have a highest bit.");
       }
 
-      return sHighestBitCache[y];
+      return cache[y];
     }
   }
 
