@@ -142,9 +142,71 @@ public final class IntMapModule {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
+    private static <V> Optional<PersistentMapIntEntry<V>> minElementPairUnsignedImpl(final Tree<V> t) {
+      Tree<V> m = t;
+
+      while (true) {
+        if (m instanceof BranchNode) {
+          m = ((BranchNode<V>) m).mLeft;
+        }
+        else {
+          return Optional.of(new EntryRef<>((LeafNode<V>) m));
+        }
+      }
+    }
+
+    private static <V> Optional<PersistentMapIntEntry<V>> minElementPairImpl(final Tree<V> t) {
+      if (t instanceof BranchNode) {
+        final BranchNode<V> bn = (BranchNode<V>) t;
+        if (bn.mBranchingBit < 0) {
+          return minElementPairUnsignedImpl(bn.mRight);
+        }
+        else {
+          return minElementPairUnsignedImpl(bn.mLeft);
+        }
+      }
+      else if (t instanceof LeafNode) {
+        return Optional.of(new EntryRef<>((LeafNode<V>) t));
+      }
+      else {
+        return Optional.empty();
+      }
+    }
+
     @Override
     public Optional<PersistentMapIntEntry<V>> minElementPair() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return minElementPairImpl(this);
+    }
+
+    private static <V> Optional<PersistentMapIntEntry<V>> maxElementPairUnsignedImpl(final Tree<V> t) {
+      Tree<V> m = t;
+
+      while (true) {
+        if (m instanceof BranchNode) {
+          m = ((BranchNode<V>) m).mRight;
+        }
+        else {
+          return Optional.of(new EntryRef<>((LeafNode<V>) m));
+        }
+      }
+    }
+
+    private static <V> Optional<PersistentMapIntEntry<V>> maxElementPairImpl(final Tree<V> t) {
+      if (t instanceof BranchNode) {
+        final BranchNode<V> bn = (BranchNode<V>) t;
+        if (bn.mBranchingBit < 0) {
+          return maxElementPairUnsignedImpl(bn.mLeft);
+        }
+        else {
+          return maxElementPairUnsignedImpl(bn.mRight);
+        }
+      }
+      else if (t instanceof LeafNode) {
+        return Optional.of(new EntryRef<>((LeafNode<V>) t));
+      }
+      else {
+        return Optional.empty();
+      }
     }
 
     @Override
@@ -194,8 +256,6 @@ public final class IntMapModule {
 
     @Override
     public Tree<V> insert(final BiFunction<V, V, V> f, final int key, final V value) {
-      Objects.requireNonNull(f);
-
       return LeafNode.create(key, value);
     }
 
@@ -312,10 +372,8 @@ public final class IntMapModule {
 
     @Override
     public Tree<V> insert(final BiFunction<V, V, V> f, final int key, final V value) {
-      Objects.requireNonNull(f);
-
       return key == mKey
-              ? create(key, f.apply(value, mValue))
+              ? create(key, f.apply(mValue, value))
               : join(key, create(key, value), mKey, this);
     }
 

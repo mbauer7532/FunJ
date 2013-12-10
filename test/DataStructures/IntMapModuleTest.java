@@ -78,27 +78,18 @@ public class IntMapModuleTest {
   public void testInsert() {
     System.out.println("insert");
     
-    final int low = 0;
-    final int high = 160;
-
-    final IntMapModule.Tree<Integer> t0 = IntMapModule.empty();
+    final int low = -3;
+    final int high = 3;
 
     final IntMapModule.Tree<Integer> t1
             = IntStream.rangeClosed(low, high)
                        .boxed()
-                       .reduce(t0,
-                               ((t, ii) -> t.insert((z1, z2) -> z1, ii, ii)),
+                       .reduce(IntMapModule.<Integer> empty(),
+                               (IntMapModule.Tree<Integer> t, Integer ii) -> t.insert(ii.intValue(), ii),
                                (tt1, tt2) -> null);
 
-    Ref<IntMapModule.Tree<Integer>> refToTree = new Ref<>(t0);
-    IntStream.rangeClosed(low, high)
-             .collect((() -> null),
-                     (IntMapModule.Tree<Integer> tree, int i) -> { refToTree.r = refToTree.r.insert((z1, z2) -> z1, i, i); },
-                     (tt1, tt2) -> {});
-    final IntMapModule.Tree<Integer> t2 = refToTree.r;
-//    GraphModule.showGraph(t1);
-//    GraphModule.showGraph(t2);
-//    GraphModule.waitTime(2000);
+    GraphModule.showGraph(t1);
+    GraphModule.waitTime(2000);
   }
 
   @Test
