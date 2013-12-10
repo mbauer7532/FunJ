@@ -178,14 +178,17 @@ public final class IntMapModule {
       }
     }
 
+    private static <V> Tree<V> goLeft (BranchNode<V> bn) { return bn.mLeft; }
+    private static <V> Tree<V> goRight(BranchNode<V> bn) { return bn.mRight; }
+
     @Override
     public Optional<PersistentMapIntEntry<V>> minElementPair() {
-      return findElementPairImpl(this, n -> n.mRight, n -> n.mLeft);
+      return findElementPairImpl(this, Tree::goRight, Tree::goLeft);
     }
 
     @Override
     public Optional<PersistentMapIntEntry<V>> maxElementPair() {
-      return findElementPairImpl(this, n -> n.mLeft, n -> n.mRight);
+      return findElementPairImpl(this, Tree::goLeft, Tree::goRight);
     }
 
     @Override
