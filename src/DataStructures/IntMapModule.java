@@ -134,12 +134,12 @@ public final class IntMapModule {
 
     @Override
     public Optional<PersistentMapIntEntry<V>> lowerPair(final int key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public Optional<PersistentMapIntEntry<V>> higherPair(final int key) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      throw new UnsupportedOperationException("Not supported yet.");
     }
 
     private static <V> Optional<PersistentMapIntEntry<V>> findElementPairUnsignedImpl(
