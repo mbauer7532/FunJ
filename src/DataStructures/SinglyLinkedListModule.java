@@ -8,6 +8,7 @@ package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
 import DataStructures.TuplesModule.Triple;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.BiFunction;
@@ -34,13 +35,9 @@ public class SinglyLinkedListModule {
     public int length();
 
     // Transformations
-    public <B, L2 extends List<B, L2>> List<B, L2> map(final Function<A, L2> f);
+    public <B> List<B, ?> map(final Function<A, B> f);
     public L reverse();
     public L intersperse(final A a);
-    public <L2 extends List<L, L2>> L intercalate(final L2 list);
-    public <L2 extends List<L, L2>> L2 transpose();
-    public <L2 extends List<L, L2>> L2 subsequences();
-    public <L2 extends List<L, L2>> L2 permutations();
 
     // Folds
     public <B> B foldl(final BiFunction<B, A, B> f, final B b);
@@ -50,20 +47,18 @@ public class SinglyLinkedListModule {
     public A foldr1(final BiFunction<A, A, A> f);
 
     // Special Folds
-    public L concat();
-    public <B, L2 extends List<B, L2>> List<B, L2> concatMap(final Function<A, L2> f);
     public boolean any(final Predicate<A> f);
     public boolean all(final Predicate<A> f);
 
     // Building lists
-    public <B, L2 extends List<B, L2>> L2 scanl(final BiFunction<B, A, B> f, final B b);
-    public <B> L scanl1(final BiFunction<A, A, A> f);
+    public <B> List<B, ?> scanl(final BiFunction<B, A, B> f, final B b);
+    public L scanl1(final BiFunction<A, A, A> f);
 
-    public <B, L2 extends List<B, L2>> L2 scanr(final BiFunction<A, B, B> f, final B b);
+    public <B> List<B, ?> scanr(final BiFunction<A, B, B> f, final B b);
     public L scanr1(final BiFunction<A, A, A> f);
 
-    public <ACC, B, L2 extends List<B, L2>> Pair<ACC, L2> mapAccumL(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc);
-    public <ACC, B, L2 extends List<B, L2>> Pair<ACC, L2> mapAccumR(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc);
+    public <ACC, B> Pair<ACC, List<B, ?>> mapAccumL(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc);
+    public <ACC, B> Pair<ACC, List<B, ?>> mapAccumR(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc);
 
     // Sublists
     public L take(final int n);
@@ -80,15 +75,15 @@ public class SinglyLinkedListModule {
     
     public Optional<L> stripPrefix(final L list);
 
-    public <L2 extends List<L, L2>> L2 group();
-    public <L2 extends List<L, L2>> L2 inits();
-    public <L2 extends List<L, L2>> L2 tails();
+    public List<L, ?> group();
+    public List<L, ?> inits();
+    public List<L, ?> tails();
 
     // Predicates
     public boolean isPrefixOf(final L list);
     public boolean isSuffixOf(final L list);
     public boolean isInfixOf(final L list);
-    
+
     // Searching (by Equality)
     public boolean elem(final A a);
     public boolean notElem(final A a);
@@ -102,17 +97,14 @@ public class SinglyLinkedListModule {
     public A nth(final int n);
 
     public OptionalInt elemIndex(final A a);
-    public <L2 extends List<Integer, L2>> L2 elemIndices(final A a);
+    public List<Integer, ?> elemIndices(final A a);
 
     public OptionalInt findIndex(final Predicate<A> pred);
-    public <L2 extends List<Integer, L2>> L2 findIndices(final Predicate<A> pred);
-
+    public List<Integer, ?> findIndices(final Predicate<A> pred);
   }
   
   
   
-  
-
   public static class LinkedList<A> implements List<A, LinkedList<A>> {
     public static <T> LinkedList<T> create(final T a, final LinkedList<T> list) { return new LinkedList<>(a, list); }
 
@@ -135,7 +127,8 @@ public class SinglyLinkedListModule {
       return create(a, this);
     }
 
-    private boolean isNull() { return this == sEmptyList; }
+    private boolean isNull()    { return this == sEmptyList; }
+    private boolean isNotNull() { return this != sEmptyList; }
 
     @Override
     public A head() {
@@ -160,7 +153,7 @@ public class SinglyLinkedListModule {
     @Override
     public A last() {
       LinkedList<A> list = null, next = this;
-      while (! next.isNull()) {
+      while (next.isNotNull()) {
         list = next;
         next = next.mCdr;
       }
@@ -173,139 +166,280 @@ public class SinglyLinkedListModule {
       }
     }
 
+    private static <A> ArrayList<A> toArray(final LinkedList<A> m) {
+      final ArrayList<A> v = new ArrayList<>();
+      LinkedList<A> t = m;
+
+      while (t.isNotNull()) {
+        v.add(t.mCar);
+        t = t.mCdr;
+      }
+
+      return v;
+    }
+
+    private static <A> LinkedList<A> fromArray(final ArrayList<A> v) {
+      final int lastIdx = v.size() - 1;
+      return IntStream.rangeClosed(0, lastIdx)
+                      .mapToObj(i -> v.get(lastIdx - i))
+                      .reduce(empty(),
+                              (list, elem) -> list.cons(elem),
+                              (l1, l2) -> { throw new AssertionError("Should never be called. Stream was sequential."); });
+    }
+
     @Override
     public LinkedList<A> init() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      if (isNull()) {
+        throw new AssertionError("init() called on empty list.");
+      }
+      else {
+        LinkedList<A> t = this;
+
+        if (t.mCdr.isNull()) {
+          return empty();
+        }
+        else {
+          final ArrayList<A> v = new ArrayList<>();
+          do {
+            v.add(t.mCar);
+            t = t.mCdr;
+          } while (t.mCdr.isNotNull());
+
+          return fromArray(v);
+        }
+      }
     }
 
     @Override
     public boolean isEmpty() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return isNull();
     }
 
     @Override
     public int length() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      int len = 0;
+      LinkedList<A> t = this;
+      while (t.isNotNull()) {
+        ++len;
+        t = t.mCdr;
+      }
+
+      return len;
     }
 
     @Override
-    public <B, L2 extends List<B, L2>> List<B, L2> map(Function<A, L2> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public <B> List<B, ?> map(Function<A, B> f) {
+      LinkedList<B> lb = empty();
+      LinkedList<A> la = this;
+
+      while (la.isNotNull()) {
+        lb = lb.cons(f.apply(la.mCar));
+        la = la.mCdr;
+      }
+
+      return lb;
     }
 
     @Override
     public LinkedList<A> reverse() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      LinkedList<A> acc = empty(), t = this;
+
+      while (t.isNotNull()) {
+        acc = acc.cons(t.mCar);
+        t = t.mCdr;
+      }
+
+      return acc;
     }
 
     @Override
-    public LinkedList<A> intersperse(A a) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public LinkedList<A> intersperse(final A a) {
+      if (isNull()) {
+        return empty();
+      }
+      else {
+        final ArrayList<A> v = new ArrayList<>();
+        v.add(mCar);
+        LinkedList<A> t = mCdr;
+
+        while (t.isNotNull()) {
+          v.add(a);
+          v.add(t.mCar);
+          t = t.mCdr;
+        }
+
+        return fromArray(v);
+      }
     }
 
     @Override
-    public <L2 extends List<LinkedList<A>, L2>> LinkedList<A> intercalate(L2 list) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public <B> B foldl(final BiFunction<B, A, B> f, final B b) {
+      B acc = b;
+      LinkedList<A> t = this;
+
+      while (t.isNotNull()) {
+        acc = f.apply(acc, t.mCar);
+        t = t.mCdr;
+      }
+
+      return acc;
     }
 
     @Override
-    public <L2 extends List<LinkedList<A>, L2>> L2 transpose() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public A foldl1(final BiFunction<A, A, A> f) {
+      if (isNull()) {
+        throw new AssertionError("foldl1() applied to an empty list.");
+      }
+      else {
+        return mCdr.foldl(f, mCar);
+      }
     }
 
     @Override
-    public <L2 extends List<LinkedList<A>, L2>> L2 subsequences() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public <B> B foldr(final BiFunction<A, B, B> f, final B b) {
+      final ArrayList<A> v = toArray(this);
+      final int lastIdx = v.size() - 1;
+      return IntStream.rangeClosed(0, lastIdx)
+                      .mapToObj(i -> v.get(lastIdx - i))
+                      .reduce(b,
+                              (acc, e) -> f.apply(e, acc),
+                              (b0, b1) -> { throw new AssertionError("Should never be called. Stream was sequential."); });
     }
 
     @Override
-    public <L2 extends List<LinkedList<A>, L2>> L2 permutations() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public A foldr1(final BiFunction<A, A, A> f) {
+      if (isNull()) {
+        throw new AssertionError("foldr1() applied to an empty list.");
+      }
+      else {
+        return mCdr.foldr(f, mCar);
+      }
     }
 
     @Override
-    public <B> B foldl(BiFunction<B, A, B> f, B b) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean any(final Predicate<A> f) {
+      LinkedList<A> t = this;
+      
+      while (t.isNotNull()) {
+        if (f.test(t.mCar)) {
+          return true;
+        }
+        t = t.mCdr;
+      }
+
+      return false;
     }
 
     @Override
-    public A foldl1(BiFunction<A, A, A> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public boolean all(final Predicate<A> f) {
+      return ! any(f.negate());
     }
 
     @Override
-    public <B> B foldr(BiFunction<A, B, B> f, B b) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public <B> LinkedList<B> scanl(BiFunction<B, A, B> f, B b) {
+      B acc = b;
+      LinkedList<A> t = this;
+      final ArrayList<B> v = new ArrayList<>();
+
+      while (t.isNotNull()) {
+        v.add(acc);
+        acc = f.apply(acc, t.mCar);
+        t = t.mCdr;
+      }
+      v.add(acc);
+      
+      return fromArray(v);
     }
 
     @Override
-    public A foldr1(BiFunction<A, A, A> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public LinkedList<A> scanl1(BiFunction<A, A, A> f) {
+      if (isNull()) {
+        return empty();
+      }
+      else {
+        return mCdr.scanl(f, mCar);
+      }
     }
 
     @Override
-    public LinkedList<A> concat() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public <B> LinkedList<B> scanr(BiFunction<A, B, B> f, B b) {
+      final ArrayList<A> v = toArray(this);
+      final int lastIdx = v.size() - 1;
+      final ArrayList<B> bs = new ArrayList<>();
 
-    @Override
-    public <B, L2 extends List<B, L2>> List<B, L2> concatMap(Function<A, L2> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+      bs.add(b);
+      IntStream.rangeClosed(0, lastIdx)
+               .mapToObj(i -> v.get(lastIdx - i))
+               .reduce(b,
+                       (acc, e) -> { final B newAcc = f.apply(e, acc); bs.add(newAcc); return newAcc; },
+                       (b0, b1) -> { throw new AssertionError("Should never be called. Stream was sequential."); });
 
-    @Override
-    public boolean any(Predicate<A> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean all(Predicate<A> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public <B, L2 extends List<B, L2>> L2 scanl(BiFunction<B, A, B> f, B b) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public <B> LinkedList<A> scanl1(BiFunction<A, A, A> f) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public <B, L2 extends List<B, L2>> L2 scanr(BiFunction<A, B, B> f, B b) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return fromArray(bs);
     }
 
     @Override
     public LinkedList<A> scanr1(BiFunction<A, A, A> f) {
+      if (isNull()) {
+        return empty();
+      }
+      else {
+        return mCdr.scanr(f, mCar);
+      }
+    }
+
+    @Override
+    public <ACC, B> Pair<ACC, List<B, ?>> mapAccumL(BiFunction<ACC, A, Pair<ACC, B>> f, ACC acc) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public <ACC, B, L2 extends List<B, L2>> Pair<ACC, L2> mapAccumL(BiFunction<ACC, A, Pair<ACC, B>> f, ACC acc) {
+    public <ACC, B> Pair<ACC, List<B, ?>> mapAccumR(BiFunction<ACC, A, Pair<ACC, B>> f, ACC acc) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public <ACC, B, L2 extends List<B, L2>> Pair<ACC, L2> mapAccumR(BiFunction<ACC, A, Pair<ACC, B>> f, ACC acc) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public LinkedList<A> take(final int n) {
+      final ArrayList<A> v = new ArrayList<>();
+      LinkedList<A> t = this;
+
+      for (int i = 0; i != n; ++i) {
+        if (t.isNull()) {
+          break;
+        }
+        v.add(t.mCar);
+        t = t.mCdr;
+      }
+
+      return fromArray(v);
     }
 
     @Override
-    public LinkedList<A> take(int n) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public LinkedList<A> drop(final int n) {
+      LinkedList<A> t = this;
+      for (int i = 0; i != n; ++i) {
+        if (t.isNull()) {
+          return t;
+        }
+        t = t.mCdr;
+      }
+
+      return t;
     }
 
     @Override
-    public LinkedList<A> drop(int n) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+    public Pair<LinkedList<A>, LinkedList<A>> splitAt(final int n) {
+      LinkedList<A> t = this;
+      final ArrayList<A> v = new ArrayList<>();
 
-    @Override
-    public Pair<LinkedList<A>, LinkedList<A>> splitAt(int n) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      for (int i = 0; i != n; ++i) {
+        if (t.isNull()) {
+          return Pair.create(this, t);
+        }
+        v.add(t.mCar);
+        t = t.mCdr;
+      }
+
+      return Pair.create(fromArray(v), t);
     }
 
     @Override
@@ -428,6 +562,14 @@ public class SinglyLinkedListModule {
     // public <B, C> SLinkedList<Triple<A, B, C>> zip(final SLinkedList<B> list1, final SLinkedList<C> list2);
     
     // public <B> Pair<SLinkedList<A>, SLinkedList<B>> unzip();
-    
+
+//     public L concat();
+
+//    public <L2 extends List<L, L2>> L intercalate(final List<L, ?> list);
+//    public <L2 extends List<L, L2>> L2 transpose();
+//    public <L2 extends List<L, L2>> L2 subsequences();
+//    public <L2 extends List<L, L2>> L2 permutations();
+//    public <B, L2 extends List<B, L2>> List<B, L2> concatMap(final Function<A, L2> f);
+
   }
 }
