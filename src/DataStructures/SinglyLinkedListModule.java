@@ -335,10 +335,9 @@ public class SinglyLinkedListModule {
       return ! any(f.negate());
     }
 
-    @Override
-    public <B> LinkedList<B> scanl(BiFunction<B, A, B> f, B b) {
+    private static <A, B> LinkedList<B> scanlImpl(final LinkedList<A> list, final BiFunction<B, A, B> f, final B b) {
       B acc = b;
-      LinkedList<A> t = this;
+      LinkedList<A> t = list;
       final ArrayList<B> v = new ArrayList<>();
 
       while (t.isNotNull()) {
@@ -352,7 +351,21 @@ public class SinglyLinkedListModule {
     }
 
     @Override
-    public LinkedList<A> scanl1(BiFunction<A, A, A> f) {
+    public <B> LinkedList<B> scanl(final BiFunction<B, A, B> f, final B b) {
+      return scanlImpl(this, f, b);
+    }
+
+    private static <A> LinkedList<A> scanl1Impl(final LinkedList<A> list, final BiFunction<A, A, A> f) {
+      if (list.isNull()) {
+        return list;
+      }
+      else {
+        return scanlImpl(list.mCdr, f, list.mCar);
+      }
+    }
+
+    @Override
+    public LinkedList<A> scanl1(final BiFunction<A, A, A> f) {
       if (isNull()) {
         return empty();
       }
@@ -361,9 +374,8 @@ public class SinglyLinkedListModule {
       }
     }
 
-    @Override
-    public <B> LinkedList<B> scanr(BiFunction<A, B, B> f, B b) {
-      final ArrayList<A> v = toArray(this);
+    private static <A, B> LinkedList<B> scanrImpl(final LinkedList<A> list, final BiFunction<A, B, B> f, final B b) {
+      final ArrayList<A> v = toArray(list);
       final int lastIdx = v.size() - 1;
       final ArrayList<B> bs = new ArrayList<>();
 
@@ -378,13 +390,22 @@ public class SinglyLinkedListModule {
     }
 
     @Override
-    public LinkedList<A> scanr1(BiFunction<A, A, A> f) {
-      if (isNull()) {
-        return empty();
+    public <B> LinkedList<B> scanr(final BiFunction<A, B, B> f, final B b) {
+      return scanrImpl(this, f, b);
+    }
+
+    private static <A> LinkedList<A> scanr1Impl(final LinkedList<A> list, final BiFunction<A, A, A> f) {
+      if (list.isNull()) {
+        return list;
       }
       else {
-        return mCdr.scanr(f, mCar);
+        return scanrImpl(list.mCdr, f, list.mCar);
       }
+    }
+
+    @Override
+    public LinkedList<A> scanr1(final BiFunction<A, A, A> f) {
+      return scanr1Impl(this, f);
     }
 
     @Override
@@ -397,10 +418,9 @@ public class SinglyLinkedListModule {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public LinkedList<A> take(final int n) {
+    private static <A> LinkedList<A> takeImpl(final LinkedList<A> list, final int n) {
       final ArrayList<A> v = new ArrayList<>();
-      LinkedList<A> t = this;
+      LinkedList<A> t = list;
 
       for (int i = 0; i != n; ++i) {
         if (t.isNull()) {
@@ -414,8 +434,12 @@ public class SinglyLinkedListModule {
     }
 
     @Override
-    public LinkedList<A> drop(final int n) {
-      LinkedList<A> t = this;
+    public LinkedList<A> take(final int n) {
+      return takeImpl(this, n);
+    }
+
+    private static <A> LinkedList<A> dropImpl(final LinkedList<A> list, final int n) {
+      LinkedList<A> t = list;
       for (int i = 0; i != n; ++i) {
         if (t.isNull()) {
           return t;
@@ -427,19 +451,28 @@ public class SinglyLinkedListModule {
     }
 
     @Override
-    public Pair<LinkedList<A>, LinkedList<A>> splitAt(final int n) {
-      LinkedList<A> t = this;
+    public LinkedList<A> drop(final int n) {
+      return dropImpl(this, n);
+    }
+
+    private static <A> Pair<LinkedList<A>, LinkedList<A>> splitAtImpl(final LinkedList<A> list, final int n) {
+      LinkedList<A> t = list;
       final ArrayList<A> v = new ArrayList<>();
 
       for (int i = 0; i != n; ++i) {
         if (t.isNull()) {
-          return Pair.create(this, t);
+          return Pair.create(list, t);
         }
         v.add(t.mCar);
         t = t.mCdr;
       }
 
       return Pair.create(fromArray(v), t);
+    }
+
+    @Override
+    public Pair<LinkedList<A>, LinkedList<A>> splitAt(final int n) {
+      return splitAtImpl(this, n);
     }
 
     @Override
