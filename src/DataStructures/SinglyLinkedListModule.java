@@ -473,82 +473,82 @@ public class SinglyLinkedListModule {
     }
 
     @Override
-    public <L2 extends List<LinkedList<A>, L2>> L2 group() {
+    public LinkedList<LinkedList<A>> group() {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public <L2 extends List<LinkedList<A>, L2>> L2 inits() {
+    public LinkedList<LinkedList<A>> inits() {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public <L2 extends List<LinkedList<A>, L2>> L2 tails() {
+    public LinkedList<LinkedList<A>> tails() {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean isPrefixOf(LinkedList<A> list) {
+    public boolean isPrefixOf(final LinkedList<A> list) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean isSuffixOf(LinkedList<A> list) {
+    public boolean isSuffixOf(final LinkedList<A> list) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean isInfixOf(LinkedList<A> list) {
+    public boolean isInfixOf(final LinkedList<A> list) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean elem(A a) {
+    public boolean elem(final A a) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public boolean notElem(A a) {
+    public boolean notElem(final A a) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Optional<A> find(Predicate<A> pred) {
+    public Optional<A> find(final Predicate<A> pred) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public LinkedList<A> filter(Predicate<A> pred) {
+    public LinkedList<A> filter(final Predicate<A> pred) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Pair<LinkedList<A>, LinkedList<A>> partition(Predicate<A> pred) {
+    public Pair<LinkedList<A>, LinkedList<A>> partition(final Predicate<A> pred) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public A nth(int n) {
+    public A nth(final int n) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public OptionalInt elemIndex(A a) {
+    public OptionalInt elemIndex(final A a) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public <L2 extends List<Integer, L2>> L2 elemIndices(A a) {
+    public LinkedList<Integer> elemIndices(final A a) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public OptionalInt findIndex(Predicate<A> pred) {
+    public OptionalInt findIndex(final Predicate<A> pred) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public <L2 extends List<Integer, L2>> L2 findIndices(Predicate<A> pred) {
+    public LinkedList<Integer> findIndices(final Predicate<A> pred) {
       throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
   }
