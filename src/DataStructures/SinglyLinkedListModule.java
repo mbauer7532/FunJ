@@ -346,7 +346,7 @@ public class SinglyLinkedListModule {
         t = t.mCdr;
       }
       v.add(acc);
-      
+
       return fromArray(v);
     }
 
@@ -366,12 +366,7 @@ public class SinglyLinkedListModule {
 
     @Override
     public LinkedList<A> scanl1(final BiFunction<A, A, A> f) {
-      if (isNull()) {
-        return empty();
-      }
-      else {
-        return mCdr.scanl(f, mCar);
-      }
+      return scanl1Impl(this, f);
     }
 
     private static <A, B> LinkedList<B> scanrImpl(final LinkedList<A> list, final BiFunction<A, B, B> f, final B b) {
