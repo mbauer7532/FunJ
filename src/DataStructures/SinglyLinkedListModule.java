@@ -316,10 +316,9 @@ public class SinglyLinkedListModule {
       }
     }
 
-    @Override
-    public boolean any(final Predicate<A> f) {
-      LinkedList<A> t = this;
-      
+    private static <A> boolean anyImpl(final LinkedList<A> list, final Predicate<A> f) {
+      LinkedList<A> t = list;
+
       while (t.isNotNull()) {
         if (f.test(t.mCar)) {
           return true;
@@ -331,8 +330,17 @@ public class SinglyLinkedListModule {
     }
 
     @Override
+    public boolean any(final Predicate<A> f) {
+      return anyImpl(this, f);
+    }
+
+    private static <A> boolean allImpl(final LinkedList<A> list, final Predicate<A> f) {
+      return ! anyImpl(list, f.negate());
+    }
+
+    @Override
     public boolean all(final Predicate<A> f) {
-      return ! any(f.negate());
+      return allImpl(this, f);
     }
 
     private static <A, B> LinkedList<B> scanlImpl(final LinkedList<A> list, final BiFunction<B, A, B> f, final B b) {
