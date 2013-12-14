@@ -8,13 +8,16 @@ package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
 import DataStructures.TuplesModule.Triple;
+import Utils.Ref;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 /**
@@ -70,8 +73,8 @@ public class SinglyLinkedListModule {
     public L dropWhile(final Predicate<A> pred);
     public L dropWhileEnd(final Predicate<A> pred);
 
-    public Pair<L, L> spanPred(final Predicate<A> pred);
-    public Pair<L, L> breakPred(final Predicate<A> pred);
+    public Pair<L, L> spanByPredicate(final Predicate<A> pred);
+    public Pair<L, L> breakByPredicate(final Predicate<A> pred);
     
     public Optional<L> stripPrefix(final L list);
 
@@ -516,49 +519,198 @@ public class SinglyLinkedListModule {
       return splitAtImpl(this, n);
     }
 
+    private static <A> void takeDropImpl(final LinkedList<A> list, final Predicate<A> pred, final Ref<LinkedList<A>> tk, final Ref<LinkedList<A>> dr) {
+      final ArrayList<A> v = new ArrayList<>();
+      LinkedList<A> t = list;
+
+      while (t.isNotNull() && pred.test(t.mCar)) {
+        v.add(t.mCar);
+        t = t.mCdr;
+      }
+
+      tk.r = fromArray(v);
+      dr.r = t;
+    }
+
+    private static <A> LinkedList<A> takeWhileImpl(final LinkedList<A> list, final Predicate<A> pred) {
+      final ArrayList<A> v = new ArrayList<>();
+      LinkedList<A> t = list;
+      
+      while (t.isNotNull() && pred.test(t.mCar)) {
+        v.add(t.mCar);
+        t = t.mCdr;
+      }
+
+      return fromArray(v);
+    }
+
     @Override
-    public LinkedList<A> takeWhile(Predicate<A> pred) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public LinkedList<A> takeWhile(final Predicate<A> pred) {
+      return takeWhileImpl(this, pred);
+    }
+
+    private static <A> LinkedList<A> dropWhileImpl(final LinkedList<A> list, final Predicate<A> pred) {
+      LinkedList<A> t = list;
+      
+      while (t.isNotNull() && pred.test(t.mCar)) {
+        t = t.mCdr;
+      }
+
+      return t;
     }
 
     @Override
     public LinkedList<A> dropWhile(Predicate<A> pred) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return dropWhileImpl(this, pred);
+    }
+
+    private static <A> LinkedList<A> dropWhileEndImpl(final LinkedList<A> list, final Predicate<A> pred) {
+      final ArrayList<A> v = toArray(list);
+
+      for (int i = v.size() - 1; i >= 0; --i) {
+        if (pred.test(v.get(i))) {
+          v.remove(i);
+        }
+        else {
+          break;
+        }
+      }
+
+      return fromArray(v);
     }
 
     @Override
-    public LinkedList<A> dropWhileEnd(Predicate<A> pred) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public LinkedList<A> dropWhileEnd(final Predicate<A> pred) {
+      return dropWhileEndImpl(this, pred);
+    }
+
+    private static <A> Pair<LinkedList<A>, LinkedList<A>> spanByPredicateImpl(final LinkedList<A> list, final Predicate<A> pred) {
+      LinkedList<A> t = list;
+      int n = 0;
+      while (t.isNotNull()) {
+        if (! pred.test(t.mCar)) {
+          break;
+        }
+        t = t.mCdr;
+        ++n;
+      }
+
+      final LinkedList<A> l1, l2;
+      if (n == 0) {
+        l1 = empty();
+        l2 = list;
+      }
+      else if (t.isNull()) {
+        l1 = list;
+        l2 = empty();
+      }
+      else {
+        final Ref<LinkedList<A>> tk = new Ref<>(), dr = new Ref<>();
+        takeDropImpl(list, pred, tk, dr);
+        l1 = tk.r;
+        l2 = dr.r;
+      }
+      
+      return Pair.create(l1, l2);
     }
 
     @Override
-    public Pair<LinkedList<A>, LinkedList<A>> spanPred(Predicate<A> pred) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Pair<LinkedList<A>, LinkedList<A>> spanByPredicate(final Predicate<A> pred) {
+      return spanByPredicateImpl(this, pred);
     }
 
     @Override
-    public Pair<LinkedList<A>, LinkedList<A>> breakPred(Predicate<A> pred) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Pair<LinkedList<A>, LinkedList<A>> breakByPredicate(final Predicate<A> pred) {
+      return spanByPredicateImpl(this, pred.negate());
+    }
+
+    private static <A> Optional<LinkedList<A>> stripPrefixImpl(final LinkedList<A> list, final LinkedList<A> prefix) {
+      LinkedList<A> t0 = prefix, t1 = list;
+      
+      while (t0.isNotNull() && t1.isNotNull()) {
+        if (! t0.mCar.equals(t1.mCar)) {
+          break;
+        }
+        t0 = t0.mCdr;
+        t1 = t1.mCdr;
+      }
+
+      if (t0.isNotNull()) {
+        return Optional.empty();
+      }
+      else {
+        return Optional.of(t1);
+      }
     }
 
     @Override
-    public Optional<LinkedList<A>> stripPrefix(LinkedList<A> list) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Optional<LinkedList<A>> stripPrefix(final LinkedList<A> prefix) {
+      return stripPrefixImpl(this, prefix);
+    }
+
+    private static <A> LinkedList<LinkedList<A>> groupImpl(final LinkedList<A> list, final BiPredicate<A, A> eqPred) {
+      LinkedList<A> t = list;
+      if (t.isNull()) {
+        return empty();
+      }
+      else {
+        final ArrayList<ArrayList<A>> res = new ArrayList<>();
+        res.add(new ArrayList<>());
+
+        while (t.isNotNull()) {
+          final int idx = res.size() - 1;
+          final ArrayList<A> v = res.get(idx);
+          final A a = t.mCar;
+
+          if (v.isEmpty() || eqPred.test(a, v.get(0))) {
+            v.add(a);
+          }
+          else {
+            final ArrayList<A> newV = new ArrayList<>();
+            newV.add(a);
+            res.add(newV);
+          }
+        }
+
+        return fromArray(res.stream().map(LinkedList::fromArray).collect(Collectors.toCollection(ArrayList::new)));
+      }
     }
 
     @Override
     public LinkedList<LinkedList<A>> group() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return groupImpl(this, (e1, e2) -> e1.equals(e2));
+    }
+
+    private static <A> LinkedList<LinkedList<A>> initsImpl(final LinkedList<A> list) {
+      final ArrayList<A> v = toArray(list);
+      LinkedList<LinkedList<A>> res = empty();
+      for (int i = v.size() - 1; i >= 0; --i) {
+        res = res.cons(fromArray(v));
+        v.remove(i);
+      }
+
+      return res.cons(empty());
     }
 
     @Override
     public LinkedList<LinkedList<A>> inits() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return initsImpl(this);
+    }
+
+    private static <A> LinkedList<LinkedList<A>> tailsImpl(final LinkedList<A> list) {
+      LinkedList<A> t = list;
+      LinkedList<LinkedList<A>> res = empty();
+      while (t.isNotNull()) {
+        res = res.cons(t);
+        t = t.mCdr;
+      }
+
+      return res.cons(t).reverse();
     }
 
     @Override
     public LinkedList<LinkedList<A>> tails() {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return tailsImpl(this);
     }
 
     @Override
