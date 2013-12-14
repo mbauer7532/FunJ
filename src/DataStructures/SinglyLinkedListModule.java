@@ -295,9 +295,8 @@ public class SinglyLinkedListModule {
       }
     }
 
-    @Override
-    public <B> B foldr(final BiFunction<A, B, B> f, final B b) {
-      final ArrayList<A> v = toArray(this);
+    private static <A, B> B foldrImpl(final LinkedList<A> list, final BiFunction<A, B, B> f, final B b) {
+      final ArrayList<A> v = toArray(list);
       final int lastIdx = v.size() - 1;
       return IntStream.rangeClosed(0, lastIdx)
                       .mapToObj(i -> v.get(lastIdx - i))
@@ -307,13 +306,22 @@ public class SinglyLinkedListModule {
     }
 
     @Override
-    public A foldr1(final BiFunction<A, A, A> f) {
-      if (isNull()) {
+    public <B> B foldr(final BiFunction<A, B, B> f, final B b) {
+      return foldrImpl(this, f, b);
+    }
+
+    private static <A> A foldr1Impl(final LinkedList<A> list, final BiFunction<A, A, A> f) {
+      if (list.isNull()) {
         throw new AssertionError("foldr1() applied to an empty list.");
       }
       else {
-        return mCdr.foldr(f, mCar);
+        return foldrImpl(list.mCdr, f, list.mCar);
       }
+    }
+
+    @Override
+    public A foldr1(final BiFunction<A, A, A> f) {
+      return foldr1Impl(this, f);
     }
 
     private static <A> boolean anyImpl(final LinkedList<A> list, final Predicate<A> f) {
