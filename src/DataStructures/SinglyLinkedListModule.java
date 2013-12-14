@@ -183,13 +183,17 @@ public class SinglyLinkedListModule {
       return v;
     }
 
-    private static <A> LinkedList<A> fromArray(final ArrayList<A> v) {
-      final int lastIdx = v.size() - 1;
-      return IntStream.rangeClosed(0, lastIdx)
-                      .mapToObj(i -> v.get(lastIdx - i))
+    private static <A> LinkedList<A> fromArray(final ArrayList<A> v, final int i, final int j) {
+      return IntStream.rangeClosed(i, j)
+                      .mapToObj(idx -> v.get(j - idx))
                       .reduce(empty(),
                               (list, elem) -> list.cons(elem),
                               (l1, l2) -> { throw new AssertionError("Should never be called. Stream was sequential."); });
+    }
+
+
+    private static <A> LinkedList<A> fromArray(final ArrayList<A> v) {
+      return fromArray(v, 0, v.size() - 1);
     }
 
     private static <A> LinkedList<A> initImpl(final LinkedList<A> list) {
@@ -683,12 +687,14 @@ public class SinglyLinkedListModule {
 
     private static <A> LinkedList<LinkedList<A>> initsImpl(final LinkedList<A> list) {
       final ArrayList<A> v = toArray(list);
-      LinkedList<LinkedList<A>> res = empty();
-      for (int i = v.size() - 1; i >= 0; --i) {
-        res = res.cons(fromArray(v));
-        v.remove(i);
-      }
-
+      final int lastIdx = v.size() - 1;
+      
+      final LinkedList<LinkedList<A>> res =
+              IntStream.rangeClosed(0, lastIdx)
+                       .mapToObj(i -> fromArray(v, 0, lastIdx - i))
+                       .reduce(empty(),
+                               (t, e) -> t.cons(e),
+                               (t1, t2) -> { throw new AssertionError("Should not be called.  The stream was sequential."); });
       return res.cons(empty());
     }
 
