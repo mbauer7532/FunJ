@@ -102,9 +102,7 @@ public class SinglyLinkedListModule {
     public OptionalInt findIndex(final Predicate<A> pred);
     public List<Integer, ?> findIndices(final Predicate<A> pred);
   }
-  
-  
-  
+
   public static class LinkedList<A> implements List<A, LinkedList<A>> {
     public static <T> LinkedList<T> create(final T a, final LinkedList<T> list) { return new LinkedList<>(a, list); }
 
@@ -150,20 +148,24 @@ public class SinglyLinkedListModule {
       }
     }
 
-    @Override
-    public A last() {
-      LinkedList<A> list = null, next = this;
+    private static <A> A lastImpl(final LinkedList<A> list) {
+      LinkedList<A> t = null, next = list;
       while (next.isNotNull()) {
-        list = next;
+        t = next;
         next = next.mCdr;
       }
 
-      if (list == null) {
+      if (t == null) {
         throw new AssertionError("last() called on empty list.");
       }
       else {
-        return list.mCar;
+        return t.mCar;
       }
+    }
+
+    @Override
+    public A last() {
+      return lastImpl(this);
     }
 
     private static <A> ArrayList<A> toArray(final LinkedList<A> m) {
@@ -187,13 +189,12 @@ public class SinglyLinkedListModule {
                               (l1, l2) -> { throw new AssertionError("Should never be called. Stream was sequential."); });
     }
 
-    @Override
-    public LinkedList<A> init() {
-      if (isNull()) {
+    private static <A> LinkedList<A> initImpl(final LinkedList<A> list) {
+      if (list.isNull()) {
         throw new AssertionError("init() called on empty list.");
       }
       else {
-        LinkedList<A> t = this;
+        LinkedList<A> t = list;
 
         if (t.mCdr.isNull()) {
           return empty();
@@ -211,14 +212,18 @@ public class SinglyLinkedListModule {
     }
 
     @Override
+    public LinkedList<A> init() {
+      return initImpl(this);
+    }
+
+    @Override
     public boolean isEmpty() {
       return isNull();
     }
 
-    @Override
-    public int length() {
+    private static <A> int lengthImpl(final LinkedList<A> list) {
       int len = 0;
-      LinkedList<A> t = this;
+      LinkedList<A> t = list;
       while (t.isNotNull()) {
         ++len;
         t = t.mCdr;
@@ -228,9 +233,13 @@ public class SinglyLinkedListModule {
     }
 
     @Override
-    public <B> List<B, ?> map(Function<A, B> f) {
+    public int length() {
+      return lengthImpl(this);
+    }
+
+    private static <A, B> LinkedList<B> mapImpl(final LinkedList<A> list, final Function<A, B> f) {
       LinkedList<B> lb = empty();
-      LinkedList<A> la = this;
+      LinkedList<A> la = list;
 
       while (la.isNotNull()) {
         lb = lb.cons(f.apply(la.mCar));
@@ -241,8 +250,12 @@ public class SinglyLinkedListModule {
     }
 
     @Override
-    public LinkedList<A> reverse() {
-      LinkedList<A> acc = empty(), t = this;
+    public <B> LinkedList<B> map(final Function<A, B> f) {
+      return mapImpl(this, f);
+    }
+
+    private static <A> LinkedList<A> reverseImpl(final LinkedList<A> list) {
+      LinkedList<A> acc = empty(), t = list;
 
       while (t.isNotNull()) {
         acc = acc.cons(t.mCar);
@@ -253,14 +266,18 @@ public class SinglyLinkedListModule {
     }
 
     @Override
-    public LinkedList<A> intersperse(final A a) {
-      if (isNull()) {
+    public LinkedList<A> reverse() {
+      return reverseImpl(this);
+    }
+
+    private static <A> LinkedList<A> intersperseImpl(final LinkedList<A> list, final A a) {
+     if (list.isNull()) {
         return empty();
       }
       else {
         final ArrayList<A> v = new ArrayList<>();
-        v.add(mCar);
-        LinkedList<A> t = mCdr;
+        v.add(list.mCar);
+        LinkedList<A> t = list.mCdr;
 
         while (t.isNotNull()) {
           v.add(a);
@@ -273,9 +290,13 @@ public class SinglyLinkedListModule {
     }
 
     @Override
-    public <B> B foldl(final BiFunction<B, A, B> f, final B b) {
+    public LinkedList<A> intersperse(final A a) {
+      return intersperseImpl(this, a);
+    }
+
+    private static <A, B> B foldlImpl(final LinkedList<A> list, final BiFunction<B, A, B> f, final B b) {
       B acc = b;
-      LinkedList<A> t = this;
+      LinkedList<A> t = list;
 
       while (t.isNotNull()) {
         acc = f.apply(acc, t.mCar);
@@ -286,13 +307,22 @@ public class SinglyLinkedListModule {
     }
 
     @Override
-    public A foldl1(final BiFunction<A, A, A> f) {
-      if (isNull()) {
+    public <B> B foldl(final BiFunction<B, A, B> f, final B b) {
+      return foldlImpl(this, f, b);
+    }
+
+    private static <A> A foldl1Impl(final LinkedList<A> list, final BiFunction<A, A, A> f) {
+      if (list.isNull()) {
         throw new AssertionError("foldl1() applied to an empty list.");
       }
       else {
-        return mCdr.foldl(f, mCar);
+        return foldlImpl(list.mCdr, f, list.mCar);
       }
+    }
+
+    @Override
+    public A foldl1(final BiFunction<A, A, A> f) {
+      return foldl1Impl(this, f);
     }
 
     private static <A, B> B foldrImpl(final LinkedList<A> list, final BiFunction<A, B, B> f, final B b) {
