@@ -637,12 +637,7 @@ public class SinglyLinkedListModule {
         t1 = t1.mCdr;
       }
 
-      if (t0.isNotNull()) {
-        return Optional.empty();
-      }
-      else {
-        return Optional.of(t1);
-      }
+      return t0.isNotNull() ? Optional.empty() : Optional.of(t1);
     }
 
     @Override
@@ -651,13 +646,13 @@ public class SinglyLinkedListModule {
     }
 
     private static <A> LinkedList<LinkedList<A>> groupImpl(final LinkedList<A> list, final BiPredicate<A, A> eqPred) {
-      LinkedList<A> t = list;
-      if (t.isNull()) {
+      if (list.isNull()) {
         return empty();
       }
       else {
         final ArrayList<ArrayList<A>> res = new ArrayList<>();
         res.add(new ArrayList<>());
+        LinkedList<A> t = list;
 
         while (t.isNotNull()) {
           final int idx = res.size() - 1;
