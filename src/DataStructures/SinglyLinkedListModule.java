@@ -13,6 +13,7 @@ import Utils.Ref;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -105,6 +106,8 @@ public class SinglyLinkedListModule {
 
     public OptionalInt findIndex(final Predicate<A> pred);
     public List<Integer, ?> findIndices(final Predicate<A> pred);
+
+    public LinkedList<A> nub();
   }
 
   public static class LinkedList<A> implements List<A, LinkedList<A>> {
@@ -873,8 +876,29 @@ public class SinglyLinkedListModule {
     public LinkedList<Integer> findIndices(final Predicate<A> pred) {
       return elemIndicesImpl(this, pred);
     }
+
+    private static <A> LinkedList<A> nubImpl(final LinkedList<A> list) {
+      final ArrayList<A> v = new ArrayList<>();
+      final TreeSet<A> s = new TreeSet<>();
+
+      LinkedList<A> t = list;
+      while (t.isNotNull()) {
+        if (! s.contains(t.mCar)) {
+          v.add(t.mCar);
+          s.add(t.mCar);
+        }
+        t = t.mCdr;
+      }
+
+      return fromArray(v);
+    }
+
+    @Override
+    public LinkedList<A> nub() {
+      return nubImpl(this);
+    }
   }
-  
+
   class Factory{
     // replicate :: Int -> a -> [a]
     // unfoldr :: (b -> Maybe (a, b)) -> b -> [a]
