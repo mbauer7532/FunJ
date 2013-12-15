@@ -883,9 +883,10 @@ public class SinglyLinkedListModule {
 
       LinkedList<A> t = list;
       while (t.isNotNull()) {
-        if (! s.contains(t.mCar)) {
-          v.add(t.mCar);
-          s.add(t.mCar);
+        final A elem = t.mCar;
+        if (! s.contains(elem)) {
+          v.add(elem);
+          s.add(elem);
         }
         t = t.mCdr;
       }
