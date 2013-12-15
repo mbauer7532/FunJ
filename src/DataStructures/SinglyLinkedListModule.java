@@ -8,6 +8,7 @@ package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
 import DataStructures.TuplesModule.Triple;
+import Utils.Functionals;
 import Utils.Ref;
 import java.util.ArrayList;
 import java.util.Optional;
@@ -570,8 +571,8 @@ public class SinglyLinkedListModule {
     private static <A> LinkedList<A> dropWhileEndImpl(final LinkedList<A> list, final Predicate<A> pred) {
       final ArrayList<A> v = toArray(list);
 
-      int i;
-      for (i = v.size() - 1; i >= 0; --i) {
+      int i = v.size() - 1;
+      for (; i >= 0; --i) {
         if (! pred.test(v.get(i))) {
           break;
         }
@@ -627,7 +628,7 @@ public class SinglyLinkedListModule {
 
     private static <A> Optional<LinkedList<A>> stripPrefixImpl(final LinkedList<A> list, final LinkedList<A> prefix) {
       LinkedList<A> t0 = prefix, t1 = list;
-      
+
       while (t0.isNotNull() && t1.isNotNull()) {
         if (! t0.mCar.equals(t1.mCar)) {
           break;
@@ -645,8 +646,8 @@ public class SinglyLinkedListModule {
     }
 
     @Override
-    public Optional<LinkedList<A>> stripPrefix(final LinkedList<A> prefix) {
-      return stripPrefixImpl(this, prefix);
+    public Optional<LinkedList<A>> stripPrefix(final LinkedList<A> list) {
+      return stripPrefixImpl(list, this);
     }
 
     private static <A> LinkedList<LinkedList<A>> groupImpl(final LinkedList<A> list, final BiPredicate<A, A> eqPred) {
@@ -685,7 +686,7 @@ public class SinglyLinkedListModule {
     private static <A> LinkedList<LinkedList<A>> initsImpl(final LinkedList<A> list) {
       final ArrayList<A> v = toArray(list);
       final int lastIdx = v.size() - 1;
-      
+
       final LinkedList<LinkedList<A>> res =
               IntStream.rangeClosed(0, lastIdx)
                        .mapToObj(i -> fromArray(v, 0, lastIdx - i))
@@ -716,54 +717,129 @@ public class SinglyLinkedListModule {
       return tailsImpl(this);
     }
 
+    private static <A> boolean isPrefixOfImpl(final LinkedList<A> prefix, final LinkedList<A> list) {
+      LinkedList<A> t0 = prefix, t1 = list;
+
+      while (t0.isNotNull() && t1.isNotNull()) {
+        if (! t0.mCar.equals(t1.mCar)) {
+          break;
+        }
+        t0 = t0.mCdr;
+        t1 = t1.mCdr;
+      }
+
+      return t0.isNull();
+    }
+
     @Override
     public boolean isPrefixOf(final LinkedList<A> list) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return isPrefixOfImpl(this, list);
     }
 
     @Override
     public boolean isSuffixOf(final LinkedList<A> list) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return isPrefixOfImpl(reverseImpl(this), reverseImpl(list));
     }
 
     @Override
     public boolean isInfixOf(final LinkedList<A> list) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return anyImpl(tailsImpl(this), x -> isPrefixOfImpl(list, x));
+    }
+
+    private static <A> Optional<Pair<A, Integer>> findByImpl(final LinkedList<A> list, final Predicate<A> pred) {
+      LinkedList<A> t = list;
+
+      int i = 0;
+      while (t.isNotNull()) {
+        if (pred.test(t.mCar)) {
+          return Optional.of(Pair.create(t.mCar, i));
+        }
+        ++i;
+      }
+
+      return Optional.empty();
     }
 
     @Override
     public boolean elem(final A a) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return findByImpl(this, x -> a.equals(x)).isPresent();
     }
 
     @Override
     public boolean notElem(final A a) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return ! elem(a);
     }
 
     @Override
     public Optional<A> find(final Predicate<A> pred) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return findByImpl(this, pred).map(Pair::getFirst);
+    }
+
+    private static <A> LinkedList<A> filterImpl(final LinkedList<A> list, final Predicate<A> pred) {
+      final ArrayList<A> v = new ArrayList<>();
+      LinkedList<A> t = list;
+      
+      while (t.isNotNull()) {
+        if (pred.test(t.mCar)) {
+          v.add(t.mCar);
+        }
+        t = t.mCdr;
+      }
+
+      return fromArray(v);
     }
 
     @Override
     public LinkedList<A> filter(final Predicate<A> pred) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return filterImpl(this, pred);
+    }
+
+    private static <A> Pair<LinkedList<A>, LinkedList<A>> partitionImpl(final LinkedList<A> list, final Predicate<A> pred) {
+      final ArrayList<A> vt = new ArrayList<>(), vf = new ArrayList<>();
+      LinkedList<A> t = list;
+      
+      while (t.isNotNull()) {
+        (pred.test(t.mCar) ? vt : vf).add(t.mCar);
+        t = t.mCdr;
+      }
+
+      return Pair.create(fromArray(vt), fromArray(vf));
     }
 
     @Override
     public Pair<LinkedList<A>, LinkedList<A>> partition(final Predicate<A> pred) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return partitionImpl(this, pred);
+    }
+
+    private static <A> A nthImpl(final LinkedList<A> list, final int n) {
+      if (n < 0) {
+        throw new AssertionError("Index was negative in nth()");
+      }
+      else {
+        int i = 0;
+        LinkedList<A> t = list;
+        while (t.isNotNull() && i < n) {
+          t = t.mCdr;
+          ++i;
+        }
+
+        if (t.isNull()) {
+          throw new AssertionError("Index was out of bounds of list in nth()");
+        }
+        else {
+          return t.mCar;
+        }
+      }
     }
 
     @Override
     public A nth(final int n) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return nthImpl(this, n);
     }
 
     @Override
     public OptionalInt elemIndex(final A a) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return Functionals.mapOptOrElse(findByImpl(this, x -> a.equals(x)), x -> OptionalInt.of(x.mx2.intValue()), OptionalInt::empty);
     }
 
     @Override
