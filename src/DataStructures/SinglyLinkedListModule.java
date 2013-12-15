@@ -834,22 +834,44 @@ public class SinglyLinkedListModule {
 
     @Override
     public OptionalInt elemIndex(final A a) {
-      return Functionals.mapOptOrElse(findByImpl(this, x -> a.equals(x)), x -> OptionalInt.of(x.mx2.intValue()), OptionalInt::empty);
+      return Functionals.mapOptOrElse(
+              findByImpl(this, x -> a.equals(x)).map(Pair::getSecond),
+              x -> OptionalInt.of(x.intValue()),
+              OptionalInt::empty);
+    }
+
+    private static <A> LinkedList<Integer> elemIndicesImpl(final LinkedList<A> list, final Predicate<A> pred) {
+      LinkedList<A> t = list;
+      int idx = 0;
+      final ArrayList<Integer> v = new ArrayList<>();
+
+      while (t.isNotNull()) {
+        if (pred.test(t.mCar)) {
+          v.add(idx);
+        }
+        t = t.mCdr;
+        ++idx;
+      }
+
+      return fromArray(v);
     }
 
     @Override
     public LinkedList<Integer> elemIndices(final A a) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return elemIndicesImpl(this, x -> a.equals(x));
     }
 
     @Override
     public OptionalInt findIndex(final Predicate<A> pred) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return Functionals.mapOptOrElse(
+              findByImpl(this, pred).map(Pair::getSecond),
+              x -> OptionalInt.of(x.intValue()),
+              OptionalInt::empty);
     }
 
     @Override
     public LinkedList<Integer> findIndices(final Predicate<A> pred) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+      return elemIndicesImpl(this, pred);
     }
   }
   
