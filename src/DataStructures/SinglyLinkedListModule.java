@@ -191,7 +191,6 @@ public class SinglyLinkedListModule {
                               (l1, l2) -> { throw new AssertionError("Should never be called. Stream was sequential."); });
     }
 
-
     private static <A> LinkedList<A> fromArray(final ArrayList<A> v) {
       return fromArray(v, 0, v.size() - 1);
     }
@@ -571,16 +570,14 @@ public class SinglyLinkedListModule {
     private static <A> LinkedList<A> dropWhileEndImpl(final LinkedList<A> list, final Predicate<A> pred) {
       final ArrayList<A> v = toArray(list);
 
-      for (int i = v.size() - 1; i >= 0; --i) {
-        if (pred.test(v.get(i))) {
-          v.remove(i);
-        }
-        else {
+      int i;
+      for (i = v.size() - 1; i >= 0; --i) {
+        if (! pred.test(v.get(i))) {
           break;
         }
       }
 
-      return fromArray(v);
+      return fromArray(v, 0, i);
     }
 
     @Override
