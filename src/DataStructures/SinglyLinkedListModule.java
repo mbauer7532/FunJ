@@ -7,16 +7,14 @@
 package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
-import DataStructures.TuplesModule.Triple;
 import Utils.Functionals;
 import Utils.Ref;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -30,6 +28,7 @@ public class SinglyLinkedListModule {
   public interface List<A, L extends List<A, L>> {
     // Constructor
     public L cons(final A a);
+    public L append(final L list);
 
     // Basic functions
     public A head();
@@ -107,7 +106,11 @@ public class SinglyLinkedListModule {
     public OptionalInt findIndex(final Predicate<A> pred);
     public List<Integer, ?> findIndices(final Predicate<A> pred);
 
-    public LinkedList<A> nub();
+    public L nub();
+    public L delete(final A a);
+    public L deleteBy(final A a, final BiPredicate<A, A> pred);
+    public L listDiff(final L list);
+    
   }
 
   public static class LinkedList<A> implements List<A, LinkedList<A>> {
@@ -127,13 +130,28 @@ public class SinglyLinkedListModule {
     @SuppressWarnings("unchecked")
     public static <T> LinkedList<T> empty() { return (LinkedList<T>) sEmptyList; }
 
+    private boolean isNull()    { return this == sEmptyList; }
+    private boolean isNotNull() { return this != sEmptyList; }
+
     @Override
     public LinkedList<A> cons(final A a) {
       return create(a, this);
     }
 
-    private boolean isNull()    { return this == sEmptyList; }
-    private boolean isNotNull() { return this != sEmptyList; }
+    private static <A> LinkedList<A> appendImpl(final LinkedList<A> list1, final LinkedList<A> list2) {
+      final ArrayList<A> v = toArray(list1);
+      final int lastIdx = v.size() - 1;
+      return IntStream.rangeClosed(0, lastIdx)
+                      .mapToObj(idx -> v.get(lastIdx - idx))
+                      .reduce(list2,
+                              (list, elem) -> list.cons(elem),
+                              (l1, l2) -> { throw new AssertionError("Should never get here.  The stream was sequential."); });
+    }
+
+    @Override
+    public LinkedList<A> append(final LinkedList<A> list) {
+      return appendImpl(this, list);
+    }
 
     @Override
     public A head() {
@@ -879,14 +897,14 @@ public class SinglyLinkedListModule {
 
     private static <A> LinkedList<A> nubImpl(final LinkedList<A> list) {
       final ArrayList<A> v = new ArrayList<>();
-      final TreeSet<A> s = new TreeSet<>();
+      final HashSet<A> s = new HashSet<>();
 
       LinkedList<A> t = list;
       while (t.isNotNull()) {
         final A elem = t.mCar;
-        if (! s.contains(elem)) {
+        final boolean notAreadyThere = s.add(elem);
+        if (notAreadyThere) {
           v.add(elem);
-          s.add(elem);
         }
         t = t.mCdr;
       }
@@ -898,6 +916,60 @@ public class SinglyLinkedListModule {
     public LinkedList<A> nub() {
       return nubImpl(this);
     }
+
+    private static <A> LinkedList<A> deleteByImpl(final LinkedList<A> list, final A a, final BiPredicate<A, A> pred) {
+      LinkedList<A> t = list;
+      final ArrayList<A> v = new ArrayList<>();
+
+      boolean skippedOne = false;
+      while (t.isNotNull()) {
+        if (skippedOne) {
+          v.add(t.mCar);
+        }
+        else if (pred.test(a, t.mCar)) {
+          skippedOne = true;
+        }
+        else {
+          v.add(t.mCar);
+        }
+        t = t.mCdr;
+      }
+
+      return skippedOne ? fromArray(v) : list;
+    }
+
+    @Override
+    public LinkedList<A> delete(final A a) {
+      return deleteByImpl(this, a, (x, y) -> x.equals(y));
+    }
+
+    @Override
+    public LinkedList<A> deleteBy(final A a, final BiPredicate<A, A> pred) {
+      return deleteByImpl(this, a, pred);
+    }
+
+    @Override
+    public LinkedList<A> listDiff(LinkedList<A> list) {
+      return foldlImpl(list, (xs, x) -> xs.delete(x), this);
+    }
+
+    public static <A, B, C> LinkedList<C> zipWith(final LinkedList<A> listA, final LinkedList<B> listB, final BiFunction<A, B, C> zipper) {
+      LinkedList<A> ta = listA;
+      LinkedList<B> tb = listB;
+      ArrayList<C> v = new ArrayList<>();
+
+      while (ta.isNotNull() && tb.isNotNull()) {
+        v.add(zipper.apply(ta.mCar, tb.mCar));
+        ta = ta.mCdr;
+        tb = tb.mCdr;
+      }
+
+      return fromArray(v);
+    }
+
+    public static <A, B> LinkedList<Pair<A, B>> zip(final LinkedList<A> listA, final LinkedList<B> listB) {
+      return zipWith(listA, listB, Pair::create);
+    }
   }
 
   class Factory{
@@ -905,6 +977,12 @@ public class SinglyLinkedListModule {
     // unfoldr :: (b -> Maybe (a, b)) -> b -> [a]
     // public boolean lookup(final A a); // this must be an association list
     // Zipping and unzipping
+    // I did zip in list... maybe that's ok... it's not
+    
+//    public <B> List<Pair<A, B>, ?> zip(final List<B, ?> list);
+//    public <B, C> LinkedList<C> zipWith(final List<B, ?> listB, final BiFunction<A, B, C> zipper);
+
+    // unzip :: [(a, b)] -> ([a], [b])
     // public <B> SLinkedList<Pair<A, B>> zip(final SLinkedList<B> list);
     // public <B, C> SLinkedList<Triple<A, B, C>> zip(final SLinkedList<B> list1, final SLinkedList<C> list2);
     
