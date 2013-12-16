@@ -116,6 +116,9 @@ public class SinglyLinkedListModule {
 
     public LinkedList<A> union(final LinkedList<A> list);
     public LinkedList<A> intersect(final LinkedList<A> list);
+
+    public LinkedList<A> sort();
+    public LinkedList<A> insert(final A a);
   }
 
   public static class LinkedList<A> implements List<A, LinkedList<A>> {
@@ -1030,6 +1033,47 @@ public class SinglyLinkedListModule {
     @Override
     public LinkedList<A> intersect(final LinkedList<A> list) {
       return intersectImpl(this, list);
+    }
+    
+    private static <A> LinkedList<A> sortImpl(final LinkedList<A> list) {
+      final ArrayList<A> v = toArray(list);
+      v.sort(null);
+      return fromArray(v);
+    }
+
+    @Override
+    public LinkedList<A> sort() {
+      return sortImpl(this);
+    }
+
+    private static <A> LinkedList<A> insertImpl(final LinkedList<A> list, final A a) {
+      LinkedList<A> t = list;
+      final ArrayList<A> v = new ArrayList<>();
+
+      @SuppressWarnings("unchecked")
+      final Comparable<? super A> aCmp = (Comparable<? super A>) a;
+
+      while (t.isNotNull()) {
+        if (aCmp.compareTo(t.mCar) <= 0) {
+          break;
+        }
+        else {
+          v.add(t.mCar);
+        }
+        t = t.mCdr;
+      }
+
+      final int lastIdx = v.size() - 1;
+      return IntStream.rangeClosed(0, lastIdx)
+                      .mapToObj(i -> v.get(lastIdx - i))
+                      .reduce(t.cons(a),
+                              (l, e) -> l.cons(e),
+                              (l1, l2) -> { throw new AssertionError("It's not happenning. The stream is sequential."); });
+    }
+
+    @Override
+    public LinkedList<A> insert(final A a) {
+      return insertImpl(this, a);
     }
   }
 
