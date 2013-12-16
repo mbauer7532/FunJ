@@ -10,9 +10,11 @@ import DataStructures.TuplesModule.Pair;
 import Utils.Functionals;
 import Utils.Ref;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
@@ -110,15 +112,16 @@ public class SinglyLinkedListModule {
     public List<Integer, ?> findIndices(final Predicate<A> pred);
 
     public L nub();
+    public L nubBy(final Comparator<? super A> cmp);
     public L delete(final A a);
     public L deleteBy(final A a, final BiPredicate<A, A> pred);
     public L listDiff(final L list);
 
-    public LinkedList<A> union(final LinkedList<A> list);
-    public LinkedList<A> intersect(final LinkedList<A> list);
+    public L union(final L list);
+    public L intersect(final L list);
 
-    public LinkedList<A> sort();
-    public LinkedList<A> insert(final A a);
+    public L sort();
+    public L insert(final A a);
   }
 
   public static class LinkedList<A> implements List<A, LinkedList<A>> {
@@ -920,9 +923,9 @@ public class SinglyLinkedListModule {
       return elemIndicesImpl(this, pred);
     }
 
-    private static <A> LinkedList<A> nubImpl(final LinkedList<A> list) {
+    private static <A> LinkedList<A> nubByImpl(final LinkedList<A> list, final Comparator<? super A> cmp) {
       final ArrayList<A> v = new ArrayList<>();
-      final HashSet<A> s = new HashSet<>();
+      final TreeSet<A> s = new TreeSet<>(cmp);
 
       LinkedList<A> t = list;
       while (t.isNotNull()) {
@@ -938,8 +941,14 @@ public class SinglyLinkedListModule {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public LinkedList<A> nub() {
-      return nubImpl(this);
+      return nubByImpl(this, (x, y) -> ((Comparable<? super A>)x).compareTo(y));
+    }
+
+    @Override
+    public LinkedList<A> nubBy(final Comparator<? super A> cmp) {
+      return nubByImpl(this, cmp);
     }
 
     private static <A> LinkedList<A> deleteByImpl(final LinkedList<A> list, final A a, final BiPredicate<A, A> pred) {
