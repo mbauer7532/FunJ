@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -37,6 +38,8 @@ public class SinglyLinkedListModule {
     public L init();
     public boolean isEmpty();
     public int length();
+
+    void forEach(Consumer<? super A> action);
 
     // Transformations
     public <B> List<B, ?> map(final Function<A, B> f);
@@ -110,7 +113,9 @@ public class SinglyLinkedListModule {
     public L delete(final A a);
     public L deleteBy(final A a, final BiPredicate<A, A> pred);
     public L listDiff(final L list);
-    
+
+    public LinkedList<A> union(final LinkedList<A> list);
+    public LinkedList<A> intersect(final LinkedList<A> list);
   }
 
   public static class LinkedList<A> implements List<A, LinkedList<A>> {
@@ -263,6 +268,23 @@ public class SinglyLinkedListModule {
     @Override
     public int length() {
       return lengthImpl(this);
+    }
+
+    private static <A> void forEachImpl(final LinkedList<A> list, final Consumer<? super A> action) {
+      LinkedList<A> t = list;
+      while (t.isNotNull()) {
+        action.accept(t.mCar);
+        t = t.mCdr;
+      }
+      
+      return;
+    }
+
+    @Override
+    public void forEach(final Consumer<? super A> action) {
+      forEachImpl(this, action);
+      
+      return;
     }
 
     private static <A, B> LinkedList<B> mapImpl(final LinkedList<A> list, final Function<A, B> f) {
@@ -970,7 +992,47 @@ public class SinglyLinkedListModule {
     public static <A, B> LinkedList<Pair<A, B>> zip(final LinkedList<A> listA, final LinkedList<B> listB) {
       return zipWith(listA, listB, Pair::create);
     }
+
+    private static <A> LinkedList<A> unionImpl(final LinkedList<A> list1, final LinkedList<A> list2) {
+      final HashSet<A> s = new HashSet<>();
+      final ArrayList<A> v = new ArrayList<>();
+
+      list1.forEach(a -> { s.add(a); v.add(a); });
+      list2.forEach(a -> {
+        final boolean notAlreadyThere = s.add(a);
+        if (notAlreadyThere) {
+          v.add(a);
+        }
+      });
+
+      return fromArray(v);
+    }
+
+    @Override
+    public LinkedList<A> union(final LinkedList<A> list) {
+      return unionImpl(this, list);
+    }
+
+    private static <A> LinkedList<A> intersectImpl(final LinkedList<A> list1, final LinkedList<A> list2) {
+      final HashSet<A> s = new HashSet<>();
+      final ArrayList<A> v = new ArrayList<>();
+
+      list2.forEach(a -> { s.add(a); });
+      list1.forEach(a -> {
+        if (s.contains(a)) {
+          v.add(a);
+        }
+      });
+
+      return fromArray(v);
+    }
+
+    @Override
+    public LinkedList<A> intersect(final LinkedList<A> list) {
+      return intersectImpl(this, list);
+    }
   }
+
 
   class Factory{
     // replicate :: Int -> a -> [a]
