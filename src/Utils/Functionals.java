@@ -175,4 +175,8 @@ public class Functionals {
       return g.get();
     }
   }
+
+  public static <A> A functionShouldNotBeCalled(final A a, final A b) {
+    throw new AssertionError("Should never get here.  The stream was sequential.");
+  }
 }

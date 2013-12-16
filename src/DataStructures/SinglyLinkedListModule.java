@@ -153,7 +153,7 @@ public class SinglyLinkedListModule {
                       .mapToObj(idx -> v.get(lastIdx - idx))
                       .reduce(list2,
                               (list, elem) -> list.cons(elem),
-                              (l1, l2) -> { throw new AssertionError("Should never get here.  The stream was sequential."); });
+                              Functionals::functionShouldNotBeCalled);
     }
 
     @Override
@@ -218,7 +218,7 @@ public class SinglyLinkedListModule {
                       .mapToObj(idx -> v.get(j - idx))
                       .reduce(empty(),
                               (list, elem) -> list.cons(elem),
-                              (l1, l2) -> { throw new AssertionError("Should never be called. Stream was sequential."); });
+                              Functionals::functionShouldNotBeCalled);
     }
 
     private static <A> LinkedList<A> fromArray(final ArrayList<A> v) {
@@ -385,7 +385,7 @@ public class SinglyLinkedListModule {
                       .mapToObj(i -> v.get(lastIdx - i))
                       .reduce(b,
                               (acc, e) -> f.apply(e, acc),
-                              (b0, b1) -> { throw new AssertionError("Should never be called. Stream was sequential."); });
+                              Functionals::functionShouldNotBeCalled);
     }
 
     @Override
@@ -478,7 +478,7 @@ public class SinglyLinkedListModule {
                .mapToObj(i -> v.get(lastIdx - i))
                .reduce(b,
                        (acc, e) -> { final B newAcc = f.apply(e, acc); bs.add(newAcc); return newAcc; },
-                       (b0, b1) -> { throw new AssertionError("Should never be called. Stream was sequential."); });
+                       Functionals::functionShouldNotBeCalled);
 
       return fromArray(bs);
     }
@@ -733,7 +733,7 @@ public class SinglyLinkedListModule {
                        .mapToObj(i -> fromArray(v, 0, lastIdx - i))
                        .reduce(empty(),
                                (t, e) -> t.cons(e),
-                               (t1, t2) -> { throw new AssertionError("Should not be called.  The stream was sequential."); });
+                               Functionals::functionShouldNotBeCalled);
       return res.cons(empty());
     }
 
@@ -1068,7 +1068,7 @@ public class SinglyLinkedListModule {
                       .mapToObj(i -> v.get(lastIdx - i))
                       .reduce(t.cons(a),
                               (l, e) -> l.cons(e),
-                              (l1, l2) -> { throw new AssertionError("It's not happenning. The stream is sequential."); });
+                              Functionals::functionShouldNotBeCalled);
     }
 
     @Override
