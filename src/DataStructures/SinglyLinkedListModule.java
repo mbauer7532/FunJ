@@ -118,10 +118,14 @@ public class SinglyLinkedListModule {
     public L listDiff(final L list);
 
     public L union(final L list);
+    public L unionBy(final L list, final Comparator<? super A> cmp);
     public L intersect(final L list);
+    public L intersectBy(final L list, final Comparator<? super A> cmp);
 
     public L sort();
     public L insert(final A a);
+
+    L deleteFirstBy(final L list, final BiPredicate<A, A> pred);
   }
 
   public static class LinkedList<A> implements List<A, LinkedList<A>> {
@@ -983,6 +987,13 @@ public class SinglyLinkedListModule {
     }
 
     @Override
+    public LinkedList<A> deleteFirstBy(final LinkedList<A> list, final BiPredicate<A, A> pred) {
+      final Ref<LinkedList<A>> ref = new Ref<>(empty());
+      list.forEach(elem -> { ref.r = deleteByImpl(ref.r, elem, pred); });
+      return ref.r;
+    }
+
+    @Override
     public LinkedList<A> listDiff(LinkedList<A> list) {
       return foldlImpl(list, (xs, x) -> xs.delete(x), this);
     }
@@ -1005,8 +1016,8 @@ public class SinglyLinkedListModule {
       return zipWith(listA, listB, Pair::create);
     }
 
-    private static <A> LinkedList<A> unionImpl(final LinkedList<A> list1, final LinkedList<A> list2) {
-      final HashSet<A> s = new HashSet<>();
+    private static <A> LinkedList<A> unionByImpl(final LinkedList<A> list1, final LinkedList<A> list2, final Comparator<? super A> cmp) {
+      final TreeSet<A> s = new TreeSet<>(cmp);
       final ArrayList<A> v = new ArrayList<>();
 
       list1.forEach(a -> { s.add(a); v.add(a); });
@@ -1022,11 +1033,16 @@ public class SinglyLinkedListModule {
 
     @Override
     public LinkedList<A> union(final LinkedList<A> list) {
-      return unionImpl(this, list);
+      return unionByImpl(this, list, (x, y) -> ((Comparable<? super A>)x).compareTo(y));
     }
 
-    private static <A> LinkedList<A> intersectImpl(final LinkedList<A> list1, final LinkedList<A> list2) {
-      final HashSet<A> s = new HashSet<>();
+    @Override
+    public LinkedList<A> unionBy(final LinkedList<A> list, final Comparator<? super A> cmp) {
+      return unionByImpl(this, list, cmp);
+    }
+
+    private static <A> LinkedList<A> intersectByImpl(final LinkedList<A> list1, final LinkedList<A> list2, final Comparator<? super A> cmp) {
+      final TreeSet<A> s = new TreeSet<>(cmp);
       final ArrayList<A> v = new ArrayList<>();
 
       list2.forEach(a -> { s.add(a); });
@@ -1041,9 +1057,14 @@ public class SinglyLinkedListModule {
 
     @Override
     public LinkedList<A> intersect(final LinkedList<A> list) {
-      return intersectImpl(this, list);
+      return intersectByImpl(this, list, (x, y) -> ((Comparable<? super A>)x).compareTo(y));
     }
-    
+
+    @Override
+    public LinkedList<A> intersectBy(final LinkedList<A> list, final Comparator<? super A> cmp) {
+      return intersectByImpl(this, list, cmp);
+    }
+
     private static <A> LinkedList<A> sortImpl(final LinkedList<A> list) {
       final ArrayList<A> v = toArray(list);
       v.sort(null);
