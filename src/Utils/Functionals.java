@@ -6,6 +6,7 @@
 
 package Utils;
 
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -178,5 +179,10 @@ public class Functionals {
 
   public static <A> A functionShouldNotBeCalled(final A a, final A b) {
     throw new AssertionError("Should never get here.  The stream was sequential.");
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <A> int comparator(final A x, final A y) {
+    return ((Comparable<? super A>) x).compareTo(y);
   }
 }

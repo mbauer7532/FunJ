@@ -81,7 +81,7 @@ public class SinglyLinkedListModule {
 
     public Pair<L, L> spanByPredicate(final Predicate<A> pred);
     public Pair<L, L> breakByPredicate(final Predicate<A> pred);
-    
+
     public Optional<L> stripPrefix(final L list);
 
     public List<L, ?> group();
@@ -124,7 +124,9 @@ public class SinglyLinkedListModule {
     public L intersectBy(final L list, final Comparator<? super A> cmp);
 
     public L sort();
+    public L sortBy(final Comparator<? super A> cmp);
     public L insert(final A a);
+    public L insertBy(final A a, final Comparator<? super A> cmp);
 
     L deleteFirstBy(final L list, final BiPredicate<A, A> pred);
   }
@@ -951,9 +953,8 @@ public class SinglyLinkedListModule {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public LinkedList<A> nub() {
-      return nubByImpl(this, (x, y) -> ((Comparable<? super A>)x).compareTo(y));
+      return nubByImpl(this, Functionals::comparator);
     }
 
     @Override
@@ -1039,7 +1040,7 @@ public class SinglyLinkedListModule {
 
     @Override
     public LinkedList<A> union(final LinkedList<A> list) {
-      return unionByImpl(this, list, (x, y) -> ((Comparable<? super A>)x).compareTo(y));
+      return unionByImpl(this, list, Functionals::comparator);
     }
 
     @Override
@@ -1063,7 +1064,7 @@ public class SinglyLinkedListModule {
 
     @Override
     public LinkedList<A> intersect(final LinkedList<A> list) {
-      return intersectByImpl(this, list, (x, y) -> ((Comparable<? super A>)x).compareTo(y));
+      return intersectByImpl(this, list, Functionals::comparator);
     }
 
     @Override
@@ -1071,26 +1072,28 @@ public class SinglyLinkedListModule {
       return intersectByImpl(this, list, cmp);
     }
 
-    private static <A> LinkedList<A> sortImpl(final LinkedList<A> list) {
+    private static <A> LinkedList<A> sortByImpl(final LinkedList<A> list, final Comparator<? super A> cmp) {
       final ArrayList<A> v = toArray(list);
-      v.sort(null);
+      v.sort(cmp);
       return fromArray(v);
     }
 
     @Override
     public LinkedList<A> sort() {
-      return sortImpl(this);
+      return sortByImpl(this, null);
     }
 
-    private static <A> LinkedList<A> insertImpl(final LinkedList<A> list, final A a) {
+    @Override
+    public LinkedList<A> sortBy(final Comparator<? super A> cmp) {
+      return sortByImpl(this, cmp);
+    }
+
+    private static <A> LinkedList<A> insertByImpl(final LinkedList<A> list, final A a, final Comparator<? super A> cmp) {
       LinkedList<A> t = list;
       final ArrayList<A> v = new ArrayList<>();
 
-      @SuppressWarnings("unchecked")
-      final Comparable<? super A> aCmp = (Comparable<? super A>) a;
-
       while (t.isNotNull()) {
-        if (aCmp.compareTo(t.mCar) <= 0) {
+        if (cmp.compare(a, t.mCar) <= 0) {
           break;
         }
         else {
@@ -1109,9 +1112,14 @@ public class SinglyLinkedListModule {
 
     @Override
     public LinkedList<A> insert(final A a) {
-      return insertImpl(this, a);
+      return insertByImpl(this, a, Functionals::comparator);
     }
-  }
+
+    @Override
+    public LinkedList<A> insertBy(final A a, final Comparator<? super A> cmp) {
+      return insertByImpl(this, a, cmp);
+    }
+}
 
 
   class Factory{
