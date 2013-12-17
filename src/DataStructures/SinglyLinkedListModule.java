@@ -85,6 +85,7 @@ public class SinglyLinkedListModule {
     public Optional<L> stripPrefix(final L list);
 
     public List<L, ?> group();
+    public List<L, ?> groupBy(final BiPredicate<A, A> eqPred);
     public List<L, ?> inits();
     public List<L, ?> tails();
 
@@ -698,7 +699,7 @@ public class SinglyLinkedListModule {
       return stripPrefixImpl(list, this);
     }
 
-    private static <A> LinkedList<LinkedList<A>> groupImpl(final LinkedList<A> list, final BiPredicate<A, A> eqPred) {
+    private static <A> LinkedList<LinkedList<A>> groupByImpl(final LinkedList<A> list, final BiPredicate<A, A> eqPred) {
       if (list.isNull()) {
         return empty();
       }
@@ -728,7 +729,12 @@ public class SinglyLinkedListModule {
 
     @Override
     public LinkedList<LinkedList<A>> group() {
-      return groupImpl(this, (e1, e2) -> e1.equals(e2));
+      return groupByImpl(this, (e1, e2) -> e1.equals(e2));
+    }
+
+    @Override
+    public LinkedList<LinkedList<A>> groupBy(final BiPredicate<A, A> eqPred) {
+      return groupByImpl(this, eqPred);
     }
 
     private static <A> LinkedList<LinkedList<A>> initsImpl(final LinkedList<A> list) {
