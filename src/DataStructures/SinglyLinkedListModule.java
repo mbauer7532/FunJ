@@ -137,7 +137,13 @@ public class SinglyLinkedListModule {
   }
 
   public static class LinkedList<A> implements List<A, LinkedList<A>> {
-    public static <T> LinkedList<T> create(final T a, final LinkedList<T> list) { return new LinkedList<>(a, list); }
+    private static <T> LinkedList<T> create(final T a, final LinkedList<T> list) {
+      return new LinkedList<>(a, list);
+    }
+
+    private static <T> LinkedList<T> createInv(final LinkedList<T> list, final T a) {
+      return new LinkedList<>(a, list);
+    }
 
     private LinkedList() { mCar = null; mCdr = null; }
     private LinkedList(final A a, final LinkedList<A> list) {
@@ -167,7 +173,7 @@ public class SinglyLinkedListModule {
       return IntStream.rangeClosed(0, lastIdx)
                       .mapToObj(idx -> v.get(lastIdx - idx))
                       .reduce(list2,
-                              (list, elem) -> list.cons(elem),
+                              LinkedList::createInv,
                               Functionals::functionShouldNotBeCalled);
     }
 
@@ -232,7 +238,7 @@ public class SinglyLinkedListModule {
       return IntStream.rangeClosed(i, j)
                       .mapToObj(idx -> v.get(j - idx))
                       .reduce(empty(),
-                              (list, elem) -> list.cons(elem),
+                              LinkedList::createInv,
                               Functionals::functionShouldNotBeCalled);
     }
 
@@ -310,7 +316,7 @@ public class SinglyLinkedListModule {
       LinkedList<A> la = list;
 
       while (la.isNotNull()) {
-        lb = lb.cons(f.apply(la.mCar));
+        lb = create(f.apply(la.mCar), lb);
         la = la.mCdr;
       }
 
@@ -326,7 +332,7 @@ public class SinglyLinkedListModule {
       LinkedList<A> acc = empty(), t = list;
 
       while (t.isNotNull()) {
-        acc = acc.cons(t.mCar);
+        acc = create(t.mCar, acc);
         t = t.mCdr;
       }
 
@@ -752,9 +758,9 @@ public class SinglyLinkedListModule {
               IntStream.rangeClosed(0, lastIdx)
                        .mapToObj(i -> fromArray(v, 0, lastIdx - i))
                        .reduce(empty(),
-                               (t, e) -> t.cons(e),
+                               LinkedList::createInv,
                                Functionals::functionShouldNotBeCalled);
-      return res.cons(empty());
+      return create(empty(), res);
     }
 
     @Override
@@ -766,11 +772,11 @@ public class SinglyLinkedListModule {
       LinkedList<A> t = list;
       LinkedList<LinkedList<A>> res = empty();
       while (t.isNotNull()) {
-        res = res.cons(t);
+        res = create(t, res);
         t = t.mCdr;
       }
 
-      return res.cons(t).reverse();
+      return create(t, res).reverse();
     }
 
     @Override
@@ -1092,8 +1098,8 @@ public class SinglyLinkedListModule {
       final int lastIdx = v.size() - 1;
       return IntStream.rangeClosed(0, lastIdx)
                       .mapToObj(i -> v.get(lastIdx - i))
-                      .reduce(t.cons(a),
-                              (l, e) -> l.cons(e),
+                      .reduce(create(a, t),
+                              LinkedList::createInv,
                               Functionals::functionShouldNotBeCalled);
     }
 
