@@ -523,14 +523,46 @@ public class SinglyLinkedListModule {
       return scanr1Impl(this, f);
     }
 
-    @Override
-    public <ACC, B> Pair<ACC, List<B, ?>> mapAccumL(BiFunction<ACC, A, Pair<ACC, B>> f, ACC acc) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    private static <A, ACC, B> Pair<ACC, List<B, ?>> mapAccumLImpl(
+            final LinkedList<A> list,
+            final BiFunction<ACC, A, Pair<ACC, B>> f,
+            final ACC acc) {
+      LinkedList<A> t = list;
+      ACC newAcc = acc;
+      ArrayList<B> v = new ArrayList<>();
+
+      while (t.isNotNull()) {
+        final Pair<ACC, B> r = f.apply(newAcc, t.mCar);
+        newAcc = r.mx1;        
+        v.add(r.mx2);
+        t = t.mCdr;
+      }
+      return Pair.create(newAcc, fromArray(v));
     }
 
     @Override
-    public <ACC, B> Pair<ACC, List<B, ?>> mapAccumR(BiFunction<ACC, A, Pair<ACC, B>> f, ACC acc) {
-      throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public <ACC, B> Pair<ACC, List<B, ?>> mapAccumL(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc) {
+      return mapAccumLImpl(this, f, acc);
+    }
+
+    private static <A, ACC, B> Pair<ACC, List<B, ?>> mapAccumRImpl(
+            final LinkedList<A> list,
+            final BiFunction<ACC, A, Pair<ACC, B>> f,
+            final ACC acc) {
+      final ArrayList<A> v = toArray(list);
+      final ArrayList<B> u = new ArrayList<>();
+      final int lastIdx = v.size() - 1;
+      final ACC newAcc = IntStream.rangeClosed(0, lastIdx)
+                                  .mapToObj(i -> v.get(lastIdx - i))
+                                  .reduce(acc,
+                                          (rAcc, e) -> { final Pair<ACC, B> r = f.apply(rAcc, e); u.add(r.mx2); return r.mx1; },
+                                          Functionals::functionShouldNotBeCalled);
+      return Pair.create(newAcc, u.stream().reduce(empty(), LinkedList::createInv, Functionals::functionShouldNotBeCalled));
+    }
+
+    @Override
+    public <ACC, B> Pair<ACC, List<B, ?>> mapAccumR(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc) {
+      return mapAccumRImpl(this, f, acc);
     }
 
     private static <A> LinkedList<A> takeImpl(final LinkedList<A> list, final int n) {
