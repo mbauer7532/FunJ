@@ -11,7 +11,6 @@ import Utils.Functionals;
 import Utils.Ref;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.TreeSet;
@@ -129,6 +128,12 @@ public class SinglyLinkedListModule {
     public L insertBy(final A a, final Comparator<? super A> cmp);
 
     L deleteFirstBy(final L list, final BiPredicate<A, A> pred);
+
+    public A max();
+    public A maxBy(final Comparator<? super A> cmp);
+    
+    public A min();
+    public A minBy(final Comparator<? super A> cmp);
   }
 
   public static class LinkedList<A> implements List<A, LinkedList<A>> {
@@ -1005,24 +1010,6 @@ public class SinglyLinkedListModule {
       return foldlImpl(list, (xs, x) -> xs.delete(x), this);
     }
 
-    public static <A, B, C> LinkedList<C> zipWith(final LinkedList<A> listA, final LinkedList<B> listB, final BiFunction<A, B, C> zipper) {
-      LinkedList<A> ta = listA;
-      LinkedList<B> tb = listB;
-      ArrayList<C> v = new ArrayList<>();
-
-      while (ta.isNotNull() && tb.isNotNull()) {
-        v.add(zipper.apply(ta.mCar, tb.mCar));
-        ta = ta.mCdr;
-        tb = tb.mCdr;
-      }
-
-      return fromArray(v);
-    }
-
-    public static <A, B> LinkedList<Pair<A, B>> zip(final LinkedList<A> listA, final LinkedList<B> listB) {
-      return zipWith(listA, listB, Pair::create);
-    }
-
     private static <A> LinkedList<A> unionByImpl(final LinkedList<A> list1, final LinkedList<A> list2, final Comparator<? super A> cmp) {
       final TreeSet<A> s = new TreeSet<>(cmp);
       final ArrayList<A> v = new ArrayList<>();
@@ -1118,6 +1105,70 @@ public class SinglyLinkedListModule {
     @Override
     public LinkedList<A> insertBy(final A a, final Comparator<? super A> cmp) {
       return insertByImpl(this, a, cmp);
+    }
+
+    private static <A> Optional<A> orderingByImpl(final LinkedList<A> list, final BiFunction<A, A, A> selector) {
+      if (list.isEmpty()) {
+        return Optional.empty();
+      }
+      else {
+        LinkedList<A> t = list;
+        A m = t.mCar;
+        t = t.mCdr;
+        
+        while (t.isNotNull()) {
+          m = selector.apply(m, t.mCar);
+          t = t.mCdr;
+        }
+
+        return Optional.of(m);
+      }
+    }
+
+    @Override
+    public A max() {
+      return Functionals.mapOptOrElse(orderingByImpl(this, (m0, m1) -> Functionals.comparator(m0, m1) >= 0 ? m0 : m1),
+                                      Function.identity(),
+                                      () -> { throw new AssertionError("Cannot apply function max() on an empty list."); });
+    }
+
+    @Override
+    public A maxBy(final Comparator<? super A> cmp) {
+      return Functionals.mapOptOrElse(orderingByImpl(this, (m0, m1) -> cmp.compare(m0, m1) >= 0 ? m0 : m1),
+                                      Function.identity(),
+                                      () -> { throw new AssertionError("Cannot apply function maxBy() on an empty list."); });
+    }
+
+    @Override
+    public A min() {
+      return Functionals.mapOptOrElse(orderingByImpl(this, (m0, m1) -> Functionals.comparator(m0, m1) >= 0 ? m1 : m0),
+                                      Function.identity(),
+                                      () -> { throw new AssertionError("Cannot apply function min() on an empty list."); });
+    }
+
+    @Override
+    public A minBy(final Comparator<? super A> cmp) {
+      return Functionals.mapOptOrElse(orderingByImpl(this, (m0, m1) -> cmp.compare(m0, m1) >= 0 ? m1 : m0),
+                                      Function.identity(),
+                                      () -> { throw new AssertionError("Cannot apply function minBy() on an empty list."); });
+    }
+
+    public static <A, B, C> LinkedList<C> zipWith(final LinkedList<A> listA, final LinkedList<B> listB, final BiFunction<A, B, C> zipper) {
+      LinkedList<A> ta = listA;
+      LinkedList<B> tb = listB;
+      ArrayList<C> v = new ArrayList<>();
+
+      while (ta.isNotNull() && tb.isNotNull()) {
+        v.add(zipper.apply(ta.mCar, tb.mCar));
+        ta = ta.mCdr;
+        tb = tb.mCdr;
+      }
+
+      return fromArray(v);
+    }
+
+    public static <A, B> LinkedList<Pair<A, B>> zip(final LinkedList<A> listA, final LinkedList<B> listB) {
+      return zipWith(listA, listB, Pair::create);
     }
 }
 
