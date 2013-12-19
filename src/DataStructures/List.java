@@ -126,4 +126,7 @@ public interface List<A, L extends List<A, L>> {
     
   public A min();
   public A minBy(final Comparator<? super A> cmp);
+
+  public List<L, ?> subsequences(final L list);
+  public List<L, ?> permutations(final LinkedList<A> list);
 }

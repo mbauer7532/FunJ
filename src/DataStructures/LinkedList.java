@@ -1084,6 +1084,16 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
                                     Function.identity(),
                                     () -> { throw new AssertionError("Cannot apply function minBy() on an empty list."); });
   }
+    
+  @Override
+  public LinkedList<LinkedList<A>> subsequences(final LinkedList<A> list) {
+    return null;
+  }
+
+  @Override
+  public LinkedList<LinkedList<A>> permutations(final LinkedList<A> list) {
+    return null;
+  }
 
   public static <A, B, C> LinkedList<C> zipWith(final LinkedList<A> listA, final LinkedList<B> listB, final BiFunction<A, B, C> zipper) {
     LinkedList<A> ta = listA;
@@ -1180,11 +1190,4 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
     }
   }
 
-  public static <A> LinkedList<LinkedList<A>> subsequences(final LinkedList<A> list) {
-    return null;
-  }
-
-  public static <A> LinkedList<LinkedList<A>> permutations(final LinkedList<A> list) {
-    return null;
-  }
 }
