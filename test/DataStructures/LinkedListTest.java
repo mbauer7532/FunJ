@@ -10,6 +10,7 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -52,26 +53,24 @@ public class LinkedListTest {
     assertFalse(l1.isEmpty());
     assertFalse(l2.isEmpty());
     assertFalse(l3.isEmpty());
-
-    System.out.printf("%s\n", l0.toString());
-    System.out.printf("%s\n", l1.toString());
-    System.out.printf("%s\n", l2.toString());
-    System.out.printf("%s\n", l3.toString());
   }
-
+//
+//    System.out.printf("%s\n", l0.toString());
+//    System.out.printf("%s\n", l1.toString());
+//    System.out.printf("%s\n", l2.toString());
+//    System.out.printf("%s\n", l3.toString());
   /**
    * Test of cons method, of class LinkedList.
    */
   @Test
   public void testCons() {
     System.out.println("cons");
-//    Object a = null;
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.cons(a);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+    final LinkedList<Integer> l = LinkedList.<Integer> empty().cons(3).cons(2).cons(1);
+    
+    assertEquals((Integer) 1, l.head());
+    assertEquals((Integer) 2, l.tail().head());
+    assertEquals((Integer) 3, l.tail().tail().head());
+    assertTrue(l.tail().tail().tail().isEmpty());
   }
 
   /**
@@ -80,12 +79,17 @@ public class LinkedListTest {
   @Test
   public void testAppend() {
     System.out.println("append");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.append(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+    final LinkedList<Integer> l1 = LinkedList.<Integer> empty().cons(2).cons(1).cons(0);
+    final LinkedList<Integer> l2 = LinkedList.<Integer> empty().cons(5).cons(4).cons(3);
+    final LinkedList<Integer> l3 = l1.append(l2);
+
+    assertEquals(l3.length(), 6);
+    IntStream.range(0, 6).forEach(i -> { assertEquals((Integer) i, l3.nth(i)); });
+
+    final LinkedList<Integer> lempty = LinkedList.empty();
+    assertEquals(lempty.append(l1), l1.append(lempty));
+    assertEquals(lempty.append(l1), l1);
+    assertEquals(lempty.append(l1).length(), l1.length());
   }
 
   /**
