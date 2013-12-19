@@ -21,6 +21,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 /**
  *
@@ -1099,32 +1100,89 @@ public class SinglyLinkedListModule {
     public static <A, B> LinkedList<Pair<A, B>> zip(final LinkedList<A> listA, final LinkedList<B> listB) {
       return zipWith(listA, listB, Pair::create);
     }
-}
 
+    public static <A> LinkedList<A> replicate(final int n, final A a) {
+      return Stream.generate(() -> a)
+                   .limit(n)
+                   .reduce(empty(),
+                           LinkedList::createInv,
+                           Functionals::functionShouldNotBeCalled);
+    }
+
+    public static <A, B> Pair<LinkedList<A>, LinkedList<B>> unzip(final LinkedList<Pair<A, B>> list) {
+      final ArrayList<A> v0 = new ArrayList<>();
+      final ArrayList<B> v1 = new ArrayList<>();
+
+      list.forEach(p -> { v0.add(p.mx1); v1.add(p.mx2); });
+
+      return Pair.create(fromArray(v0), fromArray(v1));
+    }
+
+    public static <A, B> LinkedList<A> unfoldr(final Function<B, Optional<Pair<A, B>>> f, final B b) {
+      final ArrayList<A> v = new ArrayList<>();
+      Optional<Pair<A, B>> opt = f.apply(b);
+
+      while (opt.isPresent()) {
+        final Pair<A, B> p = opt.get();
+        v.add(p.mx1);
+        opt = f.apply(p.mx2);
+      }
+
+      return fromArray(v);
+    }
+
+    public static <A> LinkedList<A> concat(final LinkedList<LinkedList<A>> list) {
+      final ArrayList<A> v = new ArrayList<>();
+
+      list.forEach(l -> { l.forEach(e -> { v.add(e); }); });
+      
+      return fromArray(v);
+    }
+
+    public static <A, B> LinkedList<B> concatMap(final Function<A, LinkedList<B>> f, final LinkedList<A> list) {
+      final ArrayList<B> v = new ArrayList<>();
+
+      list.forEach(l -> f.apply(l).forEach(e -> { v.add(e); }));
+      
+      return fromArray(v);
+    }
+
+    public static <A> LinkedList<A> intercalate(final LinkedList<A> list1, final LinkedList<LinkedList<A>> list2) {
+      return concat(intersperseImpl(list2, list1));
+    }
+
+    private static <A> LinkedList<A> getCar(final LinkedList<LinkedList<A>> list) {
+      return null;
+    }
+    
+    private static <A> LinkedList<LinkedList<A>> getCdr(final LinkedList<LinkedList<A>> list) {
+      return null;
+    }
+
+    public static <A> LinkedList<LinkedList<A>> transpose(final LinkedList<LinkedList<A>> list) {
+      if (list.isNull()) {
+        return list;
+      }
+      else {
+        final LinkedList<A> ys = list.mCar;
+        final LinkedList<LinkedList<A>> xss = list.mCdr;
+        if (ys.isNull()) {
+          return transpose(xss);
+        }
+        else {
+          final A x = ys.mCar;
+          final LinkedList<A> xs = ys.mCdr;
+          return create(create(x, getCar(xss)),
+                        transpose(create(xs, getCdr(xss))));
+        }
+      }
+    }
+  }
 
   class Factory{
-    // replicate :: Int -> a -> [a]
-    // unfoldr :: (b -> Maybe (a, b)) -> b -> [a]
-    // public boolean lookup(final A a); // this must be an association list
-    // Zipping and unzipping
-    // I did zip in list... maybe that's ok... it's not
-    
-//    public <B> List<Pair<A, B>, ?> zip(final List<B, ?> list);
-//    public <B, C> LinkedList<C> zipWith(final List<B, ?> listB, final BiFunction<A, B, C> zipper);
-
-    // unzip :: [(a, b)] -> ([a], [b])
-    // public <B> SLinkedList<Pair<A, B>> zip(final SLinkedList<B> list);
-    // public <B, C> SLinkedList<Triple<A, B, C>> zip(final SLinkedList<B> list1, final SLinkedList<C> list2);
-    
-    // public <B> Pair<SLinkedList<A>, SLinkedList<B>> unzip();
-
-//     public L concat();
-
-//    public <L2 extends List<L, L2>> L intercalate(final List<L, ?> list);
-//    public <L2 extends List<L, L2>> L2 transpose();
+ //    public <L2 extends List<L, L2>> L2 transpose();
 //    public <L2 extends List<L, L2>> L2 subsequences();
 //    public <L2 extends List<L, L2>> L2 permutations();
-//    public <B, L2 extends List<B, L2>> List<B, L2> concatMap(final Function<A, L2> f);
 
   }
 }
