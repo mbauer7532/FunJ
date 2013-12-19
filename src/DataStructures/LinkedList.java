@@ -152,7 +152,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
     return lastImpl(this);
   }
 
-  private static <A> ArrayList<A> toArray(final LinkedList<A> m) {
+  public static <A> ArrayList<A> toArray(final LinkedList<A> m) {
     final ArrayList<A> v = new ArrayList<>();
     LinkedList<A> t = m;
 
@@ -164,7 +164,11 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
     return v;
   }
 
-  private static <A> LinkedList<A> fromArray(final ArrayList<A> v, final int i, final int j) {
+  public static <A> LinkedList<A> fromStream(final Stream<A> s) {
+    return fromArray(s.collect(Collectors.toCollection(ArrayList::new)));
+  }
+
+  public static <A> LinkedList<A> fromArray(final ArrayList<A> v, final int i, final int j) {
     return IntStream.rangeClosed(i, j)
       .mapToObj(idx -> v.get(j - idx))
       .reduce(empty(),
@@ -172,7 +176,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
               Functionals::functionShouldNotBeCalled);
   }
 
-  private static <A> LinkedList<A> fromArray(final ArrayList<A> v) {
+  public static <A> LinkedList<A> fromArray(final ArrayList<A> v) {
     return fromArray(v, 0, v.size() - 1);
   }
 
