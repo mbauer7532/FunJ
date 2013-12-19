@@ -1180,12 +1180,13 @@ public class SinglyLinkedListModule {
         }
       }
     }
-  }
 
-  class Factory{
- //    public <L2 extends List<L, L2>> L2 transpose();
-//    public <L2 extends List<L, L2>> L2 subsequences();
-//    public <L2 extends List<L, L2>> L2 permutations();
+    public static <A> LinkedList<LinkedList<A>> subsequences(final LinkedList<A> list) {
+      return null;
+    }
 
+    public static <A> LinkedList<LinkedList<A>> permutations(final LinkedList<A> list) {
+      return null;
+    }
   }
 }
