@@ -57,7 +57,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   private LinkedList<A> cdr() { return mCdr; }
     
   @Override
-    public LinkedList<A> cons(final A a) {
+  public LinkedList<A> cons(final A a) {
     return create(a, this);
   }
 
@@ -72,12 +72,12 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> append(final LinkedList<A> list) {
+  public LinkedList<A> append(final LinkedList<A> list) {
     return appendImpl(this, list);
   }
 
   @Override
-    public A head() {
+  public A head() {
     if (isNull()) {
       throw new AssertionError("head() called on empty list.");
     }
@@ -87,7 +87,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> tail() {
+  public LinkedList<A> tail() {
     if (isNull()) {
       throw new AssertionError("tail() called on empty list.");
     }
@@ -112,7 +112,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public A last() {
+  public A last() {
     return lastImpl(this);
   }
 
@@ -163,12 +163,12 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> init() {
+  public LinkedList<A> init() {
     return initImpl(this);
   }
 
   @Override
-    public boolean isEmpty() {
+  public boolean isEmpty() {
     return isNull();
   }
 
@@ -184,7 +184,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public int length() {
+  public int length() {
     return lengthImpl(this);
   }
 
@@ -199,7 +199,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public void forEach(final Consumer<? super A> action) {
+  public void forEach(final Consumer<? super A> action) {
     forEachImpl(this, action);
       
     return;
@@ -218,7 +218,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public <B> LinkedList<B> map(final Function<A, B> f) {
+  public <B> LinkedList<B> map(final Function<A, B> f) {
     return mapImpl(this, f);
   }
 
@@ -234,7 +234,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> reverse() {
+  public LinkedList<A> reverse() {
     return reverseImpl(this);
   }
 
@@ -258,7 +258,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> intersperse(final A a) {
+  public LinkedList<A> intersperse(final A a) {
     return intersperseImpl(this, a);
   }
 
@@ -275,7 +275,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public <B> B foldl(final BiFunction<B, A, B> f, final B b) {
+  public <B> B foldl(final BiFunction<B, A, B> f, final B b) {
     return foldlImpl(this, f, b);
   }
 
@@ -289,7 +289,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public A foldl1(final BiFunction<A, A, A> f) {
+  public A foldl1(final BiFunction<A, A, A> f) {
     return foldl1Impl(this, f);
   }
 
@@ -304,7 +304,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public <B> B foldr(final BiFunction<A, B, B> f, final B b) {
+  public <B> B foldr(final BiFunction<A, B, B> f, final B b) {
     return foldrImpl(this, f, b);
   }
 
@@ -318,7 +318,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public A foldr1(final BiFunction<A, A, A> f) {
+  public A foldr1(final BiFunction<A, A, A> f) {
     return foldr1Impl(this, f);
   }
 
@@ -336,7 +336,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public boolean any(final Predicate<A> f) {
+  public boolean any(final Predicate<A> f) {
     return anyImpl(this, f);
   }
 
@@ -345,7 +345,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public boolean all(final Predicate<A> f) {
+  public boolean all(final Predicate<A> f) {
     return allImpl(this, f);
   }
 
@@ -365,7 +365,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public <B> LinkedList<B> scanl(final BiFunction<B, A, B> f, final B b) {
+  public <B> LinkedList<B> scanl(final BiFunction<B, A, B> f, final B b) {
     return scanlImpl(this, f, b);
   }
 
@@ -379,7 +379,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> scanl1(final BiFunction<A, A, A> f) {
+  public LinkedList<A> scanl1(final BiFunction<A, A, A> f) {
     return scanl1Impl(this, f);
   }
 
@@ -399,7 +399,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public <B> LinkedList<B> scanr(final BiFunction<A, B, B> f, final B b) {
+  public <B> LinkedList<B> scanr(final BiFunction<A, B, B> f, final B b) {
     return scanrImpl(this, f, b);
   }
 
@@ -413,7 +413,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> scanr1(final BiFunction<A, A, A> f) {
+  public LinkedList<A> scanr1(final BiFunction<A, A, A> f) {
     return scanr1Impl(this, f);
   }
 
@@ -435,7 +435,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public <ACC, B> Pair<ACC, List<B, ?>> mapAccumL(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc) {
+  public <ACC, B> Pair<ACC, List<B, ?>> mapAccumL(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc) {
     return mapAccumLImpl(this, f, acc);
   }
 
@@ -455,7 +455,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public <ACC, B> Pair<ACC, List<B, ?>> mapAccumR(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc) {
+  public <ACC, B> Pair<ACC, List<B, ?>> mapAccumR(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc) {
     return mapAccumRImpl(this, f, acc);
   }
 
@@ -475,7 +475,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> take(final int n) {
+  public LinkedList<A> take(final int n) {
     return takeImpl(this, n);
   }
 
@@ -492,7 +492,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> drop(final int n) {
+  public LinkedList<A> drop(final int n) {
     return dropImpl(this, n);
   }
 
@@ -512,7 +512,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public Pair<LinkedList<A>, LinkedList<A>> splitAt(final int n) {
+  public Pair<LinkedList<A>, LinkedList<A>> splitAt(final int n) {
     return splitAtImpl(this, n);
   }
 
@@ -542,7 +542,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> takeWhile(final Predicate<A> pred) {
+  public LinkedList<A> takeWhile(final Predicate<A> pred) {
     return takeWhileImpl(this, pred);
   }
 
@@ -557,7 +557,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> dropWhile(Predicate<A> pred) {
+  public LinkedList<A> dropWhile(Predicate<A> pred) {
     return dropWhileImpl(this, pred);
   }
 
@@ -575,7 +575,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> dropWhileEnd(final Predicate<A> pred) {
+  public LinkedList<A> dropWhileEnd(final Predicate<A> pred) {
     return dropWhileEndImpl(this, pred);
   }
 
@@ -610,12 +610,12 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public Pair<LinkedList<A>, LinkedList<A>> spanByPredicate(final Predicate<A> pred) {
+  public Pair<LinkedList<A>, LinkedList<A>> spanByPredicate(final Predicate<A> pred) {
     return spanByPredicateImpl(this, pred);
   }
 
   @Override
-    public Pair<LinkedList<A>, LinkedList<A>> breakByPredicate(final Predicate<A> pred) {
+  public Pair<LinkedList<A>, LinkedList<A>> breakByPredicate(final Predicate<A> pred) {
     return spanByPredicateImpl(this, pred.negate());
   }
 
@@ -634,7 +634,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public Optional<LinkedList<A>> stripPrefix(final LinkedList<A> list) {
+  public Optional<LinkedList<A>> stripPrefix(final LinkedList<A> list) {
     return stripPrefixImpl(list, this);
   }
 
@@ -667,12 +667,12 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<LinkedList<A>> group() {
+  public LinkedList<LinkedList<A>> group() {
     return groupByImpl(this, (e1, e2) -> e1.equals(e2));
   }
 
   @Override
-    public LinkedList<LinkedList<A>> groupBy(final BiPredicate<A, A> eqPred) {
+  public LinkedList<LinkedList<A>> groupBy(final BiPredicate<A, A> eqPred) {
     return groupByImpl(this, eqPred);
   }
 
@@ -690,7 +690,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<LinkedList<A>> inits() {
+  public LinkedList<LinkedList<A>> inits() {
     return initsImpl(this);
   }
 
@@ -706,7 +706,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<LinkedList<A>> tails() {
+  public LinkedList<LinkedList<A>> tails() {
     return tailsImpl(this);
   }
 
@@ -725,17 +725,17 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public boolean isPrefixOf(final LinkedList<A> list) {
+  public boolean isPrefixOf(final LinkedList<A> list) {
     return isPrefixOfImpl(this, list);
   }
 
   @Override
-    public boolean isSuffixOf(final LinkedList<A> list) {
+  public boolean isSuffixOf(final LinkedList<A> list) {
     return isPrefixOfImpl(reverseImpl(this), reverseImpl(list));
   }
 
   @Override
-    public boolean isInfixOf(final LinkedList<A> list) {
+  public boolean isInfixOf(final LinkedList<A> list) {
     return anyImpl(tailsImpl(this), x -> isPrefixOfImpl(list, x));
   }
 
@@ -754,17 +754,17 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public boolean elem(final A a) {
+  public boolean elem(final A a) {
     return findByImpl(this, x -> a.equals(x)).isPresent();
   }
 
   @Override
-    public boolean notElem(final A a) {
+  public boolean notElem(final A a) {
     return ! elem(a);
   }
 
   @Override
-    public Optional<A> find(final Predicate<A> pred) {
+  public Optional<A> find(final Predicate<A> pred) {
     return findByImpl(this, pred).map(Pair::getFirst);
   }
 
@@ -783,7 +783,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> filter(final Predicate<A> pred) {
+  public LinkedList<A> filter(final Predicate<A> pred) {
     return filterImpl(this, pred);
   }
 
@@ -800,7 +800,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public Pair<LinkedList<A>, LinkedList<A>> partition(final Predicate<A> pred) {
+  public Pair<LinkedList<A>, LinkedList<A>> partition(final Predicate<A> pred) {
     return partitionImpl(this, pred);
   }
 
@@ -826,12 +826,12 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public A nth(final int n) {
+  public A nth(final int n) {
     return nthImpl(this, n);
   }
 
   @Override
-    public OptionalInt elemIndex(final A a) {
+  public OptionalInt elemIndex(final A a) {
     return Functionals.mapOptOrElse(
       findByImpl(this, x -> a.equals(x)).map(Pair::getSecond),
       x -> OptionalInt.of(x.intValue()),
@@ -855,12 +855,12 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<Integer> elemIndices(final A a) {
+  public LinkedList<Integer> elemIndices(final A a) {
     return elemIndicesImpl(this, x -> a.equals(x));
   }
 
   @Override
-    public OptionalInt findIndex(final Predicate<A> pred) {
+  public OptionalInt findIndex(final Predicate<A> pred) {
     return Functionals.mapOptOrElse(
       findByImpl(this, pred).map(Pair::getSecond),
       x -> OptionalInt.of(x.intValue()),
@@ -868,7 +868,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<Integer> findIndices(final Predicate<A> pred) {
+  public LinkedList<Integer> findIndices(final Predicate<A> pred) {
     return elemIndicesImpl(this, pred);
   }
 
@@ -890,12 +890,12 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> nub() {
+  public LinkedList<A> nub() {
     return nubByImpl(this, Functionals::comparator);
   }
 
   @Override
-    public LinkedList<A> nubBy(final Comparator<? super A> cmp) {
+  public LinkedList<A> nubBy(final Comparator<? super A> cmp) {
     return nubByImpl(this, cmp);
   }
 
@@ -921,24 +921,24 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> delete(final A a) {
+  public LinkedList<A> delete(final A a) {
     return deleteByImpl(this, a, (x, y) -> x.equals(y));
   }
 
   @Override
-    public LinkedList<A> deleteBy(final A a, final BiPredicate<A, A> pred) {
+  public LinkedList<A> deleteBy(final A a, final BiPredicate<A, A> pred) {
     return deleteByImpl(this, a, pred);
   }
 
   @Override
-    public LinkedList<A> deleteFirstBy(final LinkedList<A> list, final BiPredicate<A, A> pred) {
+  public LinkedList<A> deleteFirstBy(final LinkedList<A> list, final BiPredicate<A, A> pred) {
     final Ref<LinkedList<A>> ref = new Ref<>(empty());
     list.forEach(elem -> { ref.r = deleteByImpl(ref.r, elem, pred); });
     return ref.r;
   }
 
   @Override
-    public LinkedList<A> listDiff(LinkedList<A> list) {
+  public LinkedList<A> listDiff(LinkedList<A> list) {
     return foldlImpl(list, (xs, x) -> xs.delete(x), this);
   }
 
@@ -958,12 +958,12 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> union(final LinkedList<A> list) {
+  public LinkedList<A> union(final LinkedList<A> list) {
     return unionByImpl(this, list, Functionals::comparator);
   }
 
   @Override
-    public LinkedList<A> unionBy(final LinkedList<A> list, final Comparator<? super A> cmp) {
+  public LinkedList<A> unionBy(final LinkedList<A> list, final Comparator<? super A> cmp) {
     return unionByImpl(this, list, cmp);
   }
 
@@ -982,12 +982,12 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> intersect(final LinkedList<A> list) {
+  public LinkedList<A> intersect(final LinkedList<A> list) {
     return intersectByImpl(this, list, Functionals::comparator);
   }
 
   @Override
-    public LinkedList<A> intersectBy(final LinkedList<A> list, final Comparator<? super A> cmp) {
+  public LinkedList<A> intersectBy(final LinkedList<A> list, final Comparator<? super A> cmp) {
     return intersectByImpl(this, list, cmp);
   }
 
@@ -998,12 +998,12 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> sort() {
+  public LinkedList<A> sort() {
     return sortByImpl(this, null);
   }
 
   @Override
-    public LinkedList<A> sortBy(final Comparator<? super A> cmp) {
+  public LinkedList<A> sortBy(final Comparator<? super A> cmp) {
     return sortByImpl(this, cmp);
   }
 
@@ -1030,12 +1030,12 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public LinkedList<A> insert(final A a) {
+  public LinkedList<A> insert(final A a) {
     return insertByImpl(this, a, Functionals::comparator);
   }
 
   @Override
-    public LinkedList<A> insertBy(final A a, final Comparator<? super A> cmp) {
+  public LinkedList<A> insertBy(final A a, final Comparator<? super A> cmp) {
     return insertByImpl(this, a, cmp);
   }
 
@@ -1058,33 +1058,33 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-    public A max() {
+  public A max() {
     return Functionals.mapOptOrElse(orderingByImpl(this, (m0, m1) -> Functionals.comparator(m0, m1) >= 0 ? m0 : m1),
                                     Function.identity(),
                                     () -> { throw new AssertionError("Cannot apply function max() on an empty list."); });
   }
 
   @Override
-    public A maxBy(final Comparator<? super A> cmp) {
+  public A maxBy(final Comparator<? super A> cmp) {
     return Functionals.mapOptOrElse(orderingByImpl(this, (m0, m1) -> cmp.compare(m0, m1) >= 0 ? m0 : m1),
                                     Function.identity(),
                                     () -> { throw new AssertionError("Cannot apply function maxBy() on an empty list."); });
   }
 
   @Override
-    public A min() {
+  public A min() {
     return Functionals.mapOptOrElse(orderingByImpl(this, (m0, m1) -> Functionals.comparator(m0, m1) >= 0 ? m1 : m0),
                                     Function.identity(),
                                     () -> { throw new AssertionError("Cannot apply function min() on an empty list."); });
   }
 
   @Override
-    public A minBy(final Comparator<? super A> cmp) {
+  public A minBy(final Comparator<? super A> cmp) {
     return Functionals.mapOptOrElse(orderingByImpl(this, (m0, m1) -> cmp.compare(m0, m1) >= 0 ? m1 : m0),
                                     Function.identity(),
                                     () -> { throw new AssertionError("Cannot apply function minBy() on an empty list."); });
   }
-    
+
   @Override
   public LinkedList<LinkedList<A>> subsequences(final LinkedList<A> list) {
     return null;
