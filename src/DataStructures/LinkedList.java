@@ -58,7 +58,11 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
 
   @Override
   public String toString() {
-    return String.format("[%s]", intersperseImpl(mapImpl(this, e -> e.toString()), ", "));
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
+    intersperseImpl(mapImpl(this, e -> e.toString()), ", ").forEach(sb::append);
+    sb.append("]");
+    return sb.toString();
   }
   
   @Override
@@ -238,15 +242,15 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A, B> LinkedList<B> mapImpl(final LinkedList<A> list, final Function<A, B> f) {
-    LinkedList<B> lb = empty();
+    ArrayList<B> v = new ArrayList<>();
     LinkedList<A> la = list;
 
     while (la.isNotNull()) {
-      lb = create(f.apply(la.mCar), lb);
+      v.add(f.apply(la.mCar));
       la = la.mCdr;
     }
 
-    return lb;
+    return fromArray(v);
   }
 
   @Override
@@ -272,7 +276,7 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
 
   private static <A> LinkedList<A> intersperseImpl(final LinkedList<A> list, final A a) {
     if (list.isNull()) {
-      return empty();
+      return list;
     }
     else {
       final ArrayList<A> v = new ArrayList<>();

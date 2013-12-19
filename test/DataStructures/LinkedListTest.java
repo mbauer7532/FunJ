@@ -22,25 +22,19 @@ import static org.junit.Assert.*;
  * @author Neo
  */
 public class LinkedListTest {
-  
-  public LinkedListTest() {
-  }
-  
+  public LinkedListTest() {}
+
   @BeforeClass
-  public static void setUpClass() {
-  }
-  
+  public static void setUpClass() {}
+
   @AfterClass
-  public static void tearDownClass() {
-  }
-  
+  public static void tearDownClass() {}
+
   @Before
-  public void setUp() {
-  }
-  
+  public void setUp() {}
+
   @After
-  public void tearDown() {
-  }
+  public void tearDown() {}
 
   /**
    * Test of empty method, of class LinkedList.
@@ -48,11 +42,21 @@ public class LinkedListTest {
   @Test
   public void testEmpty() {
     System.out.println("empty");
-    LinkedList expResult = null;
-    LinkedList result = LinkedList.empty();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> l0 = LinkedList.empty();
+    final LinkedList<Integer> l1 = l0.cons(1);
+    final LinkedList<Integer> l2 = l1.cons(2);
+    final LinkedList<Integer> l3 = l2.cons(3);
+
+    assertTrue(l0.isEmpty());
+    assertFalse(l1.isEmpty());
+    assertFalse(l2.isEmpty());
+    assertFalse(l3.isEmpty());
+
+    System.out.printf("%s\n", l0.toString());
+    System.out.printf("%s\n", l1.toString());
+    System.out.printf("%s\n", l2.toString());
+    System.out.printf("%s\n", l3.toString());
   }
 
   /**
@@ -61,13 +65,13 @@ public class LinkedListTest {
   @Test
   public void testCons() {
     System.out.println("cons");
-    Object a = null;
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.cons(a);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Object a = null;
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.cons(a);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -76,12 +80,12 @@ public class LinkedListTest {
   @Test
   public void testAppend() {
     System.out.println("append");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.append(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.append(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -90,12 +94,12 @@ public class LinkedListTest {
   @Test
   public void testHead() {
     System.out.println("head");
-    LinkedList instance = null;
-    Object expResult = null;
-    Object result = instance.head();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    Object expResult = null;
+//    Object result = instance.head();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -104,12 +108,12 @@ public class LinkedListTest {
   @Test
   public void testTail() {
     System.out.println("tail");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.tail();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.tail();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -118,12 +122,12 @@ public class LinkedListTest {
   @Test
   public void testLast() {
     System.out.println("last");
-    LinkedList instance = null;
-    Object expResult = null;
-    Object result = instance.last();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    Object expResult = null;
+//    Object result = instance.last();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -132,12 +136,12 @@ public class LinkedListTest {
   @Test
   public void testInit() {
     System.out.println("init");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.init();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.init();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -146,12 +150,12 @@ public class LinkedListTest {
   @Test
   public void testIsEmpty() {
     System.out.println("isEmpty");
-    LinkedList instance = null;
-    boolean expResult = false;
-    boolean result = instance.isEmpty();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    boolean expResult = false;
+//    boolean result = instance.isEmpty();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -160,12 +164,12 @@ public class LinkedListTest {
   @Test
   public void testLength() {
     System.out.println("length");
-    LinkedList instance = null;
-    int expResult = 0;
-    int result = instance.length();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    int expResult = 0;
+//    int result = instance.length();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -174,11 +178,11 @@ public class LinkedListTest {
   @Test
   public void testForEach() {
     System.out.println("forEach");
-    Consumer action = null;
-    LinkedList instance = null;
-    instance.forEach(action);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Consumer action = null;
+//    LinkedList instance = null;
+//    instance.forEach(action);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -187,12 +191,12 @@ public class LinkedListTest {
   @Test
   public void testMap() {
     System.out.println("map");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.map(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.map(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -201,12 +205,12 @@ public class LinkedListTest {
   @Test
   public void testReverse() {
     System.out.println("reverse");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.reverse();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.reverse();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -215,13 +219,13 @@ public class LinkedListTest {
   @Test
   public void testIntersperse() {
     System.out.println("intersperse");
-    Object a = null;
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.intersperse(a);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Object a = null;
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.intersperse(a);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -230,12 +234,12 @@ public class LinkedListTest {
   @Test
   public void testFoldl() {
     System.out.println("foldl");
-    LinkedList instance = null;
-    Object expResult = null;
-    Object result = instance.foldl(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    Object expResult = null;
+//    Object result = instance.foldl(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -244,12 +248,12 @@ public class LinkedListTest {
   @Test
   public void testFoldl1() {
     System.out.println("foldl1");
-    LinkedList instance = null;
-    Object expResult = null;
-    Object result = instance.foldl1(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    Object expResult = null;
+//    Object result = instance.foldl1(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -258,12 +262,12 @@ public class LinkedListTest {
   @Test
   public void testFoldr() {
     System.out.println("foldr");
-    LinkedList instance = null;
-    Object expResult = null;
-    Object result = instance.foldr(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    Object expResult = null;
+//    Object result = instance.foldr(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -272,12 +276,12 @@ public class LinkedListTest {
   @Test
   public void testFoldr1() {
     System.out.println("foldr1");
-    LinkedList instance = null;
-    Object expResult = null;
-    Object result = instance.foldr1(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    Object expResult = null;
+//    Object result = instance.foldr1(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -286,12 +290,12 @@ public class LinkedListTest {
   @Test
   public void testAny() {
     System.out.println("any");
-    LinkedList instance = null;
-    boolean expResult = false;
-    boolean result = instance.any(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    boolean expResult = false;
+//    boolean result = instance.any(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -300,12 +304,12 @@ public class LinkedListTest {
   @Test
   public void testAll() {
     System.out.println("all");
-    LinkedList instance = null;
-    boolean expResult = false;
-    boolean result = instance.all(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    boolean expResult = false;
+//    boolean result = instance.all(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -314,12 +318,12 @@ public class LinkedListTest {
   @Test
   public void testScanl() {
     System.out.println("scanl");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.scanl(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+////    LinkedList result = instance.scanl(null);
+////    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -328,12 +332,12 @@ public class LinkedListTest {
   @Test
   public void testScanl1() {
     System.out.println("scanl1");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.scanl1(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.scanl1(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -342,12 +346,12 @@ public class LinkedListTest {
   @Test
   public void testScanr() {
     System.out.println("scanr");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.scanr(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+////    LinkedList result = instance.scanr(null);
+////    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -356,12 +360,12 @@ public class LinkedListTest {
   @Test
   public void testScanr1() {
     System.out.println("scanr1");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.scanr1(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.scanr1(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -370,12 +374,12 @@ public class LinkedListTest {
   @Test
   public void testMapAccumL() {
     System.out.println("mapAccumL");
-    LinkedList instance = null;
-    TuplesModule.Pair expResult = null;
-    TuplesModule.Pair result = instance.mapAccumL(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    TuplesModule.Pair expResult = null;
+////    TuplesModule.Pair result = instance.mapAccumL(null);
+////    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -384,12 +388,12 @@ public class LinkedListTest {
   @Test
   public void testMapAccumR() {
     System.out.println("mapAccumR");
-    LinkedList instance = null;
-    TuplesModule.Pair expResult = null;
-    TuplesModule.Pair result = instance.mapAccumR(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    TuplesModule.Pair expResult = null;
+////    TuplesModule.Pair result = instance.mapAccumR(null);
+////    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -398,13 +402,13 @@ public class LinkedListTest {
   @Test
   public void testTake() {
     System.out.println("take");
-    int n = 0;
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.take(n);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    int n = 0;
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.take(n);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -413,13 +417,13 @@ public class LinkedListTest {
   @Test
   public void testDrop() {
     System.out.println("drop");
-    int n = 0;
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.drop(n);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    int n = 0;
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.drop(n);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -428,13 +432,13 @@ public class LinkedListTest {
   @Test
   public void testSplitAt() {
     System.out.println("splitAt");
-    int n = 0;
-    LinkedList instance = null;
-    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
-    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.splitAt(n);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    int n = 0;
+//    LinkedList instance = null;
+////    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
+////    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.splitAt(n);
+////    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -443,12 +447,12 @@ public class LinkedListTest {
   @Test
   public void testTakeWhile() {
     System.out.println("takeWhile");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.takeWhile(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.takeWhile(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -457,12 +461,12 @@ public class LinkedListTest {
   @Test
   public void testDropWhile() {
     System.out.println("dropWhile");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.dropWhile(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.dropWhile(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -471,12 +475,12 @@ public class LinkedListTest {
   @Test
   public void testDropWhileEnd() {
     System.out.println("dropWhileEnd");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.dropWhileEnd(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.dropWhileEnd(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -485,12 +489,12 @@ public class LinkedListTest {
   @Test
   public void testSpanByPredicate() {
     System.out.println("spanByPredicate");
-    LinkedList instance = null;
-    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
-    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.spanByPredicate(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
+//    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.spanByPredicate(null);
+//    assertEquals(expResult, result);
+//    TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -499,12 +503,12 @@ public class LinkedListTest {
   @Test
   public void testBreakByPredicate() {
     System.out.println("breakByPredicate");
-    LinkedList instance = null;
-    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
-    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.breakByPredicate(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
+//    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.breakByPredicate(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -513,12 +517,12 @@ public class LinkedListTest {
   @Test
   public void testStripPrefix() {
     System.out.println("stripPrefix");
-    LinkedList instance = null;
-    Optional<LinkedList<A>> expResult = null;
-    Optional<LinkedList<A>> result = instance.stripPrefix(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    Optional<LinkedList<A>> expResult = null;
+//    Optional<LinkedList<A>> result = instance.stripPrefix(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -527,12 +531,12 @@ public class LinkedListTest {
   @Test
   public void testGroup() {
     System.out.println("group");
-    LinkedList instance = null;
-    LinkedList<LinkedList<A>> expResult = null;
-    LinkedList<LinkedList<A>> result = instance.group();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList<LinkedList<A>> expResult = null;
+//    LinkedList<LinkedList<A>> result = instance.group();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -541,12 +545,12 @@ public class LinkedListTest {
   @Test
   public void testGroupBy() {
     System.out.println("groupBy");
-    LinkedList instance = null;
-    LinkedList<LinkedList<A>> expResult = null;
-    LinkedList<LinkedList<A>> result = instance.groupBy(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList<LinkedList<A>> expResult = null;
+//    LinkedList<LinkedList<A>> result = instance.groupBy(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -555,12 +559,12 @@ public class LinkedListTest {
   @Test
   public void testInits() {
     System.out.println("inits");
-    LinkedList instance = null;
-    LinkedList<LinkedList<A>> expResult = null;
-    LinkedList<LinkedList<A>> result = instance.inits();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList<LinkedList<A>> expResult = null;
+//    LinkedList<LinkedList<A>> result = instance.inits();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -569,12 +573,12 @@ public class LinkedListTest {
   @Test
   public void testTails() {
     System.out.println("tails");
-    LinkedList instance = null;
-    LinkedList<LinkedList<A>> expResult = null;
-    LinkedList<LinkedList<A>> result = instance.tails();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList<LinkedList<A>> expResult = null;
+//    LinkedList<LinkedList<A>> result = instance.tails();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -583,12 +587,12 @@ public class LinkedListTest {
   @Test
   public void testIsPrefixOf() {
     System.out.println("isPrefixOf");
-    LinkedList instance = null;
-    boolean expResult = false;
-    boolean result = instance.isPrefixOf(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    boolean expResult = false;
+//    boolean result = instance.isPrefixOf(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -597,12 +601,12 @@ public class LinkedListTest {
   @Test
   public void testIsSuffixOf() {
     System.out.println("isSuffixOf");
-    LinkedList instance = null;
-    boolean expResult = false;
-    boolean result = instance.isSuffixOf(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    boolean expResult = false;
+//    boolean result = instance.isSuffixOf(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -611,12 +615,12 @@ public class LinkedListTest {
   @Test
   public void testIsInfixOf() {
     System.out.println("isInfixOf");
-    LinkedList instance = null;
-    boolean expResult = false;
-    boolean result = instance.isInfixOf(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    boolean expResult = false;
+//    boolean result = instance.isInfixOf(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -625,13 +629,13 @@ public class LinkedListTest {
   @Test
   public void testElem() {
     System.out.println("elem");
-    Object a = null;
-    LinkedList instance = null;
-    boolean expResult = false;
-    boolean result = instance.elem(a);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Object a = null;
+//    LinkedList instance = null;
+//    boolean expResult = false;
+//    boolean result = instance.elem(a);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -640,13 +644,13 @@ public class LinkedListTest {
   @Test
   public void testNotElem() {
     System.out.println("notElem");
-    Object a = null;
-    LinkedList instance = null;
-    boolean expResult = false;
-    boolean result = instance.notElem(a);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Object a = null;
+//    LinkedList instance = null;
+//    boolean expResult = false;
+//    boolean result = instance.notElem(a);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -655,12 +659,12 @@ public class LinkedListTest {
   @Test
   public void testFind() {
     System.out.println("find");
-    LinkedList instance = null;
-    Optional expResult = null;
-    Optional result = instance.find(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    Optional expResult = null;
+//    Optional result = instance.find(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -669,12 +673,12 @@ public class LinkedListTest {
   @Test
   public void testFilter() {
     System.out.println("filter");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.filter(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.filter(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -683,12 +687,12 @@ public class LinkedListTest {
   @Test
   public void testPartition() {
     System.out.println("partition");
-    LinkedList instance = null;
-    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
-    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.partition(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
+//    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.partition(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -697,13 +701,13 @@ public class LinkedListTest {
   @Test
   public void testNth() {
     System.out.println("nth");
-    int n = 0;
-    LinkedList instance = null;
-    Object expResult = null;
-    Object result = instance.nth(n);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    int n = 0;
+//    LinkedList instance = null;
+//    Object expResult = null;
+//    Object result = instance.nth(n);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -712,13 +716,13 @@ public class LinkedListTest {
   @Test
   public void testElemIndex() {
     System.out.println("elemIndex");
-    Object a = null;
-    LinkedList instance = null;
-    OptionalInt expResult = null;
-    OptionalInt result = instance.elemIndex(a);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Object a = null;
+//    LinkedList instance = null;
+//    OptionalInt expResult = null;
+//    OptionalInt result = instance.elemIndex(a);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -727,13 +731,13 @@ public class LinkedListTest {
   @Test
   public void testElemIndices() {
     System.out.println("elemIndices");
-    Object a = null;
-    LinkedList instance = null;
-    LinkedList<Integer> expResult = null;
-    LinkedList<Integer> result = instance.elemIndices(a);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Object a = null;
+//    LinkedList instance = null;
+//    LinkedList<Integer> expResult = null;
+//    LinkedList<Integer> result = instance.elemIndices(a);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -742,12 +746,12 @@ public class LinkedListTest {
   @Test
   public void testFindIndex() {
     System.out.println("findIndex");
-    LinkedList instance = null;
-    OptionalInt expResult = null;
-    OptionalInt result = instance.findIndex(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    OptionalInt expResult = null;
+//    OptionalInt result = instance.findIndex(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -756,12 +760,12 @@ public class LinkedListTest {
   @Test
   public void testFindIndices() {
     System.out.println("findIndices");
-    LinkedList instance = null;
-    LinkedList<Integer> expResult = null;
-    LinkedList<Integer> result = instance.findIndices(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList<Integer> expResult = null;
+//    LinkedList<Integer> result = instance.findIndices(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -770,12 +774,12 @@ public class LinkedListTest {
   @Test
   public void testNub() {
     System.out.println("nub");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.nub();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.nub();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -784,13 +788,13 @@ public class LinkedListTest {
   @Test
   public void testNubBy() {
     System.out.println("nubBy");
-    Comparator cmp = null;
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.nubBy(cmp);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Comparator cmp = null;
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.nubBy(cmp);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -799,13 +803,13 @@ public class LinkedListTest {
   @Test
   public void testDelete() {
     System.out.println("delete");
-    Object a = null;
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.delete(a);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Object a = null;
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.delete(a);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -814,12 +818,12 @@ public class LinkedListTest {
   @Test
   public void testDeleteBy() {
     System.out.println("deleteBy");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.deleteBy(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.deleteBy(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -828,26 +832,25 @@ public class LinkedListTest {
   @Test
   public void testDeleteFirstBy() {
     System.out.println("deleteFirstBy");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.deleteFirstBy(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.deleteFirstBy(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
-
   /**
    * Test of listDiff method, of class LinkedList.
    */
   @Test
   public void testListDiff() {
     System.out.println("listDiff");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.listDiff(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.listDiff(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -856,12 +859,12 @@ public class LinkedListTest {
   @Test
   public void testUnion() {
     System.out.println("union");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.union(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.union(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -870,12 +873,12 @@ public class LinkedListTest {
   @Test
   public void testUnionBy() {
     System.out.println("unionBy");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.unionBy(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.unionBy(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -884,12 +887,12 @@ public class LinkedListTest {
   @Test
   public void testIntersect() {
     System.out.println("intersect");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.intersect(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.intersect(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -898,12 +901,12 @@ public class LinkedListTest {
   @Test
   public void testIntersectBy() {
     System.out.println("intersectBy");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.intersectBy(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.intersectBy(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -912,12 +915,12 @@ public class LinkedListTest {
   @Test
   public void testSort() {
     System.out.println("sort");
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.sort();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.sort();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -926,13 +929,13 @@ public class LinkedListTest {
   @Test
   public void testSortBy() {
     System.out.println("sortBy");
-    Comparator cmp = null;
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.sortBy(cmp);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Comparator cmp = null;
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.sortBy(cmp);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -941,13 +944,13 @@ public class LinkedListTest {
   @Test
   public void testInsert() {
     System.out.println("insert");
-    Object a = null;
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.insert(a);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Object a = null;
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.insert(a);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -956,14 +959,14 @@ public class LinkedListTest {
   @Test
   public void testInsertBy() {
     System.out.println("insertBy");
-    Object a = null;
-    Comparator cmp = null;
-    LinkedList instance = null;
-    LinkedList expResult = null;
-    LinkedList result = instance.insertBy(a, cmp);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Object a = null;
+//    Comparator cmp = null;
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.insertBy(a, cmp);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -972,12 +975,12 @@ public class LinkedListTest {
   @Test
   public void testMax() {
     System.out.println("max");
-    LinkedList instance = null;
-    Object expResult = null;
-    Object result = instance.max();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    Object expResult = null;
+//    Object result = instance.max();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -986,13 +989,13 @@ public class LinkedListTest {
   @Test
   public void testMaxBy() {
     System.out.println("maxBy");
-    Comparator cmp = null;
-    LinkedList instance = null;
-    Object expResult = null;
-    Object result = instance.maxBy(cmp);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Comparator cmp = null;
+//    LinkedList instance = null;
+//    Object expResult = null;
+//    Object result = instance.maxBy(cmp);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -1001,12 +1004,12 @@ public class LinkedListTest {
   @Test
   public void testMin() {
     System.out.println("min");
-    LinkedList instance = null;
-    Object expResult = null;
-    Object result = instance.min();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    Object expResult = null;
+//    Object result = instance.min();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -1015,13 +1018,13 @@ public class LinkedListTest {
   @Test
   public void testMinBy() {
     System.out.println("minBy");
-    Comparator cmp = null;
-    LinkedList instance = null;
-    Object expResult = null;
-    Object result = instance.minBy(cmp);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    Comparator cmp = null;
+//    LinkedList instance = null;
+//    Object expResult = null;
+//    Object result = instance.minBy(cmp);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -1030,12 +1033,12 @@ public class LinkedListTest {
   @Test
   public void testSubsequences() {
     System.out.println("subsequences");
-    LinkedList instance = null;
-    LinkedList<LinkedList<A>> expResult = null;
-    LinkedList<LinkedList<A>> result = instance.subsequences(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList<LinkedList<A>> expResult = null;
+//    LinkedList<LinkedList<A>> result = instance.subsequences(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -1044,12 +1047,12 @@ public class LinkedListTest {
   @Test
   public void testPermutations() {
     System.out.println("permutations");
-    LinkedList instance = null;
-    LinkedList<LinkedList<A>> expResult = null;
-    LinkedList<LinkedList<A>> result = instance.permutations(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList instance = null;
+//    LinkedList<LinkedList<A>> expResult = null;
+//    LinkedList<LinkedList<A>> result = instance.permutations(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -1058,11 +1061,11 @@ public class LinkedListTest {
   @Test
   public void testZipWith() {
     System.out.println("zipWith");
-    LinkedList expResult = null;
-    LinkedList result = LinkedList.zipWith(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList expResult = null;
+//    LinkedList result = LinkedList.zipWith(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -1071,11 +1074,11 @@ public class LinkedListTest {
   @Test
   public void testZip() {
     System.out.println("zip");
-    LinkedList<TuplesModule.Pair<A, B>> expResult = null;
-    LinkedList<TuplesModule.Pair<A, B>> result = LinkedList.zip(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList<TuplesModule.Pair<A, B>> expResult = null;
+//    LinkedList<TuplesModule.Pair<A, B>> result = LinkedList.zip(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -1084,13 +1087,13 @@ public class LinkedListTest {
   @Test
   public void testReplicate() {
     System.out.println("replicate");
-    int n = 0;
-    Object a = null;
-    LinkedList expResult = null;
-    LinkedList result = LinkedList.replicate(n, a);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    int n = 0;
+//    Object a = null;
+//    LinkedList expResult = null;
+//    LinkedList result = LinkedList.replicate(n, a);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -1099,11 +1102,11 @@ public class LinkedListTest {
   @Test
   public void testUnzip() {
     System.out.println("unzip");
-    TuplesModule.Pair<LinkedList<A>, LinkedList<B>> expResult = null;
-    TuplesModule.Pair<LinkedList<A>, LinkedList<B>> result = LinkedList.unzip(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    TuplesModule.Pair<LinkedList<A>, LinkedList<B>> expResult = null;
+//    TuplesModule.Pair<LinkedList<A>, LinkedList<B>> result = LinkedList.unzip(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -1112,11 +1115,11 @@ public class LinkedListTest {
   @Test
   public void testUnfoldr() {
     System.out.println("unfoldr");
-    LinkedList expResult = null;
-    LinkedList result = LinkedList.unfoldr(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList expResult = null;
+//    LinkedList result = LinkedList.unfoldr(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -1125,11 +1128,11 @@ public class LinkedListTest {
   @Test
   public void testConcat() {
     System.out.println("concat");
-    LinkedList expResult = null;
-    LinkedList result = LinkedList.concat(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList expResult = null;
+//    LinkedList result = LinkedList.concat(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -1138,11 +1141,11 @@ public class LinkedListTest {
   @Test
   public void testConcatMap() {
     System.out.println("concatMap");
-    LinkedList expResult = null;
-    LinkedList result = LinkedList.concatMap(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList expResult = null;
+//    LinkedList result = LinkedList.concatMap(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -1151,11 +1154,11 @@ public class LinkedListTest {
   @Test
   public void testIntercalate() {
     System.out.println("intercalate");
-    LinkedList expResult = null;
-    LinkedList result = LinkedList.intercalate(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList expResult = null;
+//    LinkedList result = LinkedList.intercalate(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
 
   /**
@@ -1164,11 +1167,10 @@ public class LinkedListTest {
   @Test
   public void testTranspose() {
     System.out.println("transpose");
-    LinkedList<LinkedList<A>> expResult = null;
-    LinkedList<LinkedList<A>> result = LinkedList.transpose(null);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+//    LinkedList<LinkedList<A>> expResult = null;
+//    LinkedList<LinkedList<A>> result = LinkedList.transpose(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
   }
-  
 }
