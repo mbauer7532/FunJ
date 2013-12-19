@@ -55,7 +55,39 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
 
   private A car() { return mCar; }
   private LinkedList<A> cdr() { return mCdr; }
-    
+
+  @Override
+  public String toString() {
+    return String.format("[%s]", intersperseImpl(mapImpl(this, e -> e.toString()), ", "));
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (! (obj instanceof List)) {
+      return false;
+    }
+    else {
+      List<A, ?> la = this;
+      @SuppressWarnings("unchecked")
+      List<A, ?> lb = (List<A, ?>) obj;
+
+      while (! la.isEmpty() && ! lb.isEmpty()) {
+        if (! la.head().equals(lb.head())) {
+          return false;
+        }
+        la = la.tail();
+        lb = lb.tail();
+      }
+ 
+      return la.isEmpty() && lb.isEmpty();
+    }
+  }
+
+  @Override
+  public int hashCode() {
+    return foldlImpl(this, (h, e) -> h + e.hashCode(), 23);
+  }
+
   @Override
   public LinkedList<A> cons(final A a) {
     return create(a, this);
