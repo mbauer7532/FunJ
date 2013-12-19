@@ -54,6 +54,9 @@ public class SinglyLinkedListModule {
     private boolean isNull()    { return this == sEmptyList; }
     private boolean isNotNull() { return this != sEmptyList; }
 
+    private A car() { return mCar; }
+    private LinkedList<A> cdr() { return mCdr; }
+    
     @Override
     public LinkedList<A> cons(final A a) {
       return create(a, this);
@@ -1151,12 +1154,12 @@ public class SinglyLinkedListModule {
       return concat(intersperseImpl(list2, list1));
     }
 
-    private static <A> LinkedList<A> getCar(final LinkedList<LinkedList<A>> list) {
-      return null;
+    private static <A> LinkedList<A> getCars(final LinkedList<LinkedList<A>> list) {
+      return list.filter(LinkedList::isNull).map(LinkedList::car);
     }
-    
-    private static <A> LinkedList<LinkedList<A>> getCdr(final LinkedList<LinkedList<A>> list) {
-      return null;
+
+    private static <A> LinkedList<LinkedList<A>> getCdrs(final LinkedList<LinkedList<A>> list) {
+      return list.filter(LinkedList::isNull).map(LinkedList::cdr);
     }
 
     public static <A> LinkedList<LinkedList<A>> transpose(final LinkedList<LinkedList<A>> list) {
@@ -1172,8 +1175,8 @@ public class SinglyLinkedListModule {
         else {
           final A x = ys.mCar;
           final LinkedList<A> xs = ys.mCdr;
-          return create(create(x, getCar(xss)),
-                        transpose(create(xs, getCdr(xss))));
+          return create(create(x, getCars(xss)),
+                        transpose(create(xs, getCdrs(xss))));
         }
       }
     }
