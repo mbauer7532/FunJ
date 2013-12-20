@@ -57,6 +57,21 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   private LinkedList<A> cdr() { return mCdr; }
 
   @Override
+  public LinkedList<A> addFirst(final A a) {
+    return create(a, this);
+  }
+
+  @Override
+  LinkedList<A> addLast(final A a) {
+    return append(create(a, empty()));
+  }
+
+  @Override
+  public LinkedList<A> cons(final A a) {
+    return create(a, this);
+  }
+
+  @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("[");
@@ -90,11 +105,6 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   @Override
   public int hashCode() {
     return foldlImpl(this, (h, e) -> h + e.hashCode(), 23);
-  }
-
-  @Override
-  public LinkedList<A> cons(final A a) {
-    return create(a, this);
   }
 
   private static <A> LinkedList<A> appendImpl(final LinkedList<A> list1, final LinkedList<A> list2) {

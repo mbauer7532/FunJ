@@ -21,7 +21,9 @@ import java.util.function.Predicate;
  */
 public interface List<A, L extends List<A, L>> {
   // Constructor
-  public L cons(final A a);
+  public L addFirst(final A a);
+  public L addLast(final A a);
+  public L cons(final A a); // For the faithful... same as addFirst().
   public L append(final L list);
 
   // Basic functions
