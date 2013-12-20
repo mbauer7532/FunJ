@@ -27,7 +27,7 @@ import java.util.stream.Stream;
  *
  * @author Neo
  */
-public class LinkedList<A> implements List<A, LinkedList<A>> {
+public final class LinkedList<A> implements List<A, LinkedList<A>> {
   private static <T> LinkedList<T> create(final T a, final LinkedList<T> list) {
     return new LinkedList<>(a, list);
   }
@@ -62,8 +62,8 @@ public class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-  LinkedList<A> addLast(final A a) {
-    return append(create(a, empty()));
+  public LinkedList<A> addLast(final A a) {
+    return appendImpl(this, create(a, empty()));
   }
 
   @Override
