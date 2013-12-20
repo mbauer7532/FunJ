@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 /**
  *
  * @author Neo
+ * @param <A>
  */
 public final class LinkedList<A> implements List<A, LinkedList<A>> {
   private static <T> LinkedList<T> create(final T a, final LinkedList<T> list) {

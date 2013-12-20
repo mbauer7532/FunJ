@@ -6,6 +6,8 @@
 
 package DataStructures;
 
+import Utils.Ref;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -55,11 +57,7 @@ public class LinkedListTest {
     assertFalse(l2.isEmpty());
     assertFalse(l3.isEmpty());
   }
-//
-//    System.out.printf("%s\n", l0.toString());
-//    System.out.printf("%s\n", l1.toString());
-//    System.out.printf("%s\n", l2.toString());
-//    System.out.printf("%s\n", l3.toString());
+
   /**
    * Test of cons method, of class LinkedList.
    */
@@ -90,7 +88,9 @@ public class LinkedListTest {
     final LinkedList<Integer> e = LinkedList.empty();
     assertEquals(e.append(l1), l1.append(e));
     assertEquals(e.append(l1), l1);
+    assertEquals(l1.append(e), l1);
     assertEquals(e.append(l1).length(), l1.length());
+    assertEquals(e.append(l1).append(e).append(e).length(), l1.length());
   }
 
   /**
@@ -101,13 +101,16 @@ public class LinkedListTest {
     System.out.println("head");
 
     final LinkedList<Integer> e = LinkedList.empty();
+    boolean exceptionWasThrown = false;
     try {
       final Integer n = e.head();
     }
-    catch (AssertionError ae) {}
+    catch (AssertionError ae) { exceptionWasThrown = true; }
+    assertTrue(exceptionWasThrown);
 
     final LinkedList<Integer> oneElem = e.cons(1);
     assertEquals(oneElem.head(), (Integer) 1);
+    assertEquals(oneElem.cons(2).head(), (Integer) 2);
   }
 
   /**
@@ -127,6 +130,7 @@ public class LinkedListTest {
     
     final LinkedList<Integer> oneElem = e.cons(1);
     assertEquals(oneElem.tail(), e);
+    assertEquals(oneElem.cons(2).tail(), oneElem);
   }
 
   /**
@@ -186,12 +190,11 @@ public class LinkedListTest {
   @Test
   public void testIsEmpty() {
     System.out.println("isEmpty");
-//    LinkedList instance = null;
-//    boolean expResult = false;
-//    boolean result = instance.isEmpty();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertTrue(e.isEmpty());
+    assertFalse(e.addFirst(1).isEmpty());
+    assertTrue(e.addLast(2).addFirst(1).tail().tail().isEmpty());
+    assertFalse(e.addLast(2).addFirst(1).tail().isEmpty());
   }
 
   /**
@@ -200,12 +203,11 @@ public class LinkedListTest {
   @Test
   public void testLength() {
     System.out.println("length");
-//    LinkedList instance = null;
-//    int expResult = 0;
-//    int result = instance.length();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertEquals(e.length(), 0);
+    assertEquals(e.cons(0).length(), 1);
+    
+    assertEquals(LinkedList.fromStream(IntStream.rangeClosed(1, 10).boxed()).length(), 10);
   }
 
   /**
@@ -214,11 +216,15 @@ public class LinkedListTest {
   @Test
   public void testForEach() {
     System.out.println("forEach");
-//    Consumer action = null;
-//    LinkedList instance = null;
-//    instance.forEach(action);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    final Ref<Integer> r = new Ref<>(0);
+    e.forEach(n -> { r.r = 1; });
+    assertTrue(r.r == 0);
+
+    final Ref<String> s = new Ref("");
+    LinkedList.fromStream(IntStream.range(1, 10).boxed()).forEach(n -> s.r = s.r + n.toString());
+    assertEquals(s.r, "123456789");
   }
 
   /**
@@ -227,12 +233,18 @@ public class LinkedListTest {
   @Test
   public void testMap() {
     System.out.println("map");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.map(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    final LinkedList<Integer> eMaped = e.map(n -> n * n);
+    assertEquals(e, eMaped);
+    assertTrue(eMaped.isEmpty());
+
+    final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.rangeClosed(1,10).boxed());
+    final  LinkedList<Integer> lsMaped = ls.map(n -> n * n);
+
+    assertEquals(ls.length(), 10);
+    assertEquals(lsMaped.length(), 10);
+    assertEquals(lsMaped.toString(), "[1, 4, 9, 16, 25, 36, 49, 64, 81, 100]");
   }
 
   /**
@@ -1248,6 +1260,88 @@ public class LinkedListTest {
 //    LinkedList instance = null;
 //    int expResult = 0;
 //    int result = instance.hashCode();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
+  }
+
+  /**
+   * Test of addFirst method, of class LinkedList.
+   */
+  @Test
+  public void testAddFirst() {
+    System.out.println("addFirst");
+//    Object a = null;
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.addFirst(a);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
+  }
+
+  /**
+   * Test of addLast method, of class LinkedList.
+   */
+  @Test
+  public void testAddLast() {
+    System.out.println("addLast");
+//    Object a = null;
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.addLast(a);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
+  }
+
+  /**
+   * Test of toArray method, of class LinkedList.
+   */
+  @Test
+  public void testToArray() {
+    System.out.println("toArray");
+//    ArrayList expResult = null;
+//    ArrayList result = LinkedList.toArray(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
+  }
+
+  /**
+   * Test of fromStream method, of class LinkedList.
+   */
+  @Test
+  public void testFromStream() {
+    System.out.println("fromStream");
+//    LinkedList expResult = null;
+//    LinkedList result = LinkedList.fromStream(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
+  }
+
+  /**
+   * Test of fromArray method, of class LinkedList.
+   */
+  @Test
+  public void testFromArray() {
+    System.out.println("fromArray");
+//    LinkedList expResult = null;
+//    LinkedList result = LinkedList.fromArray(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
+  }
+
+  /**
+   * Test of fromArray method, of class LinkedList.
+   */
+  @Test
+  public void testFromArray_3args() {
+    System.out.println("fromArray");
+//    LinkedList expResult = null;
+//    LinkedList result = LinkedList.fromArray(null);
 //    assertEquals(expResult, result);
 //    // TODO review the generated test code and remove the default call to fail.
 //    fail("The test case is a prototype.");
