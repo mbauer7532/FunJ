@@ -1136,13 +1136,32 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
                                     () -> { throw new AssertionError("Cannot apply function minBy() on an empty list."); });
   }
 
-  @Override
-  public LinkedList<LinkedList<A>> subsequences(final LinkedList<A> list) {
-    return null;
+  private static <A> LinkedList<A> flatMapImpl(final LinkedList<A> list, final Function<A, LinkedList<A>> f) {
+    return concat(mapImpl(list, f));
   }
 
   @Override
-  public LinkedList<LinkedList<A>> permutations(final LinkedList<A> list) {
+  public LinkedList<A> flatMap(final Function<A, LinkedList<A>> f) {
+    return flatMapImpl(this, f);
+  }
+
+  private static <A> LinkedList<LinkedList<A>> subsequencesImpl(final LinkedList<A> list) {
+    if (list.isNull()) {
+      return create(list, empty());
+    }
+    else {
+      final A a = list.mCar;
+      final LinkedList<LinkedList<A>> subseqs = subsequencesImpl(list.mCdr);
+      return flatMapImpl(subseqs, ls -> create(ls, (create(create(a, ls), empty()))));
+    }
+  }
+
+  public LinkedList<LinkedList<A>> subsequences() {
+    return subsequencesImpl(this);
+  }
+
+  @Override
+  public LinkedList<LinkedList<A>> permutations() {
     return null;
   }
 

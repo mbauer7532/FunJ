@@ -14,6 +14,7 @@ import java.util.OptionalInt;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -1081,12 +1082,12 @@ public class LinkedListTest {
   @Test
   public void testSubsequences() {
     System.out.println("subsequences");
-//    LinkedList instance = null;
-//    LinkedList<LinkedList<A>> expResult = null;
-//    LinkedList<LinkedList<A>> result = instance.subsequences(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+    final LinkedList<String> ls = LinkedList.fromStream(Stream.of("a", "b", "c"));
+    final LinkedList<LinkedList<String>> subseqs = ls.subsequences();
+    assertEquals(subseqs.toString(), "[[], [a], [b], [a, b], [c], [a, c], [b, c], [a, b, c]]");
+
+    assertEquals(LinkedList.<Integer> empty().subsequences().toString(), "[[]]");
+    assertEquals(LinkedList.<Integer> empty().cons(1).subsequences().toString(), "[[], [1]]");
   }
 
   /**
@@ -1321,11 +1322,12 @@ public class LinkedListTest {
 //    fail("The test case is a prototype.");
   }
 
+  
   /**
    * Test of fromArray method, of class LinkedList.
    */
   @Test
-  public void testFromArray() {
+  public void testFromArray_ArrayList() {
     System.out.println("fromArray");
 //    LinkedList expResult = null;
 //    LinkedList result = LinkedList.fromArray(null);
@@ -1342,6 +1344,21 @@ public class LinkedListTest {
     System.out.println("fromArray");
 //    LinkedList expResult = null;
 //    LinkedList result = LinkedList.fromArray(null);
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
+  }
+
+
+  /**
+   * Test of flatMap method, of class LinkedList.
+   */
+  @Test
+  public void testFlatMap() {
+    System.out.println("flatMap");
+//    LinkedList instance = null;
+//    LinkedList expResult = null;
+//    LinkedList result = instance.flatMap(null);
 //    assertEquals(expResult, result);
 //    // TODO review the generated test code and remove the default call to fail.
 //    fail("The test case is a prototype.");

@@ -38,6 +38,7 @@ public interface List<A, L extends List<A, L>> {
 
   // Transformations
   public <B> List<B, ?> map(final Function<A, B> f);
+  public LinkedList<A> flatMap(final Function<A, LinkedList<A>> f);
   public L reverse();
   public L intersperse(final A a);
 
@@ -129,6 +130,6 @@ public interface List<A, L extends List<A, L>> {
   public A min();
   public A minBy(final Comparator<? super A> cmp);
 
-  public List<L, ?> subsequences(final L list);
-  public List<L, ?> permutations(final LinkedList<A> list);
+  public List<L, ?> subsequences();
+  public List<L, ?> permutations();
 }
