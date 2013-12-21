@@ -1082,12 +1082,17 @@ public class LinkedListTest {
   @Test
   public void testSubsequences() {
     System.out.println("subsequences");
-    final LinkedList<String> ls = LinkedList.fromStream(Stream.of("a", "b", "c"));
-    final LinkedList<LinkedList<String>> subseqs = ls.subsequences();
-    assertEquals(subseqs.toString(), "[[], [a], [b], [a, b], [c], [a, c], [b, c], [a, b, c]]");
-
-    assertEquals(LinkedList.<Integer> empty().subsequences().toString(), "[[]]");
-    assertEquals(LinkedList.<Integer> empty().cons(1).subsequences().toString(), "[[], [1]]");
+    {
+      assertEquals(LinkedList.<Integer> empty().subsequences().toString(), "[[]]");
+    }
+    {
+      assertEquals(LinkedList.<Integer> empty().cons(1).subsequences().toString(), "[[], [1]]");
+    }
+    {
+      final LinkedList<String> ls = LinkedList.fromStream(Stream.of("a", "b", "c"));
+      final LinkedList<LinkedList<String>> subseqs = ls.subsequences();
+      assertEquals(subseqs.toString(), "[[], [a], [b], [a, b], [c], [a, c], [b, c], [a, b, c]]");
+    }
   }
 
   /**
