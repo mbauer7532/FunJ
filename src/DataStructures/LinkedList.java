@@ -11,8 +11,11 @@ import Utils.Functionals;
 import Utils.Ref;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.Spliterator;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -22,6 +25,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  *
@@ -1171,8 +1175,82 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     }
   }
 
+  @Override
   public LinkedList<LinkedList<A>> subsequences() {
     return subsequencesImpl(this);
+  }
+
+  private static final class ListIterator<A> implements Iterator<A> {
+    private LinkedList<A> mCurrentElem;
+
+    public ListIterator(final LinkedList<A> list) {
+      mCurrentElem = list;
+    }
+    
+    @Override
+    public boolean hasNext() {
+      return mCurrentElem.isNotNull();
+    }
+
+    @Override
+    public A next() {
+      if (mCurrentElem.isNull()) {
+        throw new NoSuchElementException("Iterator has reached the end of the list.");
+      }
+      final A a = mCurrentElem.mCar;
+      mCurrentElem = mCurrentElem.mCdr;
+      return a;
+    }
+  }
+
+  private static final class ListSpliterator<A> implements Spliterator<A> {
+    private LinkedList<A> mCurrentElem;
+
+    public ListSpliterator(final LinkedList<A> list) {
+      mCurrentElem = list;
+    }
+
+    @Override
+    public boolean tryAdvance(Consumer<? super A> action) {
+      if (mCurrentElem.isNull()) {
+        return false;
+      }
+      else {
+        action.accept(mCurrentElem.mCar);
+        mCurrentElem = mCurrentElem.mCdr;
+        return true;
+      }
+    }
+
+    @Override
+    public Spliterator<A> trySplit() {
+      return null;
+    }
+
+    @Override
+    public void forEachRemaining(Consumer<? super A> action) {
+      mCurrentElem.forEach(action);
+    }
+
+    @Override
+    public long estimateSize() {
+      return Long.MAX_VALUE;
+    }
+
+    @Override
+    public int characteristics() {
+      return ORDERED | SIZED | NONNULL | IMMUTABLE | CONCURRENT;
+    }
+  }
+
+  @Override
+  public Iterator<A> iterator() {
+    return new ListIterator<>(this);
+  }
+
+  @Override
+  public Stream<A> stream() {
+    return StreamSupport.stream(new ListSpliterator<A>(this), false);
   }
 
   private static <A> LinkedList<LinkedList<A>> intersperseIncludingEdgesAndAppend(final LinkedList<A> list, final A a, final LinkedList<LinkedList<A>> res) {

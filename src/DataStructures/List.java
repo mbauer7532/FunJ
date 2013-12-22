@@ -7,6 +7,7 @@
 package DataStructures;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.BiFunction;
@@ -14,6 +15,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  *
@@ -132,4 +134,7 @@ public interface List<A, L extends List<A, L>> {
 
   public List<L, ?> subsequences();
   public List<L, ?> permutations();
+
+  public Iterator<A> iterator();
+  public Stream<A> stream();
 }

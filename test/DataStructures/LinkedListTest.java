@@ -9,6 +9,7 @@ package DataStructures;
 import Utils.Ref;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.Consumer;
@@ -1383,5 +1384,31 @@ public class LinkedListTest {
 //    assertEquals(expResult, result);
 //    // TODO review the generated test code and remove the default call to fail.
 //    fail("The test case is a prototype.");
+  }
+
+  /**
+   * Test of iterator method, of class LinkedList.
+   */
+  @Test
+  public void testIterator() {
+    System.out.println("iterator");
+//    LinkedList instance = null;
+//    Iterator expResult = null;
+//    Iterator result = instance.iterator();
+//    assertEquals(expResult, result);
+//    // TODO review the generated test code and remove the default call to fail.
+//    fail("The test case is a prototype.");
+  }
+
+  /**
+   * Test of stream method, of class LinkedList.
+   */
+  @Test
+  public void testStream() {
+    System.out.println("stream");
+
+    LinkedList<Integer> list = LinkedList.<Integer> empty().cons(3).cons(2).cons(1).cons(0);
+    
+    list.stream().map(n -> n * n).forEach(System.out::println);
   }
 }
