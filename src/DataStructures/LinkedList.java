@@ -103,9 +103,21 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     }
   }
 
+  private static <A> int hashCodeImpl(final LinkedList<A> list) {
+    LinkedList<A> t = list;
+    int hashRes = 23;
+
+    while (t.isNotNull()) {
+      hashRes += t.mCar.hashCode();
+      t = t.mCdr;
+    }
+
+    return hashRes;
+  }
+
   @Override
   public int hashCode() {
-    return foldlImpl(this, (h, e) -> h + e.hashCode(), 23);
+    return hashCodeImpl(this);
   }
 
   private static <A> LinkedList<A> appendImpl(final LinkedList<A> list1, final LinkedList<A> list2) {
@@ -717,9 +729,11 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     }
   }
 
+  private static <A> boolean equalityPredicate(final A a1, final A a2) { return a1.equals(a2); }
+
   @Override
   public LinkedList<LinkedList<A>> group() {
-    return groupByImpl(this, (e1, e2) -> e1.equals(e2));
+    return groupByImpl(this, LinkedList::equalityPredicate);
   }
 
   @Override
@@ -907,7 +921,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   @Override
   public LinkedList<Integer> elemIndices(final A a) {
-    return elemIndicesImpl(this, x -> a.equals(x));
+    return elemIndicesImpl(this, a::equals);
   }
 
   @Override
@@ -973,7 +987,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   @Override
   public LinkedList<A> delete(final A a) {
-    return deleteByImpl(this, a, (x, y) -> x.equals(y));
+    return deleteByImpl(this, a, LinkedList::equalityPredicate);
   }
 
   @Override
@@ -1146,13 +1160,14 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A> LinkedList<LinkedList<A>> subsequencesImpl(final LinkedList<A> list) {
+    final LinkedList<LinkedList<A>> e = empty();
     if (list.isNull()) {
-      return create(list, empty());
+      return create(list, e);
     }
     else {
       final A a = list.mCar;
       final LinkedList<LinkedList<A>> subseqs = subsequencesImpl(list.mCdr);
-      return flatMapImpl(subseqs, ls -> create(ls, (create(create(a, ls), empty()))));
+      return foldrImpl(subseqs, (ls, res) -> create(ls, (create(create(a, ls), res))), e);
     }
   }
 
@@ -1160,9 +1175,40 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     return subsequencesImpl(this);
   }
 
+  private static <A> LinkedList<LinkedList<A>> intersperseIncludingEdgesAndAppend(final LinkedList<A> list, final A a, final LinkedList<LinkedList<A>> res) {
+    final ArrayList<A> v = toArray(list);
+    LinkedList<LinkedList<A>> newRes = res;
+
+    final int resElems = v.size() + 1;
+    LinkedList<A> t = list;
+    for (int i = 0; i != resElems; ++i) {
+      LinkedList<A> newList = create(a, t);
+      for (int j = i; j != 0; --j) {
+        newList = create(v.get(j - 1), newList);
+      }
+      newRes = create(newList, newRes);
+      t = t.mCdr;
+    }
+
+    return newRes;
+  }
+
+  private static <A> LinkedList<LinkedList<A>> permutationsImpl(final LinkedList<A> list) {
+    final LinkedList<LinkedList<A>> e = empty();
+    if (list.isNull()) {
+      return create(empty(), e);
+    }
+    else {
+      final A a = list.mCar;
+      final LinkedList<LinkedList<A>> perms = permutationsImpl(list.mCdr);
+
+      return foldlImpl(perms, (res, perm) -> intersperseIncludingEdgesAndAppend(perm, a, res), e);
+    }
+  }
+
   @Override
   public LinkedList<LinkedList<A>> permutations() {
-    return null;
+    return permutationsImpl(this);
   }
 
   public static <A, B, C> LinkedList<C> zipWith(final LinkedList<A> listA, final LinkedList<B> listB, final BiFunction<A, B, C> zipper) {

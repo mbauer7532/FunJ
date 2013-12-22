@@ -1101,12 +1101,28 @@ public class LinkedListTest {
   @Test
   public void testPermutations() {
     System.out.println("permutations");
-//    LinkedList instance = null;
-//    LinkedList<LinkedList<A>> expResult = null;
-//    LinkedList<LinkedList<A>> result = instance.permutations(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+    {
+      assertEquals("[[]]", LinkedList.<Integer> empty().permutations().toString());
+    }
+    {
+      assertEquals("[[1]]", LinkedList.<Integer> empty().cons(1).permutations().toString());
+    }
+    {
+      final LinkedList<String> ls = LinkedList.fromStream(Stream.of("a", "b", "c"));
+      final LinkedList<LinkedList<String>> subseqs = ls.permutations();
+      assertEquals(
+              "[[b, c, a], [b, a, c], [a, b, c], [c, b, a], [c, a, b], [a, c, b]]",
+              subseqs.toString());
+      assertEquals(subseqs.length(), 3 * 2 * 1);
+    }
+    {
+      final LinkedList<String> ls = LinkedList.fromStream(Stream.of("a", "b", "c", "d"));
+      final LinkedList<LinkedList<String>> subseqs = ls.permutations();
+      assertEquals(
+              "[[b, d, c, a], [b, d, a, c], [b, a, d, c], [a, b, d, c], [d, b, c, a], [d, b, a, c], [d, a, b, c], [a, d, b, c], [d, c, b, a], [d, c, a, b], [d, a, c, b], [a, d, c, b], [b, c, d, a], [b, c, a, d], [b, a, c, d], [a, b, c, d], [c, b, d, a], [c, b, a, d], [c, a, b, d], [a, c, b, d], [c, d, b, a], [c, d, a, b], [c, a, d, b], [a, c, d, b]]",
+              subseqs.toString());
+      assertEquals(subseqs.length(), 4 * 3 * 2 * 1);
+    }
   }
 
   /**
