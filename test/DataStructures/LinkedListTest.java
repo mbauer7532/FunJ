@@ -488,13 +488,19 @@ public class LinkedListTest {
   @Test
   public void testTake() {
     System.out.println("take");
-//    int n = 0;
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.take(n);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertEquals(e, e.take(1));
+    assertEquals(e.cons(1), e.cons(2).cons(1).take(1));
+    assertEquals(e.cons(3).cons(2).cons(1), e.cons(3).cons(2).cons(1).take(3));
+    assertEquals(e.cons(1), e.cons(1).take(10));
+    
+    boolean exceptionWasThrown = false;
+    try {
+      e.take(-1);
+    }
+    catch (AssertionError ae) { exceptionWasThrown = true; }
+    assertTrue(exceptionWasThrown);
   }
 
   /**
@@ -503,13 +509,20 @@ public class LinkedListTest {
   @Test
   public void testDrop() {
     System.out.println("drop");
-//    int n = 0;
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.drop(n);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+    
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertEquals(e, e.drop(1));
+    assertEquals(e.cons(2), e.cons(2).cons(1).drop(1));
+    assertEquals(e, e.cons(3).cons(2).cons(1).drop(3));
+    assertEquals(e.cons(3), e.cons(3).cons(2).cons(1).drop(2));
+    assertEquals(e, e.cons(1).drop(10));
+    
+    boolean exceptionWasThrown = false;
+    try {
+      e.drop(-1);
+    }
+    catch (AssertionError ae) { exceptionWasThrown = true; }
+    assertTrue(exceptionWasThrown);
   }
 
   /**

@@ -537,18 +537,23 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A> LinkedList<A> takeImpl(final LinkedList<A> list, final int n) {
-    final ArrayList<A> v = new ArrayList<>();
-    LinkedList<A> t = list;
-
-    for (int i = 0; i != n; ++i) {
-      if (t.isNull()) {
-        break;
-      }
-      v.add(t.mCar);
-      t = t.mCdr;
+    if (n < 0) {
+      throw new AssertionError("The n parameter in function take() cannot be negative.");
     }
+    else {
+      final ArrayList<A> v = new ArrayList<>();
+      LinkedList<A> t = list;
 
-    return fromArray(v);
+      for (int i = 0; i != n; ++i) {
+        if (t.isNull()) {
+          break;
+        }
+        v.add(t.mCar);
+        t = t.mCdr;
+      }
+
+      return fromArray(v);
+    }
   }
 
   @Override
@@ -557,15 +562,20 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A> LinkedList<A> dropImpl(final LinkedList<A> list, final int n) {
-    LinkedList<A> t = list;
-    for (int i = 0; i != n; ++i) {
-      if (t.isNull()) {
-        return t;
-      }
-      t = t.mCdr;
+    if (n < 0) {
+      throw new AssertionError("The n parameter in function drop() cannot be negative.");
     }
+    else {
+      LinkedList<A> t = list;
+      for (int i = 0; i != n; ++i) {
+        if (t.isNull()) {
+          return t;
+        }
+        t = t.mCdr;
+      }
 
-    return t;
+      return t;
+    }
   }
 
   @Override
