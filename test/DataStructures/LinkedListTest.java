@@ -1392,12 +1392,16 @@ public class LinkedListTest {
   @Test
   public void testIterator() {
     System.out.println("iterator");
-//    LinkedList instance = null;
-//    Iterator expResult = null;
-//    Iterator result = instance.iterator();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+    
+    final int high = 5000;
+    LinkedList<Integer> list = LinkedList.fromStream(IntStream.rangeClosed(1, high).mapToObj(n -> n));
+    
+    int n = 1;
+    
+    for (Integer i : list) {
+      assertEquals(n, i.intValue());
+      ++n;
+    }
   }
 
   /**
@@ -1407,8 +1411,11 @@ public class LinkedListTest {
   public void testStream() {
     System.out.println("stream");
 
-    LinkedList<Integer> list = LinkedList.<Integer> empty().cons(3).cons(2).cons(1).cons(0);
+    final int high = 5000;
+    LinkedList<Integer> list = LinkedList.fromStream(IntStream.rangeClosed(1, high).mapToObj(n -> 1));
+    ArrayList<Integer> v = list.stream().map(n -> n * n * n * n * n * n).map(n -> n + 1).map(n -> n - 1).map(n -> n).collect(Collectors.toCollection(ArrayList::new));
     
-    list.stream().map(n -> n * n).forEach(System.out::println);
+    assertEquals(high, v.size());
+    
   }
 }

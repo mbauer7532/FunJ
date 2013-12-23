@@ -20,8 +20,10 @@ import java.util.stream.Stream;
 /**
  *
  * @author Neo
+ * @param <A>
+ * @param <L>
  */
-public interface List<A, L extends List<A, L>> {
+public interface List<A, L extends List<A, L>> extends Iterable<A> {
   // Constructor
   public L addFirst(final A a);
   public L addLast(final A a);

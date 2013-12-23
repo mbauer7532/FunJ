@@ -1383,5 +1383,4 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
       }
     }
   }
-
 }
