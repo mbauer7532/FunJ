@@ -1157,7 +1157,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   public static <A, B> LinkedList<B> flatMap(final LinkedList<A> list, final Function<A, LinkedList<B>> f) {
     final ArrayList<B> v = new ArrayList<>();
 
-    forEachImpl(list, l -> LinkedList.forEachImpl(f.apply(l), v::add));
+    forEachImpl(list, l -> forEachImpl(f.apply(l), v::add));
 
     return fromArray(v);
   }
