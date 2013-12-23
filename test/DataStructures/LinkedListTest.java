@@ -241,6 +241,8 @@ public class LinkedListTest {
     assertEquals(e, eMaped);
     assertTrue(eMaped.isEmpty());
 
+    assertEquals(e.cons(1), e.cons(1).map(n -> n));
+
     final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.rangeClosed(1,10).boxed());
     final  LinkedList<Integer> lsMaped = ls.map(n -> n * n);
 
@@ -255,12 +257,20 @@ public class LinkedListTest {
   @Test
   public void testReverse() {
     System.out.println("reverse");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.reverse();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    final LinkedList<Integer> eReversed = e.reverse();
+    assertEquals(e, eReversed);
+    assertTrue(eReversed.isEmpty());
+
+    assertEquals(e.cons(1), e.cons(1).reverse());
+    
+    final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.rangeClosed(1,10).boxed());
+    final  LinkedList<Integer> lsReversed = ls.reverse();
+
+    assertEquals(ls.length(), 10);
+    assertEquals(lsReversed.length(), 10);
+    assertEquals(lsReversed.toString(), "[10, 9, 8, 7, 6, 5, 4, 3, 2, 1]");
   }
 
   /**
@@ -269,13 +279,15 @@ public class LinkedListTest {
   @Test
   public void testIntersperse() {
     System.out.println("intersperse");
-//    Object a = null;
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.intersperse(a);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertEquals(e, e.intersperse(0));
+    assertEquals(e.cons(2), e.cons(2).intersperse(0));
+    assertEquals(e.cons(2).cons(0).cons(3), e.cons(2).cons(3).intersperse(0));
+
+    final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.rangeClosed(1,10).boxed());
+    final  LinkedList<Integer> lsReversed = ls.reverse().intersperse(0);
+    assertEquals(lsReversed.toString(), "[10, 0, 9, 0, 8, 0, 7, 0, 6, 0, 5, 0, 4, 0, 3, 0, 2, 0, 1]");
   }
 
   /**
