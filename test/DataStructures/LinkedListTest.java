@@ -296,12 +296,14 @@ public class LinkedListTest {
   @Test
   public void testFoldl() {
     System.out.println("foldl");
-//    LinkedList instance = null;
-//    Object expResult = null;
-//    Object result = instance.foldl(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertEquals("x", e.foldl((res, i) -> Integer.toString(i) + res, "x"));
+    assertEquals("1x", e.cons(1).foldl((res, i) -> Integer.toString(i) + res, "x"));
+    assertEquals("21x", e.cons(2).cons(1).foldl((res, i) -> Integer.toString(i) + res, "x"));
+
+    assertEquals((Integer) 123456789,
+                 LinkedList.fromStream(IntStream.range(1, 10).boxed()).foldl((res, i) -> res * 10 + i, 0));
   }
 
   /**
@@ -310,12 +312,20 @@ public class LinkedListTest {
   @Test
   public void testFoldl1() {
     System.out.println("foldl1");
-//    LinkedList instance = null;
-//    Object expResult = null;
-//    Object result = instance.foldl1(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    boolean exceptionWasThrown = false;
+    try {
+      final Integer s = e.foldl1((res, i) -> i * 10 + res);
+    }
+    catch (AssertionError ae) { exceptionWasThrown = true; }
+    assertTrue(exceptionWasThrown);
+
+    final Integer ii = e.cons(7).foldl1((res, i) -> i * 10 + res);
+    assertEquals((Integer) 7, ii);
+
+    assertEquals((Integer) 123456789,
+                 LinkedList.fromStream(IntStream.range(1, 10).boxed()).foldl1((res, i) -> res * 10 + i));
   }
 
   /**
@@ -324,12 +334,14 @@ public class LinkedListTest {
   @Test
   public void testFoldr() {
     System.out.println("foldr");
-//    LinkedList instance = null;
-//    Object expResult = null;
-//    Object result = instance.foldr(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertEquals("x", e.foldr((i, res) -> Integer.toString(i) + res, "x"));
+    assertEquals("1x", e.cons(1).foldr((i, res) -> Integer.toString(i) + res, "x"));
+    assertEquals("12x", e.cons(2).cons(1).foldr((i,res) -> Integer.toString(i) + res, "x"));
+
+    assertEquals((Integer) 987654321,
+                 LinkedList.fromStream(IntStream.range(1, 10).boxed()).foldr((i, res) -> res * 10 + i, 0));
   }
 
   /**
@@ -338,12 +350,20 @@ public class LinkedListTest {
   @Test
   public void testFoldr1() {
     System.out.println("foldr1");
-//    LinkedList instance = null;
-//    Object expResult = null;
-//    Object result = instance.foldr1(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    boolean exceptionWasThrown = false;
+    try {
+      final Integer s = e.foldr1((i, res) -> i * 10 + res);
+    }
+    catch (AssertionError ae) { exceptionWasThrown = true; }
+    assertTrue(exceptionWasThrown);
+
+    final Integer ii = e.cons(7).foldr1((i, res) -> i * 10 + res);
+    assertEquals((Integer) 7, ii);
+
+    assertEquals((Integer) 987654321,
+                 LinkedList.fromStream(IntStream.range(1, 10).boxed()).foldr1((i, res) -> res * 10 + i));
   }
 
   /**

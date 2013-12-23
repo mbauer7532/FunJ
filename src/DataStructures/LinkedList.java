@@ -363,6 +363,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   private static <A, B> B foldrImpl(final LinkedList<A> list, final BiFunction<A, B, B> f, final B b) {
     final ArrayList<A> v = toArray(list);
     final int lastIdx = v.size() - 1;
+
     return IntStream.rangeClosed(0, lastIdx)
       .mapToObj(i -> v.get(lastIdx - i))
       .reduce(b,
@@ -380,7 +381,16 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
       throw new AssertionError("foldr1() applied to an empty list.");
     }
     else {
-      return foldrImpl(list.mCdr, f, list.mCar);
+      final ArrayList<A> v = toArray(list);
+      final int lastIdx = v.size() - 1;
+      final int butLastIdx = lastIdx - 1;
+      final A b = v.get(lastIdx);
+
+      return IntStream.rangeClosed(0, butLastIdx)
+                      .mapToObj(i -> v.get(butLastIdx - i))
+                      .reduce(b,
+                              (acc, e) -> f.apply(e, acc),
+                              Functionals::functionShouldNotBeCalled);
     }
   }
 
