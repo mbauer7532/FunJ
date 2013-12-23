@@ -80,11 +80,11 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append("[");
-    intersperseImpl(mapImpl(this, e -> e.toString()), ", ").forEach(sb::append);
+    forEachImpl(intersperseImpl(mapImpl(this, e -> e.toString()), ", "), sb::append);
     sb.append("]");
     return sb.toString();
   }
-  
+
   @Override
   public boolean equals(Object obj) {
     if (! (obj instanceof List)) {
@@ -1002,7 +1002,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   @Override
   public LinkedList<A> deleteFirstBy(final LinkedList<A> list, final BiPredicate<A, A> pred) {
     final Ref<LinkedList<A>> ref = new Ref<>(empty());
-    list.forEach(elem -> { ref.r = deleteByImpl(ref.r, elem, pred); });
+    forEachImpl(list, elem -> { ref.r = deleteByImpl(ref.r, elem, pred); });
     return ref.r;
   }
 
@@ -1015,8 +1015,8 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     final TreeSet<A> s = new TreeSet<>(cmp);
     final ArrayList<A> v = new ArrayList<>();
 
-    list1.forEach(a -> { s.add(a); v.add(a); });
-    list2.forEach(a -> {
+    forEachImpl(list1, a -> { s.add(a); v.add(a); });
+    forEachImpl(list2, a -> {
         final boolean notAlreadyThere = s.add(a);
         if (notAlreadyThere) {
           v.add(a);
@@ -1040,8 +1040,8 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     final TreeSet<A> s = new TreeSet<>(cmp);
     final ArrayList<A> v = new ArrayList<>();
 
-    list2.forEach(a -> { s.add(a); });
-    list1.forEach(a -> {
+    forEachImpl(list2, a -> { s.add(a); });
+    forEachImpl(list1, a -> {
         if (s.contains(a)) {
           v.add(a);
         }
@@ -1154,13 +1154,12 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
                                     () -> { throw new AssertionError("Cannot apply function minBy() on an empty list."); });
   }
 
-  private static <A> LinkedList<A> flatMapImpl(final LinkedList<A> list, final Function<A, LinkedList<A>> f) {
-    return concat(mapImpl(list, f));
-  }
+  public static <A, B> LinkedList<B> flatMap(final LinkedList<A> list, final Function<A, LinkedList<B>> f) {
+    final ArrayList<B> v = new ArrayList<>();
 
-  @Override
-  public LinkedList<A> flatMap(final Function<A, LinkedList<A>> f) {
-    return flatMapImpl(this, f);
+    forEachImpl(list, l -> LinkedList.forEachImpl(f.apply(l), v::add));
+
+    return fromArray(v);
   }
 
   private static <A> LinkedList<LinkedList<A>> subsequencesImpl(final LinkedList<A> list) {
@@ -1229,7 +1228,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
     @Override
     public void forEachRemaining(Consumer<? super A> action) {
-      mCurrentElem.forEach(action);
+      forEachImpl(mCurrentElem, action);
     }
 
     @Override
@@ -1319,7 +1318,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     final ArrayList<A> v0 = new ArrayList<>();
     final ArrayList<B> v1 = new ArrayList<>();
 
-    list.forEach(p -> { v0.add(p.mx1); v1.add(p.mx2); });
+    forEachImpl(list, p -> { v0.add(p.mx1); v1.add(p.mx2); });
 
     return Pair.create(fromArray(v0), fromArray(v1));
   }
@@ -1340,15 +1339,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   public static <A> LinkedList<A> concat(final LinkedList<LinkedList<A>> list) {
     final ArrayList<A> v = new ArrayList<>();
 
-    list.forEach(l -> { l.forEach(e -> { v.add(e); }); });
-      
-    return fromArray(v);
-  }
-
-  public static <A, B> LinkedList<B> concatMap(final Function<A, LinkedList<B>> f, final LinkedList<A> list) {
-    final ArrayList<B> v = new ArrayList<>();
-
-    list.forEach(l -> f.apply(l).forEach(e -> { v.add(e); }));
+    forEachImpl(list, l -> { forEachImpl(l, v::add); });
       
     return fromArray(v);
   }

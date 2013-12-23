@@ -42,7 +42,6 @@ public interface List<A, L extends List<A, L>> extends Iterable<A> {
 
   // Transformations
   public <B> List<B, ?> map(final Function<A, B> f);
-  public LinkedList<A> flatMap(final Function<A, LinkedList<A>> f);
   public L reverse();
   public L intersperse(final A a);
 
