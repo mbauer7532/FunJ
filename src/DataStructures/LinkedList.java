@@ -1349,11 +1349,11 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A> LinkedList<A> getCars(final LinkedList<LinkedList<A>> list) {
-    return list.filter(LinkedList::isNull).map(LinkedList::car);
+    return mapImpl(filterImpl(list, LinkedList::isNull), LinkedList::car);
   }
 
   private static <A> LinkedList<LinkedList<A>> getCdrs(final LinkedList<LinkedList<A>> list) {
-    return list.filter(LinkedList::isNull).map(LinkedList::cdr);
+    return mapImpl(filterImpl(list, LinkedList::isNull), LinkedList::cdr);
   }
 
   public static <A> LinkedList<LinkedList<A>> transpose(final LinkedList<LinkedList<A>> list) {
