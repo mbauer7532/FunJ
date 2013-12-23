@@ -372,12 +372,14 @@ public class LinkedListTest {
   @Test
   public void testAny() {
     System.out.println("any");
-//    LinkedList instance = null;
-//    boolean expResult = false;
-//    boolean result = instance.any(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertFalse(e.any(n -> n % 2 == 0));
+    assertTrue(e.cons(2).any(n -> n % 2 == 0));
+    assertTrue(e.cons(1).cons(2).cons(1).any(n -> n % 2 == 0));
+    assertTrue(e.cons(1).cons(1).cons(2).any(n -> n % 2 == 0));
+    assertTrue(e.cons(2).cons(1).cons(1).any(n -> n % 2 == 0));
+    assertFalse(e.cons(1).cons(1).cons(1).any(n -> n % 2 == 0));
   }
 
   /**
@@ -386,12 +388,14 @@ public class LinkedListTest {
   @Test
   public void testAll() {
     System.out.println("all");
-//    LinkedList instance = null;
-//    boolean expResult = false;
-//    boolean result = instance.all(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertTrue(e.all(n -> n % 2 == 0));
+    assertTrue(e.cons(2).all(n -> n % 2 == 0));
+    assertFalse(e.cons(1).cons(2).cons(1).all(n -> n % 2 == 0));
+    assertFalse(e.cons(2).cons(1).cons(2).all(n -> n % 2 == 0));
+    assertFalse(e.cons(2).cons(1).cons(1).all(n -> n % 2 == 0));
+    assertTrue(e.cons(2).cons(2).cons(2).all(n -> n % 2 == 0));
   }
 
   /**
