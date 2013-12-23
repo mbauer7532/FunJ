@@ -1128,28 +1128,28 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   @Override
   public A max() {
-    return Functionals.mapOptOrElse(orderingByImpl(this, (m0, m1) -> Functionals.comparator(m0, m1) >= 0 ? m0 : m1),
+    return Functionals.mapOptOrElse(orderingByImpl(this, Functionals::maxComparator),
                                     Function.identity(),
                                     () -> { throw new AssertionError("Cannot apply function max() on an empty list."); });
   }
 
   @Override
   public A maxBy(final Comparator<? super A> cmp) {
-    return Functionals.mapOptOrElse(orderingByImpl(this, (m0, m1) -> cmp.compare(m0, m1) >= 0 ? m0 : m1),
+    return Functionals.mapOptOrElse(orderingByImpl(this, Functionals::maxComparator),
                                     Function.identity(),
                                     () -> { throw new AssertionError("Cannot apply function maxBy() on an empty list."); });
   }
 
   @Override
   public A min() {
-    return Functionals.mapOptOrElse(orderingByImpl(this, (m0, m1) -> Functionals.comparator(m0, m1) >= 0 ? m1 : m0),
+    return Functionals.mapOptOrElse(orderingByImpl(this,  Functionals::minComparator),
                                     Function.identity(),
                                     () -> { throw new AssertionError("Cannot apply function min() on an empty list."); });
   }
 
   @Override
   public A minBy(final Comparator<? super A> cmp) {
-    return Functionals.mapOptOrElse(orderingByImpl(this, (m0, m1) -> cmp.compare(m0, m1) >= 0 ? m1 : m0),
+    return Functionals.mapOptOrElse(orderingByImpl(this,  Functionals::minComparator),
                                     Function.identity(),
                                     () -> { throw new AssertionError("Cannot apply function minBy() on an empty list."); });
   }

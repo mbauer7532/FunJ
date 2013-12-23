@@ -185,4 +185,12 @@ public class Functionals {
   public static <A> int comparator(final A x, final A y) {
     return ((Comparable<? super A>) x).compareTo(y);
   }
+
+  public static <A> A maxComparator(final A x, final A y) {
+    return comparator(x, y) >= 0 ? x : y;
+  }
+
+  public static <A> A minComparator(final A x, final A y) {
+    return comparator(x, y) >= 0 ? y : x;
+  }
 }
