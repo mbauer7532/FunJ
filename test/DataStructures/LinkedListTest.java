@@ -867,12 +867,25 @@ public class LinkedListTest {
   @Test
   public void testFilter() {
     System.out.println("filter");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.filter(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, e.filter(n -> true));
+      assertEquals(e, e.filter(n -> false));
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(2).cons(1);
+      assertEquals(e.cons(2), ls.filter(n -> n == 2));
+      assertEquals(e.cons(1), ls.filter(n -> n == 1));
+      assertEquals(e, ls.filter(n -> n == 3));
+      assertEquals(ls, ls.filter(n -> n != 3));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.range(0, 100).boxed());
+
+      assertTrue(ls.filter(x -> x < 50).length() == 50);
+      assertTrue(ls.filter(x -> x >= 50).length() == 50);
+    }
   }
 
   /**
@@ -881,12 +894,7 @@ public class LinkedListTest {
   @Test
   public void testPartition() {
     System.out.println("partition");
-//    LinkedList instance = null;
-//    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
-//    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.partition(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
   }
 
   /**
