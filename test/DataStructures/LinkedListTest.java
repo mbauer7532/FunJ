@@ -792,13 +792,22 @@ public class LinkedListTest {
   @Test
   public void testElem() {
     System.out.println("elem");
-//    Object a = null;
-//    LinkedList instance = null;
-//    boolean expResult = false;
-//    boolean result = instance.elem(a);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertFalse(e.elem(1));
+      assertFalse(e.cons(0).elem(1));
+      assertTrue(e.cons(1).elem(1));
+      assertTrue(e.cons(1).cons(2).elem(1));
+      assertTrue(e.cons(1).cons(2).elem(2));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.range(0, 100).boxed());
+      IntStream.range(0, 100).forEach(n -> assertTrue(ls.elem(n)));
+
+      assertFalse(ls.elem(-1));
+      assertFalse(ls.elem(100));
+    }
   }
 
   /**
@@ -807,13 +816,22 @@ public class LinkedListTest {
   @Test
   public void testNotElem() {
     System.out.println("notElem");
-//    Object a = null;
-//    LinkedList instance = null;
-//    boolean expResult = false;
-//    boolean result = instance.notElem(a);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertTrue(e.notElem(1));
+      assertTrue(e.cons(0).notElem(1));
+      assertFalse(e.cons(1).notElem(1));
+      assertFalse(e.cons(1).cons(2).notElem(1));
+      assertFalse(e.cons(1).cons(2).notElem(2));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.range(0, 100).boxed());
+      IntStream.range(0, 100).forEach(n -> assertFalse(ls.notElem(n)));
+
+      assertTrue(ls.notElem(-1));
+      assertTrue(ls.notElem(100));
+    }
   }
 
   /**
@@ -822,12 +840,25 @@ public class LinkedListTest {
   @Test
   public void testFind() {
     System.out.println("find");
-//    LinkedList instance = null;
-//    Optional expResult = null;
-//    Optional result = instance.find(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final Optional<Integer> res = e.find(n -> true);
+      assertEquals(Optional.empty(), res);
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(2).cons(1);
+      assertEquals(Integer.valueOf(2), ls.find(n -> n == 2).get());
+      assertEquals(Integer.valueOf(1), ls.find(n -> n == 1).get());
+      assertFalse(ls.find(n -> n == 0).isPresent());
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.range(0, 100).boxed());
+      IntStream.range(0, 100).forEach(n -> assertTrue(ls.find(x -> x == n).isPresent()));
+
+      assertFalse(ls.find(x -> x == -1).isPresent());
+      assertFalse(ls.find(x -> x == 100).isPresent());
+    }
   }
 
   /**
@@ -1378,13 +1409,15 @@ public class LinkedListTest {
   @Test
   public void testEquals() {
     System.out.println("equals");
-//    Object obj = null;
-//    LinkedList instance = null;
-//    boolean expResult = false;
-//    boolean result = instance.equals(obj);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertTrue(e.equals(e));
+    assertTrue(e.cons(1).equals(e.cons(1)));
+    assertFalse(e.cons(1).equals(e));
+    assertFalse(e.equals(e.cons(1)));
+    assertFalse(e.cons(2).cons(1).equals(e.cons(1)));
+    assertTrue(e.cons(2).cons(1).equals(e.cons(2).cons(1)));
+    assertFalse(e.cons(2).cons(1).equals(e.cons(1).cons(2)));
   }
 
   /**
@@ -1510,7 +1543,6 @@ public class LinkedListTest {
     LinkedList<Integer> list = LinkedList.fromStream(IntStream.rangeClosed(1, high).mapToObj(n -> n));
     
     int n = 1;
-    
     for (Integer i : list) {
       assertEquals(n, i.intValue());
       ++n;
@@ -1529,6 +1561,5 @@ public class LinkedListTest {
     ArrayList<Integer> v = list.stream().map(n -> n * n * n * n * n * n).map(n -> n + 1).map(n -> n - 1).map(n -> n).collect(Collectors.toCollection(ArrayList::new));
     
     assertEquals(high, v.size());
-    
   }
 }
