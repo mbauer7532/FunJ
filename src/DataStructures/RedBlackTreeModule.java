@@ -1133,7 +1133,7 @@ public class RedBlackTreeModule {
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<PersistentMapEntry<K, V>> stream) {
     return stream.reduce(empty(),
-                         ((t, p) -> t.insert(p.getKey(), p.getValue())),
+                         (t, p) -> t.insert(p.getKey(), p.getValue()),
                          Functionals::functionShouldNotBeCalled);
   }
 
