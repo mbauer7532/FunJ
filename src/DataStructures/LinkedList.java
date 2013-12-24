@@ -142,7 +142,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   @Override
   public A head() {
     if (isNull()) {
-      throw new AssertionError("head() called on empty list.");
+      throw buildExnEmptyList("head");
     }
     else {
       return mCar;
@@ -152,7 +152,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   @Override
   public LinkedList<A> tail() {
     if (isNull()) {
-      throw new AssertionError("tail() called on empty list.");
+      throw buildExnEmptyList("tail");
     }
     else {
       return mCdr;
@@ -167,7 +167,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     }
 
     if (t == null) {
-      throw new AssertionError("last() called on empty list.");
+      throw buildExnEmptyList("last");
     }
     else {
       return t.mCar;
@@ -209,7 +209,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   private static <A> LinkedList<A> initImpl(final LinkedList<A> list) {
     if (list.isNull()) {
-      throw new AssertionError("init() called on empty list.");
+      throw buildExnEmptyList("init");
     }
     else {
       LinkedList<A> t = list;
@@ -348,7 +348,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   private static <A> A foldl1Impl(final LinkedList<A> list, final BiFunction<A, A, A> f) {
     if (list.isNull()) {
-      throw new AssertionError("foldl1() applied to an empty list.");
+      throw buildExnEmptyList("foldl1");
     }
     else {
       return foldlImpl(list.mCdr, f, list.mCar);
@@ -378,7 +378,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   private static <A> A foldr1Impl(final LinkedList<A> list, final BiFunction<A, A, A> f) {
     if (list.isNull()) {
-      throw new AssertionError("foldr1() applied to an empty list.");
+      throw buildExnEmptyList("foldr1");
     }
     else {
       final ArrayList<A> v = toArray(list);
@@ -1150,28 +1150,28 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   public A max() {
     return Functionals.mapOptOrElse(orderingByImpl(this, Functionals::maxComparator),
                                     Function.identity(),
-                                    () -> { throw new AssertionError("Cannot apply function max() on an empty list."); });
+                                    () -> { throw buildExnEmptyList("max"); });
   }
 
   @Override
   public A maxBy(final Comparator<? super A> cmp) {
     return Functionals.mapOptOrElse(orderingByImpl(this, Functionals::maxComparator),
                                     Function.identity(),
-                                    () -> { throw new AssertionError("Cannot apply function maxBy() on an empty list."); });
+                                    () -> { throw buildExnEmptyList("maxBy"); });
   }
 
   @Override
   public A min() {
     return Functionals.mapOptOrElse(orderingByImpl(this,  Functionals::minComparator),
                                     Function.identity(),
-                                    () -> { throw new AssertionError("Cannot apply function min() on an empty list."); });
+                                    () -> { throw buildExnEmptyList("min"); });
   }
 
   @Override
   public A minBy(final Comparator<? super A> cmp) {
     return Functionals.mapOptOrElse(orderingByImpl(this,  Functionals::minComparator),
                                     Function.identity(),
-                                    () -> { throw new AssertionError("Cannot apply function minBy() on an empty list."); });
+                                    () -> { throw buildExnEmptyList("minBy"); });
   }
 
   public static <A, B> LinkedList<B> flatMap(final LinkedList<A> list, final Function<A, LinkedList<B>> f) {
@@ -1393,5 +1393,9 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
                       transpose(create(xs, getCdrs(xss))));
       }
     }
+  }
+
+  private static AssertionError buildExnEmptyList(final String funName) {
+    return new AssertionError(String.format("%s() called on empty list.", funName));
   }
 }
