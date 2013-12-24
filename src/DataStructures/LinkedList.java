@@ -838,6 +838,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
         return Optional.of(Pair.create(t.mCar, i));
       }
       ++i;
+      t = t.mCdr;
     }
 
     return Optional.empty();
