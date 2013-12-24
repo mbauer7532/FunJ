@@ -589,12 +589,23 @@ public class LinkedListTest {
   @Test
   public void testTakeWhile() {
     System.out.println("takeWhile");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.takeWhile(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+    
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, e.takeWhile(n -> true));
+      assertEquals(e, e.takeWhile(n -> false));
+    }
+    {
+      assertEquals(e.cons(1), e.cons(1).takeWhile(n -> n == 1));
+      assertEquals(e, e.cons(1).takeWhile(n -> n == 2));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.range(0, 10).boxed());
+      
+      assertEquals(e, ls.takeWhile(n -> false));
+      assertEquals(ls, ls.takeWhile(n -> true));
+      assertEquals(e.cons(1).cons(0), ls.takeWhile(n -> n < 2));
+    }
   }
 
   /**
@@ -603,12 +614,22 @@ public class LinkedListTest {
   @Test
   public void testDropWhile() {
     System.out.println("dropWhile");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.dropWhile(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, e.dropWhile(n -> true));
+      assertEquals(e, e.dropWhile(n -> false));
+    }
+    {
+      assertEquals(e, e.cons(1).dropWhile(n -> n == 1));
+      assertEquals(e.cons(1), e.cons(1).dropWhile(n -> n == 2));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.range(0, 10).boxed());
+      assertEquals(ls, ls.dropWhile(n -> false));
+      assertEquals(e, ls.dropWhile(n -> true));
+      assertEquals(ls.tail().tail(), ls.dropWhile(n -> n < 2));
+    }
   }
 
   /**
