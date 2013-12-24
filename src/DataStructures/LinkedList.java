@@ -1360,7 +1360,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     final ArrayList<A> v = new ArrayList<>();
 
     forEachImpl(list, l -> { forEachImpl(l, v::add); });
-      
+
     return fromArray(v);
   }
 
