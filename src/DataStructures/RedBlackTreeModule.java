@@ -12,6 +12,7 @@ package DataStructures;
 import DataStructures.PersistentMapBase.EntryRef;
 import DataStructures.TuplesModule.Pair;
 import Utils.ArrayUtils;
+import Utils.Functionals;
 import Utils.Functionals.TriFunction;
 import Utils.Numeric;
 import Utils.Ref;
@@ -1133,7 +1134,7 @@ public class RedBlackTreeModule {
   public static <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<PersistentMapEntry<K, V>> stream) {
     return stream.reduce(empty(),
                          ((t, p) -> t.insert(p.getKey(), p.getValue())),
-                         ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
+                         Functionals::functionShouldNotBeCalled);
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<PersistentMapEntry<K, V>> v) {

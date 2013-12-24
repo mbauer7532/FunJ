@@ -768,7 +768,7 @@ public final class IntMapModule {
   public static <V> Tree<V> fromStream(final Stream<PersistentMapIntEntry<V>> stream) {
     return stream.reduce(EmptyNode.<V> create(),
                          (final Tree<V> t, final PersistentMapIntEntry<V> e) -> t.insert(e.getKey(), e.getValue()),
-                         (t1, t2) -> { throw new AssertionError("Must not be called.  The stream was sequential."); });
+                         Functionals::functionShouldNotBeCalled);
   }
 
   public static <V> Tree<V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapIntEntry<V>> v) {

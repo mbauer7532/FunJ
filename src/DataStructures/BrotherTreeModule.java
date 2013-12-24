@@ -8,6 +8,7 @@ package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
 import Utils.ArrayUtils;
+import Utils.Functionals;
 import Utils.Functionals.TriFunction;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -1083,7 +1084,7 @@ public final class BrotherTreeModule {
     return fromSpine(BrotherTreeModule.<K, V> empty(),
                      stream.reduce(Nil.create(),
                                    (s, p) -> cons(p.getKey(), p.getValue(), s),
-                                   (s1, s2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
+                                   Functionals::functionShouldNotBeCalled));
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
@@ -1098,7 +1099,7 @@ public final class BrotherTreeModule {
   public static <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<PersistentMapEntry<K, V>> stream) {
     return stream.reduce(empty(),
                          ((t, p) -> t.insert(p.getKey(), p.getValue())),
-                         ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
+                         Functionals::functionShouldNotBeCalled);
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<PersistentMapEntry<K, V>> v) {
