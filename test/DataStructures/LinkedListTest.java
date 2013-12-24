@@ -6,6 +6,7 @@
 
 package DataStructures;
 
+import DataStructures.TuplesModule.Pair;
 import Utils.Ref;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -509,7 +510,7 @@ public class LinkedListTest {
   @Test
   public void testDrop() {
     System.out.println("drop");
-    
+
     final LinkedList<Integer> e = LinkedList.empty();
     assertEquals(e, e.drop(1));
     assertEquals(e.cons(2), e.cons(2).cons(1).drop(1));
@@ -531,13 +532,50 @@ public class LinkedListTest {
   @Test
   public void testSplitAt() {
     System.out.println("splitAt");
-//    int n = 0;
-//    LinkedList instance = null;
-////    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
-////    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.splitAt(n);
-////    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p = e.splitAt(0);
+      assertEquals(p.mx1, e);
+      assertEquals(p.mx2, e);
+    }
+    {
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p = e.splitAt(1);
+      assertEquals(p.mx1, e);
+      assertEquals(p.mx2, e);
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1);
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p0 = ls.splitAt(0);
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p1 = ls.splitAt(1);
+      assertEquals(p0.mx1, e);
+      assertEquals(p0.mx2, ls);
+      assertEquals(p1.mx1, ls);
+      assertEquals(p1.mx2, e);
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(2).cons(1);
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p0 = ls.splitAt(0);
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p1 = ls.splitAt(1);
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p2 = ls.splitAt(2);
+
+      assertEquals(p0.mx1, e);
+      assertEquals(p0.mx2, ls);
+      assertEquals(p1.mx1, e.cons(1));
+      assertEquals(p1.mx2, e.cons(2));
+      assertEquals(p2.mx1, ls);
+      assertEquals(p2.mx2, e);
+    }
+    {
+      final int low = 5, high = 500;
+      final int cnt = high - low + 1;
+      final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.rangeClosed(low, high).boxed());
+      for (int n = 0; n != cnt + 1; ++n) {
+        final Pair<LinkedList<Integer>, LinkedList<Integer>> p = ls.splitAt(n);
+        assertEquals(p.mx1.length(), n);
+        assertEquals(p.mx2.length(), cnt - n);
+      }
+    }
   }
 
   /**

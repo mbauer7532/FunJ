@@ -1328,10 +1328,10 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   public static <A> LinkedList<A> replicate(final int n, final A a) {
     return Stream.generate(() -> a)
-      .limit(n)
-      .reduce(empty(),
-              LinkedList::createInv,
-              Functionals::functionShouldNotBeCalled);
+                 .limit(n)
+                 .reduce(empty(),
+                         LinkedList::createInv,
+                         Functionals::functionShouldNotBeCalled);
   }
 
   public static <A, B> Pair<LinkedList<A>, LinkedList<B>> unzip(final LinkedList<Pair<A, B>> list) {
