@@ -895,6 +895,32 @@ public class LinkedListTest {
   public void testPartition() {
     System.out.println("partition");
 
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p0 = e.partition(n -> false);
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p1 = e.partition(n -> true);
+
+      assertEquals(e, p0.mx1);
+      assertEquals(e, p0.mx2);
+      assertEquals(e, p1.mx1);
+      assertEquals(e, p1.mx2);
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(2).cons(1);
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p0 = ls.partition(n -> n <= 1);
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p1 = ls.partition(n -> n > 1);
+      assertEquals(e.cons(1), p0.mx1);
+      assertEquals(e.cons(2), p0.mx2);
+      assertEquals(e.cons(2), p1.mx1);
+      assertEquals(e.cons(1), p1.mx2);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.range(0, 100).boxed());
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p = ls.partition(n -> n < 50);
+
+      assertEquals(LinkedList.fromStream(IntStream.range(0, 50).boxed()), p.mx1);
+      assertEquals(LinkedList.fromStream(IntStream.range(50, 100).boxed()), p.mx2);
+    }
   }
 
   /**
