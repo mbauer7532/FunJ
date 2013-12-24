@@ -576,6 +576,11 @@ public class LinkedListTest {
         assertEquals(p.mx2.length(), cnt - n);
       }
     }
+    {
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p = e.cons(1).splitAt(-1);
+      assertEquals(p.mx1, e);
+      assertEquals(p.mx2, e.cons(1));
+    }
   }
 
   /**

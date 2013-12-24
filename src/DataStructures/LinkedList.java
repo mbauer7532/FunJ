@@ -584,10 +584,11 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A> Pair<LinkedList<A>, LinkedList<A>> splitAtImpl(final LinkedList<A> list, final int n) {
+    final int m = Math.max(0, n);
     LinkedList<A> t = list;
     final ArrayList<A> v = new ArrayList<>();
 
-    for (int i = 0; i != n; ++i) {
+    for (int i = 0; i != m; ++i) {
       if (t.isNull()) {
         return Pair.create(list, t);
       }
