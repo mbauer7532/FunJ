@@ -43,6 +43,14 @@ public class LinkedListTest {
   @After
   public void tearDown() {}
 
+  private static Stream<Integer> makeStream(final int from, final int to) {
+    return IntStream.rangeClosed(from, to).boxed();
+  }
+
+  private static LinkedList<Integer> makeList(final int from, final int to) {
+    return LinkedList.fromStream(makeStream(from, to));
+  }
+
   /**
    * Test of empty method, of class LinkedList.
    */
@@ -1517,14 +1525,13 @@ public class LinkedListTest {
   @Test
   public void testFromStream() {
     System.out.println("fromStream");
-//    LinkedList expResult = null;
-//    LinkedList result = LinkedList.fromStream(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> ls = makeList(0, 5); // Function uses fromStream()
+    for (int i = 0; i != 6; ++i) {
+      assertEquals(Integer.valueOf(i), ls.nth(i));
+    }
   }
 
-  
   /**
    * Test of fromArray method, of class LinkedList.
    */
@@ -1558,12 +1565,24 @@ public class LinkedListTest {
   @Test
   public void testFlatMap() {
     System.out.println("flatMap");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.flatMap(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+    
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, LinkedList.flatMap(e, x -> e.cons(x)));
+    }
+    {
+      final LinkedList<Integer> ls = makeList(0, 5);
+      final LinkedList<Integer> res = LinkedList.flatMap(ls, i -> makeList(0, i));
+      assertEquals(1 + 2 + 3 + 4 + 5 + 6, res.length());
+
+      LinkedList<Integer> t = res;
+      for (int i = 0; i != 6; ++i) {
+        for (int j = 0; j != i + 1; ++j) {
+          assertEquals(j, t.head().intValue());
+          t = t.tail();
+        }
+      }
+    }
   }
 
   /**
@@ -1574,7 +1593,7 @@ public class LinkedListTest {
     System.out.println("iterator");
     
     final int high = 5000;
-    LinkedList<Integer> list = LinkedList.fromStream(IntStream.rangeClosed(1, high).mapToObj(n -> n));
+    LinkedList<Integer> list = makeList(1, high);
     
     int n = 1;
     for (Integer i : list) {
