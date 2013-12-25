@@ -125,7 +125,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A> LinkedList<A> appendImpl(final LinkedList<A> list1, final LinkedList<A> list2) {
-    final ArrayList<A> v = toArray(list1);
+    final ArrayList<A> v = toArrayImpl(list1);
     final int lastIdx = v.size() - 1;
     return IntStream.rangeClosed(0, lastIdx)
       .mapToObj(idx -> v.get(lastIdx - idx))
@@ -179,9 +179,9 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     return lastImpl(this);
   }
 
-  public static <A> ArrayList<A> toArray(final LinkedList<A> m) {
+  private static <A> ArrayList<A> toArrayImpl(final LinkedList<A> list) {
     final ArrayList<A> v = new ArrayList<>();
-    LinkedList<A> t = m;
+    LinkedList<A> t = list;
 
     while (t.isNotNull()) {
       v.add(t.mCar);
@@ -189,6 +189,11 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     }
 
     return v;
+  }
+
+  @Override
+  public ArrayList<A> toArray() {
+    return toArrayImpl(this);
   }
 
   public static <A> LinkedList<A> fromStream(final Stream<A> s) {
@@ -361,7 +366,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A, B> B foldrImpl(final LinkedList<A> list, final BiFunction<A, B, B> f, final B b) {
-    final ArrayList<A> v = toArray(list);
+    final ArrayList<A> v = toArrayImpl(list);
     final int lastIdx = v.size() - 1;
 
     return IntStream.rangeClosed(0, lastIdx)
@@ -381,7 +386,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
       throw buildExnEmptyList("foldr1");
     }
     else {
-      final ArrayList<A> v = toArray(list);
+      final ArrayList<A> v = toArrayImpl(list);
       final int lastIdx = v.size() - 1;
       final int butLastIdx = lastIdx - 1;
       final A b = v.get(lastIdx);
@@ -461,7 +466,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A, B> LinkedList<B> scanrImpl(final LinkedList<A> list, final BiFunction<A, B, B> f, final B b) {
-    final ArrayList<A> v = toArray(list);
+    final ArrayList<A> v = toArrayImpl(list);
     final int lastIdx = v.size() - 1;
     final ArrayList<B> bs = new ArrayList<>();
 
@@ -520,7 +525,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     final LinkedList<A> list,
     final BiFunction<ACC, A, Pair<ACC, B>> f,
     final ACC acc) {
-    final ArrayList<A> v = toArray(list);
+    final ArrayList<A> v = toArrayImpl(list);
     final ArrayList<B> u = new ArrayList<>();
     final int lastIdx = v.size() - 1;
     final ACC newAcc = IntStream.rangeClosed(0, lastIdx)
@@ -650,7 +655,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A> LinkedList<A> dropWhileEndImpl(final LinkedList<A> list, final Predicate<A> pred) {
-    final ArrayList<A> v = toArray(list);
+    final ArrayList<A> v = toArrayImpl(list);
 
     int i = v.size() - 1;
     for (; i >= 0; --i) {
@@ -767,7 +772,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A> LinkedList<LinkedList<A>> initsImpl(final LinkedList<A> list) {
-    final ArrayList<A> v = toArray(list);
+    final ArrayList<A> v = toArrayImpl(list);
     final int lastIdx = v.size() - 1;
 
     final LinkedList<LinkedList<A>> res =
@@ -1083,7 +1088,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A> LinkedList<A> sortByImpl(final LinkedList<A> list, final Comparator<? super A> cmp) {
-    final ArrayList<A> v = toArray(list);
+    final ArrayList<A> v = toArrayImpl(list);
     v.sort(cmp);
     return fromArray(v);
   }
@@ -1275,7 +1280,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A> LinkedList<LinkedList<A>> intersperseIncludingEdgesAndAppend(final LinkedList<A> list, final A a, final LinkedList<LinkedList<A>> res) {
-    final ArrayList<A> v = toArray(list);
+    final ArrayList<A> v = toArrayImpl(list);
     LinkedList<LinkedList<A>> newRes = res;
 
     final int resElems = v.size() + 1;

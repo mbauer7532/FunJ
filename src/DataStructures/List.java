@@ -6,6 +6,7 @@
 
 package DataStructures;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Optional;
@@ -138,4 +139,5 @@ public interface List<A, L extends List<A, L>> extends Iterable<A> {
 
   public Iterator<A> iterator();
   public Stream<A> stream();
+  public ArrayList<A> toArray();
 }
