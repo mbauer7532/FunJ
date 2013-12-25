@@ -9,6 +9,7 @@ package DataStructures;
 import DataStructures.TuplesModule.Pair;
 import Utils.Ref;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Optional;
@@ -1512,11 +1513,20 @@ public class LinkedListTest {
   @Test
   public void testToArray() {
     System.out.println("toArray");
-//    ArrayList expResult = null;
-//    ArrayList result = LinkedList.toArray(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(new ArrayList<>(), e.toArray());
+    }
+
+    {
+      final ArrayList<Integer> v =
+              Arrays.stream(new int[] {1,2,3})
+                    .boxed()
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+      assertEquals(v, e.cons(3).cons(2).cons(1).toArray());
+    }
   }
 
   /**
