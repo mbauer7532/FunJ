@@ -1152,12 +1152,23 @@ public class LinkedListTest {
   @Test
   public void testSort() {
     System.out.println("sort");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.sort();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final LinkedList<Integer> eSorted = e.sort();
+      assertEquals(e, eSorted);
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1);
+      final LinkedList<Integer> lsSorted = ls.sort();
+      assertEquals(ls, lsSorted);
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1).cons(-5).cons(5).cons(6).cons(2);
+      final LinkedList<Integer> lsSorted = ls.sort();
+      final LinkedList<Pair<Integer, Integer>> lsZipped = LinkedList.zip(lsSorted, lsSorted.tail());
+      assertTrue(lsZipped.all(p -> p.mx1 <= p.mx2));
+    }
   }
 
   /**
@@ -1166,13 +1177,29 @@ public class LinkedListTest {
   @Test
   public void testSortBy() {
     System.out.println("sortBy");
-//    Comparator cmp = null;
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.sortBy(cmp);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+      final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final LinkedList<Integer> eSorted = e.sortBy(LinkedListTest::cmp);
+      assertEquals(e, eSorted);
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1);
+      final LinkedList<Integer> lsSorted = ls.sortBy(LinkedListTest::cmp);
+      assertEquals(ls, lsSorted);
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1).cons(-5).cons(5).cons(6).cons(2);
+      final LinkedList<Integer> lsSorted = ls.sortBy(LinkedListTest::cmp);
+      final LinkedList<Pair<Integer, Integer>> lsZipped = LinkedList.zip(lsSorted, lsSorted.tail());
+      assertTrue(lsZipped.all(p -> p.mx1 <= p.mx2));
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1).cons(-5).cons(5).cons(6).cons(2);
+      final LinkedList<Integer> lsSorted = ls.sortBy(LinkedListTest::negCmp);
+      final LinkedList<Pair<Integer, Integer>> lsZipped = LinkedList.zip(lsSorted, lsSorted.tail());
+      assertTrue(lsZipped.all(p -> p.mx1 >= p.mx2));
+    }
   }
 
   /**
@@ -1206,8 +1233,8 @@ public class LinkedListTest {
 //    fail("The test case is a prototype.");
   }
 
-  private static int cmp(final int x, final int y) { return x > y ? 1 : x < y ? -1 : 0; }
-  private static int negCmp(final int x, final int y) { return -cmp(x, y); }
+  private static int cmp(final Integer x, final Integer y) { return x > y ? 1 : x < y ? -1 : 0; }
+  private static int negCmp(final Integer x, final Integer y) { return -cmp(x, y); }
 
   /**
    * Test of max method, of class LinkedList.
