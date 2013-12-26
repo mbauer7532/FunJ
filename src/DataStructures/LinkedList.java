@@ -1375,12 +1375,21 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     return concat(intersperseImpl(list2, list1));
   }
 
+  private static <A, B> LinkedList<B> getFromListOfLists(final LinkedList<LinkedList<A>> list, final Function<LinkedList<A>, B> f) {
+    LinkedList<LinkedList<A>> t = list;
+    final ArrayList<B> v = new ArrayList<>();
+
+    forEachImpl(list, l -> { if (l.isNotNull()) { v.add(f.apply(l)); } });
+
+    return fromArray(v);
+  }
+
   private static <A> LinkedList<A> getCars(final LinkedList<LinkedList<A>> list) {
-    return mapImpl(filterImpl(list, LinkedList::isNull), LinkedList::car);
+    return getFromListOfLists(list, LinkedList::car);
   }
 
   private static <A> LinkedList<LinkedList<A>> getCdrs(final LinkedList<LinkedList<A>> list) {
-    return mapImpl(filterImpl(list, LinkedList::isNull), LinkedList::cdr);
+    return getFromListOfLists(list, LinkedList::cdr);
   }
 
   public static <A> LinkedList<LinkedList<A>> transpose(final LinkedList<LinkedList<A>> list) {
