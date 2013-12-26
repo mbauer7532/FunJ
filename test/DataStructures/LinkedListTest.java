@@ -1206,18 +1206,40 @@ public class LinkedListTest {
 //    fail("The test case is a prototype.");
   }
 
+  private static int cmp(final int x, final int y) { return x > y ? 1 : x < y ? -1 : 0; }
+  private static int negCmp(final int x, final int y) { return -cmp(x, y); }
+
   /**
    * Test of max method, of class LinkedList.
    */
   @Test
   public void testMax() {
     System.out.println("max");
-//    LinkedList instance = null;
-//    Object expResult = null;
-//    Object result = instance.max();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    boolean exceptionWasThrown = false;
+    try {
+      final Integer m = e.max();
+    }
+    catch (AssertionError ae) { exceptionWasThrown = true; }
+    assertTrue(exceptionWasThrown);
+
+    {
+      final LinkedList<Integer> ls = e.cons(5).cons(1).cons(3).cons(2);
+      assertEquals(Integer.valueOf(5), ls.max());
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1).cons(5).cons(3).cons(2);
+      assertEquals(Integer.valueOf(5), ls.max());
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1).cons(3).cons(5).cons(2);
+      assertEquals(Integer.valueOf(5), ls.max());
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1).cons(3).cons(2).cons(5);
+      assertEquals(Integer.valueOf(5), ls.max());
+    }
   }
 
   /**
@@ -1226,14 +1248,36 @@ public class LinkedListTest {
   @Test
   public void testMaxBy() {
     System.out.println("maxBy");
-//    Comparator cmp = null;
-//    LinkedList instance = null;
-//    Object expResult = null;
-//    Object result = instance.maxBy(cmp);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-  }
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    boolean exceptionWasThrown = false;
+    try {
+      final Integer m = e.maxBy(LinkedListTest::cmp);
+    }
+    catch (AssertionError ae) { exceptionWasThrown = true; }
+    assertTrue(exceptionWasThrown);
+
+    {
+      final LinkedList<Integer> ls = e.cons(5).cons(1).cons(3).cons(2);
+      assertEquals(Integer.valueOf(5), ls.maxBy(LinkedListTest::cmp));
+      assertEquals(Integer.valueOf(1), ls.maxBy(LinkedListTest::negCmp));
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1).cons(5).cons(3).cons(2);
+      assertEquals(Integer.valueOf(5), ls.maxBy(LinkedListTest::cmp));
+      assertEquals(Integer.valueOf(1), ls.maxBy(LinkedListTest::negCmp));
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1).cons(3).cons(5).cons(2);
+      assertEquals(Integer.valueOf(5), ls.maxBy(LinkedListTest::cmp));
+      assertEquals(Integer.valueOf(1), ls.maxBy(LinkedListTest::negCmp));
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1).cons(3).cons(2).cons(5);
+      assertEquals(Integer.valueOf(5), ls.maxBy(LinkedListTest::cmp));
+      assertEquals(Integer.valueOf(1), ls.maxBy(LinkedListTest::negCmp));
+    }
+}
 
   /**
    * Test of min method, of class LinkedList.
@@ -1241,12 +1285,31 @@ public class LinkedListTest {
   @Test
   public void testMin() {
     System.out.println("min");
-//    LinkedList instance = null;
-//    Object expResult = null;
-//    Object result = instance.min();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    boolean exceptionWasThrown = false;
+    try {
+      final Integer m = e.min();
+    }
+    catch (AssertionError ae) { exceptionWasThrown = true; }
+    assertTrue(exceptionWasThrown);
+
+    {
+      final LinkedList<Integer> ls = e.cons(1).cons(5).cons(3).cons(2);
+      assertEquals(Integer.valueOf(1), ls.min());
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(5).cons(1).cons(3).cons(2);
+      assertEquals(Integer.valueOf(1), ls.min());
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(5).cons(3).cons(1).cons(2);
+      assertEquals(Integer.valueOf(1), ls.min());
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(5).cons(3).cons(2).cons(1);
+      assertEquals(Integer.valueOf(1), ls.min());
+    }
   }
 
   /**
@@ -1255,13 +1318,35 @@ public class LinkedListTest {
   @Test
   public void testMinBy() {
     System.out.println("minBy");
-//    Comparator cmp = null;
-//    LinkedList instance = null;
-//    Object expResult = null;
-//    Object result = instance.minBy(cmp);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    boolean exceptionWasThrown = false;
+    try {
+      final Integer m = e.minBy(LinkedListTest::cmp);
+    }
+    catch (AssertionError ae) { exceptionWasThrown = true; }
+    assertTrue(exceptionWasThrown);
+
+    {
+      final LinkedList<Integer> ls = e.cons(1).cons(5).cons(3).cons(2);
+      assertEquals(Integer.valueOf(1), ls.minBy(LinkedListTest::cmp));
+      assertEquals(Integer.valueOf(5), ls.minBy(LinkedListTest::negCmp));
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(5).cons(1).cons(3).cons(2);
+      assertEquals(Integer.valueOf(1), ls.minBy(LinkedListTest::cmp));
+      assertEquals(Integer.valueOf(5), ls.minBy(LinkedListTest::negCmp));
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(5).cons(3).cons(1).cons(2);
+      assertEquals(Integer.valueOf(1), ls.minBy(LinkedListTest::cmp));
+      assertEquals(Integer.valueOf(5), ls.minBy(LinkedListTest::negCmp));
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(5).cons(3).cons(2).cons(1);
+      assertEquals(Integer.valueOf(1), ls.minBy(LinkedListTest::cmp));
+      assertEquals(Integer.valueOf(5), ls.minBy(LinkedListTest::negCmp));
+    }
   }
 
   /**

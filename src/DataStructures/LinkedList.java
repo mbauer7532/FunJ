@@ -1153,32 +1153,30 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     }
   }
 
+  private static <A> A computeOrdinal(final LinkedList<A> list, final BiFunction<A, A, A> selector, final String functionName) {
+    return Functionals.mapOptOrElse(orderingByImpl(list, selector),
+                                    Function.identity(),
+                                    () -> { throw buildExnEmptyList(functionName); });
+  }
+
   @Override
   public A max() {
-    return Functionals.mapOptOrElse(orderingByImpl(this, Functionals::maxComparator),
-                                    Function.identity(),
-                                    () -> { throw buildExnEmptyList("max"); });
+    return computeOrdinal(this, Functionals::maxSelector, "max");
   }
 
   @Override
   public A maxBy(final Comparator<? super A> cmp) {
-    return Functionals.mapOptOrElse(orderingByImpl(this, Functionals::maxComparator),
-                                    Function.identity(),
-                                    () -> { throw buildExnEmptyList("maxBy"); });
+    return computeOrdinal(this, (x, y) -> cmp.compare(x, y) >= 0 ? x : y, "maxBy");
   }
 
   @Override
   public A min() {
-    return Functionals.mapOptOrElse(orderingByImpl(this,  Functionals::minComparator),
-                                    Function.identity(),
-                                    () -> { throw buildExnEmptyList("min"); });
+    return computeOrdinal(this, Functionals::minSelector, "min");
   }
 
   @Override
   public A minBy(final Comparator<? super A> cmp) {
-    return Functionals.mapOptOrElse(orderingByImpl(this,  Functionals::minComparator),
-                                    Function.identity(),
-                                    () -> { throw buildExnEmptyList("minBy"); });
+    return computeOrdinal(this, (x, y) -> cmp.compare(x, y) < 0 ? x : y, "minBy");
   }
 
   public static <A, B> LinkedList<B> flatMap(final LinkedList<A> list, final Function<A, LinkedList<B>> f) {
