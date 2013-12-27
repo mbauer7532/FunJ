@@ -999,19 +999,9 @@ public class LinkedListTest {
       assertTrue(exceptionWasThrown);
     }
     {
-      final LinkedList<Integer> ls = makeList(0, 5);
-      int i = 0;
-      assertEquals(Integer.valueOf(i), ls.nth(i));
-      ++i;
-      assertEquals(Integer.valueOf(i), ls.nth(i));
-      ++i;
-      assertEquals(Integer.valueOf(i), ls.nth(i));
-      ++i;
-      assertEquals(Integer.valueOf(i), ls.nth(i));
-      ++i;
-      assertEquals(Integer.valueOf(i), ls.nth(i));
-      ++i;
-      assertEquals(Integer.valueOf(i), ls.nth(i));
+      final int low = 0, high = 5;
+      final LinkedList<Integer> ls = makeList(low, high);
+      IntStream.rangeClosed(low, high).forEach(i -> { assertEquals(Integer.valueOf(i), ls.nth(i)); });
     }
   }
 
