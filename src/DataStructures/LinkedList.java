@@ -1417,7 +1417,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   @SafeVarargs
   public static <A> LinkedList<A> of(A ... v) {
     LinkedList<A> t = empty();
-    
+
     for (int i = v.length - 1; i >= 0; --i) {
       t = create(v[i], t);
     }
