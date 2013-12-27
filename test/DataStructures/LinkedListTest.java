@@ -11,6 +11,7 @@ import Utils.Ref;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -1041,12 +1042,35 @@ public class LinkedListTest {
   @Test
   public void testFindIndex() {
     println("findIndex");
-//    LinkedList instance = null;
-//    OptionalInt expResult = null;
-//    OptionalInt result = instance.findIndex(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final OptionalInt i = e.findIndex(n -> true);
+      assertFalse(i.isPresent());
+    }
+    {
+      final LinkedList<Integer> ls = makeList(-1, -1);
+      final OptionalInt i = ls.findIndex(n -> n == -1);
+      assertEquals(OptionalInt.of(0), i);
+    }
+    {
+      final LinkedList<Integer> ls = makeList(-5, -1);
+      final OptionalInt i = ls.findIndex(n -> n == -1);
+
+      IntStream.rangeClosed(-5, -1).forEach(n -> { assertEquals(OptionalInt.of(n + 5), ls.findIndex(j -> j == n)); });
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1,2,3,2);
+      assertEquals(OptionalInt.of(1), ls.findIndex(n -> n == 2));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1,2,3,2);
+      assertEquals(OptionalInt.of(2), ls.findIndex(n -> n > 2));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1,2,3,2);
+      assertEquals(OptionalInt.empty(), ls.findIndex(n -> n < 0));
+    }
   }
 
   /**
