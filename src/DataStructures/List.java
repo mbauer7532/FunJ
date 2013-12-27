@@ -20,7 +20,7 @@ import java.util.stream.Stream;
 
 /**
  *
- * @author Neo Neo Neo
+ * @author Neo
  * @param <A>
  * @param <L>
  */
