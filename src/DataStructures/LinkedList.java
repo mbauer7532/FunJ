@@ -856,14 +856,8 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   private static <A> LinkedList<A> filterImpl(final LinkedList<A> list, final Predicate<A> pred) {
     final ArrayList<A> v = new ArrayList<>();
-    LinkedList<A> t = list;
-      
-    while (t.isNotNull()) {
-      if (pred.test(t.mCar)) {
-        v.add(t.mCar);
-      }
-      t = t.mCdr;
-    }
+
+    forEachImpl(list, a -> { if (pred.test(a)) { v.add(a); } });
 
     return fromArray(v);
   }
@@ -875,12 +869,8 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   private static <A> Pair<LinkedList<A>, LinkedList<A>> partitionImpl(final LinkedList<A> list, final Predicate<A> pred) {
     final ArrayList<A> vt = new ArrayList<>(), vf = new ArrayList<>();
-    LinkedList<A> t = list;
-      
-    while (t.isNotNull()) {
-      (pred.test(t.mCar) ? vt : vf).add(t.mCar);
-      t = t.mCdr;
-    }
+
+    forEachImpl(list, a -> { (pred.test(a) ? vt : vf).add(a); });
 
     return Pair.create(fromArray(vt), fromArray(vf));
   }
@@ -962,15 +952,12 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     final ArrayList<A> v = new ArrayList<>();
     final TreeSet<A> s = new TreeSet<>(cmp);
 
-    LinkedList<A> t = list;
-    while (t.isNotNull()) {
-      final A elem = t.mCar;
-      final boolean notAreadyThere = s.add(elem);
+    forEachImpl(list, a -> {
+      final boolean notAreadyThere = s.add(a);
       if (notAreadyThere) {
-        v.add(elem);
+        v.add(a);
       }
-      t = t.mCdr;
-    }
+    });
 
     return fromArray(v);
   }
@@ -1109,10 +1096,10 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
     final int lastIdx = v.size() - 1;
     return IntStream.rangeClosed(0, lastIdx)
-      .mapToObj(i -> v.get(lastIdx - i))
-      .reduce(create(a, t),
-              LinkedList::createInv,
-              Functionals::functionShouldNotBeCalled);
+                    .mapToObj(i -> v.get(lastIdx - i))
+                    .reduce(create(a, t),
+                            LinkedList::createInv,
+                            Functionals::functionShouldNotBeCalled);
   }
 
   @Override
@@ -1130,16 +1117,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
       return Optional.empty();
     }
     else {
-      LinkedList<A> t = list;
-      A m = t.mCar;
-      t = t.mCdr;
-        
-      while (t.isNotNull()) {
-        m = selector.apply(m, t.mCar);
-        t = t.mCdr;
-      }
-
-      return Optional.of(m);
+      return Optional.of(foldlImpl(list.mCdr, selector, list.mCar));
     }
   }
 

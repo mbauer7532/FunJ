@@ -78,9 +78,9 @@ public class LinkedListTest {
     println("cons");
     final LinkedList<Integer> l = LinkedList.<Integer> empty().cons(3).cons(2).cons(1);
     
-    assertEquals((Integer) 1, l.head());
-    assertEquals((Integer) 2, l.tail().head());
-    assertEquals((Integer) 3, l.tail().tail().head());
+    assertEquals(Integer.valueOf(1), l.head());
+    assertEquals(Integer.valueOf(2), l.tail().head());
+    assertEquals(Integer.valueOf(3), l.tail().tail().head());
     assertTrue(l.tail().tail().tail().isEmpty());
   }
 
@@ -95,7 +95,7 @@ public class LinkedListTest {
     final LinkedList<Integer> l3 = l1.append(l2);
 
     assertEquals(l3.length(), 6);
-    IntStream.range(0, 6).forEach(i -> { assertEquals((Integer) i, l3.nth(i)); });
+    IntStream.range(0, 6).forEach(i -> { assertEquals(Integer.valueOf(i), l3.nth(i)); });
 
     final LinkedList<Integer> e = LinkedList.empty();
     assertEquals(e.append(l1), l1.append(e));
@@ -121,8 +121,8 @@ public class LinkedListTest {
     assertTrue(exceptionWasThrown);
 
     final LinkedList<Integer> oneElem = e.cons(1);
-    assertEquals(oneElem.head(), (Integer) 1);
-    assertEquals(oneElem.cons(2).head(), (Integer) 2);
+    assertEquals(oneElem.head(), Integer.valueOf(1));
+    assertEquals(oneElem.cons(2).head(), Integer.valueOf(2));
   }
 
   /**
@@ -154,11 +154,11 @@ public class LinkedListTest {
 
     {
       final LinkedList<Integer> list = LinkedList.fromStream(IntStream.rangeClosed(0, 10).boxed());
-      assertEquals(list.last(), (Integer) 10);
+      assertEquals(list.last(), Integer.valueOf(10));
     }
     {
       final LinkedList<Integer> list = LinkedList.<Integer> empty().cons(1);
-      assertEquals(list.last(), (Integer) 1);
+      assertEquals(list.last(), Integer.valueOf(1));
     }
     {
       boolean exceptionWasThrown = false;
@@ -233,7 +233,7 @@ public class LinkedListTest {
     e.forEach(n -> { r.r = 1; });
     assertTrue(r.r == 0);
 
-    final Ref<String> s = new Ref("");
+    final Ref<String> s = new Ref<>("");
     LinkedList.fromStream(IntStream.range(1, 10).boxed()).forEach(n -> s.r = s.r + n.toString());
     assertEquals(s.r, "123456789");
   }
@@ -311,7 +311,7 @@ public class LinkedListTest {
     assertEquals("1x", e.cons(1).foldl((res, i) -> Integer.toString(i) + res, "x"));
     assertEquals("21x", e.cons(2).cons(1).foldl((res, i) -> Integer.toString(i) + res, "x"));
 
-    assertEquals((Integer) 123456789,
+    assertEquals(Integer.valueOf(123456789),
                  LinkedList.fromStream(IntStream.range(1, 10).boxed()).foldl((res, i) -> res * 10 + i, 0));
   }
 
@@ -331,9 +331,9 @@ public class LinkedListTest {
     assertTrue(exceptionWasThrown);
 
     final Integer ii = e.cons(7).foldl1((res, i) -> i * 10 + res);
-    assertEquals((Integer) 7, ii);
+    assertEquals(Integer.valueOf(7), ii);
 
-    assertEquals((Integer) 123456789,
+    assertEquals(Integer.valueOf(123456789),
                  LinkedList.fromStream(IntStream.range(1, 10).boxed()).foldl1((res, i) -> res * 10 + i));
   }
 
@@ -349,7 +349,7 @@ public class LinkedListTest {
     assertEquals("1x", e.cons(1).foldr((i, res) -> Integer.toString(i) + res, "x"));
     assertEquals("12x", e.cons(2).cons(1).foldr((i,res) -> Integer.toString(i) + res, "x"));
 
-    assertEquals((Integer) 987654321,
+    assertEquals(Integer.valueOf(987654321),
                  LinkedList.fromStream(IntStream.range(1, 10).boxed()).foldr((i, res) -> res * 10 + i, 0));
   }
 
@@ -369,9 +369,9 @@ public class LinkedListTest {
     assertTrue(exceptionWasThrown);
 
     final Integer ii = e.cons(7).foldr1((i, res) -> i * 10 + res);
-    assertEquals((Integer) 7, ii);
+    assertEquals(Integer.valueOf(7), ii);
 
-    assertEquals((Integer) 987654321,
+    assertEquals(Integer.valueOf(987654321),
                  LinkedList.fromStream(IntStream.range(1, 10).boxed()).foldr1((i, res) -> res * 10 + i));
   }
 
