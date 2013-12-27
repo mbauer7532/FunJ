@@ -1692,13 +1692,11 @@ public class LinkedListTest {
   @Test
   public void testAddLast() {
     println("addLast");
-//    Object a = null;
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.addLast(a);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertEquals(LinkedList.singleton(1), e.addLast(1));
+    assertEquals(makeList(0, 6), makeList(0, 5).addLast(6));
+    assertEquals(makeList(0, 7), makeList(0, 5).addLast(6).addLast(7));
   }
 
   /**
