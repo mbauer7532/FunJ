@@ -739,7 +739,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
       final ArrayList<ArrayList<A>> res = new ArrayList<>();
       res.add(new ArrayList<>());
       LinkedList<A> t = list;
-
+      
       while (t.isNotNull()) {
         final int idx = res.size() - 1;
         final ArrayList<A> v = res.get(idx);
@@ -753,9 +753,10 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
           newV.add(a);
           res.add(newV);
         }
+        t = t.mCdr;
       }
 
-      return fromArray(res.stream().map(LinkedList::fromArray).collect(Collectors.toCollection(ArrayList::new)));
+      return fromStream(res.stream().map(LinkedList::fromArray));
     }
   }
 
@@ -777,10 +778,10 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
     final LinkedList<LinkedList<A>> res =
       IntStream.rangeClosed(0, lastIdx)
-      .mapToObj(i -> fromArray(v, 0, lastIdx - i))
-      .reduce(empty(),
-              LinkedList::createInv,
-              Functionals::functionShouldNotBeCalled);
+               .mapToObj(i -> fromArray(v, 0, lastIdx - i))
+               .reduce(empty(),
+                       LinkedList::createInv,
+                       Functionals::functionShouldNotBeCalled);
     return create(empty(), res);
   }
 
@@ -1411,5 +1412,17 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   private static AssertionError buildExnEmptyList(final String funName) {
     return new AssertionError(String.format("%s() called on empty list.", funName));
+  }
+
+  @SafeVarargs
+  public static <A> LinkedList<A> of(A ... v) {
+    final int len = v.length;
+    LinkedList<A> t = empty();
+    
+    for (int i = len - 1; i >= 0; --i) {
+      t = create(v[i], t);
+    }
+
+    return t;
   }
 }

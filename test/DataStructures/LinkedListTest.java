@@ -10,11 +10,7 @@ import DataStructures.TuplesModule.Pair;
 import Utils.Ref;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
 import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -23,7 +19,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.*;
+import static org.junit.Assert.*;        
 
 /**
  *
@@ -52,12 +48,16 @@ public class LinkedListTest {
     return LinkedList.fromStream(makeStream(from, to));
   }
 
+  private static void println(final String s) {
+    System.out.println(s);
+  }
+
   /**
    * Test of empty method, of class LinkedList.
    */
   @Test
   public void testEmpty() {
-    System.out.println("empty");
+    println("empty");
 
     final LinkedList<Integer> l0 = LinkedList.empty();
     final LinkedList<Integer> l1 = l0.cons(1);
@@ -75,7 +75,7 @@ public class LinkedListTest {
    */
   @Test
   public void testCons() {
-    System.out.println("cons");
+    println("cons");
     final LinkedList<Integer> l = LinkedList.<Integer> empty().cons(3).cons(2).cons(1);
     
     assertEquals((Integer) 1, l.head());
@@ -89,7 +89,7 @@ public class LinkedListTest {
    */
   @Test
   public void testAppend() {
-    System.out.println("append");
+    println("append");
     final LinkedList<Integer> l1 = LinkedList.<Integer> empty().cons(2).cons(1).cons(0);
     final LinkedList<Integer> l2 = LinkedList.<Integer> empty().cons(5).cons(4).cons(3);
     final LinkedList<Integer> l3 = l1.append(l2);
@@ -110,7 +110,7 @@ public class LinkedListTest {
    */
   @Test
   public void testHead() {
-    System.out.println("head");
+    println("head");
 
     final LinkedList<Integer> e = LinkedList.empty();
     boolean exceptionWasThrown = false;
@@ -130,7 +130,7 @@ public class LinkedListTest {
    */
   @Test
   public void testTail() {
-    System.out.println("tail");
+    println("tail");
 
     final LinkedList<Integer> e = LinkedList.empty();
     boolean exceptionWasThrown = false;
@@ -150,7 +150,7 @@ public class LinkedListTest {
    */
   @Test
   public void testLast() {
-    System.out.println("last");
+    println("last");
 
     {
       final LinkedList<Integer> list = LinkedList.fromStream(IntStream.rangeClosed(0, 10).boxed());
@@ -175,11 +175,10 @@ public class LinkedListTest {
    */
   @Test
   public void testInit() {
-    System.out.println("init");
+    println("init");
    {
       final LinkedList<Integer> list = LinkedList.fromStream(IntStream.rangeClosed(0, 10).boxed());
       assertEquals(list.init(), LinkedList.fromStream(IntStream.rangeClosed(0, 9).boxed()));
-      System.out.println(list.init());
     }
     {
       final LinkedList<Integer> list = LinkedList.<Integer> empty().cons(1);
@@ -201,7 +200,7 @@ public class LinkedListTest {
    */
   @Test
   public void testIsEmpty() {
-    System.out.println("isEmpty");
+    println("isEmpty");
     final LinkedList<Integer> e = LinkedList.empty();
     assertTrue(e.isEmpty());
     assertFalse(e.addFirst(1).isEmpty());
@@ -214,7 +213,7 @@ public class LinkedListTest {
    */
   @Test
   public void testLength() {
-    System.out.println("length");
+    println("length");
     final LinkedList<Integer> e = LinkedList.empty();
     assertEquals(e.length(), 0);
     assertEquals(e.cons(0).length(), 1);
@@ -227,7 +226,7 @@ public class LinkedListTest {
    */
   @Test
   public void testForEach() {
-    System.out.println("forEach");
+    println("forEach");
 
     final LinkedList<Integer> e = LinkedList.empty();
     final Ref<Integer> r = new Ref<>(0);
@@ -244,7 +243,7 @@ public class LinkedListTest {
    */
   @Test
   public void testMap() {
-    System.out.println("map");
+    println("map");
 
     final LinkedList<Integer> e = LinkedList.empty();
     final LinkedList<Integer> eMaped = e.map(n -> n * n);
@@ -266,7 +265,7 @@ public class LinkedListTest {
    */
   @Test
   public void testReverse() {
-    System.out.println("reverse");
+    println("reverse");
 
     final LinkedList<Integer> e = LinkedList.empty();
     final LinkedList<Integer> eReversed = e.reverse();
@@ -288,7 +287,7 @@ public class LinkedListTest {
    */
   @Test
   public void testIntersperse() {
-    System.out.println("intersperse");
+    println("intersperse");
 
     final LinkedList<Integer> e = LinkedList.empty();
     assertEquals(e, e.intersperse(0));
@@ -305,7 +304,7 @@ public class LinkedListTest {
    */
   @Test
   public void testFoldl() {
-    System.out.println("foldl");
+    println("foldl");
 
     final LinkedList<Integer> e = LinkedList.empty();
     assertEquals("x", e.foldl((res, i) -> Integer.toString(i) + res, "x"));
@@ -321,7 +320,7 @@ public class LinkedListTest {
    */
   @Test
   public void testFoldl1() {
-    System.out.println("foldl1");
+    println("foldl1");
 
     final LinkedList<Integer> e = LinkedList.empty();
     boolean exceptionWasThrown = false;
@@ -343,7 +342,7 @@ public class LinkedListTest {
    */
   @Test
   public void testFoldr() {
-    System.out.println("foldr");
+    println("foldr");
 
     final LinkedList<Integer> e = LinkedList.empty();
     assertEquals("x", e.foldr((i, res) -> Integer.toString(i) + res, "x"));
@@ -359,7 +358,7 @@ public class LinkedListTest {
    */
   @Test
   public void testFoldr1() {
-    System.out.println("foldr1");
+    println("foldr1");
 
     final LinkedList<Integer> e = LinkedList.empty();
     boolean exceptionWasThrown = false;
@@ -381,7 +380,7 @@ public class LinkedListTest {
    */
   @Test
   public void testAny() {
-    System.out.println("any");
+    println("any");
 
     final LinkedList<Integer> e = LinkedList.empty();
     assertFalse(e.any(n -> n % 2 == 0));
@@ -397,7 +396,7 @@ public class LinkedListTest {
    */
   @Test
   public void testAll() {
-    System.out.println("all");
+    println("all");
 
     final LinkedList<Integer> e = LinkedList.empty();
     assertTrue(e.all(n -> n % 2 == 0));
@@ -413,7 +412,7 @@ public class LinkedListTest {
    */
   @Test
   public void testScanl() {
-    System.out.println("scanl");
+    println("scanl");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
 ////    LinkedList result = instance.scanl(null);
@@ -427,7 +426,7 @@ public class LinkedListTest {
    */
   @Test
   public void testScanl1() {
-    System.out.println("scanl1");
+    println("scanl1");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
 //    LinkedList result = instance.scanl1(null);
@@ -441,7 +440,7 @@ public class LinkedListTest {
    */
   @Test
   public void testScanr() {
-    System.out.println("scanr");
+    println("scanr");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
 ////    LinkedList result = instance.scanr(null);
@@ -455,7 +454,7 @@ public class LinkedListTest {
    */
   @Test
   public void testScanr1() {
-    System.out.println("scanr1");
+    println("scanr1");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
 //    LinkedList result = instance.scanr1(null);
@@ -469,7 +468,7 @@ public class LinkedListTest {
    */
   @Test
   public void testMapAccumL() {
-    System.out.println("mapAccumL");
+    println("mapAccumL");
 //    LinkedList instance = null;
 //    TuplesModule.Pair expResult = null;
 ////    TuplesModule.Pair result = instance.mapAccumL(null);
@@ -483,7 +482,7 @@ public class LinkedListTest {
    */
   @Test
   public void testMapAccumR() {
-    System.out.println("mapAccumR");
+    println("mapAccumR");
 //    LinkedList instance = null;
 //    TuplesModule.Pair expResult = null;
 ////    TuplesModule.Pair result = instance.mapAccumR(null);
@@ -497,7 +496,7 @@ public class LinkedListTest {
    */
   @Test
   public void testTake() {
-    System.out.println("take");
+    println("take");
 
     final LinkedList<Integer> e = LinkedList.empty();
     assertEquals(e, e.take(1));
@@ -518,7 +517,7 @@ public class LinkedListTest {
    */
   @Test
   public void testDrop() {
-    System.out.println("drop");
+    println("drop");
 
     final LinkedList<Integer> e = LinkedList.empty();
     assertEquals(e, e.drop(1));
@@ -540,7 +539,7 @@ public class LinkedListTest {
    */
   @Test
   public void testSplitAt() {
-    System.out.println("splitAt");
+    println("splitAt");
 
     final LinkedList<Integer> e = LinkedList.empty();
     {
@@ -597,7 +596,7 @@ public class LinkedListTest {
    */
   @Test
   public void testTakeWhile() {
-    System.out.println("takeWhile");
+    println("takeWhile");
     
     final LinkedList<Integer> e = LinkedList.empty();
     {
@@ -622,7 +621,7 @@ public class LinkedListTest {
    */
   @Test
   public void testDropWhile() {
-    System.out.println("dropWhile");
+    println("dropWhile");
 
     final LinkedList<Integer> e = LinkedList.empty();
     {
@@ -646,7 +645,7 @@ public class LinkedListTest {
    */
   @Test
   public void testDropWhileEnd() {
-    System.out.println("dropWhileEnd");
+    println("dropWhileEnd");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
 //    LinkedList result = instance.dropWhileEnd(null);
@@ -660,7 +659,7 @@ public class LinkedListTest {
    */
   @Test
   public void testSpanByPredicate() {
-    System.out.println("spanByPredicate");
+    println("spanByPredicate");
 //    LinkedList instance = null;
 //    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
 //    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.spanByPredicate(null);
@@ -674,7 +673,7 @@ public class LinkedListTest {
    */
   @Test
   public void testBreakByPredicate() {
-    System.out.println("breakByPredicate");
+    println("breakByPredicate");
 //    LinkedList instance = null;
 //    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
 //    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.breakByPredicate(null);
@@ -688,7 +687,7 @@ public class LinkedListTest {
    */
   @Test
   public void testStripPrefix() {
-    System.out.println("stripPrefix");
+    println("stripPrefix");
 //    LinkedList instance = null;
 //    Optional<LinkedList<A>> expResult = null;
 //    Optional<LinkedList<A>> result = instance.stripPrefix(null);
@@ -702,13 +701,55 @@ public class LinkedListTest {
    */
   @Test
   public void testGroup() {
-    System.out.println("group");
-//    LinkedList instance = null;
-//    LinkedList<LinkedList<A>> expResult = null;
-//    LinkedList<LinkedList<A>> result = instance.group();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+    println("group");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final LinkedList<Integer> ls = e;
+      final LinkedList<LinkedList<Integer>> lsRes = ls.group();
+      assertEquals(0, lsRes.length());
+      assertEquals(e, lsRes);
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1);
+      final LinkedList<LinkedList<Integer>> lsRes = ls.group();
+      assertEquals(1, lsRes.length());
+      assertEquals(ls, lsRes.head());
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1).cons(1);
+      final LinkedList<LinkedList<Integer>> lsRes = ls.group();
+      assertEquals(1, lsRes.length());
+      assertEquals(ls, lsRes.head());
+    }
+    {
+      final LinkedList<Integer> ls = e.cons(1).cons(1).cons(2);
+      final LinkedList<LinkedList<Integer>> lsRes = ls.group();
+
+      println(lsRes.toString());
+
+      assertEquals(2, lsRes.length());
+      assertEquals(LinkedList.of(2), lsRes.nth(0));
+      assertEquals(LinkedList.of(1, 1), lsRes.nth(1));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 2, 3, 3, 3, 5, 6, 6, 2, 2, 1, 3, 3, 4, 5);
+      final LinkedList<LinkedList<Integer>> lsRes = ls.group();
+
+      println(lsRes.toString());
+
+      assertEquals(10, lsRes.length());
+      assertEquals(LinkedList.of(1), lsRes.nth(0));
+      assertEquals(LinkedList.of(2, 2), lsRes.nth(1));
+      assertEquals(LinkedList.of(3, 3, 3), lsRes.nth(2));
+      assertEquals(LinkedList.of(5), lsRes.nth(3));
+      assertEquals(LinkedList.of(6, 6), lsRes.nth(4));
+      assertEquals(LinkedList.of(2, 2), lsRes.nth(5));
+      assertEquals(LinkedList.of(1), lsRes.nth(6));
+      assertEquals(LinkedList.of(3, 3), lsRes.nth(7));
+      assertEquals(LinkedList.of(4), lsRes.nth(8));
+      assertEquals(LinkedList.of(5), lsRes.nth(9));
+    }
   }
 
   /**
@@ -716,7 +757,7 @@ public class LinkedListTest {
    */
   @Test
   public void testGroupBy() {
-    System.out.println("groupBy");
+    println("groupBy");
 //    LinkedList instance = null;
 //    LinkedList<LinkedList<A>> expResult = null;
 //    LinkedList<LinkedList<A>> result = instance.groupBy(null);
@@ -730,7 +771,7 @@ public class LinkedListTest {
    */
   @Test
   public void testInits() {
-    System.out.println("inits");
+    println("inits");
 //    LinkedList instance = null;
 //    LinkedList<LinkedList<A>> expResult = null;
 //    LinkedList<LinkedList<A>> result = instance.inits();
@@ -744,7 +785,7 @@ public class LinkedListTest {
    */
   @Test
   public void testTails() {
-    System.out.println("tails");
+    println("tails");
 //    LinkedList instance = null;
 //    LinkedList<LinkedList<A>> expResult = null;
 //    LinkedList<LinkedList<A>> result = instance.tails();
@@ -758,7 +799,7 @@ public class LinkedListTest {
    */
   @Test
   public void testIsPrefixOf() {
-    System.out.println("isPrefixOf");
+    println("isPrefixOf");
 //    LinkedList instance = null;
 //    boolean expResult = false;
 //    boolean result = instance.isPrefixOf(null);
@@ -772,7 +813,7 @@ public class LinkedListTest {
    */
   @Test
   public void testIsSuffixOf() {
-    System.out.println("isSuffixOf");
+    println("isSuffixOf");
 //    LinkedList instance = null;
 //    boolean expResult = false;
 //    boolean result = instance.isSuffixOf(null);
@@ -786,7 +827,7 @@ public class LinkedListTest {
    */
   @Test
   public void testIsInfixOf() {
-    System.out.println("isInfixOf");
+    println("isInfixOf");
 //    LinkedList instance = null;
 //    boolean expResult = false;
 //    boolean result = instance.isInfixOf(null);
@@ -800,7 +841,7 @@ public class LinkedListTest {
    */
   @Test
   public void testElem() {
-    System.out.println("elem");
+    println("elem");
 
     final LinkedList<Integer> e = LinkedList.empty();
     {
@@ -824,7 +865,7 @@ public class LinkedListTest {
    */
   @Test
   public void testNotElem() {
-    System.out.println("notElem");
+    println("notElem");
 
     final LinkedList<Integer> e = LinkedList.empty();
     {
@@ -848,7 +889,7 @@ public class LinkedListTest {
    */
   @Test
   public void testFind() {
-    System.out.println("find");
+    println("find");
 
     final LinkedList<Integer> e = LinkedList.empty();
     {
@@ -875,7 +916,7 @@ public class LinkedListTest {
    */
   @Test
   public void testFilter() {
-    System.out.println("filter");
+    println("filter");
 
     final LinkedList<Integer> e = LinkedList.empty();
     {
@@ -902,7 +943,7 @@ public class LinkedListTest {
    */
   @Test
   public void testPartition() {
-    System.out.println("partition");
+    println("partition");
 
     final LinkedList<Integer> e = LinkedList.empty();
     {
@@ -937,7 +978,7 @@ public class LinkedListTest {
    */
   @Test
   public void testNth() {
-    System.out.println("nth");
+    println("nth");
 //    int n = 0;
 //    LinkedList instance = null;
 //    Object expResult = null;
@@ -952,7 +993,7 @@ public class LinkedListTest {
    */
   @Test
   public void testElemIndex() {
-    System.out.println("elemIndex");
+    println("elemIndex");
 //    Object a = null;
 //    LinkedList instance = null;
 //    OptionalInt expResult = null;
@@ -967,7 +1008,7 @@ public class LinkedListTest {
    */
   @Test
   public void testElemIndices() {
-    System.out.println("elemIndices");
+    println("elemIndices");
 //    Object a = null;
 //    LinkedList instance = null;
 //    LinkedList<Integer> expResult = null;
@@ -982,7 +1023,7 @@ public class LinkedListTest {
    */
   @Test
   public void testFindIndex() {
-    System.out.println("findIndex");
+    println("findIndex");
 //    LinkedList instance = null;
 //    OptionalInt expResult = null;
 //    OptionalInt result = instance.findIndex(null);
@@ -996,7 +1037,7 @@ public class LinkedListTest {
    */
   @Test
   public void testFindIndices() {
-    System.out.println("findIndices");
+    println("findIndices");
 //    LinkedList instance = null;
 //    LinkedList<Integer> expResult = null;
 //    LinkedList<Integer> result = instance.findIndices(null);
@@ -1010,7 +1051,7 @@ public class LinkedListTest {
    */
   @Test
   public void testNub() {
-    System.out.println("nub");
+    println("nub");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
 //    LinkedList result = instance.nub();
@@ -1024,7 +1065,7 @@ public class LinkedListTest {
    */
   @Test
   public void testNubBy() {
-    System.out.println("nubBy");
+    println("nubBy");
 //    Comparator cmp = null;
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
@@ -1039,7 +1080,7 @@ public class LinkedListTest {
    */
   @Test
   public void testDelete() {
-    System.out.println("delete");
+    println("delete");
 //    Object a = null;
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
@@ -1054,7 +1095,7 @@ public class LinkedListTest {
    */
   @Test
   public void testDeleteBy() {
-    System.out.println("deleteBy");
+    println("deleteBy");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
 //    LinkedList result = instance.deleteBy(null);
@@ -1068,7 +1109,7 @@ public class LinkedListTest {
    */
   @Test
   public void testDeleteFirstBy() {
-    System.out.println("deleteFirstBy");
+    println("deleteFirstBy");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
 //    LinkedList result = instance.deleteFirstBy(null);
@@ -1081,7 +1122,7 @@ public class LinkedListTest {
    */
   @Test
   public void testListDiff() {
-    System.out.println("listDiff");
+    println("listDiff");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
 //    LinkedList result = instance.listDiff(null);
@@ -1095,7 +1136,7 @@ public class LinkedListTest {
    */
   @Test
   public void testUnion() {
-    System.out.println("union");
+    println("union");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
 //    LinkedList result = instance.union(null);
@@ -1109,7 +1150,7 @@ public class LinkedListTest {
    */
   @Test
   public void testUnionBy() {
-    System.out.println("unionBy");
+    println("unionBy");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
 //    LinkedList result = instance.unionBy(null);
@@ -1123,7 +1164,7 @@ public class LinkedListTest {
    */
   @Test
   public void testIntersect() {
-    System.out.println("intersect");
+    println("intersect");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
 //    LinkedList result = instance.intersect(null);
@@ -1137,7 +1178,7 @@ public class LinkedListTest {
    */
   @Test
   public void testIntersectBy() {
-    System.out.println("intersectBy");
+    println("intersectBy");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
 //    LinkedList result = instance.intersectBy(null);
@@ -1151,7 +1192,7 @@ public class LinkedListTest {
    */
   @Test
   public void testSort() {
-    System.out.println("sort");
+    println("sort");
 
     final LinkedList<Integer> e = LinkedList.empty();
     {
@@ -1176,7 +1217,7 @@ public class LinkedListTest {
    */
   @Test
   public void testSortBy() {
-    System.out.println("sortBy");
+    println("sortBy");
 
       final LinkedList<Integer> e = LinkedList.empty();
     {
@@ -1207,7 +1248,7 @@ public class LinkedListTest {
    */
   @Test
   public void testInsert() {
-    System.out.println("insert");
+    println("insert");
 //    Object a = null;
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
@@ -1222,7 +1263,7 @@ public class LinkedListTest {
    */
   @Test
   public void testInsertBy() {
-    System.out.println("insertBy");
+    println("insertBy");
 //    Object a = null;
 //    Comparator cmp = null;
 //    LinkedList instance = null;
@@ -1241,7 +1282,7 @@ public class LinkedListTest {
    */
   @Test
   public void testMax() {
-    System.out.println("max");
+    println("max");
 
     final LinkedList<Integer> e = LinkedList.empty();
     boolean exceptionWasThrown = false;
@@ -1274,7 +1315,7 @@ public class LinkedListTest {
    */
   @Test
   public void testMaxBy() {
-    System.out.println("maxBy");
+    println("maxBy");
 
     final LinkedList<Integer> e = LinkedList.empty();
     boolean exceptionWasThrown = false;
@@ -1311,7 +1352,7 @@ public class LinkedListTest {
    */
   @Test
   public void testMin() {
-    System.out.println("min");
+    println("min");
 
     final LinkedList<Integer> e = LinkedList.empty();
     boolean exceptionWasThrown = false;
@@ -1344,7 +1385,7 @@ public class LinkedListTest {
    */
   @Test
   public void testMinBy() {
-    System.out.println("minBy");
+    println("minBy");
 
     final LinkedList<Integer> e = LinkedList.empty();
     boolean exceptionWasThrown = false;
@@ -1381,7 +1422,7 @@ public class LinkedListTest {
    */
   @Test
   public void testSubsequences() {
-    System.out.println("subsequences");
+    println("subsequences");
     {
       assertEquals(LinkedList.<Integer> empty().subsequences().toString(), "[[]]");
     }
@@ -1400,7 +1441,7 @@ public class LinkedListTest {
    */
   @Test
   public void testPermutations() {
-    System.out.println("permutations");
+    println("permutations");
     {
       assertEquals("[[]]", LinkedList.<Integer> empty().permutations().toString());
     }
@@ -1430,7 +1471,7 @@ public class LinkedListTest {
    */
   @Test
   public void testZipWith() {
-    System.out.println("zipWith");
+    println("zipWith");
 //    LinkedList expResult = null;
 //    LinkedList result = LinkedList.zipWith(null);
 //    assertEquals(expResult, result);
@@ -1443,7 +1484,7 @@ public class LinkedListTest {
    */
   @Test
   public void testZip() {
-    System.out.println("zip");
+    println("zip");
 //    LinkedList<TuplesModule.Pair<A, B>> expResult = null;
 //    LinkedList<TuplesModule.Pair<A, B>> result = LinkedList.zip(null);
 //    assertEquals(expResult, result);
@@ -1456,7 +1497,7 @@ public class LinkedListTest {
    */
   @Test
   public void testReplicate() {
-    System.out.println("replicate");
+    println("replicate");
 //    int n = 0;
 //    Object a = null;
 //    LinkedList expResult = null;
@@ -1471,7 +1512,7 @@ public class LinkedListTest {
    */
   @Test
   public void testUnzip() {
-    System.out.println("unzip");
+    println("unzip");
 //    TuplesModule.Pair<LinkedList<A>, LinkedList<B>> expResult = null;
 //    TuplesModule.Pair<LinkedList<A>, LinkedList<B>> result = LinkedList.unzip(null);
 //    assertEquals(expResult, result);
@@ -1484,7 +1525,7 @@ public class LinkedListTest {
    */
   @Test
   public void testUnfoldr() {
-    System.out.println("unfoldr");
+    println("unfoldr");
 //    LinkedList expResult = null;
 //    LinkedList result = LinkedList.unfoldr(null);
 //    assertEquals(expResult, result);
@@ -1497,7 +1538,7 @@ public class LinkedListTest {
    */
   @Test
   public void testConcat() {
-    System.out.println("concat");
+    println("concat");
 //    LinkedList expResult = null;
 //    LinkedList result = LinkedList.concat(null);
 //    assertEquals(expResult, result);
@@ -1510,7 +1551,7 @@ public class LinkedListTest {
    */
   @Test
   public void testConcatMap() {
-    System.out.println("concatMap");
+    println("concatMap");
 //    LinkedList expResult = null;
 //    LinkedList result = LinkedList.concatMap(null);
 //    assertEquals(expResult, result);
@@ -1523,7 +1564,7 @@ public class LinkedListTest {
    */
   @Test
   public void testIntercalate() {
-    System.out.println("intercalate");
+    println("intercalate");
 //    LinkedList expResult = null;
 //    LinkedList result = LinkedList.intercalate(null);
 //    assertEquals(expResult, result);
@@ -1536,7 +1577,7 @@ public class LinkedListTest {
    */
   @Test
   public void testTranspose() {
-    System.out.println("transpose");
+    println("transpose");
 //    LinkedList<LinkedList<A>> expResult = null;
 //    LinkedList<LinkedList<A>> result = LinkedList.transpose(null);
 //    assertEquals(expResult, result);
@@ -1549,7 +1590,7 @@ public class LinkedListTest {
    */
   @Test
   public void testToString() {
-    System.out.println("toString");
+    println("toString");
 //    LinkedList instance = null;
 //    String expResult = "";
 //    String result = instance.toString();
@@ -1563,7 +1604,7 @@ public class LinkedListTest {
    */
   @Test
   public void testEquals() {
-    System.out.println("equals");
+    println("equals");
 
     final LinkedList<Integer> e = LinkedList.empty();
     assertTrue(e.equals(e));
@@ -1580,7 +1621,7 @@ public class LinkedListTest {
    */
   @Test
   public void testHashCode() {
-    System.out.println("hashCode");
+    println("hashCode");
 //    LinkedList instance = null;
 //    int expResult = 0;
 //    int result = instance.hashCode();
@@ -1594,7 +1635,7 @@ public class LinkedListTest {
    */
   @Test
   public void testAddFirst() {
-    System.out.println("addFirst");
+    println("addFirst");
 //    Object a = null;
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
@@ -1609,7 +1650,7 @@ public class LinkedListTest {
    */
   @Test
   public void testAddLast() {
-    System.out.println("addLast");
+    println("addLast");
 //    Object a = null;
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
@@ -1624,7 +1665,7 @@ public class LinkedListTest {
    */
   @Test
   public void testToArray() {
-    System.out.println("toArray");
+    println("toArray");
 
     final LinkedList<Integer> e = LinkedList.empty();
     {
@@ -1646,7 +1687,7 @@ public class LinkedListTest {
    */
   @Test
   public void testFromStream() {
-    System.out.println("fromStream");
+    println("fromStream");
 
     final LinkedList<Integer> ls = makeList(0, 5); // Function uses fromStream()
     for (int i = 0; i != 6; ++i) {
@@ -1659,7 +1700,7 @@ public class LinkedListTest {
    */
   @Test
   public void testFromArray_ArrayList() {
-    System.out.println("fromArray");
+    println("fromArray");
 //    LinkedList expResult = null;
 //    LinkedList result = LinkedList.fromArray(null);
 //    assertEquals(expResult, result);
@@ -1672,7 +1713,7 @@ public class LinkedListTest {
    */
   @Test
   public void testFromArray_3args() {
-    System.out.println("fromArray");
+    println("fromArray");
 //    LinkedList expResult = null;
 //    LinkedList result = LinkedList.fromArray(null);
 //    assertEquals(expResult, result);
@@ -1686,7 +1727,7 @@ public class LinkedListTest {
    */
   @Test
   public void testFlatMap() {
-    System.out.println("flatMap");
+    println("flatMap");
     
     final LinkedList<Integer> e = LinkedList.empty();
     {
@@ -1712,7 +1753,7 @@ public class LinkedListTest {
    */
   @Test
   public void testIterator() {
-    System.out.println("iterator");
+    println("iterator");
     
     final int high = 5000;
     LinkedList<Integer> list = makeList(1, high);
@@ -1729,7 +1770,7 @@ public class LinkedListTest {
    */
   @Test
   public void testStream() {
-    System.out.println("stream");
+    println("stream");
 
     final int high = 5000;
     LinkedList<Integer> list = LinkedList.fromStream(IntStream.rangeClosed(1, high).mapToObj(n -> 1));
