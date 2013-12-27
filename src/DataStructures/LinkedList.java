@@ -33,6 +33,11 @@ import java.util.stream.StreamSupport;
  * @param <A>
  */
 public final class LinkedList<A> implements List<A, LinkedList<A>> {
+  @SuppressWarnings("unchecked")
+  public static <A> LinkedList<A> empty() { return (LinkedList<A>) sEmptyList; }
+
+  public static <A> LinkedList<A> singleton(final A a) { return create(a, empty()); }
+
   private static <T> LinkedList<T> create(final T a, final LinkedList<T> list) {
     return new LinkedList<>(a, list);
   }
@@ -42,6 +47,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private LinkedList() { mCar = null; mCdr = null; }
+
   private LinkedList(final A a, final LinkedList<A> list) {
     mCar = a;
     mCdr = list;
@@ -51,9 +57,6 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   private final LinkedList<A> mCdr;
 
   private static final LinkedList<?> sEmptyList = new LinkedList<>();
-
-  @SuppressWarnings("unchecked")
-    public static <T> LinkedList<T> empty() { return (LinkedList<T>) sEmptyList; }
 
   private boolean isNull()    { return this == sEmptyList; }
   private boolean isNotNull() { return this != sEmptyList; }
@@ -279,12 +282,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   private static <A, B> LinkedList<B> mapImpl(final LinkedList<A> list, final Function<A, B> f) {
     ArrayList<B> v = new ArrayList<>();
-    LinkedList<A> la = list;
-
-    while (la.isNotNull()) {
-      v.add(f.apply(la.mCar));
-      la = la.mCdr;
-    }
+    forEachImpl(list, a -> { v.add(f.apply(a)); });
 
     return fromArray(v);
   }
@@ -295,14 +293,11 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A> LinkedList<A> reverseImpl(final LinkedList<A> list) {
-    LinkedList<A> acc = empty(), t = list;
+    final Ref<LinkedList<A>> acc = new Ref<>(empty());
 
-    while (t.isNotNull()) {
-      acc = create(t.mCar, acc);
-      t = t.mCdr;
-    }
+    forEachImpl(list, a -> { acc.r = create(a, acc.r); });
 
-    return acc;
+    return acc.r;
   }
 
   @Override
@@ -319,11 +314,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
       v.add(list.mCar);
       LinkedList<A> t = list.mCdr;
 
-      while (t.isNotNull()) {
-        v.add(a);
-        v.add(t.mCar);
-        t = t.mCdr;
-      }
+      forEachImpl(list.mCdr, m -> { v.add(a); v.add(m); });
 
       return fromArray(v);
     }
@@ -335,15 +326,11 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A, B> B foldlImpl(final LinkedList<A> list, final BiFunction<B, A, B> f, final B b) {
-    B acc = b;
-    LinkedList<A> t = list;
+    final Ref<B> acc = new Ref<>(b);
 
-    while (t.isNotNull()) {
-      acc = f.apply(acc, t.mCar);
-      t = t.mCdr;
-    }
+    forEachImpl(list, a -> { acc.r = f.apply(acc.r, a); });
 
-    return acc;
+    return acc.r;
   }
 
   @Override
@@ -370,10 +357,10 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     final int lastIdx = v.size() - 1;
 
     return IntStream.rangeClosed(0, lastIdx)
-      .mapToObj(i -> v.get(lastIdx - i))
-      .reduce(b,
-              (acc, e) -> f.apply(e, acc),
-              Functionals::functionShouldNotBeCalled);
+                    .mapToObj(i -> v.get(lastIdx - i))
+                    .reduce(b,
+                            (acc, e) -> f.apply(e, acc),
+                            Functionals::functionShouldNotBeCalled);
   }
 
   @Override
@@ -472,10 +459,10 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
     bs.add(b);
     IntStream.rangeClosed(0, lastIdx)
-      .mapToObj(i -> v.get(lastIdx - i))
-      .reduce(b,
-              (acc, e) -> { final B newAcc = f.apply(e, acc); bs.add(newAcc); return newAcc; },
-              Functionals::functionShouldNotBeCalled);
+             .mapToObj(i -> v.get(lastIdx - i))
+             .reduce(b,
+                     (acc, e) -> { final B newAcc = f.apply(e, acc); bs.add(newAcc); return newAcc; },
+                     Functionals::functionShouldNotBeCalled);
 
     return fromArray(bs);
   }
@@ -500,20 +487,19 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A, ACC, B> Pair<ACC, List<B, ?>> mapAccumLImpl(
-    final LinkedList<A> list,
-    final BiFunction<ACC, A, Pair<ACC, B>> f,
-    final ACC acc) {
-    LinkedList<A> t = list;
-    ACC newAcc = acc;
-    ArrayList<B> v = new ArrayList<>();
+          final LinkedList<A> list,
+          final BiFunction<ACC, A, Pair<ACC, B>> f,
+          final ACC acc) {
+    final Ref<ACC> newAcc = new Ref<>(acc);
+    final ArrayList<B> v = new ArrayList<>();
 
-    while (t.isNotNull()) {
-      final Pair<ACC, B> r = f.apply(newAcc, t.mCar);
-      newAcc = r.mx1;        
-      v.add(r.mx2);
-      t = t.mCdr;
-    }
-    return Pair.create(newAcc, fromArray(v));
+    forEachImpl(list, a -> { 
+      final Pair<ACC, B> p = f.apply(newAcc.r, a);
+      newAcc.r = p.mx1;        
+      v.add(p.mx2);
+    });
+
+    return Pair.create(newAcc.r, fromArray(v));
   }
 
   @Override
@@ -522,18 +508,23 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   private static <A, ACC, B> Pair<ACC, List<B, ?>> mapAccumRImpl(
-    final LinkedList<A> list,
-    final BiFunction<ACC, A, Pair<ACC, B>> f,
-    final ACC acc) {
+          final LinkedList<A> list,
+          final BiFunction<ACC, A, Pair<ACC, B>> f,
+          final ACC acc) {
     final ArrayList<A> v = toArrayImpl(list);
     final ArrayList<B> u = new ArrayList<>();
     final int lastIdx = v.size() - 1;
+
     final ACC newAcc = IntStream.rangeClosed(0, lastIdx)
-      .mapToObj(i -> v.get(lastIdx - i))
-      .reduce(acc,
-              (rAcc, e) -> { final Pair<ACC, B> r = f.apply(rAcc, e); u.add(r.mx2); return r.mx1; },
-              Functionals::functionShouldNotBeCalled);
-    return Pair.create(newAcc, u.stream().reduce(empty(), LinkedList::createInv, Functionals::functionShouldNotBeCalled));
+                                .mapToObj(i -> v.get(lastIdx - i))
+                                .reduce(acc,
+                                        (rAcc, e) -> { final Pair<ACC, B> r = f.apply(rAcc, e); u.add(r.mx2); return r.mx1; },
+                                        Functionals::functionShouldNotBeCalled);
+    return Pair.create(newAcc,
+                       u.stream()
+                        .reduce(empty(),
+                                LinkedList::createInv,
+                                Functionals::functionShouldNotBeCalled));
   }
 
   @Override
@@ -738,12 +729,10 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     else {
       final ArrayList<ArrayList<A>> res = new ArrayList<>();
       res.add(new ArrayList<>());
-      LinkedList<A> t = list;
-      
-      while (t.isNotNull()) {
+
+      forEachImpl(list, a -> {
         final int idx = res.size() - 1;
         final ArrayList<A> v = res.get(idx);
-        final A a = t.mCar;
 
         if (v.isEmpty() || eqPred.test(a, v.get(0))) {
           v.add(a);
@@ -753,8 +742,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
           newV.add(a);
           res.add(newV);
         }
-        t = t.mCdr;
-      }
+      });
 
       return fromStream(res.stream().map(LinkedList::fromArray));
     }
@@ -793,6 +781,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   private static <A> LinkedList<LinkedList<A>> tailsImpl(final LinkedList<A> list) {
     LinkedList<A> t = list;
     LinkedList<LinkedList<A>> res = empty();
+
     while (t.isNotNull()) {
       res = create(t, res);
       t = t.mCdr;
