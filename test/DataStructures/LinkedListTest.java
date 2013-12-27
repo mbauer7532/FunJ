@@ -959,17 +959,18 @@ public class LinkedListTest {
       final LinkedList<Integer> ls = e.cons(2).cons(1);
       final Pair<LinkedList<Integer>, LinkedList<Integer>> p0 = ls.partition(n -> n <= 1);
       final Pair<LinkedList<Integer>, LinkedList<Integer>> p1 = ls.partition(n -> n > 1);
-      assertEquals(e.cons(1), p0.mx1);
-      assertEquals(e.cons(2), p0.mx2);
-      assertEquals(e.cons(2), p1.mx1);
-      assertEquals(e.cons(1), p1.mx2);
+
+      assertEquals(LinkedList.singleton(1), p0.mx1);
+      assertEquals(LinkedList.singleton(2), p0.mx2);
+      assertEquals(LinkedList.singleton(2), p1.mx1);
+      assertEquals(LinkedList.singleton(1), p1.mx2);
     }
     {
-      final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.range(0, 100).boxed());
+      final LinkedList<Integer> ls = makeList(0, 99);
       final Pair<LinkedList<Integer>, LinkedList<Integer>> p = ls.partition(n -> n < 50);
 
-      assertEquals(LinkedList.fromStream(IntStream.range(0, 50).boxed()), p.mx1);
-      assertEquals(LinkedList.fromStream(IntStream.range(50, 100).boxed()), p.mx2);
+      assertEquals(makeList(0, 49), p.mx1);
+      assertEquals(makeList(50, 99), p.mx2);
     }
   }
 
@@ -979,13 +980,39 @@ public class LinkedListTest {
   @Test
   public void testNth() {
     println("nth");
-//    int n = 0;
-//    LinkedList instance = null;
-//    Object expResult = null;
-//    Object result = instance.nth(n);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      boolean exceptionWasThrown = false;
+      try {
+        final Integer m = e.cons(1).nth(-1);
+      }
+      catch (AssertionError ae) { exceptionWasThrown = true; }
+      assertTrue(exceptionWasThrown);
+    }
+    {
+      boolean exceptionWasThrown = false;
+      try {
+        final Integer m = e.nth(0);
+      }
+      catch (AssertionError ae) { exceptionWasThrown = true; }
+      assertTrue(exceptionWasThrown);
+    }
+    {
+      final LinkedList<Integer> ls = makeList(0, 5);
+      int i = 0;
+      assertEquals(Integer.valueOf(i), ls.nth(i));
+      ++i;
+      assertEquals(Integer.valueOf(i), ls.nth(i));
+      ++i;
+      assertEquals(Integer.valueOf(i), ls.nth(i));
+      ++i;
+      assertEquals(Integer.valueOf(i), ls.nth(i));
+      ++i;
+      assertEquals(Integer.valueOf(i), ls.nth(i));
+      ++i;
+      assertEquals(Integer.valueOf(i), ls.nth(i));
+    }
   }
 
   /**
