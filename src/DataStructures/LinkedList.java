@@ -29,7 +29,7 @@ import java.util.stream.StreamSupport;
 
 /**
  *
- * @author Neo
+ * @author Neo Neo
  * @param <A>
  */
 public final class LinkedList<A> implements List<A, LinkedList<A>> {
