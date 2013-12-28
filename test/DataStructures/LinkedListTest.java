@@ -1677,13 +1677,11 @@ public class LinkedListTest {
   @Test
   public void testAddFirst() {
     println("addFirst");
-//    Object a = null;
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.addFirst(a);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertEquals(LinkedList.singleton(1), e.addFirst(1));
+    assertEquals(makeList(-1, 5), makeList(0, 5).addFirst(-1));
+    assertEquals(makeList(-2, 5), makeList(0, 5).addFirst(-1).addFirst(-2));
   }
 
   /**
