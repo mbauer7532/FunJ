@@ -1619,11 +1619,8 @@ public class LinkedListTest {
   @Test
   public void testTranspose() {
     println("transpose");
-//    LinkedList<LinkedList<A>> expResult = null;
-//    LinkedList<LinkedList<A>> result = LinkedList.transpose(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    
   }
 
   /**
@@ -1632,12 +1629,10 @@ public class LinkedListTest {
   @Test
   public void testToString() {
     println("toString");
-//    LinkedList instance = null;
-//    String expResult = "";
-//    String result = instance.toString();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    assertEquals("[]", LinkedList.<Integer> empty().toString());
+    assertEquals("[1]", LinkedList.singleton(1).toString());
+    assertEquals("[1, 2]", LinkedList.singleton(2).cons(1).toString());
   }
 
   /**
@@ -1663,12 +1658,12 @@ public class LinkedListTest {
   @Test
   public void testHashCode() {
     println("hashCode");
-//    LinkedList instance = null;
-//    int expResult = 0;
-//    int result = instance.hashCode();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+
+    assertEquals(e.hashCode(), LinkedList.singleton(1).tail().hashCode());
+    assertEquals(e.cons(1).hashCode(), LinkedList.of(1).hashCode());
+    assertTrue(e.hashCode() != e.cons(1).hashCode());
   }
 
   /**
