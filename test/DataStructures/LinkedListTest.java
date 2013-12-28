@@ -1620,7 +1620,40 @@ public class LinkedListTest {
   public void testTranspose() {
     println("transpose");
 
-    
+    {
+      final LinkedList<LinkedList<Integer>> expected = LinkedList.empty();
+      final LinkedList<LinkedList<Integer>> res = LinkedList.transpose(LinkedList.<LinkedList<Integer>> empty());
+      
+      assertEquals(expected, res);
+    }
+    {
+      final LinkedList<LinkedList<Integer>> ls = LinkedList.of(LinkedList.of(1, 2, 3), LinkedList.of(4, 5, 6));
+      final LinkedList<LinkedList<Integer>> expected = LinkedList.of(LinkedList.of(1, 4), LinkedList.of(2, 5), LinkedList.of(3, 6));
+      final LinkedList<LinkedList<Integer>> res = LinkedList.transpose(ls);
+
+      assertEquals(expected, res);
+    }
+    {
+      final LinkedList<LinkedList<Integer>> ls = LinkedList.of(LinkedList.of(1, 2, 3), LinkedList.of(5), LinkedList.of(6, 7));
+      final LinkedList<LinkedList<Integer>> expected = LinkedList.of(LinkedList.of(1, 5, 6), LinkedList.of(2, 7), LinkedList.of(3));
+      final LinkedList<LinkedList<Integer>> res = LinkedList.transpose(ls);
+
+      assertEquals(expected, res);
+    }
+    {
+      final LinkedList<LinkedList<Integer>> ls = LinkedList.of(LinkedList.of(1), LinkedList.of(2), LinkedList.of(3, 4, 5, 6));
+      final LinkedList<LinkedList<Integer>> expected = LinkedList.of(LinkedList.of(1, 2, 3), LinkedList.of(4), LinkedList.of(5), LinkedList.of(6));
+      final LinkedList<LinkedList<Integer>> res = LinkedList.transpose(ls);
+
+      assertEquals(expected, res);
+    }
+    {
+      final LinkedList<LinkedList<Integer>> ls = LinkedList.of(LinkedList.of(1), LinkedList.empty(), LinkedList.of(3, 4, 5, 6));
+      final LinkedList<LinkedList<Integer>> expected = LinkedList.of(LinkedList.of(1, 3), LinkedList.of(4), LinkedList.of(5), LinkedList.of(6));
+      final LinkedList<LinkedList<Integer>> res = LinkedList.transpose(ls);
+
+      assertEquals(expected, res);
+    }
   }
 
   /**
