@@ -499,6 +499,13 @@ public class LinkedListTest {
 
       assertEquals(expected, res);
     }
+    {
+      final LinkedList<String> ls = LinkedList.of("a", "bb", "ccc", "dddd");
+      final Pair<LinkedList<String>, List<Ref<String>, ?>> res = ls.mapAccumL((acc, x) -> Pair.create(acc.cons(x), new Ref<>(x)), LinkedList.empty());
+      final Pair<LinkedList<String>, List<Ref<String>, ?>> expected = Pair.create(ls.reverse(), ls.map(x -> new Ref<>(x)));
+
+      assertEquals(expected, res);
+    }
   }
 
   /**
@@ -507,12 +514,42 @@ public class LinkedListTest {
   @Test
   public void testMapAccumR() {
     println("mapAccumR");
-//    LinkedList instance = null;
-//    TuplesModule.Pair expResult = null;
-////    TuplesModule.Pair result = instance.mapAccumR(null);
-////    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final LinkedList<Integer> e = LinkedList.empty();
+      final Pair<Integer, List<Integer, ?>> res = e.mapAccumR((acc, x) -> Pair.create(acc, x), -1);
+      final Pair<Integer, List<Integer, ?>> expected = Pair.create(-1, e);
+
+      assertEquals(expected, res);
+    }
+    {
+      final LinkedList<String> ls = LinkedList.singleton("neo");
+      final Pair<Integer, List<Ref<String>, ?>> res = ls.mapAccumR((acc, x) -> Pair.create(acc + x.length(), new Ref<>(x)), -1);
+      final Pair<Integer, List<Ref<String>, ?>> expected = Pair.create(2, LinkedList.of(new Ref<>("neo")));
+
+      assertEquals(expected, res);
+    }
+    {
+      final LinkedList<String> ls = LinkedList.of("a", "bb", "ccc", "dddd");
+      final Pair<Integer, List<Ref<String>, ?>> res = ls.mapAccumR((acc, x) -> Pair.create(acc - x.length(), new Ref<>(x)), 0);
+      final Pair<Integer, List<Ref<String>, ?>> expected = Pair.create(0 - 1 - 2 - 3 - 4, ls.map(x -> new Ref<>(x)));
+
+      assertEquals(expected, res);
+    }
+    {
+      final LinkedList<String> ls = LinkedList.of("a", "bb", "ccc", "dddd");
+      final Pair<Integer, List<Ref<String>, ?>> res = ls.mapAccumR((acc, x) -> Pair.create(acc + x.length(), new Ref<>(x)), 0);
+      final Pair<Integer, List<Ref<String>, ?>> expected = Pair.create(0 + 1 + 2 + 3 + 4, ls.map(x -> new Ref<>(x)));
+
+      assertEquals(expected, res);
+    }
+    {
+      final LinkedList<String> ls = LinkedList.of("a", "bb", "ccc", "dddd");
+      final Pair<LinkedList<String>, List<Ref<String>, ?>> res = ls.mapAccumR((acc, x) -> Pair.create(acc.cons(x), new Ref<>(x)), LinkedList.empty());
+      final Pair<LinkedList<String>, List<Ref<String>, ?>> expected = Pair.create(ls, ls.map(x -> new Ref<>(x)));
+
+      assertEquals(expected, res);
+    }
   }
 
   /**
