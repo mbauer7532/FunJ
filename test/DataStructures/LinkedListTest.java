@@ -91,8 +91,8 @@ public class LinkedListTest {
   @Test
   public void testAppend() {
     println("append");
-    final LinkedList<Integer> l1 = LinkedList.<Integer> empty().cons(2).cons(1).cons(0);
-    final LinkedList<Integer> l2 = LinkedList.<Integer> empty().cons(5).cons(4).cons(3);
+    final LinkedList<Integer> l1 = LinkedList.of(0, 1, 2);
+    final LinkedList<Integer> l2 = LinkedList.of(3, 4, 5);
     final LinkedList<Integer> l3 = l1.append(l2);
 
     assertEquals(l3.length(), 6);
@@ -154,17 +154,17 @@ public class LinkedListTest {
     println("last");
 
     {
-      final LinkedList<Integer> list = LinkedList.fromStream(IntStream.rangeClosed(0, 10).boxed());
+      final LinkedList<Integer> list = makeList(0, 10);
       assertEquals(list.last(), Integer.valueOf(10));
     }
     {
-      final LinkedList<Integer> list = LinkedList.<Integer> empty().cons(1);
+      final LinkedList<Integer> list = LinkedList.singleton(1);
       assertEquals(list.last(), Integer.valueOf(1));
     }
     {
       boolean exceptionWasThrown = false;
       try {
-        final LinkedList<Integer> list = LinkedList.<Integer> empty();
+        final LinkedList<Integer> list = LinkedList.empty();
         final Integer i = list.last();
       }
       catch (AssertionError ae) { exceptionWasThrown = true; }
@@ -178,11 +178,11 @@ public class LinkedListTest {
   public void testInit() {
     println("init");
    {
-      final LinkedList<Integer> list = LinkedList.fromStream(IntStream.rangeClosed(0, 10).boxed());
-      assertEquals(list.init(), LinkedList.fromStream(IntStream.rangeClosed(0, 9).boxed()));
+      final LinkedList<Integer> list = makeList(0, 10);
+      assertEquals(list.init(), makeList(0, 9));
     }
     {
-      final LinkedList<Integer> list = LinkedList.<Integer> empty().cons(1);
+      final LinkedList<Integer> list = LinkedList.singleton(1);
       assertEquals(list.init(), LinkedList.<Integer> empty());
     }
     {
@@ -219,7 +219,7 @@ public class LinkedListTest {
     assertEquals(e.length(), 0);
     assertEquals(e.cons(0).length(), 1);
     
-    assertEquals(LinkedList.fromStream(IntStream.rangeClosed(1, 10).boxed()).length(), 10);
+    assertEquals(10, makeList(1, 10).length());
   }
 
   /**
@@ -312,8 +312,7 @@ public class LinkedListTest {
     assertEquals("1x", e.cons(1).foldl((res, i) -> Integer.toString(i) + res, "x"));
     assertEquals("21x", e.cons(2).cons(1).foldl((res, i) -> Integer.toString(i) + res, "x"));
 
-    assertEquals(Integer.valueOf(123456789),
-                 LinkedList.fromStream(IntStream.range(1, 10).boxed()).foldl((res, i) -> res * 10 + i, 0));
+    assertEquals(Integer.valueOf(123456789), makeList(1, 9).foldl((res, i) -> res * 10 + i, 0));
   }
 
   /**
@@ -334,8 +333,7 @@ public class LinkedListTest {
     final Integer ii = e.cons(7).foldl1((res, i) -> i * 10 + res);
     assertEquals(Integer.valueOf(7), ii);
 
-    assertEquals(Integer.valueOf(123456789),
-                 LinkedList.fromStream(IntStream.range(1, 10).boxed()).foldl1((res, i) -> res * 10 + i));
+    assertEquals(Integer.valueOf(123456789), makeList(1, 9).foldl1((res, i) -> res * 10 + i));
   }
 
   /**
@@ -350,8 +348,7 @@ public class LinkedListTest {
     assertEquals("1x", e.cons(1).foldr((i, res) -> Integer.toString(i) + res, "x"));
     assertEquals("12x", e.cons(2).cons(1).foldr((i,res) -> Integer.toString(i) + res, "x"));
 
-    assertEquals(Integer.valueOf(987654321),
-                 LinkedList.fromStream(IntStream.range(1, 10).boxed()).foldr((i, res) -> res * 10 + i, 0));
+    assertEquals(Integer.valueOf(987654321), makeList(1, 9).foldr((i, res) -> res * 10 + i, 0));
   }
 
   /**
@@ -372,8 +369,7 @@ public class LinkedListTest {
     final Integer ii = e.cons(7).foldr1((i, res) -> i * 10 + res);
     assertEquals(Integer.valueOf(7), ii);
 
-    assertEquals(Integer.valueOf(987654321),
-                 LinkedList.fromStream(IntStream.range(1, 10).boxed()).foldr1((i, res) -> res * 10 + i));
+    assertEquals(Integer.valueOf(987654321), makeList(1, 9).foldr1((i, res) -> res * 10 + i));
   }
 
   /**
@@ -1182,13 +1178,44 @@ public class LinkedListTest {
   @Test
   public void testDelete() {
     println("delete");
-//    Object a = null;
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.delete(a);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final LinkedList<Integer> e = LinkedList.empty();
+      final LinkedList<Integer> res = e.delete(1);
+      final LinkedList<Integer> expected = e;
+      
+      assertEquals(expected, res);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.singleton(1);
+      final LinkedList<Integer> res1 = ls.delete(1);
+      final LinkedList<Integer> res2 = ls.delete(2);
+      final LinkedList<Integer> expected1 = LinkedList.empty();
+      final LinkedList<Integer> expected2 = LinkedList.singleton(1);
+      
+      assertEquals(expected1, res1);
+      assertEquals(expected2, res2);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1,2,3,2,5);
+      final LinkedList<Integer> res1 = ls.delete(1);
+      final LinkedList<Integer> res2 = ls.delete(2);
+      final LinkedList<Integer> res3 = ls.delete(3);
+      final LinkedList<Integer> res4 = ls.delete(5);
+      final LinkedList<Integer> res5 = ls.delete(2).delete(2);
+
+      final LinkedList<Integer> expected1 = LinkedList.of(2,3,2,5);
+      final LinkedList<Integer> expected2 = LinkedList.of(1,3,2,5);
+      final LinkedList<Integer> expected3 = LinkedList.of(1,2,2,5);
+      final LinkedList<Integer> expected4 = LinkedList.of(1,2,3,2);
+      final LinkedList<Integer> expected5 = LinkedList.of(1,3,5);
+
+      assertEquals(expected1, res1);
+      assertEquals(expected2, res2);
+      assertEquals(expected3, res3);
+      assertEquals(expected4, res4);
+      assertEquals(expected5, res5);
+    }
   }
 
   /**
