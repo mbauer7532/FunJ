@@ -6,6 +6,7 @@
 
 package DataStructures;
 
+import DataStructures.TuplesModule.Pair;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -64,21 +65,21 @@ public interface List<A, L extends List<A, L>> extends Iterable<A> {
   public <B> List<B, ?> scanr(final BiFunction<A, B, B> f, final B b);
   public L scanr1(final BiFunction<A, A, A> f);
 
-  public <ACC, B> TuplesModule.Pair<ACC, List<B, ?>> mapAccumL(final BiFunction<ACC, A, TuplesModule.Pair<ACC, B>> f, final ACC acc);
-  public <ACC, B> TuplesModule.Pair<ACC, List<B, ?>> mapAccumR(final BiFunction<ACC, A, TuplesModule.Pair<ACC, B>> f, final ACC acc);
+  public <ACC, B> Pair<ACC, List<B, ?>> mapAccumL(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc);
+  public <ACC, B> Pair<ACC, List<B, ?>> mapAccumR(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc);
 
   // Sublists
   public L take(final int n);
   public L drop(final int n);
 
-  public TuplesModule.Pair<L, L> splitAt(final int n);
+  public Pair<L, L> splitAt(final int n);
 
   public L takeWhile(final Predicate<A> pred);
   public L dropWhile(final Predicate<A> pred);
   public L dropWhileEnd(final Predicate<A> pred);
 
-  public TuplesModule.Pair<L, L> spanByPredicate(final Predicate<A> pred);
-  public TuplesModule.Pair<L, L> breakByPredicate(final Predicate<A> pred);
+  public Pair<L, L> spanByPredicate(final Predicate<A> pred);
+  public Pair<L, L> breakByPredicate(final Predicate<A> pred);
 
   public Optional<L> stripPrefix(final L list);
 
@@ -99,7 +100,7 @@ public interface List<A, L extends List<A, L>> extends Iterable<A> {
   // Searching (by Predicate)
   public Optional<A> find(final Predicate<A> pred);
   public L filter(final Predicate<A> pred);
-  public TuplesModule.Pair<L, L> partition(final Predicate<A> pred);
+  public Pair<L, L> partition(final Predicate<A> pred);
 
   // Indexing
   public A nth(final int n);
