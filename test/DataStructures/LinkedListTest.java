@@ -1183,7 +1183,7 @@ public class LinkedListTest {
       final LinkedList<Integer> e = LinkedList.empty();
       final LinkedList<Integer> res = e.delete(1);
       final LinkedList<Integer> expected = e;
-      
+
       assertEquals(expected, res);
     }
     {
@@ -1192,7 +1192,7 @@ public class LinkedListTest {
       final LinkedList<Integer> res2 = ls.delete(2);
       final LinkedList<Integer> expected1 = LinkedList.empty();
       final LinkedList<Integer> expected2 = LinkedList.singleton(1);
-      
+
       assertEquals(expected1, res1);
       assertEquals(expected2, res2);
     }
