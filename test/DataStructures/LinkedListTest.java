@@ -795,7 +795,7 @@ public class LinkedListTest {
       final Optional<LinkedList<Integer>> res3 = ls.stripPrefix(LinkedList.of(1,2,3));
       final Optional<LinkedList<Integer>> res4 = ls.stripPrefix(LinkedList.of(1,2,3,4));
       final Optional<LinkedList<Integer>> res5 = ls.stripPrefix(LinkedList.of(1,2,3,4,5));
-      
+
       assertEquals(Optional.of(LinkedList.of(2,3,4)), res1);
       assertEquals(Optional.of(LinkedList.of(3,4)), res2);
       assertEquals(Optional.of(LinkedList.of(4)), res3);
@@ -893,12 +893,23 @@ public class LinkedListTest {
   @Test
   public void testTails() {
     println("tails");
-//    LinkedList instance = null;
-//    LinkedList<LinkedList<A>> expResult = null;
-//    LinkedList<LinkedList<A>> result = instance.tails();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(LinkedList.singleton(e), e.tails());
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1);
+      assertEquals(LinkedList.of(LinkedList.of(1), e), ls.tails());
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1,2);
+      assertEquals(LinkedList.of(LinkedList.of(1,2), LinkedList.of(2), e), ls.tails());
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1,2,3);
+      assertEquals(LinkedList.of(LinkedList.of(1,2,3), LinkedList.of(2,3), LinkedList.of(3), e), ls.tails());
+    }
   }
 
   /**
