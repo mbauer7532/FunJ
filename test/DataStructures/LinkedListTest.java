@@ -1495,19 +1495,19 @@ public class LinkedListTest {
     assertTrue(exceptionWasThrown);
 
     {
-      final LinkedList<Integer> ls = e.cons(5).cons(1).cons(3).cons(2);
+      final LinkedList<Integer> ls = LinkedList.of(2, 3, 1, 5);
       assertEquals(Integer.valueOf(5), ls.max());
     }
     {
-      final LinkedList<Integer> ls = e.cons(1).cons(5).cons(3).cons(2);
+      final LinkedList<Integer> ls =  LinkedList.of(2, 3, 5, 1);
       assertEquals(Integer.valueOf(5), ls.max());
     }
     {
-      final LinkedList<Integer> ls = e.cons(1).cons(3).cons(5).cons(2);
+      final LinkedList<Integer> ls = LinkedList.of(2, 5, 3, 1);
       assertEquals(Integer.valueOf(5), ls.max());
     }
     {
-      final LinkedList<Integer> ls = e.cons(1).cons(3).cons(2).cons(5);
+      final LinkedList<Integer> ls = LinkedList.of(5, 2, 3, 1);
       assertEquals(Integer.valueOf(5), ls.max());
     }
   }
@@ -1528,22 +1528,22 @@ public class LinkedListTest {
     assertTrue(exceptionWasThrown);
 
     {
-      final LinkedList<Integer> ls = e.cons(5).cons(1).cons(3).cons(2);
+      final LinkedList<Integer> ls = LinkedList.of(2, 3, 1, 5);
       assertEquals(Integer.valueOf(5), ls.maxBy(LinkedListTest::cmp));
       assertEquals(Integer.valueOf(1), ls.maxBy(LinkedListTest::negCmp));
     }
     {
-      final LinkedList<Integer> ls = e.cons(1).cons(5).cons(3).cons(2);
+      final LinkedList<Integer> ls = LinkedList.of(2, 3, 5, 1);
       assertEquals(Integer.valueOf(5), ls.maxBy(LinkedListTest::cmp));
       assertEquals(Integer.valueOf(1), ls.maxBy(LinkedListTest::negCmp));
     }
     {
-      final LinkedList<Integer> ls = e.cons(1).cons(3).cons(5).cons(2);
+      final LinkedList<Integer> ls = LinkedList.of(2, 5, 3, 1);
       assertEquals(Integer.valueOf(5), ls.maxBy(LinkedListTest::cmp));
       assertEquals(Integer.valueOf(1), ls.maxBy(LinkedListTest::negCmp));
     }
     {
-      final LinkedList<Integer> ls = e.cons(1).cons(3).cons(2).cons(5);
+      final LinkedList<Integer> ls = LinkedList.of(5, 2, 3, 1);
       assertEquals(Integer.valueOf(5), ls.maxBy(LinkedListTest::cmp));
       assertEquals(Integer.valueOf(1), ls.maxBy(LinkedListTest::negCmp));
     }
@@ -1565,19 +1565,19 @@ public class LinkedListTest {
     assertTrue(exceptionWasThrown);
 
     {
-      final LinkedList<Integer> ls = e.cons(1).cons(5).cons(3).cons(2);
+      final LinkedList<Integer> ls = LinkedList.of(2, 3, 5, 1);
       assertEquals(Integer.valueOf(1), ls.min());
     }
     {
-      final LinkedList<Integer> ls = e.cons(5).cons(1).cons(3).cons(2);
+      final LinkedList<Integer> ls = LinkedList.of(2, 3, 1, 5);
       assertEquals(Integer.valueOf(1), ls.min());
     }
     {
-      final LinkedList<Integer> ls = e.cons(5).cons(3).cons(1).cons(2);
+      final LinkedList<Integer> ls = LinkedList.of(2, 1, 3, 5);
       assertEquals(Integer.valueOf(1), ls.min());
     }
     {
-      final LinkedList<Integer> ls = e.cons(5).cons(3).cons(2).cons(1);
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3, 5);
       assertEquals(Integer.valueOf(1), ls.min());
     }
   }
@@ -1598,22 +1598,22 @@ public class LinkedListTest {
     assertTrue(exceptionWasThrown);
 
     {
-      final LinkedList<Integer> ls = e.cons(1).cons(5).cons(3).cons(2);
+      final LinkedList<Integer> ls = LinkedList.of(2, 3, 5, 1);
       assertEquals(Integer.valueOf(1), ls.minBy(LinkedListTest::cmp));
       assertEquals(Integer.valueOf(5), ls.minBy(LinkedListTest::negCmp));
     }
     {
-      final LinkedList<Integer> ls = e.cons(5).cons(1).cons(3).cons(2);
+      final LinkedList<Integer> ls = LinkedList.of(2, 3, 1, 5);
       assertEquals(Integer.valueOf(1), ls.minBy(LinkedListTest::cmp));
       assertEquals(Integer.valueOf(5), ls.minBy(LinkedListTest::negCmp));
     }
     {
-      final LinkedList<Integer> ls = e.cons(5).cons(3).cons(1).cons(2);
+      final LinkedList<Integer> ls = LinkedList.of(2, 1, 3, 5);
       assertEquals(Integer.valueOf(1), ls.minBy(LinkedListTest::cmp));
       assertEquals(Integer.valueOf(5), ls.minBy(LinkedListTest::negCmp));
     }
     {
-      final LinkedList<Integer> ls = e.cons(5).cons(3).cons(2).cons(1);
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3, 5);
       assertEquals(Integer.valueOf(1), ls.minBy(LinkedListTest::cmp));
       assertEquals(Integer.valueOf(5), ls.minBy(LinkedListTest::negCmp));
     }
@@ -1626,15 +1626,15 @@ public class LinkedListTest {
   public void testSubsequences() {
     println("subsequences");
     {
-      assertEquals(LinkedList.<Integer> empty().subsequences().toString(), "[[]]");
+      assertEquals("[[]]", LinkedList.<Integer> empty().subsequences().toString());
     }
     {
-      assertEquals(LinkedList.<Integer> empty().cons(1).subsequences().toString(), "[[], [1]]");
+      assertEquals("[[], [1]]", LinkedList.<Integer> empty().cons(1).subsequences().toString());
     }
     {
-      final LinkedList<String> ls = LinkedList.fromStream(Stream.of("a", "b", "c"));
+      final LinkedList<String> ls = LinkedList.of("a", "b", "c");
       final LinkedList<LinkedList<String>> subseqs = ls.subsequences();
-      assertEquals(subseqs.toString(), "[[], [a], [b], [a, b], [c], [a, c], [b, c], [a, b, c]]");
+      assertEquals("[[], [a], [b], [a, b], [c], [a, c], [b, c], [a, b, c]]", subseqs.toString());
     }
   }
 
@@ -1656,7 +1656,7 @@ public class LinkedListTest {
       assertEquals(
               "[[b, c, a], [b, a, c], [a, b, c], [c, b, a], [c, a, b], [a, c, b]]",
               subseqs.toString());
-      assertEquals(subseqs.length(), 3 * 2 * 1);
+      assertEquals(3 * 2 * 1, subseqs.length());
     }
     {
       final LinkedList<String> ls = LinkedList.fromStream(Stream.of("a", "b", "c", "d"));
