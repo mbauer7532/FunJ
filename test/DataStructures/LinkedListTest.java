@@ -727,21 +727,49 @@ public class LinkedListTest {
   public void testSpanBy() {
     println("spanBy");
 
-    // ...
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(Pair.create(e, e), e.spanBy(n -> true));
+      assertEquals(Pair.create(e, e), e.spanBy(n -> false));
+    }
+    {
+      final LinkedList<Integer> ls = makeList(1, 1);
+      assertEquals(Pair.create(LinkedList.of(1), e), ls.spanBy(n -> n == 1));
+      assertEquals(Pair.create(e, LinkedList.of(1)), ls.spanBy(n -> n != 1));
+    }
+    {
+      final LinkedList<Integer> ls = makeList(1, 10);
+      assertEquals(Pair.create(makeList(1, 5), makeList(6, 10)), ls.spanBy(n -> n < 6));
+      assertEquals(Pair.create(e, makeList(1, 10)), ls.spanBy(n -> n > 6));
+      assertEquals(Pair.create(LinkedList.singleton(1), makeList(2, 10)), ls.spanBy(n -> n == 1));
+      assertEquals(Pair.create(LinkedList.of(1, 2), makeList(3, 10)), ls.spanBy(n -> n == 1 || n == 2));
+    }
   }
 
   /**
    * Test of breakByPredicate method, of class LinkedList.
    */
   @Test
-  public void testBreakByPredicate() {
-    println("breakByPredicate");
-//    LinkedList instance = null;
-//    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
-//    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.breakByPredicate(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+  public void testBreakBy() {
+    println("breakBy");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(Pair.create(e, e), e.breakBy(n -> true));
+      assertEquals(Pair.create(e, e), e.breakBy(n -> false));
+    }
+    {
+      final LinkedList<Integer> ls = makeList(1, 1);
+      assertEquals(Pair.create(LinkedList.of(1), e), ls.breakBy(n -> n != 1));
+      assertEquals(Pair.create(e, LinkedList.of(1)), ls.breakBy(n -> n == 1));
+    }
+    {
+      final LinkedList<Integer> ls = makeList(1, 10);
+      assertEquals(Pair.create(makeList(1, 5), makeList(6, 10)), ls.breakBy(n -> n >= 6));
+      assertEquals(Pair.create(e, makeList(1, 10)), ls.breakBy(n -> n <= 6));
+      assertEquals(Pair.create(LinkedList.singleton(1), makeList(2, 10)), ls.breakBy(n -> n != 1));
+      assertEquals(Pair.create(LinkedList.of(1, 2), makeList(3, 10)), ls.breakBy(n -> n != 1 && n != 2));
+    }
   }
 
   /**
