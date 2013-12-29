@@ -1416,24 +1416,64 @@ public class LinkedListTest {
 
       assertNotSame(ls.tail(), res1.tail());
       assertSame(ls.tail(), res1.tail().tail());
-      assertSame(ls.tail().tail(), res2.tail().tail().tail());
     }
   }
 
   /**
    * Test of insertBy method, of class LinkedList.
    */
+
+  private static int insertByCmp(final Integer x, final Integer y) { return Math.abs(x - y) <= 1 ? 0 : (x > y ? 1 : -1); }
+
   @Test
   public void testInsertBy() {
     println("insertBy");
-//    Object a = null;
-//    Comparator cmp = null;
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.insertBy(a, cmp);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final LinkedList<Integer> res = e.insertBy(1, LinkedListTest::insertByCmp);
+      assertEquals(LinkedList.singleton(1), res);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(2,4,6);
+      final LinkedList<Integer> res0 = ls.insertBy(0, LinkedListTest::insertByCmp);
+      final LinkedList<Integer> res1 = ls.insertBy(1, LinkedListTest::insertByCmp);
+      final LinkedList<Integer> res2 = ls.insertBy(2, LinkedListTest::insertByCmp);
+      final LinkedList<Integer> res3 = ls.insertBy(3, LinkedListTest::insertByCmp);
+      final LinkedList<Integer> res4 = ls.insertBy(4, LinkedListTest::insertByCmp);
+      final LinkedList<Integer> res5 = ls.insertBy(5, LinkedListTest::insertByCmp);
+      final LinkedList<Integer> res6 = ls.insertBy(6, LinkedListTest::insertByCmp);
+      final LinkedList<Integer> res7 = ls.insertBy(7, LinkedListTest::insertByCmp);
+      final LinkedList<Integer> res8 = ls.insertBy(8, LinkedListTest::insertByCmp);
+
+      final LinkedList<Integer> expected0 = LinkedList.of(0,2,4,6);
+      final LinkedList<Integer> expected1 = LinkedList.of(1,2,4,6);
+      final LinkedList<Integer> expected2 = LinkedList.of(2,2,4,6);
+      final LinkedList<Integer> expected3 = LinkedList.of(3,2,4,6);
+      final LinkedList<Integer> expected4 = LinkedList.of(2,4,4,6);
+      final LinkedList<Integer> expected5 = LinkedList.of(2,5,4,6);
+      final LinkedList<Integer> expected6 = LinkedList.of(2,4,6,6);
+      final LinkedList<Integer> expected7 = LinkedList.of(2,4,7,6);
+      final LinkedList<Integer> expected8 = LinkedList.of(2,4,6,8);
+
+      assertEquals(expected0, res0);
+      assertEquals(expected1, res1);
+      assertEquals(expected2, res2);
+      assertEquals(expected3, res3);
+      assertEquals(expected4, res4);
+      assertEquals(expected5, res5);
+      assertEquals(expected6, res6);
+      assertEquals(expected7, res7);
+      assertEquals(expected8, res8);
+    }
+    {
+      final LinkedList<Integer> ls = makeList(1, 5);
+      final LinkedList<Integer> res1 = ls.insertBy(2, LinkedListTest::insertByCmp);
+      final LinkedList<Integer> res2 = ls.insertBy(3, LinkedListTest::insertByCmp);
+
+      assertSame(ls, res1.tail());
+      assertSame(ls.tail(), res2.tail().tail());
+    }
   }
 
   private static int cmp(final Integer x, final Integer y) { return x > y ? 1 : x < y ? -1 : 0; }
