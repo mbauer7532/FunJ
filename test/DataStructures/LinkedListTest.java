@@ -929,12 +929,21 @@ public class LinkedListTest {
   @Test
   public void testIsPrefixOf() {
     println("isPrefixOf");
-//    LinkedList instance = null;
-//    boolean expResult = false;
-//    boolean result = instance.isPrefixOf(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertTrue(e.isPrefixOf(e));
+    assertFalse(e.cons(1).isPrefixOf(e));
+    assertTrue(e.isPrefixOf(e.cons(1)));
+
+    final LinkedList<Integer> ls = LinkedList.of(1,2,3);
+
+    assertTrue(LinkedList.of(1).isPrefixOf(ls));
+    assertFalse(LinkedList.of(2).isPrefixOf(ls));
+    assertFalse(LinkedList.of(3).isPrefixOf(ls));
+
+    assertTrue(LinkedList.of(1,2).isPrefixOf(ls));
+    assertTrue(LinkedList.of(1,2,3).isPrefixOf(ls));
+    assertFalse(LinkedList.of(1,2,3,4).isPrefixOf(ls));
   }
 
   /**
@@ -943,12 +952,21 @@ public class LinkedListTest {
   @Test
   public void testIsSuffixOf() {
     println("isSuffixOf");
-//    LinkedList instance = null;
-//    boolean expResult = false;
-//    boolean result = instance.isSuffixOf(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertTrue(e.isSuffixOf(e));
+    assertFalse(e.cons(1).isSuffixOf(e));
+    assertTrue(e.isSuffixOf(e.cons(1)));
+
+    final LinkedList<Integer> ls = LinkedList.of(1,2,3);
+
+    assertTrue(LinkedList.of(3).isSuffixOf(ls));
+    assertFalse(LinkedList.of(2).isSuffixOf(ls));
+    assertFalse(LinkedList.of(1).isSuffixOf(ls));
+
+    assertTrue(LinkedList.of(2,3).isSuffixOf(ls));
+    assertTrue(LinkedList.of(1,2,3).isSuffixOf(ls));
+    assertFalse(LinkedList.of(1,2,3,4).isSuffixOf(ls));
   }
 
   /**
@@ -957,12 +975,31 @@ public class LinkedListTest {
   @Test
   public void testIsInfixOf() {
     println("isInfixOf");
-//    LinkedList instance = null;
-//    boolean expResult = false;
-//    boolean result = instance.isInfixOf(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    assertTrue(e.isInfixOf(e));
+    assertFalse(e.cons(1).isInfixOf(e));
+    assertTrue(e.isInfixOf(e.cons(1)));
+
+    final LinkedList<Integer> ls = LinkedList.of(1,2,3,4);
+
+    assertTrue(LinkedList.of(1).isInfixOf(ls));
+    assertTrue(LinkedList.of(2).isInfixOf(ls));
+    assertTrue(LinkedList.of(3).isInfixOf(ls));
+    assertTrue(LinkedList.of(4).isInfixOf(ls));
+
+    assertTrue(LinkedList.of(1,2).isInfixOf(ls));
+    assertTrue(LinkedList.of(2,3).isInfixOf(ls));
+    assertTrue(LinkedList.of(3,4).isInfixOf(ls));
+    assertTrue(LinkedList.of(1,2,3).isInfixOf(ls));
+    assertTrue(LinkedList.of(2,3,4).isInfixOf(ls));
+    assertTrue(LinkedList.of(1,2,3,4).isInfixOf(ls));
+
+    assertFalse(LinkedList.of(1,3).isInfixOf(ls));
+    assertFalse(LinkedList.of(2,4).isInfixOf(ls));
+    assertFalse(LinkedList.of(3,4,5).isInfixOf(ls));
+    assertFalse(LinkedList.of(4,5).isInfixOf(ls));
+    assertFalse(LinkedList.of(5).isInfixOf(ls));
   }
 
   /**

@@ -821,7 +821,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   @Override
   public boolean isInfixOf(final LinkedList<A> list) {
-    return anyImpl(tailsImpl(this), x -> isPrefixOfImpl(list, x));
+    return anyImpl(tailsImpl(list), x -> isPrefixOfImpl(this, x));
   }
 
   private static <A> Optional<Pair<A, Integer>> findByImpl(final LinkedList<A> list, final Predicate<A> pred) {
