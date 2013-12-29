@@ -1408,7 +1408,16 @@ public class LinkedListTest {
       assertEquals(expected5, res5);
       assertEquals(expected6, res6);
       assertEquals(expected7, res7);
-    }    
+    }
+    {
+      final LinkedList<Integer> ls = makeList(1, 5);
+      final LinkedList<Integer> res1 = ls.insert(2);
+      final LinkedList<Integer> res2 = ls.insert(3);
+
+      assertNotSame(ls.tail(), res1.tail());
+      assertSame(ls.tail(), res1.tail().tail());
+      assertSame(ls.tail().tail(), res2.tail().tail().tail());
+    }
   }
 
   /**
