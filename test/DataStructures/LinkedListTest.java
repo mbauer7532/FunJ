@@ -703,12 +703,21 @@ public class LinkedListTest {
   @Test
   public void testDropWhileEnd() {
     println("dropWhileEnd");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.dropWhileEnd(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final LinkedList<Integer> ls = LinkedList.empty();
+      assertEquals(ls, ls.dropWhileEnd(n -> true));
+      assertEquals(ls, ls.dropWhileEnd(n -> false));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1,2,3,4,5);
+      assertEquals(LinkedList.of(1,2,3,4,5), ls.dropWhileEnd(n -> n > 5));
+      assertEquals(LinkedList.of(1,2,3,4), ls.dropWhileEnd(n -> n > 4));
+      assertEquals(LinkedList.of(1,2,3), ls.dropWhileEnd(n -> n > 3));
+      assertEquals(LinkedList.of(1,2), ls.dropWhileEnd(n -> n > 2));
+      assertEquals(LinkedList.of(1), ls.dropWhileEnd(n -> n > 1));
+      assertEquals(LinkedList.of(), ls.dropWhileEnd(n -> n > 0));
+    }
   }
 
   /**
