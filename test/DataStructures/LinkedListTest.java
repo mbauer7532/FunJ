@@ -440,9 +440,9 @@ public class LinkedListTest {
     println("scanr");
 //    LinkedList instance = null;
 //    LinkedList expResult = null;
-////    LinkedList result = instance.scanr(null);
-////    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
+//    LinkedList result = instance.scanr(null);
+//    assertEquals(expResult, result);
+//    TODO review the generated test code and remove the default call to fail.
 //    fail("The test case is a prototype.");
   }
 
