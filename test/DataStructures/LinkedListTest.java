@@ -1377,13 +1377,38 @@ public class LinkedListTest {
   @Test
   public void testInsert() {
     println("insert");
-//    Object a = null;
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.insert(a);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final LinkedList<Integer> res = e.insert(1);
+      assertEquals(LinkedList.singleton(1), res);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(2,4,6);
+      final LinkedList<Integer> res1 = ls.insert(1);
+      final LinkedList<Integer> res2 = ls.insert(2);
+      final LinkedList<Integer> res3 = ls.insert(3);
+      final LinkedList<Integer> res4 = ls.insert(4);
+      final LinkedList<Integer> res5 = ls.insert(5);
+      final LinkedList<Integer> res6 = ls.insert(6);
+      final LinkedList<Integer> res7 = ls.insert(7);
+
+      final LinkedList<Integer> expected1 = LinkedList.of(1,2,4,6);
+      final LinkedList<Integer> expected2 = LinkedList.of(2,2,4,6);
+      final LinkedList<Integer> expected3 = LinkedList.of(2,3,4,6);
+      final LinkedList<Integer> expected4 = LinkedList.of(2,4,4,6);
+      final LinkedList<Integer> expected5 = LinkedList.of(2,4,5,6);
+      final LinkedList<Integer> expected6 = LinkedList.of(2,4,6,6);
+      final LinkedList<Integer> expected7 = LinkedList.of(2,4,6,7);
+
+      assertEquals(expected1, res1);
+      assertEquals(expected2, res2);
+      assertEquals(expected3, res3);
+      assertEquals(expected4, res4);
+      assertEquals(expected5, res5);
+      assertEquals(expected6, res6);
+      assertEquals(expected7, res7);
+    }    
   }
 
   /**
