@@ -663,7 +663,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     return dropWhileEndImpl(this, pred);
   }
 
-  private static <A> Pair<LinkedList<A>, LinkedList<A>> spanByPredicateImpl(final LinkedList<A> list, final Predicate<A> pred) {
+  private static <A> Pair<LinkedList<A>, LinkedList<A>> spanByImpl(final LinkedList<A> list, final Predicate<A> pred) {
     LinkedList<A> t = list;
     int n = 0;
     while (t.isNotNull()) {
@@ -694,13 +694,13 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-  public Pair<LinkedList<A>, LinkedList<A>> spanByPredicate(final Predicate<A> pred) {
-    return spanByPredicateImpl(this, pred);
+  public Pair<LinkedList<A>, LinkedList<A>> spanBy(final Predicate<A> pred) {
+    return spanByImpl(this, pred);
   }
 
   @Override
-  public Pair<LinkedList<A>, LinkedList<A>> breakByPredicate(final Predicate<A> pred) {
-    return spanByPredicateImpl(this, pred.negate());
+  public Pair<LinkedList<A>, LinkedList<A>> breakBy(final Predicate<A> pred) {
+    return spanByImpl(this, pred.negate());
   }
 
   private static <A> Optional<LinkedList<A>> stripPrefixImpl(final LinkedList<A> list, final LinkedList<A> prefix) {

@@ -724,14 +724,10 @@ public class LinkedListTest {
    * Test of spanByPredicate method, of class LinkedList.
    */
   @Test
-  public void testSpanByPredicate() {
-    println("spanByPredicate");
-//    LinkedList instance = null;
-//    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> expResult = null;
-//    TuplesModule.Pair<LinkedList<A>, LinkedList<A>> result = instance.spanByPredicate(null);
-//    assertEquals(expResult, result);
-//    TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+  public void testSpanBy() {
+    println("spanBy");
+
+    // ...
   }
 
   /**

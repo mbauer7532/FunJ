@@ -78,8 +78,8 @@ public interface List<A, L extends List<A, L>> extends Iterable<A> {
   public L dropWhile(final Predicate<A> pred);
   public L dropWhileEnd(final Predicate<A> pred);
 
-  public Pair<L, L> spanByPredicate(final Predicate<A> pred);
-  public Pair<L, L> breakByPredicate(final Predicate<A> pred);
+  public Pair<L, L> spanBy(final Predicate<A> pred);
+  public Pair<L, L> breakBy(final Predicate<A> pred);
 
   public Optional<L> stripPrefix(final L list);
 
