@@ -733,7 +733,7 @@ public class LinkedListTest {
       assertEquals(Pair.create(e, e), e.spanBy(n -> false));
     }
     {
-      final LinkedList<Integer> ls = makeList(1, 1);
+      final LinkedList<Integer> ls = LinkedList.of(1);
       assertEquals(Pair.create(LinkedList.of(1), e), ls.spanBy(n -> n == 1));
       assertEquals(Pair.create(e, LinkedList.of(1)), ls.spanBy(n -> n != 1));
     }
@@ -759,7 +759,7 @@ public class LinkedListTest {
       assertEquals(Pair.create(e, e), e.breakBy(n -> false));
     }
     {
-      final LinkedList<Integer> ls = makeList(1, 1);
+      final LinkedList<Integer> ls = LinkedList.of(1);
       assertEquals(Pair.create(LinkedList.of(1), e), ls.breakBy(n -> n != 1));
       assertEquals(Pair.create(e, LinkedList.of(1)), ls.breakBy(n -> n == 1));
     }
