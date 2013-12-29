@@ -778,14 +778,31 @@ public class LinkedListTest {
   @Test
   public void testStripPrefix() {
     println("stripPrefix");
-//    LinkedList instance = null;
-//    Optional<LinkedList<A>> expResult = null;
-//    Optional<LinkedList<A>> result = instance.stripPrefix(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-  }
 
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final Optional<LinkedList<Integer>> res = e.stripPrefix(LinkedList.empty());
+      assertEquals(Optional.of(e), res);
+    }
+    {
+      final Optional<LinkedList<Integer>> res = e.stripPrefix(LinkedList.singleton(1));
+      assertEquals(Optional.empty(), res);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1,2,3,4);
+      final Optional<LinkedList<Integer>> res1 = ls.stripPrefix(LinkedList.of(1));
+      final Optional<LinkedList<Integer>> res2 = ls.stripPrefix(LinkedList.of(1,2));
+      final Optional<LinkedList<Integer>> res3 = ls.stripPrefix(LinkedList.of(1,2,3));
+      final Optional<LinkedList<Integer>> res4 = ls.stripPrefix(LinkedList.of(1,2,3,4));
+      final Optional<LinkedList<Integer>> res5 = ls.stripPrefix(LinkedList.of(1,2,3,4,5));
+      
+      assertEquals(Optional.of(LinkedList.of(2,3,4)), res1);
+      assertEquals(Optional.of(LinkedList.of(3,4)), res2);
+      assertEquals(Optional.of(LinkedList.of(4)), res3);
+      assertEquals(Optional.of(LinkedList.empty()), res4);
+      assertEquals(Optional.empty(), res5);
+    }
+  }
   /**
    * Test of group method, of class LinkedList.
    */

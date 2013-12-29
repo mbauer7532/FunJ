@@ -40,6 +40,7 @@ public interface List<A, L extends List<A, L>> extends Iterable<A> {
   public boolean isEmpty();
   public int length();
 
+  @Override
   void forEach(Consumer<? super A> action);
 
   // Transformations
@@ -81,7 +82,7 @@ public interface List<A, L extends List<A, L>> extends Iterable<A> {
   public Pair<L, L> spanBy(final Predicate<A> pred);
   public Pair<L, L> breakBy(final Predicate<A> pred);
 
-  public Optional<L> stripPrefix(final L list);
+  public Optional<L> stripPrefix(final L prefix);
 
   public List<L, ?> group();
   public List<L, ?> groupBy(final BiPredicate<A, A> eqPred);

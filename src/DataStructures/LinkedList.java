@@ -718,8 +718,8 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-  public Optional<LinkedList<A>> stripPrefix(final LinkedList<A> list) {
-    return stripPrefixImpl(list, this);
+  public Optional<LinkedList<A>> stripPrefix(final LinkedList<A> prefix) {
+    return stripPrefixImpl(this, prefix);
   }
 
   private static <A> LinkedList<LinkedList<A>> groupByImpl(final LinkedList<A> list, final BiPredicate<A, A> eqPred) {
