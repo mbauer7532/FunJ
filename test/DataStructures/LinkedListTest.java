@@ -879,12 +879,23 @@ public class LinkedListTest {
   @Test
   public void testInits() {
     println("inits");
-//    LinkedList instance = null;
-//    LinkedList<LinkedList<A>> expResult = null;
-//    LinkedList<LinkedList<A>> result = instance.inits();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(LinkedList.singleton(e), e.inits());
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1);
+      assertEquals(LinkedList.of(e, LinkedList.of(1)), ls.inits());
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1,2);
+      assertEquals(LinkedList.of(e, LinkedList.of(1), LinkedList.of(1,2)), ls.inits());
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1,2,3);
+      assertEquals(LinkedList.of(e, LinkedList.of(1), LinkedList.of(1,2), LinkedList.of(1,2,3)), ls.inits());
+    }
   }
 
   /**
