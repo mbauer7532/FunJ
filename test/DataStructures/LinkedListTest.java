@@ -1509,7 +1509,7 @@ public class LinkedListTest {
   public void testSortBy() {
     println("sortBy");
 
-      final LinkedList<Integer> e = LinkedList.empty();
+    final LinkedList<Integer> e = LinkedList.empty();
     {
       final LinkedList<Integer> eSorted = e.sortBy(LinkedListTest::cmp);
       assertEquals(e, eSorted);
@@ -1836,11 +1836,18 @@ public class LinkedListTest {
   @Test
   public void testZipWith() {
     println("zipWith");
-//    LinkedList expResult = null;
-//    LinkedList result = LinkedList.zipWith(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, LinkedList.zipWith(e, e, (x, y) -> x + y));
+      assertEquals(e, LinkedList.zipWith(e, e.cons(1), (x, y) -> x + y));
+      assertEquals(e, LinkedList.zipWith(e.cons(1), e, (x, y) -> x + y));
+    }
+    {
+      LinkedList<Integer> ls;
+      assertEquals("[1:2]", LinkedList.zipWith(e.cons(1), e.cons(2), (x, y) -> x.toString() + ":" + y.toString()).toString());
+      assertEquals("[0:0, 1:-1, 2:-2, 3:-3, 4:-4, 5:-5]", LinkedList.zipWith(ls = makeList(0, 5), ls.map(n -> -n), (x, y) -> x.toString() + ":" + y.toString()).toString());
+    }
   }
 
   /**
