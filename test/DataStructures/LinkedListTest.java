@@ -140,7 +140,7 @@ public class LinkedListTest {
     }
     catch (AssertionError ae) { exceptionWasThrown = true; }
     assertTrue(exceptionWasThrown);
-    
+
     final LinkedList<Integer> oneElem = e.cons(1);
     assertEquals(oneElem.tail(), e);
     assertEquals(oneElem.cons(2).tail(), oneElem);
@@ -295,7 +295,7 @@ public class LinkedListTest {
     assertEquals(e.cons(2), e.cons(2).intersperse(0));
     assertEquals(e.cons(2).cons(0).cons(3), e.cons(2).cons(3).intersperse(0));
 
-    final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.rangeClosed(1,10).boxed());
+    final LinkedList<Integer> ls = makeList(1, 10);
     final  LinkedList<Integer> lsReversed = ls.reverse().intersperse(0);
     assertEquals(lsReversed.toString(), "[10, 0, 9, 0, 8, 0, 7, 0, 6, 0, 5, 0, 4, 0, 3, 0, 2, 0, 1]");
   }
