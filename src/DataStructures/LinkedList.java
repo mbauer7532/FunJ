@@ -454,7 +454,8 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   private static <A, B> LinkedList<B> scanrImpl(final LinkedList<A> list, final BiFunction<A, B, B> f, final B b) {
     final ArrayList<A> v = toArrayImpl(list);
-    final int lastIdx = v.size() - 1;
+    final int len = v.size();
+    final int lastIdx = len - 1;
     final ArrayList<B> bs = new ArrayList<>();
 
     bs.add(b);
@@ -464,7 +465,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
                      (acc, e) -> { final B newAcc = f.apply(e, acc); bs.add(newAcc); return newAcc; },
                      Functionals::functionShouldNotBeCalled);
 
-    return fromArray(bs);
+    return fromStream(IntStream.rangeClosed(0, len).mapToObj(i -> bs.get(len - i)));
   }
 
   @Override
@@ -477,7 +478,18 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
       return list;
     }
     else {
-      return scanrImpl(list.mCdr, f, list.mCar);
+      final ArrayList<A> v = toArrayImpl(list);
+      final int lastIdx = v.size() - 1;
+      final int butLastIdx = lastIdx - 1;
+      final A b = v.get(lastIdx);
+      final Ref<LinkedList<A>> e = new Ref<>(singleton(b));
+
+      IntStream.rangeClosed(0, butLastIdx)
+               .mapToObj(i -> v.get(butLastIdx - i))
+               .reduce(b,
+                       (acc, elem) -> { final A newA = f.apply(elem, acc); e.r = create(newA, e.r); return newA; },
+                       Functionals::functionShouldNotBeCalled);
+      return e.r;
     }
   }
 

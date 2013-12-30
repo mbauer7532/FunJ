@@ -410,26 +410,51 @@ public class LinkedListTest {
   @Test
   public void testScanl() {
     println("scanl");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-////    LinkedList result = instance.scanl(null);
-////    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-  }
 
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final LinkedList<Integer> res = e.scanl((aux, i) -> aux + i, 0);
+      assertEquals(LinkedList.singleton(0), res);
+    }
+    {
+      final int low = 1, high = 5;
+      final LinkedList<Integer> ls = makeList(low, high);
+      final LinkedList<Integer> res = ls.scanl((acc, i) -> acc * 10 + i, low - 1);
+      assertEquals(LinkedList.of(0, 1, 12, 123, 1234, 12345), res);
+      assertEquals(ls.foldl((acc, i) -> acc * 10 + i, low - 1), res.last());
+    }
+    {
+      final int low = 1, high = 5;
+      final LinkedList<Integer> ls = makeList(low, high);
+      final LinkedList<Integer> res = ls.scanl((acc, i) -> acc + i, low - 1);
+      assertEquals(LinkedList.of(0,1,3,6,10,15), res);
+    }
+  }
   /**
    * Test of scanl1 method, of class LinkedList.
    */
   @Test
   public void testScanl1() {
     println("scanl1");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.scanl1(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final LinkedList<Integer> e = LinkedList.empty();
+      final LinkedList<Integer> res = e.scanl1((acc, i) -> acc + i);
+      assertEquals(e, res);
+    }
+    {
+      final int low = 1, high = 5;
+      final LinkedList<Integer> ls = makeList(low, high);
+      final LinkedList<Integer> res = ls.scanl1((acc, i) -> acc * 10 + i);
+      assertEquals(LinkedList.of(1, 12, 123, 1234, 12345), res);
+    }
+    {
+      final int low = 1, high = 5;
+      final LinkedList<Integer> ls = makeList(low, high);
+      final LinkedList<Integer> res = ls.scanl1((acc, i) -> acc + i);
+
+      assertEquals(LinkedList.of(1,3,6,10,15), res);
+    }
   }
 
   /**
@@ -438,12 +463,26 @@ public class LinkedListTest {
   @Test
   public void testScanr() {
     println("scanr");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.scanr(null);
-//    assertEquals(expResult, result);
-//    TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final LinkedList<Integer> res = e.scanr((i, acc) -> acc + i, 0);
+      assertEquals(LinkedList.singleton(0), res);
+    }
+    {
+      final int low = 1, high = 5;
+      final LinkedList<Integer> ls = makeList(low, high);
+      final LinkedList<Integer> res = ls.scanr((i, acc) -> acc * 10 + i, low - 1);
+      assertEquals(LinkedList.of(54321, 5432, 543, 54, 5, 0), res);
+      assertEquals(ls.foldr((i, acc) -> acc * 10 + i, low - 1), res.head());
+    }
+    {
+      final int low = 1, high = 5;
+      final LinkedList<Integer> ls = makeList(low, high);
+      final LinkedList<Integer> res = ls.scanr((i, acc) -> acc + i, low - 1);
+
+      assertEquals(LinkedList.of(15,14,12,9,5,0), res);
+    }
   }
 
   /**
@@ -452,12 +491,26 @@ public class LinkedListTest {
   @Test
   public void testScanr1() {
     println("scanr1");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.scanr1(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final LinkedList<Integer> res = e.scanr1((i, acc) -> acc + i);
+      assertEquals(e, res);
+    }
+    {
+      final int low = 1, high = 5;
+      final LinkedList<Integer> ls = makeList(low, high);
+      final LinkedList<Integer> res = ls.scanr1((i, acc) -> acc * 10 + i);
+      assertEquals(LinkedList.of(54321, 5432, 543, 54, 5), res);
+      assertEquals(ls.foldr1((i, acc) -> acc * 10 + i), res.head());
+    }
+    {
+      final int low = 1, high = 5;
+      final LinkedList<Integer> ls = makeList(low, high);
+      final LinkedList<Integer> res = ls.scanr1((i, acc) -> acc + i);
+
+      assertEquals(LinkedList.of(15,14,12,9,5), res);
+    }
   }
 
   /**
