@@ -1268,7 +1268,7 @@ public class LinkedListTest {
       assertEquals(OptionalInt.empty(), e.elemIndex(1));
     }
     {
-      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3, 4, 5);
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3, 4, 5, 1, 2);
       assertEquals(OptionalInt.empty(), ls.elemIndex(0));
       assertEquals(OptionalInt.of(0), ls.elemIndex(1));
       assertEquals(OptionalInt.of(1), ls.elemIndex(2));
@@ -1285,13 +1285,21 @@ public class LinkedListTest {
   @Test
   public void testElemIndices() {
     println("elemIndices");
-//    Object a = null;
-//    LinkedList instance = null;
-//    LinkedList<Integer> expResult = null;
-//    LinkedList<Integer> result = instance.elemIndices(a);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, e.elemIndices(1));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 1, 3, 3, 4, 5, 4, 2, 1);
+      assertEquals(e, ls.elemIndices(0));
+      assertEquals(LinkedList.of(0, 2, 9), ls.elemIndices(1));
+      assertEquals(LinkedList.of(1, 8), ls.elemIndices(2));
+      assertEquals(LinkedList.of(3, 4), ls.elemIndices(3));
+      assertEquals(LinkedList.of(5, 7), ls.elemIndices(4));
+      assertEquals(LinkedList.of(6), ls.elemIndices(5));
+      assertEquals(LinkedList.empty(), ls.elemIndices(6));
+    }
   }
 
   /**
