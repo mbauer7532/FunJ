@@ -1262,13 +1262,21 @@ public class LinkedListTest {
   @Test
   public void testElemIndex() {
     println("elemIndex");
-//    Object a = null;
-//    LinkedList instance = null;
-//    OptionalInt expResult = null;
-//    OptionalInt result = instance.elemIndex(a);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(OptionalInt.empty(), e.elemIndex(1));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3, 4, 5);
+      assertEquals(OptionalInt.empty(), ls.elemIndex(0));
+      assertEquals(OptionalInt.of(0), ls.elemIndex(1));
+      assertEquals(OptionalInt.of(1), ls.elemIndex(2));
+      assertEquals(OptionalInt.of(2), ls.elemIndex(3));
+      assertEquals(OptionalInt.of(3), ls.elemIndex(4));
+      assertEquals(OptionalInt.of(4), ls.elemIndex(5));
+      assertEquals(OptionalInt.empty(), ls.elemIndex(6));
+    }
   }
 
   /**
