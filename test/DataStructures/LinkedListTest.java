@@ -1395,13 +1395,22 @@ public class LinkedListTest {
   @Test
   public void testNubBy() {
     println("nubBy");
-//    Comparator cmp = null;
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.nubBy(cmp);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, e.nubBy((x, y) -> 1));
+      assertEquals(e, e.nubBy((x, y) -> 0));
+      assertEquals(e, e.nubBy((x, y) -> -1));
+
+      assertEquals(e.cons(1), e.cons(1).nubBy((x, y) -> 1));
+      assertEquals(e.cons(1).cons(1), e.cons(1).cons(1).nubBy((x, y) -> 1));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 1, 2, 2, 3, 4);
+      assertEquals(LinkedList.of(1), ls.nubBy((x, y) -> 0));
+      assertEquals(LinkedList.of(1, 3),
+                   ls.nubBy((x, y) -> Math.abs(x - y) <= 1 ? 0 : x < y ? -1 : 1));
+    }
   }
 
   /**
@@ -1497,12 +1506,25 @@ public class LinkedListTest {
   @Test
   public void testUnion() {
     println("union");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.union(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, e.union(e));
+      assertEquals(e.cons(1), e.cons(1).union(e.cons(1)));
+      assertEquals(e.cons(1), e.cons(1).union(e.cons(1).cons(1)));
+      assertEquals(e.cons(1).cons(1), e.cons(1).cons(1).union(e.cons(1).cons(1)));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(2, 2, 3, 2, 3, 3);
+      assertEquals(LinkedList.of(1, 2, 3), LinkedList.of(1).union(ls));
+      assertEquals(ls, ls.union(LinkedList.of(2, 3, 3)));
+      assertEquals(ls, ls.union(ls));
+      assertEquals(ls.addLast(4), ls.union(LinkedList.of(4)));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 2, 3, 2, 3, 3);
+      assertEquals(ls, ls.union(LinkedList.of(3, 2, 2, 3, 1, 2, 3, 1, 1)));
+    }
   }
 
   /**
@@ -1525,12 +1547,29 @@ public class LinkedListTest {
   @Test
   public void testIntersect() {
     println("intersect");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.intersect(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, e.intersect(e));
+      assertEquals(e.cons(1), e.cons(1).intersect(e.cons(1)));
+      assertEquals(e.cons(1), e.cons(1).intersect(e.cons(1).cons(1)));
+      assertEquals(e.cons(1).cons(1), e.cons(1).cons(1).intersect(e.cons(1).cons(1)));
+      assertEquals(e.cons(1).cons(1), e.cons(1).cons(1).intersect(e.cons(1)));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(2, 2, 3, 2, 3, 3);
+      assertEquals(e, LinkedList.of(1).intersect(ls));
+      assertEquals(ls, ls.intersect(LinkedList.of(2, 3, 3)));
+      assertEquals(ls, ls.intersect(ls));
+      assertEquals(e, ls.intersect(LinkedList.of(4)));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 2, 3, 2, 3, 3);
+      assertEquals(ls, ls.intersect(LinkedList.of(3, 2, 2, 3, 1, 2, 3, 1, 1)));
+    }
+    {
+      assertEquals(LinkedList.of(3), LinkedList.of(1, 2, 3).intersect(LinkedList.of(3, 4, 5)));
+    }
   }
 
   /**
@@ -2177,11 +2216,16 @@ public class LinkedListTest {
   @Test
   public void testFromArray_ArrayList() {
     println("fromArray");
-//    LinkedList expResult = null;
-//    LinkedList result = LinkedList.fromArray(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final ArrayList<Integer> v = new ArrayList<>();
+      final LinkedList<Integer> e = LinkedList.empty();
+      assertEquals(e, LinkedList.fromArray(v));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1,2,3,4);
+      assertEquals(ls, LinkedList.fromArray(ls.toArray()));
+    }
   }
 
   /**

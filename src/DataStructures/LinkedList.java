@@ -950,9 +950,9 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   @Override
   public OptionalInt findIndex(final Predicate<A> pred) {
     return Functionals.mapOptOrElse(
-      findByImpl(this, pred).map(Pair::getSecond),
-      x -> OptionalInt.of(x.intValue()),
-      OptionalInt::empty);
+            findByImpl(this, pred).map(Pair::getSecond),
+            x -> OptionalInt.of(x.intValue()),
+            OptionalInt::empty);
   }
 
   @Override
