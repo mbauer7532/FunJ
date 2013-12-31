@@ -1970,11 +1970,23 @@ public class LinkedListTest {
   @Test
   public void testConcat() {
     println("concat");
-//    LinkedList expResult = null;
-//    LinkedList result = LinkedList.concat(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<LinkedList<Integer>> e = LinkedList.empty();
+    {
+      assertEquals(LinkedList.empty(), LinkedList.concat(e));
+    }
+    {
+      final LinkedList<LinkedList<Integer>> ls = LinkedList.of(LinkedList.of(), LinkedList.of());
+      assertEquals(LinkedList.empty(), LinkedList.concat(ls));
+    }
+    {
+      final LinkedList<LinkedList<Integer>> ls = LinkedList.of(LinkedList.of(), LinkedList.of(1, 2), LinkedList.of());
+      assertEquals(LinkedList.of(1, 2), LinkedList.concat(ls));
+    }
+    {
+      final LinkedList<LinkedList<Integer>> ls = LinkedList.of(LinkedList.of(1, 2, 3), LinkedList.of(4, 5, 6), LinkedList.of(7));
+      assertEquals(LinkedList.of(1, 2, 3, 4, 5, 6, 7), LinkedList.concat(ls));
+    }
   }
 
   /**
