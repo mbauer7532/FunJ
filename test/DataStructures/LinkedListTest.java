@@ -1326,15 +1326,15 @@ public class LinkedListTest {
       IntStream.rangeClosed(-5, -1).forEach(n -> { assertEquals(OptionalInt.of(n + 5), ls.findIndex(j -> j == n)); });
     }
     {
-      final LinkedList<Integer> ls = LinkedList.of(1,2,3,2);
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3, 2);
       assertEquals(OptionalInt.of(1), ls.findIndex(n -> n == 2));
     }
     {
-      final LinkedList<Integer> ls = LinkedList.of(1,2,3,2);
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3, 2);
       assertEquals(OptionalInt.of(2), ls.findIndex(n -> n > 2));
     }
     {
-      final LinkedList<Integer> ls = LinkedList.of(1,2,3,2);
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3, 2);
       assertEquals(OptionalInt.empty(), ls.findIndex(n -> n < 0));
     }
   }
@@ -1345,12 +1345,22 @@ public class LinkedListTest {
   @Test
   public void testFindIndices() {
     println("findIndices");
-//    LinkedList instance = null;
-//    LinkedList<Integer> expResult = null;
-//    LinkedList<Integer> result = instance.findIndices(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, e.findIndices(n -> true));
+      assertEquals(e, e.findIndices(n -> false));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3, 4);
+      assertEquals(LinkedList.of(0, 1), ls.findIndices(n -> n < 3));
+      assertEquals(LinkedList.of(2, 3), ls.findIndices(n -> n >= 3));
+    }
+    {
+      final LinkedList<Integer> ls = makeList(0, 11);
+      assertEquals(LinkedList.of(0, 2, 4, 6, 8, 10), ls.findIndices(n -> n % 2 == 0));
+      assertEquals(LinkedList.of(1, 3, 5, 7, 9, 11), ls.findIndices(n -> n % 2 == 1));
+    }
   }
 
   /**
@@ -1359,12 +1369,24 @@ public class LinkedListTest {
   @Test
   public void testNub() {
     println("nub");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.nub();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, e.nub());
+      assertEquals(e.cons(1), e.cons(1).nub());
+      assertEquals(e.cons(1), e.cons(1).cons(1).nub());
+    }
+    {
+      final Integer n = Integer.valueOf(1000);
+      final LinkedList<Integer> res = LinkedList.of(1, n, 2, 1, 1000, 1, 2, 1000, 2, 1, 1000, 1, 1, 2, 1000, 2, 2).nub();
+
+      assertEquals(LinkedList.of(1, 1000, 2), res);
+      assertSame(n, res.nth(1));
+    }
+    {
+      final LinkedList<Integer> res = LinkedList.of(1, 1, 1, 2, 10, 2, 10, 2).nub();
+      assertEquals(LinkedList.of(1, 2, 10), res);
+    }
   }
 
   /**
