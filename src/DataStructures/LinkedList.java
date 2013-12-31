@@ -1395,12 +1395,11 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   @SafeVarargs
   public static <A> LinkedList<A> of(A ... v) {
-    LinkedList<A> t = empty();
-
-    for (int i = v.length - 1; i >= 0; --i) {
-      t = create(v[i], t);
-    }
-
-    return t;
+    final int lastIdx = v.length - 1;
+    return IntStream.rangeClosed(0, lastIdx)
+                    .mapToObj(i -> v[lastIdx - i])
+                    .reduce(empty(),
+                            LinkedList::createInv,
+                            Functionals::functionShouldNotBeCalled);
   }
 }
