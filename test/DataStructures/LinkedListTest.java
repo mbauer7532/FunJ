@@ -1856,11 +1856,23 @@ public class LinkedListTest {
   @Test
   public void testZip() {
     println("zip");
-//    LinkedList<TuplesModule.Pair<A, B>> expResult = null;
-//    LinkedList<TuplesModule.Pair<A, B>> result = LinkedList.zip(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, LinkedList.zip(e, e));
+      assertEquals(e, LinkedList.zip(e, e.cons(1)));
+      assertEquals(e, LinkedList.zip(e.cons(1), e));
+    }
+    {
+      assertEquals(LinkedList.singleton(Pair.create(1,10)),
+                   LinkedList.zip(LinkedList.of(1,2,3), LinkedList.singleton(10)));
+    }
+    {
+      LinkedList<Integer> ls;
+      assertEquals(LinkedList.of(Pair.create(1, 2)), LinkedList.zip(e.cons(1), e.cons(2)));
+      assertEquals(LinkedList.fromStream(IntStream.rangeClosed(0, 5).mapToObj(n -> Pair.create(n, -n))),
+                   LinkedList.zip(ls = makeList(0, 5), ls.map(n -> -n)));
+    }
   }
 
   /**
