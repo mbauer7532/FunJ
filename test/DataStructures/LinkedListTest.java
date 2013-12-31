@@ -918,12 +918,44 @@ public class LinkedListTest {
   @Test
   public void testGroupBy() {
     println("groupBy");
-//    LinkedList instance = null;
-//    LinkedList<LinkedList<A>> expResult = null;
-//    LinkedList<LinkedList<A>> result = instance.groupBy(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final LinkedList<LinkedList<Integer>> res = e.groupBy((x, y) -> x < y);
+      assertEquals(LinkedList.empty(), res);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3, 4, 5);
+      final LinkedList<LinkedList<Integer>> res = ls.groupBy((x, y) -> x == y);
+      assertEquals(ls.map(x -> LinkedList.of(x)), res);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 2, 3, 4, 4, 5);
+      final LinkedList<LinkedList<Integer>> res = ls.groupBy((x, y) -> x == y);
+      assertEquals(LinkedList.of(LinkedList.of(1),
+                                 LinkedList.of(2, 2),
+                                 LinkedList.of(3),
+                                 LinkedList.of(4, 4),
+                                 LinkedList.of(5)), res);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 1, 2, 2, 2, 3, 3);
+      final LinkedList<LinkedList<Integer>> res = ls.groupBy((x, y) -> x == y);
+      assertEquals(LinkedList.of(LinkedList.of(1, 1),
+                                 LinkedList.of(2, 2, 2),
+                                 LinkedList.of(3, 3)), res);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 1, 2, 2, 2, 3, 3);
+      final LinkedList<LinkedList<Integer>> res = ls.groupBy((x, y) -> false);
+      assertEquals(LinkedList.of(LinkedList.of(1),
+                                 LinkedList.of(1),
+                                 LinkedList.of(2),
+                                 LinkedList.of(2),
+                                 LinkedList.of(2),
+                                 LinkedList.of(3),
+                                 LinkedList.of(3)), res);
+    }
   }
 
   /**
