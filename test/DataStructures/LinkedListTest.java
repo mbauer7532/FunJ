@@ -1990,13 +1990,22 @@ public class LinkedListTest {
   @Test
   public void testReplicate() {
     println("replicate");
-//    int n = 0;
-//    Object a = null;
-//    LinkedList expResult = null;
-//    LinkedList result = LinkedList.replicate(n, a);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final LinkedList<Integer> ls = LinkedList.replicate(0, 1);
+      assertEquals(LinkedList.empty(), ls);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.replicate(1, 1);
+      assertEquals(1, ls.length());
+      assertEquals(Integer.valueOf(1), ls.head());
+    }
+    {
+      final Integer one = Integer.valueOf(1);
+      final LinkedList<Integer> ls = LinkedList.replicate(5, one);
+      assertEquals(5, ls.length());
+      IntStream.range(0, 5).forEach(n -> { assertSame(one, ls.nth(n)); });
+    }
   }
 
   /**
@@ -2005,11 +2014,25 @@ public class LinkedListTest {
   @Test
   public void testUnzip() {
     println("unzip");
-//    TuplesModule.Pair<LinkedList<A>, LinkedList<B>> expResult = null;
-//    TuplesModule.Pair<LinkedList<A>, LinkedList<B>> result = LinkedList.unzip(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final LinkedList<Integer> e = LinkedList.empty();
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p = LinkedList.unzip(LinkedList.empty());
+      assertEquals(e, p.mx1);
+      assertEquals(e, p.mx2);
+    }
+    {
+      final LinkedList<Pair<Integer, Integer>> ls = LinkedList.of(Pair.create(0, 1));
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p = LinkedList.unzip(ls);
+      assertEquals(LinkedList.of(0), p.mx1);
+      assertEquals(LinkedList.of(1), p.mx2);
+    }
+    {
+      final LinkedList<Pair<Integer, Integer>> ls = LinkedList.of(Pair.create(0, 1), Pair.create(2, 3), Pair.create(4, 5));
+      final Pair<LinkedList<Integer>, LinkedList<Integer>> p = LinkedList.unzip(ls);
+      assertEquals(LinkedList.of(0, 2, 4), p.mx1);
+      assertEquals(LinkedList.of(1, 3, 5), p.mx2);
+    }
   }
 
   /**
