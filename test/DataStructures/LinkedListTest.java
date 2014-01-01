@@ -2079,11 +2079,30 @@ public class LinkedListTest {
   @Test
   public void testIntercalate() {
     println("intercalate");
-//    LinkedList expResult = null;
-//    LinkedList result = LinkedList.intercalate(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final LinkedList<Integer> e = LinkedList.empty();
+      final LinkedList<Integer> res = LinkedList.intercalate(e, LinkedList.empty());
+      assertEquals(e, res);
+    }
+    {
+      final LinkedList<Integer> xs = LinkedList.of(1, 2);
+      final LinkedList<LinkedList<Integer>> e = LinkedList.empty();
+      final LinkedList<Integer> res = LinkedList.intercalate(xs, e);
+      assertEquals(e, res);
+    }
+    {
+      final LinkedList<Integer> xs = LinkedList.of(1, 2);
+      final LinkedList<LinkedList<Integer>> xss = LinkedList.of(LinkedList.of(0));
+      final LinkedList<Integer> res = LinkedList.intercalate(xs, xss);
+      assertEquals(LinkedList.of(0), res);
+    }
+    {
+      final LinkedList<Integer> xs = LinkedList.of(1, 2);
+      final LinkedList<LinkedList<Integer>> xss = LinkedList.of(LinkedList.of(0), LinkedList.of(3, 4));
+      final LinkedList<Integer> res = LinkedList.intercalate(xs, xss);
+      assertEquals(makeList(0, 4), res);
+    }
   }
 
   /**
