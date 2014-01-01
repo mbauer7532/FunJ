@@ -205,10 +205,10 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   public static <A> LinkedList<A> fromArray(final ArrayList<A> v, final int i, final int j) {
     return IntStream.rangeClosed(i, j)
-      .mapToObj(idx -> v.get(j - idx))
-      .reduce(empty(),
-              LinkedList::createInv,
-              Functionals::functionShouldNotBeCalled);
+                    .mapToObj(idx -> v.get(j - idx))
+                    .reduce(empty(),
+                            LinkedList::createInv,
+                            Functionals::functionShouldNotBeCalled);
   }
 
   public static <A> LinkedList<A> fromArray(final ArrayList<A> v) {

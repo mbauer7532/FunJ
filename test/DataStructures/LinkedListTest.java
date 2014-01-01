@@ -2228,7 +2228,6 @@ public class LinkedListTest {
     {
       assertEquals(new ArrayList<>(), e.toArray());
     }
-
     {
       final ArrayList<Integer> v =
               Arrays.stream(new int[] {1,2,3})
