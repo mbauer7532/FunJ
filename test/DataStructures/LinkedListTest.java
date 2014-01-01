@@ -1492,12 +1492,56 @@ public class LinkedListTest {
   @Test
   public void testListDiff() {
     println("listDiff");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.listDiff(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      final LinkedList<Integer> res = e.listDiff(e);
+      assertEquals(e, res);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.singleton(1);
+      assertEquals(ls, ls.listDiff(e));
+      assertEquals(ls, ls.listDiff(LinkedList.of(2)));
+      assertEquals(ls, ls.listDiff(LinkedList.of(2, 3)));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3);
+      assertEquals(LinkedList.of(1, 2), ls.listDiff(LinkedList.of(3)));
+      assertEquals(LinkedList.of(1, 3), ls.listDiff(LinkedList.of(2)));
+      assertEquals(LinkedList.of(2, 3), ls.listDiff(LinkedList.of(1)));
+
+      assertEquals(LinkedList.of(1), ls.listDiff(LinkedList.of(2, 3)));
+      assertEquals(LinkedList.of(2), ls.listDiff(LinkedList.of(1, 3)));
+      assertEquals(LinkedList.of(3), ls.listDiff(LinkedList.of(1, 2)));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3);
+      assertEquals(e, ls.listDiff(LinkedList.of(1, 2, 3)));
+      assertEquals(e, ls.listDiff(LinkedList.of(1, 3, 2)));
+      assertEquals(e, ls.listDiff(LinkedList.of(2, 1, 3)));
+      assertEquals(e, ls.listDiff(LinkedList.of(2, 3, 1)));
+      assertEquals(e, ls.listDiff(LinkedList.of(3, 1, 2)));
+      assertEquals(e, ls.listDiff(LinkedList.of(3, 2, 1)));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3);
+      assertEquals(e, ls.listDiff(LinkedList.of(1, 2, 4, 3)));
+      assertEquals(e, ls.listDiff(LinkedList.of(1, 3, 4, 2)));
+      assertEquals(e, ls.listDiff(LinkedList.of(2, 4, 1, 3)));
+      assertEquals(e, ls.listDiff(LinkedList.of(2, 4, 3, 1)));
+      assertEquals(e, ls.listDiff(LinkedList.of(4, 3, 1, 2)));
+      assertEquals(e, ls.listDiff(LinkedList.of(4, 3, 2, 1)));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3, 5);
+      final LinkedList<Integer> res = LinkedList.of(5);
+      assertEquals(res, ls.listDiff(LinkedList.of(1, 2, 4, 3)));
+      assertEquals(res, ls.listDiff(LinkedList.of(1, 3, 4, 2)));
+      assertEquals(res, ls.listDiff(LinkedList.of(2, 4, 1, 3)));
+      assertEquals(res, ls.listDiff(LinkedList.of(2, 4, 3, 1)));
+      assertEquals(res, ls.listDiff(LinkedList.of(4, 3, 1, 2)));
+      assertEquals(res, ls.listDiff(LinkedList.of(4, 3, 2, 1)));
+    }
   }
 
   /**
@@ -1533,12 +1577,31 @@ public class LinkedListTest {
   @Test
   public void testUnionBy() {
     println("unionBy");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.unionBy(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, e.unionBy(e, LinkedListTest::cmp));
+      assertEquals(e.cons(1), e.cons(1).unionBy(e.cons(1), LinkedListTest::cmp));
+      assertEquals(e.cons(1), e.cons(1).unionBy(e.cons(1).cons(1), LinkedListTest::cmp));
+      assertEquals(e.cons(1).cons(1), e.cons(1).cons(1).unionBy(e.cons(1).cons(1), LinkedListTest::cmp));
+    }
+    {
+      assertEquals(e, e.unionBy(e, (x, y) -> 1));
+      assertEquals(e.cons(1).cons(1), e.cons(1).unionBy(e.cons(1), (x, y) -> 1));
+      assertEquals(e.cons(1).cons(1).cons(1), e.cons(1).unionBy(e.cons(1).cons(1), (x, y) -> 1));
+      assertEquals(e.cons(1).cons(1).cons(1).cons(1), e.cons(1).cons(1).unionBy(e.cons(1).cons(1), (x, y) -> 1));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(2, 2, 3, 2, 3, 3);
+      assertEquals(LinkedList.of(1, 2, 3), LinkedList.of(1).unionBy(ls, LinkedListTest::cmp));
+      assertEquals(ls, ls.unionBy(LinkedList.of(2, 3, 3), LinkedListTest::cmp));
+      assertEquals(ls, ls.unionBy(ls, LinkedListTest::cmp));
+      assertEquals(ls.addLast(4), ls.unionBy(LinkedList.of(4), LinkedListTest::cmp));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 2, 3, 2, 3, 3);
+      assertEquals(ls, ls.unionBy(LinkedList.of(3, 2, 2, 3, 1, 2, 3, 1, 1), LinkedListTest::cmp));
+    }
   }
 
   /**
@@ -1694,7 +1757,9 @@ public class LinkedListTest {
    * Test of insertBy method, of class LinkedList.
    */
 
-  private static int insertByCmp(final Integer x, final Integer y) { return Math.abs(x - y) <= 1 ? 0 : (x > y ? 1 : -1); }
+  private static int insertByCmp(final Integer x, final Integer y) {
+    return Math.abs(x - y) <= 1 ? 0 : (x > y ? 1 : -1);
+  }
 
   @Test
   public void testInsertBy() {
