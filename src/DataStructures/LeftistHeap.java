@@ -256,13 +256,22 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
       mQueue.addLast(h);
     }
 
+    private void performActionUpdatingQueue(final Consumer<? super V> action) {
+      final LeftistHeap<V> h = mQueue.removeFirst();
+      mQueue.addLast(h.mLeft);
+      mQueue.addLast(h.mRight);
+      action.accept(h.mVal);
+
+      return;
+    }
+
     @Override
     public boolean tryAdvance(final Consumer<? super V> action) {
       if (mQueue.isEmpty()) {
         return false;
       }
       else {
-        action.accept(mQueue.removeFirst().mVal);
+        performActionUpdatingQueue(action);
         return true;
       }
     }
@@ -275,7 +284,7 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     @Override
     public void forEachRemaining(Consumer<? super V> action) {
       while (! mQueue.isEmpty()) {
-        action.accept(mQueue.removeFirst().mVal);
+        performActionUpdatingQueue(action);
       }
     }
 
