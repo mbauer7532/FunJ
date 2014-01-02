@@ -1190,7 +1190,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     public ListIterator(final LinkedList<A> list) {
       mCurrentElem = list;
     }
-    
+
     @Override
     public boolean hasNext() {
       return mCurrentElem.isNotNull();
