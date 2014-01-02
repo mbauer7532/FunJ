@@ -290,7 +290,6 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     }
   }
 
-
   @Override
   public Iterator<V> iterator() {
     return new LeftistHeapIterator<>(this);
