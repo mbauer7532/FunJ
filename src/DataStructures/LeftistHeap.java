@@ -11,6 +11,7 @@ import Utils.Ref;
 import java.awt.Color;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.function.Consumer;
@@ -51,6 +52,11 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
   public static <V extends Comparable<V>> LeftistHeap<V> singleton(final V val) {
     final LeftistHeap<V> e = empty();
     return create(1, val, e, e);
+  }
+
+  @SafeVarargs
+  public static <V extends Comparable<V>> LeftistHeap<V> of(final V ... v) {
+    return fromStream(Arrays.stream(v));
   }
 
   private static <V extends Comparable<V>> boolean isEmptyImpl(final LeftistHeap<V> h) {
