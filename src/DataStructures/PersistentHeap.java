@@ -8,6 +8,7 @@ package DataStructures;
 
 import Utils.Ref;
 import java.util.Iterator;
+import java.util.stream.Stream;
 import org.StructureGraphic.v1.DSTreeNode;
 
 /**
@@ -32,4 +33,6 @@ public interface PersistentHeap<V extends Comparable<V>, H extends PersistentHea
 
   @Override
   public Iterator<V> iterator();
+
+  public Stream<V> stream();
 }

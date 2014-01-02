@@ -1232,7 +1232,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     }
 
     @Override
-    public void forEachRemaining(Consumer<? super A> action) {
+    public void forEachRemaining(final Consumer<? super A> action) {
       forEachImpl(mCurrentElem, action);
     }
 

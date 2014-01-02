@@ -12,8 +12,11 @@ import java.awt.Color;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import org.StructureGraphic.v1.DSTreeNode;
 
 /**
@@ -245,6 +248,49 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     }
   }
 
+  private static final class LeftistHeapSpliterator<V extends Comparable<V>> implements Spliterator<V> {
+    private final ArrayDeque<LeftistHeap<V>> mQueue;
+
+    public LeftistHeapSpliterator(final LeftistHeap<V> h) {
+      mQueue = new ArrayDeque<>();
+      mQueue.addLast(h);
+    }
+
+    @Override
+    public boolean tryAdvance(final Consumer<? super V> action) {
+      if (mQueue.isEmpty()) {
+        return false;
+      }
+      else {
+        action.accept(mQueue.removeFirst().mVal);
+        return true;
+      }
+    }
+
+    @Override
+    public Spliterator<V> trySplit() {
+      return null;
+    }
+
+    @Override
+    public void forEachRemaining(Consumer<? super V> action) {
+      while (! mQueue.isEmpty()) {
+        action.accept(mQueue.removeFirst().mVal);
+      }
+    }
+
+    @Override
+    public long estimateSize() {
+      return Long.MAX_VALUE;
+    }
+
+    @Override
+    public int characteristics() {
+      return SIZED | NONNULL | IMMUTABLE | CONCURRENT;
+    }
+  }
+
+
   @Override
   public Iterator<V> iterator() {
     return new LeftistHeapIterator<>(this);
@@ -263,5 +309,10 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
   @Override
   public Color DSgetColor() {
     return isEmptyImpl(this) ? Color.RED : Color.BLACK;
+  }
+
+  @Override
+  public Stream<V> stream() {
+    return StreamSupport.stream(new LeftistHeapSpliterator<V>(this), false);
   }
 }
