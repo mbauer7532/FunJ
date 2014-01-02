@@ -8,13 +8,14 @@ package DataStructures;
 
 import Utils.Ref;
 import java.util.Iterator;
+import org.StructureGraphic.v1.DSTreeNode;
 
 /**
  *
  * @author Neo
  * @param <V>
  */
-public interface PersistentHeap<V extends Comparable<V>, H extends PersistentHeap<V, H>> extends Iterable<V> {
+public interface PersistentHeap<V extends Comparable<V>, H extends PersistentHeap<V, H>> extends Iterable<V>, DSTreeNode {
   public boolean isEmpty();
 
   public V findMin();

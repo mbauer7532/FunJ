@@ -8,11 +8,13 @@ package DataStructures;
 
 import Utils.ArrayUtils;
 import Utils.Ref;
+import java.awt.Color;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
+import org.StructureGraphic.v1.DSTreeNode;
 
 /**
  *
@@ -246,5 +248,20 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
   @Override
   public Iterator<V> iterator() {
     return new LeftistHeapIterator<>(this);
+  }
+  
+  @Override
+  public DSTreeNode[] DSgetChildren() {
+    return new DSTreeNode[] { mLeft, mRight };
+  }
+
+  @Override
+  public Object DSgetValue() {
+    return mVal.toString();
+  }
+
+  @Override
+  public Color DSgetColor() {
+    return isEmptyImpl(this) ? Color.RED : Color.BLACK;
   }
 }
