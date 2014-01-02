@@ -6,6 +6,7 @@
 
 package Utils;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.IntPredicate;
@@ -36,6 +37,12 @@ public class ArrayUtils {
 
       return true;
     }
+  }
+
+  public static <V> void swap(final ArrayList<V> arr, final int i, final int j) {
+    final V t = arr.get(i);
+    arr.set(i, arr.get(j));
+    arr.set(j, t);
   }
 
   public static <T extends Comparable<T>> boolean isIncreasing(final List<T> lst) {

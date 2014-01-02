@@ -6,10 +6,12 @@
 
 package DataStructures;
 
+import Utils.ArrayUtils;
+import Utils.Ref;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -17,7 +19,7 @@ import java.util.stream.Stream;
  * @author Neo
  * @param <V>
  */
-public final class LeftistHeap<V extends Comparable<V>> implements PersistentHeap<V> {
+public final class LeftistHeap<V extends Comparable<V>> implements PersistentHeap<V, LeftistHeap<V>> {
   private final int mRank;
   private final V mVal;
   private final LeftistHeap<V> mLeft;
@@ -87,7 +89,7 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     return create(rank + 1, x, left, right);
   }
 
-  private static <V extends Comparable<V>> LeftistHeap<V> merge(final LeftistHeap<V> h1, final LeftistHeap<V> h2) {
+  private static <V extends Comparable<V>> LeftistHeap<V> mergeImpl(final LeftistHeap<V> h1, final LeftistHeap<V> h2) {
     if (isEmptyImpl(h1)) {
       return h2;
     }
@@ -102,19 +104,24 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
       if (res <= 0) {
         z = x;
         left = h1.mLeft;
-        right = merge(h1.mRight, h2);
+        right = mergeImpl(h1.mRight, h2);
       }
       else {
         z = y;
         left = h2.mLeft;
-        right = merge(h1, h2.mRight);
+        right = mergeImpl(h1, h2.mRight);
       }
       return makeT(z, left, right);
     }
   }
 
+  @Override
+  public LeftistHeap<V> merge(final LeftistHeap<V> h) {
+    return mergeImpl(this, h);
+  }
+
   private static <V extends Comparable<V>> LeftistHeap<V> insertImpl(final LeftistHeap<V> h, final V val) {
-    return merge(singleton(val), h);
+    return mergeImpl(singleton(val), h);
   }
 
   @Override
@@ -124,7 +131,17 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
 
   @Override
   public LeftistHeap<V> deleteMin() {
-    return merge(mLeft, mRight);
+    return mergeImpl(mLeft, mRight);
+  }
+
+  private static <V extends Comparable<V>> LeftistHeap<V> deleteMinImpl(final LeftistHeap<V> h, final Ref<V> v) {
+    v.r = h.mVal;
+    return mergeImpl(h.mLeft, h.mRight);
+  }
+
+  @Override
+  public LeftistHeap<V> deleteMin(final Ref<V> v) {
+    return deleteMinImpl(this, v);
   }
 
   private static <V extends Comparable<V>> int sizeImpl(final LeftistHeap<V> h) {
@@ -151,7 +168,7 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
           return h1;
         }
         h2 = q.getFirst();
-        q.addLast(merge(h1, h2));
+        q.addLast(mergeImpl(h1, h2));
       } while (true);
     }
   }
@@ -172,7 +189,16 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
   }
 
   private static <V extends Comparable<V>> ArrayList<V> toAscArrayListImpl(final LeftistHeap<V> h) {
-    return null;
+    final ArrayList<V> v = new ArrayList<>();
+    final Ref<V> minRef = new Ref<>();
+
+    LeftistHeap<V> heap = h;
+    while (! isEmptyImpl(heap)) {
+      heap = deleteMinImpl(heap, minRef);
+      v.add(minRef.r);
+    }
+
+    return v;
   }
 
   public ArrayList<V> toAscArrayList() {
@@ -180,7 +206,14 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
   }
 
   private static <V extends Comparable<V>> ArrayList<V> toDescArrayListImpl(final LeftistHeap<V> h) {
-    return null;
+    final ArrayList<V> v = toAscArrayListImpl(h);
+    final int len = v.size();
+    final int lastIdx = len - 1;
+    final int half = len / 2;
+
+    IntStream.range(0, half).forEach(i -> { ArrayUtils.swap(v, i, lastIdx - i); });
+
+    return v;
   }
 
   public ArrayList<V> toDescArrayList() {

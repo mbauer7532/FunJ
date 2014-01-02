@@ -6,6 +6,7 @@
 
 package DataStructures;
 
+import Utils.Ref;
 import java.util.Iterator;
 
 /**
@@ -13,14 +14,18 @@ import java.util.Iterator;
  * @author Neo
  * @param <V>
  */
-public interface PersistentHeap<V extends Comparable<V>> extends Iterable<V> {
+public interface PersistentHeap<V extends Comparable<V>, H extends PersistentHeap<V, H>> extends Iterable<V> {
   public boolean isEmpty();
 
   public V findMin();
 
-  public LeftistHeap<V> insert(final V val);
+  public H insert(final V val);
 
-  public LeftistHeap<V> deleteMin();
+  public H deleteMin();
+
+  public H deleteMin(final Ref<V> v);
+
+  public H merge(final H heap);
 
   public int size();
 
