@@ -174,11 +174,11 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     else {
       LeftistHeap<V> h1, h2;
       do {
-        h1 = q.getFirst();
+        h1 = q.removeFirst();
         if (q.isEmpty()) {
           return h1;
         }
-        h2 = q.getFirst();
+        h2 = q.removeFirst();
         q.addLast(mergeImpl(h1, h2));
       } while (true);
     }
@@ -312,12 +312,12 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
   
   @Override
   public DSTreeNode[] DSgetChildren() {
-    return new DSTreeNode[] { mLeft, mRight };
+    return isEmptyImpl(this) ? new DSTreeNode[0] : new DSTreeNode[] { mLeft, mRight };
   }
 
   @Override
   public Object DSgetValue() {
-    return mVal.toString();
+    return isEmptyImpl(this) ? "Null" : mVal.toString();
   }
 
   @Override
