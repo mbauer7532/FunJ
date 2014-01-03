@@ -212,6 +212,7 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     return v;
   }
 
+  @Override
   public ArrayList<V> toAscArrayList() {
     return toAscArrayListImpl(this);
   }
@@ -227,6 +228,7 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     return v;
   }
 
+  @Override
   public ArrayList<V> toDescArrayList() {
     return toDescArrayListImpl(this);
   }
@@ -328,5 +330,38 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
   @Override
   public Stream<V> stream() {
     return StreamSupport.stream(new LeftistHeapSpliterator<V>(this), false);
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (! (obj instanceof PersistentHeap)) {
+      return false;
+    }
+    else {
+      PersistentHeap<V, ?> ha = this;
+      @SuppressWarnings("unchecked")
+      PersistentHeap<V, ?> hb = (PersistentHeap<V, ?>) obj;
+
+      final ArrayList<V> av = ha.toAscArrayList();
+      final ArrayList<V> bv = hb.toAscArrayList();
+
+      return av.equals(bv);
+    }
+  }
+
+  private static <V extends Comparable<V>> int hashCodeImpl(final PersistentHeap<V, ?> heap) {
+    int hashRes = 47;
+
+    final ArrayList<V> h = heap.toAscArrayList();
+    for (V v : h) {
+      hashRes += v.hashCode();
+    }
+
+    return hashRes;
+  }
+
+  @Override
+  public int hashCode() {
+    return hashCodeImpl(this);
   }
 }

@@ -120,15 +120,8 @@ public class LeftistHeapTest {
 
     final LeftistHeap<Integer> res0 = h0.merge(h1);
     final LeftistHeap<Integer> res1 = h1.merge(h0);
-    
-    GraphModule.showGraph(h0);
-    GraphModule.showGraph(h1);
-    GraphModule.showGraph(res0);
-    GraphModule.showGraph(res0);
 
-    final int[] v = Numeric.randomPermutation(0, 5000, 200, new Random(123));
-    GraphModule.showGraph(LeftistHeap.fromStream(Arrays.stream(v).boxed()));
-    GraphModule.waitTime(100);
+    
   }
 
   /**
