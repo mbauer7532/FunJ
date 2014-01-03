@@ -1394,7 +1394,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @SafeVarargs
-  public static <A> LinkedList<A> of(A ... v) {
+  public static <A> LinkedList<A> of(final A ... v) {
     final int lastIdx = v.length - 1;
     return IntStream.rangeClosed(0, lastIdx)
                     .mapToObj(i -> v[lastIdx - i])
