@@ -15,7 +15,7 @@ import java.util.stream.Stream;
  * @author Neo
  * @param <V>
  */
-public class HMRealTimeQueue<V> {
+public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>> {
   private static class RotationState<V> {}
 
   private static final class Idle<V> extends RotationState<V> {
@@ -174,16 +174,55 @@ public class HMRealTimeQueue<V> {
     return (HMRealTimeQueue<V>) sEmptyHMRealTimeQueue;
   }
 
+  @Override
   public boolean isEmpty() {
     return mlenf == 0;
   }
 
-  public HMRealTimeQueue<V> singleton(final V x) {
+  public static <V> HMRealTimeQueue<V> singleton(final V x) {
     return HMRealTimeQueue.<V> empty().addLast(x);
   }
 
+  @Override
+  public int length() {
+    return mlenf + mlenr;
+  }
+
+  @Override
   public HMRealTimeQueue<V> addLast(final V x) {
     return check(HMRealTimeQueue.create(mlenf, mf, mState, mlenr + 1, mr.cons(x)));
+  }
+
+  @Override
+  public HMRealTimeQueue<V> drop(final int cnt) {
+    if (cnt < 0) {
+      throw new AssertionError("cnt cannt be less than zero in drop().");
+    }
+    else {
+      HMRealTimeQueue<V> q = this;
+      for (int i = 0; i != cnt; ++i) {
+        q = q.tail();
+      }
+
+      return q;
+    }
+  }
+
+  @Override
+  public ArrayList<V> take(final int cnt) {
+    if (cnt < 0) {
+      throw new AssertionError("cnt cannt be less than zero in take().");
+    }
+    else {
+      HMRealTimeQueue<V> q = this;
+      final ArrayList<V> v = new ArrayList<>();
+      for (int i = 0; i != cnt; ++i) {
+        v.add(q.head());
+        q = q.tail();
+      }
+
+      return v;
+    }
   }
 
   public static <V> HMRealTimeQueue<V> fromArray(final ArrayList<V> vs) {
@@ -194,10 +233,12 @@ public class HMRealTimeQueue<V> {
     return s.reduce(empty(), (q, e) -> q.addLast(e), Functionals::functionShouldNotBeCalled);
   }
 
+  @Override
   public V head() {
     return mf.head();
   }
 
+  @Override
   public HMRealTimeQueue<V> tail() {
     return check(HMRealTimeQueue.create(mlenf - 1,
                                         mf.tail(),
@@ -206,10 +247,12 @@ public class HMRealTimeQueue<V> {
                                         mr));
   }
 
+  @Override
   public boolean contains(final V v) {
     return mf.contains(v) || mr.contains(v);
   }
 
+  @Override
   public boolean notContains(final V v) {
     return mf.notContains(v) && mr.notContains(v);
   }
