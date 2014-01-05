@@ -38,6 +38,7 @@ public interface List<A, L extends List<A, L>> extends Iterable<A> {
   public A last();
   public L init();
   public boolean isEmpty();
+  public boolean isSingleton();
   public int length();
 
   @Override

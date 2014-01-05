@@ -247,6 +247,11 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     return isNull();
   }
 
+  @Override
+  public boolean isSingleton() {
+    return isNotNull() && mCdr.isNull();
+  }
+
   private static <A> int lengthImpl(final LinkedList<A> list) {
     int len = 0;
     LinkedList<A> t = list;
