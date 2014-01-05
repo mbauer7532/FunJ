@@ -93,7 +93,7 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
       final Appending<V> appState = (Appending<V>) state;
       final int ok = appState.mok;
       if (ok == 0) {
-        return Done.create(appState.mrp.tail());
+        return Done.create(appState.mrp);
       }
       else {
         final LinkedList<V> fp = appState.mfp;
