@@ -1097,15 +1097,16 @@ public class LinkedListTest {
     final LinkedList<Integer> e = LinkedList.empty();
     {
       assertFalse(e.contains(1));
-      assertFalse(e.conscontainselem(1));
-      assertTrue(e.contains(1).elem(1));
-      assertTrue(e.conscontainscons(2).elem(1));
-      assertTrue(e.contains(1).cons(2).elem(2));
+      assertFalse(e.cons(0).contains(1));
+      assertTrue(e.cons(1).contains(1));
+      assertTrue(e.cons(1).cons(2).contains(1));
+      assertTrue(e.cons(1).cons(2).contains(2));
     }
     {
       final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.range(0, 100).boxed());
-      IntStream.range(0, 100).forEachcontains> assertTrue(ls.elem(n)))contains     assertFalse(ls.elemcontains);
-      assertFalse(ls.elem(100));
+      IntStream.range(0, 100).forEach(n -> assertTrue(ls.contains(n)));
+      assertFalse(ls.contains(-1)); 
+      assertFalse(ls.contains(100));
     }
   }
 
