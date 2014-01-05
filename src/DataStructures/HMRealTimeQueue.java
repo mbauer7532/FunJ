@@ -8,6 +8,7 @@ package DataStructures;
 
 import Utils.Functionals;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
@@ -231,6 +232,14 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
 
   public static <V> HMRealTimeQueue<V> fromStream(final Stream<V> s) {
     return s.reduce(empty(), (q, e) -> q.addLast(e), Functionals::functionShouldNotBeCalled);
+  }
+
+  @SafeVarargs
+  public static <V> HMRealTimeQueue<V> of(final V ... v) {
+    return Arrays.stream(v)
+                 .reduce(empty(),
+                         (q, e) -> q.addLast(e),
+                         Functionals::functionShouldNotBeCalled);
   }
 
   @Override
