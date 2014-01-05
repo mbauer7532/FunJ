@@ -863,7 +863,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   @Override
   public boolean notContains(final A a) {
-    return ! contains(a);
+    return ! findByImpl(this, x -> a.equals(x)).isPresent();
   }
 
   @Override
