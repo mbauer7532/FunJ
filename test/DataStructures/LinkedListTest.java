@@ -1096,17 +1096,15 @@ public class LinkedListTest {
 
     final LinkedList<Integer> e = LinkedList.empty();
     {
-      assertFalse(e.elem(1));
-      assertFalse(e.cons(0).elem(1));
-      assertTrue(e.cons(1).elem(1));
-      assertTrue(e.cons(1).cons(2).elem(1));
-      assertTrue(e.cons(1).cons(2).elem(2));
+      assertFalse(e.contains(1));
+      assertFalse(e.conscontainselem(1));
+      assertTrue(e.contains(1).elem(1));
+      assertTrue(e.conscontainscons(2).elem(1));
+      assertTrue(e.contains(1).cons(2).elem(2));
     }
     {
       final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.range(0, 100).boxed());
-      IntStream.range(0, 100).forEach(n -> assertTrue(ls.elem(n)));
-
-      assertFalse(ls.elem(-1));
+      IntStream.range(0, 100).forEachcontains> assertTrue(ls.elem(n)))contains     assertFalse(ls.elemcontains);
       assertFalse(ls.elem(100));
     }
   }
@@ -1120,18 +1118,18 @@ public class LinkedListTest {
 
     final LinkedList<Integer> e = LinkedList.empty();
     {
-      assertTrue(e.notElem(1));
-      assertTrue(e.cons(0).notElem(1));
-      assertFalse(e.cons(1).notElem(1));
-      assertFalse(e.cons(1).cons(2).notElem(1));
-      assertFalse(e.cons(1).cons(2).notElem(2));
+      assertTrue(e.notContains(1));
+      assertTrue(e.cons(0).notContains(1));
+      assertFalse(e.cons(1).notContains(1));
+      assertFalse(e.cons(1).cons(2).notContains(1));
+      assertFalse(e.cons(1).cons(2).notContains(2));
     }
     {
       final LinkedList<Integer> ls = LinkedList.fromStream(IntStream.range(0, 100).boxed());
-      IntStream.range(0, 100).forEach(n -> assertFalse(ls.notElem(n)));
+      IntStream.range(0, 100).forEach(n -> assertFalse(ls.notContains(n)));
 
-      assertTrue(ls.notElem(-1));
-      assertTrue(ls.notElem(100));
+      assertTrue(ls.notContains(-1));
+      assertTrue(ls.notContains(100));
     }
   }
 

@@ -96,8 +96,8 @@ public interface List<A, L extends List<A, L>> extends Iterable<A> {
   public boolean isInfixOf(final L list);
 
   // Searching (by Equality)
-  public boolean elem(final A a);
-  public boolean notElem(final A a);
+  public boolean contains(final A a);
+  public boolean notContains(final A a);
 
   // Searching (by Predicate)
   public Optional<A> find(final Predicate<A> pred);

@@ -6,6 +6,10 @@
 
 package DataStructures;
 
+import Utils.Functionals;
+import java.util.ArrayList;
+import java.util.stream.Stream;
+
 /**
  *
  * @author Neo
@@ -33,11 +37,11 @@ public class HMRealTimeQueue<V> {
       mrp = rp;
     }
 
-    private final int mok;
-    private final LinkedList<V> mf;
-    private final LinkedList<V> mfp;
-    private final LinkedList<V> mr;
-    private final LinkedList<V> mrp;
+    public final int mok;
+    public final LinkedList<V> mf;
+    public final LinkedList<V> mfp;
+    public final LinkedList<V> mr;
+    public final LinkedList<V> mrp;
   }
 
   private static final class Appending<V> extends RotationState<V> {
@@ -51,9 +55,9 @@ public class HMRealTimeQueue<V> {
       mrp = rp;
     }
     
-    private final int mok;
-    private final LinkedList<V> mfp;
-    private final LinkedList<V> mrp;
+    public final int mok;
+    public final LinkedList<V> mfp;
+    public final LinkedList<V> mrp;
   }
 
   private static final class Done<V> extends RotationState<V> {
@@ -65,7 +69,7 @@ public class HMRealTimeQueue<V> {
       mr = r;
     }
 
-    private final LinkedList<V> mr;
+    public final LinkedList<V> mr;
   }
 
   private static <V> RotationState<V> exec(final RotationState<V> state) {
@@ -182,6 +186,14 @@ public class HMRealTimeQueue<V> {
     return check(HMRealTimeQueue.create(mlenf, mf, mState, mlenr + 1, mr.cons(x)));
   }
 
+  public static <V> HMRealTimeQueue<V> fromArray(final ArrayList<V> vs) {
+    return fromStream(vs.stream());
+  }
+
+  public static <V> HMRealTimeQueue<V> fromStream(final Stream<V> s) {
+    return s.reduce(empty(), (q, e) -> q.addLast(e), Functionals::functionShouldNotBeCalled);
+  }
+
   public V head() {
     return mf.head();
   }
@@ -192,6 +204,14 @@ public class HMRealTimeQueue<V> {
                                         invalidate(mState),
                                         mlenr,
                                         mr));
+  }
+
+  public boolean contains(final V v) {
+    return mf.contains(v) || mr.contains(v);
+  }
+
+  public boolean notContains(final V v) {
+    return mf.notContains(v) && mr.notContains(v);
   }
 
   private HMRealTimeQueue(final int lenf,
