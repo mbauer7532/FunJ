@@ -858,12 +858,12 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
 
   @Override
   public boolean contains(final A a) {
-    return findByImpl(this, x -> a.equals(x)).isPresent();
+    return findByImpl(this, a::equals).isPresent();
   }
 
   @Override
   public boolean notContains(final A a) {
-    return ! findByImpl(this, x -> a.equals(x)).isPresent();
+    return ! findByImpl(this, a::equals).isPresent();
   }
 
   @Override
