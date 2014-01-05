@@ -350,14 +350,9 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
   }
 
   private static <V extends Comparable<V>> int hashCodeImpl(final PersistentHeap<V, ?> heap) {
-    int hashRes = 47;
+    int hashSeed = 47; // The ronin...
 
-    final ArrayList<V> h = heap.toAscArrayList();
-    for (V v : h) {
-      hashRes += v.hashCode();
-    }
-
-    return hashRes;
+    return heap.stream().mapToInt(v -> v.hashCode()).reduce(hashSeed, Integer::sum);
   }
 
   @Override
