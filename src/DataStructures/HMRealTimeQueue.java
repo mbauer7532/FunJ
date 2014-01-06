@@ -236,10 +236,7 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
 
   @SafeVarargs
   public static <V> HMRealTimeQueue<V> of(final V ... v) {
-    return Arrays.stream(v)
-                 .reduce(empty(),
-                         (q, e) -> q.addLast(e),
-                         Functionals::functionShouldNotBeCalled);
+    return fromStream(Arrays.stream(v));
   }
 
   @Override
