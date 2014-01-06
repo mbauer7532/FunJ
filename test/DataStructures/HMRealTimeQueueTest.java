@@ -6,7 +6,9 @@
 
 package DataStructures;
 
+import Utils.Ref;
 import java.util.ArrayList;
+import java.util.stream.IntStream;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -93,12 +95,18 @@ public class HMRealTimeQueueTest {
   @Test
   public void testLength() {
     System.out.println("length");
-    HMRealTimeQueue instance = null;
-    int expResult = 0;
-    int result = instance.length();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    
+    final Ref<HMRealTimeQueue<Integer>> q = new Ref<>(HMRealTimeQueue.empty());
+    IntStream.range(0, 100).forEach(n -> {
+      assertEquals(n, q.r.length());
+      q.r = q.r.addLast(n);
+    });
+
+    IntStream.range(0, 100).forEach(n -> {
+      assertEquals(Integer.valueOf(n), q.r.head());
+      assertEquals(100 - n, q.r.length());
+      q.r = q.r.tail();
+    });
   }
 
   /**
