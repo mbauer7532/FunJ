@@ -86,7 +86,7 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
         return Appending.create(ok, fp, rp.cons(r.head()));
       }
       else {
-        return Reversing.create(ok + 1, f, fp.cons(f.head()), r, rp.cons(r.head()));
+        return Reversing.create(ok + 1, f.tail(), fp.cons(f.head()), r.tail(), rp.cons(r.head()));
       }
     }
     else if (state instanceof Appending) {
