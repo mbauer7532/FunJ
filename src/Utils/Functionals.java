@@ -16,6 +16,14 @@ import java.util.function.Supplier;
  * @author Neo
  */
 public class Functionals {
+
+  /**
+   *
+   * @param <T>
+   * @param <U>
+   * @param <V>
+   * @param <R>
+   */
   @FunctionalInterface
   public interface TriFunction<T, U, V, R> {
     /**
@@ -47,6 +55,12 @@ public class Functionals {
     }
   }
 
+  /**
+   *
+   * @param <U>
+   * @param <V>
+   * @param <R>
+   */
   @FunctionalInterface
   public interface IntTriFunction<U, V, R> {
     /**
@@ -78,6 +92,11 @@ public class Functionals {
     }
   }
 
+  /**
+   *
+   * @param <V>
+   * @param <R>
+   */
   @FunctionalInterface
   public interface IntBiFunction<V, R> {
     /**
@@ -106,6 +125,10 @@ public class Functionals {
     }
   }
 
+  /**
+   *
+   * @param <V>
+   */
   @FunctionalInterface
   public interface IntBiPredicate<V> {
     /**
@@ -134,6 +157,10 @@ public class Functionals {
     }
   }
 
+  /**
+   *
+   * @param <V>
+   */
   @FunctionalInterface
   public interface IntBiConsumer<V> {
     /**
@@ -162,6 +189,9 @@ public class Functionals {
     }
   }
 
+  /**
+   *
+   */
   @FunctionalInterface
   public interface IntComparator {
     int compare(final int i0, final int i1);
@@ -176,19 +206,47 @@ public class Functionals {
     }
   }
 
+  /**
+   *
+   * @param <A>
+   * @param a
+   * @param b
+   * @return
+   */
   public static <A> A functionShouldNotBeCalled(final A a, final A b) {
     throw new AssertionError("Should never get here.  The stream was sequential.");
   }
 
+  /**
+   *
+   * @param <A>
+   * @param x
+   * @param y
+   * @return
+   */
   @SuppressWarnings("unchecked")
   public static <A> int comparator(final A x, final A y) {
     return ((Comparable<? super A>) x).compareTo(y);
   }
 
+  /**
+   *
+   * @param <A>
+   * @param x
+   * @param y
+   * @return
+   */
   public static <A> A maxSelector(final A x, final A y) {
     return comparator(x, y) >= 0 ? x : y;
   }
 
+  /**
+   *
+   * @param <A>
+   * @param x
+   * @param y
+   * @return
+   */
   public static <A> A minSelector(final A x, final A y) {
     return comparator(x, y) >= 0 ? y : x;
   }
