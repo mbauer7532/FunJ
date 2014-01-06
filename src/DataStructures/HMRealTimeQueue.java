@@ -9,6 +9,7 @@ package DataStructures;
 import Utils.Functionals;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -23,6 +24,11 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
     @SuppressWarnings("unchecked")
     public static <V> Idle<V> create() { return (Idle<V>) sIdleRotationState; }
     private static final Idle<?> sIdleRotationState = new Idle<>();
+
+    @Override
+    public String toString() {
+      return "Idle";
+    }
   }
 
   private static final class Reversing<V> extends RotationState<V> {
@@ -36,6 +42,11 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
       mfp = fp;
       mr  = r;
       mrp = rp;
+    }
+
+    @Override
+    public String toString() {
+      return String.format("Reversing(ok = %d, f = %s, fp = %s, r = %s, rp = %s)", mok, mf.toString(), mfp.toString(), mr.toString(), mrp.toString());
     }
 
     public final int mok;
@@ -56,6 +67,11 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
       mrp = rp;
     }
     
+    @Override
+    public String toString() {
+      return String.format("Appending(ok = %d, fp = %s, rp = %s)", mok, mfp.toString(), mrp.toString());
+    }
+
     public final int mok;
     public final LinkedList<V> mfp;
     public final LinkedList<V> mrp;
@@ -68,6 +84,11 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
 
     private Done(final LinkedList<V> r) {
       mr = r;
+    }
+
+    @Override
+    public String toString() {
+      return String.format("Done(r = %s)", mr.toString());
     }
 
     public final LinkedList<V> mr;
@@ -281,6 +302,17 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
                                                final int lenr,
                                                final LinkedList<V> r) {
     return new HMRealTimeQueue<>(lenf, f, state, lenr, r);
+  }
+
+  @Override
+  public String toString() {
+    return String.format("[sz = %d, lenf = %d, f = %s, State = %s, lenr = %d, r = %s]",
+                         mlenf + mlenr,
+                         mlenf,
+                         mf.toString(),
+                         mState.toString(),
+                         mlenr,
+                         mr.toString());
   }
 
   private final int mlenf;

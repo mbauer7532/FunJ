@@ -41,11 +41,11 @@ public class HMRealTimeQueueTest {
   @Test
   public void testEmpty() {
     System.out.println("empty");
-    HMRealTimeQueue expResult = null;
-    HMRealTimeQueue result = HMRealTimeQueue.empty();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+
+    final HMRealTimeQueue<Integer> q = HMRealTimeQueue.empty();
+    assertTrue(q.isEmpty());
+    assertEquals(0, q.length());
+    assertFalse(q.addLast(1).isEmpty());
   }
 
   /**
@@ -54,12 +54,13 @@ public class HMRealTimeQueueTest {
   @Test
   public void testIsEmpty() {
     System.out.println("isEmpty");
-    HMRealTimeQueue instance = null;
-    boolean expResult = false;
-    boolean result = instance.isEmpty();
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+
+    final HMRealTimeQueue<Integer> q = HMRealTimeQueue.empty();
+    assertTrue(q.isEmpty());
+    assertEquals(0, q.length());
+    assertFalse(q.addLast(1).isEmpty());
+    assertFalse(q.addLast(1).addLast(2).isEmpty());
+    assertFalse(q.addLast(1).addLast(2).addLast(3).isEmpty());
   }
 
   /**
@@ -73,20 +74,6 @@ public class HMRealTimeQueueTest {
     assertFalse(q.isEmpty());
     assertEquals(1, q.length());
     assertEquals(Integer.valueOf(1), q.head());
-
-    q = q.addLast(2);
-    assertFalse(q.isEmpty());
-    assertEquals(2, q.length());
-    assertEquals(Integer.valueOf(1), q.head());
-    assertEquals(Integer.valueOf(2), q.tail().head());
-    assertTrue(q.tail().tail().isEmpty());
-
-    q = HMRealTimeQueue.of(1, 2, 3, 4, 5);
-    assertEquals(Integer.valueOf(1), q.head());
-    assertEquals(Integer.valueOf(2), q.tail().head());
-    assertEquals(Integer.valueOf(3), q.tail().tail().head());
-    assertEquals(Integer.valueOf(4), q.tail().tail().tail().head());
-    assertEquals(Integer.valueOf(5), q.tail().tail().tail().tail().head());
   }
 
   /**
@@ -95,16 +82,18 @@ public class HMRealTimeQueueTest {
   @Test
   public void testLength() {
     System.out.println("length");
-    
+
+    final int cnt = 32;
     final Ref<HMRealTimeQueue<Integer>> q = new Ref<>(HMRealTimeQueue.empty());
-    IntStream.range(0, 100).forEach(n -> {
+    IntStream.range(0, cnt).forEach(n -> {
       assertEquals(n, q.r.length());
+      System.out.printf("%s\n", q.r.toString());
       q.r = q.r.addLast(n);
     });
 
-    IntStream.range(0, 100).forEach(n -> {
+    IntStream.range(0, cnt).forEach(n -> {
       assertEquals(Integer.valueOf(n), q.r.head());
-      assertEquals(100 - n, q.r.length());
+      assertEquals(cnt - n, q.r.length());
       q.r = q.r.tail();
     });
   }
@@ -115,13 +104,28 @@ public class HMRealTimeQueueTest {
   @Test
   public void testAddLast() {
     System.out.println("addLast");
-    Object x = null;
-    HMRealTimeQueue instance = null;
-    HMRealTimeQueue expResult = null;
-    HMRealTimeQueue result = instance.addLast(x);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.singleton(1);
+      assertFalse(q.isEmpty());
+      assertEquals(1, q.length());
+      assertEquals(Integer.valueOf(1), q.head());
+    }
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.singleton(1).addLast(2);
+      assertFalse(q.isEmpty());
+      assertEquals(2, q.length());
+      assertEquals(Integer.valueOf(1), q.head());
+      assertEquals(Integer.valueOf(2), q.tail().head());
+      assertTrue(q.tail().tail().isEmpty());
+    }
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.of(1, 2, 3, 4, 5);
+      assertEquals(Integer.valueOf(1), q.head());
+      assertEquals(Integer.valueOf(2), q.tail().head());
+      assertEquals(Integer.valueOf(3), q.tail().tail().head());
+      assertEquals(Integer.valueOf(4), q.tail().tail().tail().head());
+      assertEquals(Integer.valueOf(5), q.tail().tail().tail().tail().head());
+    }
   }
 
   /**
@@ -130,13 +134,8 @@ public class HMRealTimeQueueTest {
   @Test
   public void testDrop() {
     System.out.println("drop");
-    int cnt = 0;
-    HMRealTimeQueue instance = null;
-    HMRealTimeQueue expResult = null;
-    HMRealTimeQueue result = instance.drop(cnt);
-    assertEquals(expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail("The test case is a prototype.");
+
+    
   }
 
   /**
@@ -251,5 +250,4 @@ public class HMRealTimeQueueTest {
     // TODO review the generated test code and remove the default call to fail.
     fail("The test case is a prototype.");
   }
-  
 }
