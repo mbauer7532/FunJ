@@ -8,12 +8,14 @@ package Utils;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.BaseStream;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 /**
  *
@@ -406,5 +408,18 @@ public class Functionals {
     final Ref<U> u = new Ref<>(identity);
     s.forEach((double x) -> { u.r = accumulator.apply(u.r, x); });
     return u.r;
+  }
+
+  /**
+   *
+   * @param <T>
+   * @param <U>
+   * @param s
+   * @param identity
+   * @param accumulator
+   * @return
+   */
+  public static <T, U> U reduce(final Stream<T> s, final U identity, final BiFunction<U, ? super T, U> accumulator) {
+    return s.reduce(identity, accumulator, Functionals::functionShouldNotBeCalled);
   }
 }

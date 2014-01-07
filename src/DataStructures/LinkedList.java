@@ -130,11 +130,9 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   private static <A> LinkedList<A> appendImpl(final LinkedList<A> list1, final LinkedList<A> list2) {
     final ArrayList<A> v = toArrayImpl(list1);
     final int lastIdx = v.size() - 1;
-    return IntStream.rangeClosed(0, lastIdx)
-      .mapToObj(idx -> v.get(lastIdx - idx))
-      .reduce(list2,
-              LinkedList::createInv,
-              Functionals::functionShouldNotBeCalled);
+    return Functionals.reduce(IntStream.rangeClosed(0, lastIdx).mapToObj(idx -> v.get(lastIdx - idx)),
+                              list2,
+                              LinkedList::createInv);
   }
 
   @Override
@@ -204,11 +202,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   public static <A> LinkedList<A> fromArray(final ArrayList<A> v, final int i, final int j) {
-    return IntStream.rangeClosed(i, j)
-                    .mapToObj(idx -> v.get(j - idx))
-                    .reduce(empty(),
-                            LinkedList::createInv,
-                            Functionals::functionShouldNotBeCalled);
+    return Functionals.reduce(IntStream.rangeClosed(i, j).mapToObj(idx -> v.get(j - idx)), empty(), LinkedList::createInv);
   }
 
   public static <A> LinkedList<A> fromArray(final ArrayList<A> v) {
@@ -361,11 +355,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     final ArrayList<A> v = toArrayImpl(list);
     final int lastIdx = v.size() - 1;
 
-    return IntStream.rangeClosed(0, lastIdx)
-                    .mapToObj(i -> v.get(lastIdx - i))
-                    .reduce(b,
-                            (acc, e) -> f.apply(e, acc),
-                            Functionals::functionShouldNotBeCalled);
+    return Functionals.reduce(IntStream.rangeClosed(0, lastIdx).mapToObj(i -> v.get(lastIdx - i)), b, (acc, e) -> f.apply(e, acc));
   }
 
   @Override
@@ -383,11 +373,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
       final int butLastIdx = lastIdx - 1;
       final A b = v.get(lastIdx);
 
-      return IntStream.rangeClosed(0, butLastIdx)
-                      .mapToObj(i -> v.get(butLastIdx - i))
-                      .reduce(b,
-                              (acc, e) -> f.apply(e, acc),
-                              Functionals::functionShouldNotBeCalled);
+      return Functionals.reduce(IntStream.rangeClosed(0, butLastIdx).mapToObj(i -> v.get(butLastIdx - i)), b, (acc, e) -> f.apply(e, acc));
     }
   }
 
@@ -464,11 +450,9 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     final ArrayList<B> bs = new ArrayList<>();
 
     bs.add(b);
-    IntStream.rangeClosed(0, lastIdx)
-             .mapToObj(i -> v.get(lastIdx - i))
-             .reduce(b,
-                     (acc, e) -> { final B newAcc = f.apply(e, acc); bs.add(newAcc); return newAcc; },
-                     Functionals::functionShouldNotBeCalled);
+    Functionals.reduce(IntStream.rangeClosed(0, lastIdx).mapToObj(i -> v.get(lastIdx - i)),
+                       b,
+                       (acc, e) -> { final B newAcc = f.apply(e, acc); bs.add(newAcc); return newAcc; });
 
     return fromStream(IntStream.rangeClosed(0, len).mapToObj(i -> bs.get(len - i)));
   }
@@ -489,11 +473,9 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
       final A b = v.get(lastIdx);
       final Ref<LinkedList<A>> e = new Ref<>(singleton(b));
 
-      IntStream.rangeClosed(0, butLastIdx)
-               .mapToObj(i -> v.get(butLastIdx - i))
-               .reduce(b,
-                       (acc, elem) -> { final A newA = f.apply(elem, acc); e.r = create(newA, e.r); return newA; },
-                       Functionals::functionShouldNotBeCalled);
+      Functionals.reduce(IntStream.rangeClosed(0, butLastIdx).mapToObj(i -> v.get(butLastIdx - i)),
+                         b,
+                        (acc, elem) -> { final A newA = f.apply(elem, acc); e.r = create(newA, e.r); return newA; });
       return e.r;
     }
   }
@@ -532,16 +514,10 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     final ArrayList<B> u = new ArrayList<>();
     final int lastIdx = v.size() - 1;
 
-    final ACC newAcc = IntStream.rangeClosed(0, lastIdx)
-                                .mapToObj(i -> v.get(lastIdx - i))
-                                .reduce(acc,
-                                        (rAcc, e) -> { final Pair<ACC, B> r = f.apply(rAcc, e); u.add(r.mx2); return r.mx1; },
-                                        Functionals::functionShouldNotBeCalled);
-    return Pair.create(newAcc,
-                       u.stream()
-                        .reduce(empty(),
-                                LinkedList::createInv,
-                                Functionals::functionShouldNotBeCalled));
+    final ACC newAcc = Functionals.reduce(IntStream.rangeClosed(0, lastIdx).mapToObj(i -> v.get(lastIdx - i)),
+                                          acc,
+                                          (rAcc, e) -> { final Pair<ACC, B> r = f.apply(rAcc, e); u.add(r.mx2); return r.mx1; });
+    return Pair.create(newAcc, Functionals.reduce(u.stream(), empty(), LinkedList::createInv));
   }
 
   @Override
@@ -780,13 +756,10 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   private static <A> LinkedList<LinkedList<A>> initsImpl(final LinkedList<A> list) {
     final ArrayList<A> v = toArrayImpl(list);
     final int lastIdx = v.size() - 1;
-
-    final LinkedList<LinkedList<A>> res =
-      IntStream.rangeClosed(0, lastIdx)
-               .mapToObj(i -> fromArray(v, 0, lastIdx - i))
-               .reduce(empty(),
-                       LinkedList::createInv,
-                       Functionals::functionShouldNotBeCalled);
+    final LinkedList<LinkedList<A>> res
+            = Functionals.reduce(IntStream.rangeClosed(0, lastIdx).mapToObj(i -> fromArray(v, 0, lastIdx - i)),
+                                 empty(),
+                                 LinkedList::createInv);
     return create(empty(), res);
   }
 
@@ -1112,11 +1085,9 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     }
 
     final int lastIdx = v.size() - 1;
-    return IntStream.rangeClosed(0, lastIdx)
-                    .mapToObj(i -> v.get(lastIdx - i))
-                    .reduce(create(a, t),
-                            LinkedList::createInv,
-                            Functionals::functionShouldNotBeCalled);
+    return Functionals.reduce(IntStream.rangeClosed(0, lastIdx).mapToObj(i -> v.get(lastIdx - i)),
+                              create(a, t),
+                              LinkedList::createInv);
   }
 
   @Override
@@ -1317,11 +1288,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   public static <A> LinkedList<A> replicate(final int n, final A a) {
-    return Stream.generate(() -> a)
-                 .limit(n)
-                 .reduce(empty(),
-                         LinkedList::createInv,
-                         Functionals::functionShouldNotBeCalled);
+    return Functionals.reduce(Stream.generate(() -> a).limit(n), empty(), LinkedList::createInv);
   }
 
   public static <A, B> Pair<LinkedList<A>, LinkedList<B>> unzip(final LinkedList<Pair<A, B>> list) {
@@ -1401,10 +1368,8 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   @SafeVarargs
   public static <A> LinkedList<A> of(final A ... v) {
     final int lastIdx = v.length - 1;
-    return IntStream.rangeClosed(0, lastIdx)
-                    .mapToObj(i -> v[lastIdx - i])
-                    .reduce(empty(),
-                            LinkedList::createInv,
-                            Functionals::functionShouldNotBeCalled);
+    return Functionals.reduce(IntStream.rangeClosed(0, lastIdx).mapToObj(i -> v[lastIdx - i]),
+                              empty(),
+                              LinkedList::createInv);
   }
 }

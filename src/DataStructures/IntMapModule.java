@@ -766,9 +766,10 @@ public final class IntMapModule {
   }
 
   public static <V> Tree<V> fromStream(final Stream<PersistentMapIntEntry<V>> stream) {
-    return stream.reduce(EmptyNode.<V> create(),
-                         (final Tree<V> t, final PersistentMapIntEntry<V> e) -> t.insert(e.getKey(), e.getValue()),
-                         Functionals::functionShouldNotBeCalled);
+    return Functionals.reduce(
+              stream,
+              EmptyNode.<V> create(),
+              (final Tree<V> t, final PersistentMapIntEntry<V> e) -> t.insert(e.getKey(), e.getValue()));
   }
 
   public static <V> Tree<V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapIntEntry<V>> v) {

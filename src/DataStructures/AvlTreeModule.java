@@ -8,6 +8,7 @@ package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
 import Utils.ArrayUtils;
+import Utils.Functionals;
 import Utils.Functionals.TriFunction;
 import java.awt.Color;
 import java.util.ArrayList;
@@ -618,9 +619,7 @@ public final class AvlTreeModule {
   }
   
   public static <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<PersistentMapEntry<K, V>> stream) {
-    return stream.reduce(empty(),
-                         ((t, p) -> t.insert(p.getKey(), p.getValue())),
-                         ((t1, t2) -> { throw new AssertionError("Must not be used.  Stream is not parallel."); }));
+    return Functionals.reduce(stream, empty(), (t, p) -> t.insert(p.getKey(), p.getValue()));
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<PersistentMapEntry<K, V>> v) {

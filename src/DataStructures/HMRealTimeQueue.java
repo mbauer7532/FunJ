@@ -253,12 +253,7 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
       throw new AssertionError("cnt cannt be less than zero in drop().");
     }
     else {
-      HMRealTimeQueue<V> q = this;
-      for (int i = 0; i != cnt; ++i) {
-        q = q.tail();
-      }
-
-      return q;
+      return Functionals.reduce(IntStream.range(0, cnt), this, (q, i) -> q.tail());
     }
   }
 
@@ -284,7 +279,7 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
   }
 
   public static <V> HMRealTimeQueue<V> fromStream(final Stream<V> s) {
-    return s.reduce(empty(), (q, e) -> q.addLast(e), Functionals::functionShouldNotBeCalled);
+    return Functionals.reduce(s, empty(), (q, e) -> q.addLast(e));
   }
 
   @SafeVarargs

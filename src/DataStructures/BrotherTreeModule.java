@@ -1082,9 +1082,7 @@ public final class BrotherTreeModule {
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
     return fromSpine(BrotherTreeModule.<K, V> empty(),
-                     stream.reduce(Nil.create(),
-                                   (s, p) -> cons(p.getKey(), p.getValue(), s),
-                                   Functionals::functionShouldNotBeCalled));
+                     Functionals.reduce(stream, Nil.create(), (s, p) -> cons(p.getKey(), p.getValue(), s)));
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {
@@ -1097,9 +1095,7 @@ public final class BrotherTreeModule {
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromStream(final Stream<PersistentMapEntry<K, V>> stream) {
-    return stream.reduce(empty(),
-                         (t, p) -> t.insert(p.getKey(), p.getValue()),
-                         Functionals::functionShouldNotBeCalled);
+    return Functionals.reduce(stream, empty(), (t, p) -> t.insert(p.getKey(), p.getValue()));
   }
 
   public static <K extends Comparable<K>, V> Tree<K, V> fromArray(final ArrayList<PersistentMapEntry<K, V>> v) {

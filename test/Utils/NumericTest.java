@@ -135,7 +135,7 @@ public class NumericTest {
     final Map<Integer, Integer> m = new TreeMap<>();
     for (int i = 0; i != N; ++i) {
       final int[] a = Numeric.randomPermutation(low, high, size, rng);
-      final int r = Arrays.stream(a).reduce(0, (n, x) -> n * 10 + x);
+      final int r = Functionals.reduce(Arrays.stream(a), 0, (n, x) -> n * 10 + x);
       final Integer ii = m.get(r);
       m.put(r, ii == null ? 1 : ii + 1);
     }
