@@ -94,7 +94,9 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
     public final LinkedList<V> mr;
   }
 
-  private static <V> RotationState<V> exec(final RotationState<V> state) {
+  private static <V> RotationState<V> exec2(final RotationState<V> istate) {
+    RotationState<V> state = istate;
+
     if (state instanceof Reversing) {
       final Reversing<V> revState = (Reversing<V>) state;
       final LinkedList<V> f  = revState.mf;
@@ -104,23 +106,59 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
       final int ok           = revState.mok;
 
       if (f.isEmpty() && r.isSingleton()) {
-        return Appending.create(ok, fp, rp.cons(r.head()));
+        state = Appending.create(ok, fp, rp.cons(r.head()));
       }
       else {
-        return Reversing.create(ok + 1, f.tail(), fp.cons(f.head()), r.tail(), rp.cons(r.head()));
+        state = Reversing.create(ok + 1, f.tail(), fp.cons(f.head()), r.tail(), rp.cons(r.head()));
       }
     }
     else if (state instanceof Appending) {
       final Appending<V> appState = (Appending<V>) state;
       final int ok = appState.mok;
       if (ok == 0) {
-        return Done.create(appState.mrp);
+        state = Done.create(appState.mrp);
       }
       else {
         final LinkedList<V> fp = appState.mfp;
 
         if (! fp.isEmpty()) {
-          return Appending.create(ok - 1, fp.tail(), appState.mrp.cons(fp.head()));
+          state = Appending.create(ok - 1, fp.tail(), appState.mrp.cons(fp.head()));
+        }
+        else {
+          return state;
+        }
+      }
+    }
+    else {
+      return state;
+    }
+
+    if (state instanceof Reversing) {
+      final Reversing<V> revState = (Reversing<V>) state;
+      final LinkedList<V> f  = revState.mf;
+      final LinkedList<V> r  = revState.mr;
+      final LinkedList<V> fp = revState.mfp;
+      final LinkedList<V> rp = revState.mrp;
+      final int ok           = revState.mok;
+
+      if (f.isEmpty() && r.isSingleton()) {
+        state = Appending.create(ok, fp, rp.cons(r.head()));
+      }
+      else {
+        state = Reversing.create(ok + 1, f.tail(), fp.cons(f.head()), r.tail(), rp.cons(r.head()));
+      }
+    }
+    else if (state instanceof Appending) {
+      final Appending<V> appState = (Appending<V>) state;
+      final int ok = appState.mok;
+      if (ok == 0) {
+        state = Done.create(appState.mrp);
+      }
+      else {
+        final LinkedList<V> fp = appState.mfp;
+
+        if (! fp.isEmpty()) {
+          state = Appending.create(ok - 1, fp.tail(), appState.mrp.cons(fp.head()));
         }
       }
     }
@@ -129,7 +167,7 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
   }
 
   private static <V> HMRealTimeQueue<V> exec2(final int lenf, final LinkedList<V> f, final RotationState<V> state, final int lenr, final LinkedList<V> r) {
-    final RotationState<V> s, newState = exec(exec(state));
+    final RotationState<V> s, newState = exec2(state);
     final LinkedList<V> newf;
 
     if (newState instanceof Done) {
