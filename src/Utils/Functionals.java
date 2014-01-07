@@ -10,6 +10,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.BaseStream;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -356,6 +357,12 @@ public class Functionals {
     return comparator(x, y) >= 0 ? y : x;
   }
 
+  private static <T, S extends BaseStream<T, S>> void checkSequentialStream(final BaseStream<T, S> s) {
+    if (s.isParallel()) {
+      throw new AssertionError("Reduce() can only be called on sequential streams.");
+    }
+  }
+
   /**
    *
    * @param <U>
@@ -365,6 +372,7 @@ public class Functionals {
    * @return
    */
   public static <U> U reduce(final IntStream s, final U identity, final Int2BiFunction<U, U> accumulator) {
+    checkSequentialStream(s);
     final Ref<U> u = new Ref<>(identity);
     s.forEach((int x) -> { u.r = accumulator.apply(u.r, x); });
     return u.r;
@@ -379,6 +387,7 @@ public class Functionals {
    * @return
    */
   public static <U> U reduce(final LongStream s, final U identity, final Long2BiFunction<U, U> accumulator) {
+    checkSequentialStream(s);
     final Ref<U> u = new Ref<>(identity);
     s.forEach((long x) -> { u.r = accumulator.apply(u.r, x); });
     return u.r;
@@ -393,6 +402,7 @@ public class Functionals {
    * @return
    */
   public static <U> U reduce(final DoubleStream s, final U identity, final Double2BiFunction<U, U> accumulator) {
+    checkSequentialStream(s);
     final Ref<U> u = new Ref<>(identity);
     s.forEach((double x) -> { u.r = accumulator.apply(u.r, x); });
     return u.r;
