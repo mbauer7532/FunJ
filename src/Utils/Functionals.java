@@ -10,6 +10,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 
 /**
  *
@@ -122,6 +125,108 @@ public class Functionals {
     default <W> IntBiFunction<V, W> andThen(final Function<? super R, ? extends W> after) {
         Objects.requireNonNull(after);
         return (final int i, final V v) -> after.apply(apply(i, v));
+    }
+  }
+
+  /**
+   *
+   * @param <V>
+   * @param <R>
+   */
+  @FunctionalInterface
+  public interface Int2BiFunction<V, R> {
+    /**
+     * Applies this function to the given arguments.
+     *
+     * @param i
+     * @param v the third function argument
+     * @return the function result
+     */
+    R apply(final V v, final int i);
+
+    /**
+     * Returns a composed function that first applies this function to
+     * its input, and then applies the {@code after} function to the result.
+     * If evaluation of either function throws an exception, it is relayed to
+     * the caller of the composed function.
+     *
+     * @param <W>
+     * @param after the function to apply after this function is applied
+     * @return a composed function that first applies this function and then
+     * applies the {@code after} function
+     * @throws NullPointerException if after is null
+     */
+    default <W> Int2BiFunction<V, W> andThen(final Function<? super R, ? extends W> after) {
+        Objects.requireNonNull(after);
+        return (final V v, final int i) -> after.apply(apply(v, i));
+    }
+  }
+  
+  /**
+   *
+   * @param <V>
+   * @param <R>
+   */
+  @FunctionalInterface
+  public interface Long2BiFunction<V, R> {
+    /**
+     * Applies this function to the given arguments.
+     *
+     * @param i
+     * @param v the third function argument
+     * @return the function result
+     */
+    R apply(final V v, final long i);
+
+    /**
+     * Returns a composed function that first applies this function to
+     * its input, and then applies the {@code after} function to the result.
+     * If evaluation of either function throws an exception, it is relayed to
+     * the caller of the composed function.
+     *
+     * @param <W>
+     * @param after the function to apply after this function is applied
+     * @return a composed function that first applies this function and then
+     * applies the {@code after} function
+     * @throws NullPointerException if after is null
+     */
+    default <W> Long2BiFunction<V, W> andThen(final Function<? super R, ? extends W> after) {
+        Objects.requireNonNull(after);
+        return (final V v, final long i) -> after.apply(apply(v, i));
+    }
+  }
+
+  /**
+   *
+   * @param <V>
+   * @param <R>
+   */
+  @FunctionalInterface
+  public interface Double2BiFunction<V, R> {
+    /**
+     * Applies this function to the given arguments.
+     *
+     * @param i
+     * @param v the third function argument
+     * @return the function result
+     */
+    R apply(final V v, final double i);
+
+    /**
+     * Returns a composed function that first applies this function to
+     * its input, and then applies the {@code after} function to the result.
+     * If evaluation of either function throws an exception, it is relayed to
+     * the caller of the composed function.
+     *
+     * @param <W>
+     * @param after the function to apply after this function is applied
+     * @return a composed function that first applies this function and then
+     * applies the {@code after} function
+     * @throws NullPointerException if after is null
+     */
+    default <W> Double2BiFunction<V, W> andThen(final Function<? super R, ? extends W> after) {
+        Objects.requireNonNull(after);
+        return (final V v, final double i) -> after.apply(apply(v, i));
     }
   }
 
@@ -249,5 +354,47 @@ public class Functionals {
    */
   public static <A> A minSelector(final A x, final A y) {
     return comparator(x, y) >= 0 ? y : x;
+  }
+
+  /**
+   *
+   * @param <U>
+   * @param s
+   * @param identity
+   * @param accumulator
+   * @return
+   */
+  public static <U> U reduce(final IntStream s, final U identity, final Int2BiFunction<U, U> accumulator) {
+    final Ref<U> u = new Ref<>(identity);
+    s.forEach((int x) -> { u.r = accumulator.apply(u.r, x); });
+    return u.r;
+  }
+
+  /**
+   *
+   * @param <U>
+   * @param s
+   * @param identity
+   * @param accumulator
+   * @return
+   */
+  public static <U> U reduce(final LongStream s, final U identity, final Long2BiFunction<U, U> accumulator) {
+    final Ref<U> u = new Ref<>(identity);
+    s.forEach((long x) -> { u.r = accumulator.apply(u.r, x); });
+    return u.r;
+  }
+
+  /**
+   *
+   * @param <U>
+   * @param s
+   * @param identity
+   * @param accumulator
+   * @return
+   */
+  public static <U> U reduce(final DoubleStream s, final U identity, final Double2BiFunction<U, U> accumulator) {
+    final Ref<U> u = new Ref<>(identity);
+    s.forEach((double x) -> { u.r = accumulator.apply(u.r, x); });
+    return u.r;
   }
 }
