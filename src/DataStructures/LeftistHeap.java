@@ -329,7 +329,7 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
 
   @Override
   public Stream<V> stream() {
-    return StreamSupport.stream(new LeftistHeapSpliterator<V>(this), false);
+    return StreamSupport.stream(new LeftistHeapSpliterator<>(this), false);
   }
 
   @Override
