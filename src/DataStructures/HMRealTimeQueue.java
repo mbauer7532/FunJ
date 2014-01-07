@@ -128,8 +128,8 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
     return state;
   }
 
-  private static <V> HMRealTimeQueue<V> exec2(final HMRealTimeQueue<V> q) {
-    final RotationState<V> s, newState = exec(exec(q.mState));
+  private static <V> HMRealTimeQueue<V> exec2(final int lenf, final LinkedList<V> f, final RotationState<V> state, final int lenr, final LinkedList<V> r) {
+    final RotationState<V> s, newState = exec(exec(state));
     final LinkedList<V> newf;
 
     if (newState instanceof Done) {
@@ -137,10 +137,11 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
       s = Idle.create();
     }
     else {
-      newf = q.mf;
+      newf = f;
       s = newState;
     }
-    return create(q.mlenf, newf, s, q.mlenr, q.mr);
+
+    return create(lenf, newf, s, lenr, r);
   }
 
   private static <V> RotationState<V> invalidate(final RotationState<V> state) {
@@ -172,20 +173,13 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
     return state;
   }
 
-  private static <V> HMRealTimeQueue<V> check(final HMRealTimeQueue<V> q) {
-    final int lenf = q.mlenf;
-    final int lenr = q.mlenr;
-
+  private static <V> HMRealTimeQueue<V> check(final int lenf, final LinkedList<V> f, final RotationState<V> state, final int lenr, final LinkedList<V> r) {
     if (lenr <= lenf) {
-      return exec2(q);
+      return exec2(lenf, f, state, lenr, r);
     }
     else {
       final LinkedList<V> e = LinkedList.empty();
-      final LinkedList<V> f = q.mf;
-      final LinkedList<V> r = q.mr;
-
-      final RotationState<V> newState = Reversing.create(0, f, e, r, e);
-      return exec2(HMRealTimeQueue.create(lenf + lenr, f, newState, 0, e));
+      return exec2(lenf + lenr, f, Reversing.create(0, f, e, r, e), 0, e);
     }
   }
 
@@ -212,7 +206,7 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
 
   @Override
   public HMRealTimeQueue<V> addLast(final V x) {
-    return check(HMRealTimeQueue.create(mlenf, mf, mState, mlenr + 1, mr.cons(x)));
+    return check(mlenf, mf, mState, mlenr + 1, mr.cons(x));
   }
 
   @Override
@@ -267,11 +261,7 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
 
   @Override
   public HMRealTimeQueue<V> tail() {
-    return check(HMRealTimeQueue.create(mlenf - 1,
-                                        mf.tail(),
-                                        invalidate(mState),
-                                        mlenr,
-                                        mr));
+    return check(mlenf - 1, mf.tail(), invalidate(mState), mlenr, mr);
   }
 
   @Override
