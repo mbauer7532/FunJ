@@ -82,14 +82,9 @@ public class IntMapModuleTest {
     final int high = 3;
 
     final IntMapModule.Tree<Integer> t1
-            = IntStream.rangeClosed(low, high)
-                       .boxed()
-                       .reduce(IntMapModule.<Integer> empty(),
-                               (IntMapModule.Tree<Integer> t, Integer ii) -> t.insert(ii.intValue(), ii),
-                               (tt1, tt2) -> null);
-
-    GraphModule.showGraph(t1);
-    GraphModule.waitTime(2000);
+            = Functionals.reduce(IntStream.rangeClosed(low, high),
+                                 IntMapModule.<Integer> empty(),
+                                 (t, i) -> t.insert(i, Integer.valueOf(i)));
   }
 
   @Test

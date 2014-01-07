@@ -71,7 +71,6 @@ public class PersistentMapTest {
         TestUtils.checkMapProperties(t);
         final Integer n = perm1[i];
         t = t.insert(n, n);
-//        GraphModule.showGraph(t);
       }
       assertEquals(size, t.size());
       TestUtils.checkMapProperties(t);

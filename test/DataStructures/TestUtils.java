@@ -74,8 +74,6 @@ public class TestUtils {
     final TuplesModule.Pair<Boolean, String> res = t.verifyMapProperties();
 
     if (! res.mx1) {
-//      GraphModule.showGraph(t);
-//      GraphModule.waitTime(1000);
       assertTrue(res.mx2, false);
     }
   }
