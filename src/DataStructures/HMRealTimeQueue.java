@@ -228,9 +228,11 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
     return (HMRealTimeQueue<V>) sEmptyHMRealTimeQueue;
   }
 
+  private static <V> boolean isEmptyImpl(final HMRealTimeQueue<V> q) { return q.mlenf == 0; }
+
   @Override
   public boolean isEmpty() {
-    return mlenf == 0;
+    return isEmptyImpl(this);
   }
 
   public static <V> HMRealTimeQueue<V> singleton(final V x) {
@@ -266,8 +268,8 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
       HMRealTimeQueue<V> q = this;
       final ArrayList<V> v = new ArrayList<>();
       for (int i = 0; i != cnt; ++i) {
-        v.add(q.head());
-        q = q.tail();
+        v.add(headImpl(q));
+        q = tailImpl(q);
       }
 
       return v;
@@ -287,14 +289,22 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
     return fromStream(Arrays.stream(v));
   }
 
+  private static <V> V headImpl(final HMRealTimeQueue<V> q) {
+    return q.mf.head();
+  }
+
   @Override
   public V head() {
-    return mf.head();
+    return headImpl(this);
+  }
+
+  private static <V> HMRealTimeQueue<V> tailImpl(final HMRealTimeQueue<V> q) {
+    return check(q.mlenf - 1, q.mf.tail(), invalidate(q.mState), q.mlenr, q.mr);
   }
 
   @Override
   public HMRealTimeQueue<V> tail() {
-    return check(mlenf - 1, mf.tail(), invalidate(mState), mlenr, mr);
+    return tailImpl(this);
   }
 
   @Override
@@ -336,6 +346,45 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
                          mState.toString(),
                          mlenr,
                          mr.toString());
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (! (obj instanceof PersistentQueue)) {
+      return false;
+    }
+    else {
+      PersistentQueue<V, ?> la = this;
+      @SuppressWarnings("unchecked")
+      PersistentQueue<V, ?> lb = (PersistentQueue<V, ?>) obj;
+
+      while (! la.isEmpty() && ! lb.isEmpty()) {
+        if (! la.head().equals(lb.head())) {
+          return false;
+        }
+        la = la.tail();
+        lb = lb.tail();
+      }
+ 
+      return la.isEmpty() && lb.isEmpty();
+    }
+  }
+
+  private static <V> int hashCodeImpl(final HMRealTimeQueue<V> list) {
+    HMRealTimeQueue<V> t = list;
+    int hashRes = 42; // the answer...
+
+    while (! isEmptyImpl(t)) {
+      hashRes += headImpl(t).hashCode();
+      t = tailImpl(t);
+    }
+
+    return hashRes;
+  }
+
+  @Override
+  public int hashCode() {
+    return hashCodeImpl(this);
   }
 
   private final int mlenf;
