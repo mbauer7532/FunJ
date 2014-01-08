@@ -193,18 +193,16 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
 
       return Reversing.create(ok - 1, f, fp, r, rp);
     }
-    else {
-      if (state instanceof Appending) {
-        final Appending<V> appState = (Appending<V>) state;
-        final int ok = appState.mok;
-        final LinkedList<V> rp = appState.mrp;
+    else if (state instanceof Appending) {
+      final Appending<V> appState = (Appending<V>) state;
+      final int ok = appState.mok;
+      final LinkedList<V> rp = appState.mrp;
 
-        if (ok == 0 && ! rp.isEmpty()) {
-          return Done.create(rp.tail());
-        }
-        else {
-          return Appending.create(ok - 1, appState.mfp, rp);
-        }
+      if (ok == 0 && ! rp.isEmpty()) {
+        return Done.create(rp.tail());
+      }
+      else {
+        return Appending.create(ok - 1, appState.mfp, rp);
       }
     }
 
@@ -236,7 +234,7 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
   }
 
   public static <V> HMRealTimeQueue<V> singleton(final V x) {
-    return HMRealTimeQueue.<V> empty().addLast(x);
+    return addLastImpl(empty(), x);
   }
 
   @Override
@@ -244,9 +242,13 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
     return mlenf + mlenr;
   }
 
+  private static <V> HMRealTimeQueue<V> addLastImpl(HMRealTimeQueue<V> q, final V x) {
+    return check(q.mlenf, q.mf, q.mState, q.mlenr + 1, q.mr.cons(x));
+  }
+
   @Override
   public HMRealTimeQueue<V> addLast(final V x) {
-    return check(mlenf, mf, mState, mlenr + 1, mr.cons(x));
+    return addLastImpl(this, x);
   }
 
   @Override
