@@ -437,4 +437,12 @@ public class Functionals {
 
     return IntStream.range(0, siz).mapToObj(i -> Pair.create(tsVec[i], usVec[i]));
   }
+
+  public static <U> Stream<Pair<Integer, U>> zip(final IntStream ts, final Stream<U> us) {
+    return zip(ts.boxed(), us);
+  }
+
+  public static <U> Stream<Pair<U, Integer>> zip(final Stream<U> ts, final IntStream us) {
+    return zip(ts, us.boxed());
+  }
 }
