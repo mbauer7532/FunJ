@@ -6,12 +6,15 @@
 
 package Utils;
 
+import DataStructures.TuplesModule.Pair;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.BaseStream;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -421,5 +424,17 @@ public class Functionals {
    */
   public static <T, U> U reduce(final Stream<T> s, final U identity, final BiFunction<U, ? super T, U> accumulator) {
     return s.reduce(identity, accumulator, Functionals::functionShouldNotBeCalled);
+  }
+
+  public static <T, U> Stream<Pair<T, U>> zip(final Stream<T> ts, final Stream<U> us) {
+    @SuppressWarnings("unchecked")
+    final T[] tsVec = (T[]) ts.toArray();
+
+    @SuppressWarnings("unchecked")
+    final U[] usVec = (U[]) us.toArray();
+
+    final int siz = Math.min(tsVec.length, usVec.length);
+
+    return IntStream.range(0, siz).mapToObj(i -> Pair.create(tsVec[i], usVec[i]));
   }
 }
