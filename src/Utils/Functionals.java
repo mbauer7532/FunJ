@@ -442,7 +442,7 @@ public class Functionals {
     return zip(ts.boxed(), us);
   }
 
-  public static <U> Stream<Pair<U, Integer>> zip(final Stream<U> ts, final IntStream us) {
+  public static <T> Stream<Pair<T, Integer>> zip(final Stream<T> ts, final IntStream us) {
     return zip(ts, us.boxed());
   }
 }
