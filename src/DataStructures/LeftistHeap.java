@@ -32,9 +32,9 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
   private final LeftistHeap<V> mRight;
 
   private LeftistHeap(final int rank, final V val, final LeftistHeap<V> left, final LeftistHeap<V> right) {
-    mRank = rank;
-    mVal = val;
-    mLeft = left;
+    mRank  = rank;
+    mVal   = val;
+    mLeft  = left;
     mRight = right;
   }
 
@@ -87,13 +87,13 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     final LeftistHeap<V> left, right;
 
     if (a.mRank >= b.mRank) {
-      rank = b.mRank;
-      left = a;
+      rank  = b.mRank;
+      left  = a;
       right = b;
     }
     else {
-      rank = a.mRank;
-      left = b;
+      rank  = a.mRank;
+      left  = b;
       right = a;
     }
 
@@ -113,13 +113,13 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
       final int res = x.compareTo(y);
 
       if (res <= 0) {
-        z = x;
-        left = h1.mLeft;
+        z     = x;
+        left  = h1.mLeft;
         right = mergeImpl(h1.mRight, h2);
       }
       else {
-        z = y;
-        left = h2.mLeft;
+        z     = y;
+        left  = h2.mLeft;
         right = mergeImpl(h1, h2.mRight);
       }
       return makeT(z, left, right);
