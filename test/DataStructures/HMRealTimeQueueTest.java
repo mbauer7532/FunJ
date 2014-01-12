@@ -6,11 +6,14 @@
 
 package DataStructures;
 
+import Utils.Functionals;
 import Utils.Numeric;
 import Utils.Ref;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -24,16 +27,16 @@ import static org.junit.Assert.*;
  */
 public class HMRealTimeQueueTest {
     public HMRealTimeQueueTest() {}
-  
+
   @BeforeClass
   public static void setUpClass() {}
-  
+
   @AfterClass
   public static void tearDownClass() {}
-  
+
   @Before
   public void setUp() {}
-  
+
   @After
   public void tearDown() {}
 
@@ -88,8 +91,8 @@ public class HMRealTimeQueueTest {
     final Random rng = new Random(12371);
     final Ref<Integer> len = new Ref<>(Integer.valueOf(0));
 
-    final int cnt = 100_000;
-    final int level = 5000;
+    final int cnt = 10_000;
+    final int level = 5_000;
 
     final Ref<HMRealTimeQueue<Integer>> q = new Ref<>(HMRealTimeQueue.empty());
     IntStream.range(0, cnt).forEach(n -> {
@@ -235,7 +238,31 @@ public class HMRealTimeQueueTest {
   public void testFromArray() {
     System.out.println("fromArray");
 
-    
+    {
+      final ArrayList<Integer> v = new ArrayList<>();
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.fromArray(v);
+      assertTrue(q.isEmpty());
+    }
+    {
+      final ArrayList<Integer> v = new ArrayList<>();
+      v.add(1);
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.fromArray(v);
+      assertFalse(q.isEmpty());
+      assertEquals(1, q.length());
+      assertEquals(Integer.valueOf(1), q.head());
+    }
+    {
+      final ArrayList<Integer> v = new ArrayList<>();
+      v.add(1); v.add(2); v.add(3); v.add(4);
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.fromArray(v);
+      assertFalse(q.isEmpty());
+      assertEquals(4, q.length());
+      assertEquals(Integer.valueOf(1), q.head());
+      assertEquals(Integer.valueOf(2), q.tail().head());
+      assertEquals(Integer.valueOf(3), q.tail().tail().head());
+      assertEquals(Integer.valueOf(4), q.tail().tail().tail().head());
+      assertTrue(q.tail().tail().tail().tail().isEmpty());
+    }
   }
 
   /**
@@ -245,7 +272,34 @@ public class HMRealTimeQueueTest {
   public void testFromStream() {
     System.out.println("fromStream");
 
-    
+    {
+      final ArrayList<Integer> v = new ArrayList<>();
+      final Stream<Integer> s = v.stream();
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.fromStream(s);
+      assertTrue(q.isEmpty());
+    }
+    {
+      final ArrayList<Integer> v = new ArrayList<>();
+      v.add(1);
+      final Stream<Integer> s = v.stream();
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.fromStream(s);
+      assertFalse(q.isEmpty());
+      assertEquals(1, q.length());
+      assertEquals(Integer.valueOf(1), q.head());
+    }
+    {
+      final ArrayList<Integer> v = new ArrayList<>();
+      v.add(1); v.add(2); v.add(3); v.add(4);
+      final Stream<Integer> s = v.stream();
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.fromStream(s);
+      assertFalse(q.isEmpty());
+      assertEquals(4, q.length());
+      assertEquals(Integer.valueOf(1), q.head());
+      assertEquals(Integer.valueOf(2), q.tail().head());
+      assertEquals(Integer.valueOf(3), q.tail().tail().head());
+      assertEquals(Integer.valueOf(4), q.tail().tail().tail().head());
+      assertTrue(q.tail().tail().tail().tail().isEmpty());
+    }
   }
 
   /**
@@ -255,7 +309,22 @@ public class HMRealTimeQueueTest {
   public void testOf() {
     System.out.println("of");
 
-    
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.of();
+      assertTrue(q.isEmpty());
+    }
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.of(1);
+      assertFalse(q.isEmpty());
+      assertTrue(q.tail().isEmpty());
+    }
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.of(1, 2);
+      assertFalse(q.isEmpty());
+      assertEquals(Integer.valueOf(1), q.head());
+      assertEquals(Integer.valueOf(2), q.tail().head());
+      assertTrue(q.tail().tail().isEmpty());
+    }
   }
 
   /**
@@ -265,7 +334,25 @@ public class HMRealTimeQueueTest {
   public void testHead() {
     System.out.println("head");
 
-    
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.of();
+      boolean exceptionWasThrown = false;
+      try {
+        final Integer i = q.head();
+      }
+      catch (AssertionError ae) { exceptionWasThrown = true; }
+      assertTrue(exceptionWasThrown);
+    }
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.of(1);
+      boolean exceptionWasThrown = false;
+      try {
+        final Integer i = q.head();
+        assertEquals(1, i.intValue());
+      }
+      catch (AssertionError ae) { exceptionWasThrown = true; }
+      assertFalse(exceptionWasThrown);
+    }
   }
 
   /**
@@ -275,7 +362,77 @@ public class HMRealTimeQueueTest {
   public void testTail() {
     System.out.println("tail");
 
-    
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.of();
+      boolean exceptionWasThrown = false;
+      try {
+        final HMRealTimeQueue<Integer> qt = q.tail();
+      }
+      catch (AssertionError ae) { exceptionWasThrown = true; }
+      assertTrue(exceptionWasThrown);
+    }
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.of(1);
+      boolean exceptionWasThrown = false;
+      try {
+        final HMRealTimeQueue<Integer> qt = q.tail();
+        assertTrue(qt.isEmpty());
+      }
+      catch (AssertionError ae) { exceptionWasThrown = true; }
+      assertFalse(exceptionWasThrown);
+    }
+  }
+
+  /**
+   * Test of tail method, of class HMRealTimeQueue.
+   */
+  @Test
+  public void testNthTail() {
+    System.out.println("nthTail");
+
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.of();
+      boolean exceptionWasThrown = false;
+      try {
+        final HMRealTimeQueue<Integer> qt = q.nthTail(0);
+      }
+      catch (AssertionError ae) { exceptionWasThrown = true; }
+      assertFalse(exceptionWasThrown);
+    }
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.of();
+      boolean exceptionWasThrown = false;
+      try {
+        final HMRealTimeQueue<Integer> qt = q.nthTail(1);
+      }
+      catch (AssertionError ae) { exceptionWasThrown = true; }
+      assertTrue(exceptionWasThrown);
+    }
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.of(1);
+      boolean exceptionWasThrown = false;
+      try {
+        final HMRealTimeQueue<Integer> qt = q.nthTail(1);
+        assertTrue(qt.isEmpty());
+      }
+      catch (AssertionError ae) { exceptionWasThrown = true; }
+      assertFalse(exceptionWasThrown);
+    }
+    {
+      final HMRealTimeQueue<Integer> q = HMRealTimeQueue.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+      boolean exceptionWasThrown = false;
+      HMRealTimeQueue<Integer> qt = null;
+      try {
+        qt = q.nthTail(9);
+        assertFalse(qt.isEmpty());
+      }
+      catch (AssertionError ae) { exceptionWasThrown = true; }
+      assertFalse(exceptionWasThrown);
+      assertTrue(qt != null);
+      assertEquals(Integer.valueOf(10), qt.head());
+      assertTrue(qt.tail().isEmpty());
+    }
+
   }
 
   /**
@@ -285,7 +442,27 @@ public class HMRealTimeQueueTest {
   public void testContains() {
     System.out.println("contains");
 
-    
+    final Random rng = new Random(12371);
+
+    final int iters = 10;
+    final int nItemsInQueue = 500;
+
+    IntStream.range(0, iters).forEach(n -> {
+      final int[] v = Numeric.randomPermutation(1, nItemsInQueue, nItemsInQueue, rng);
+      final HMRealTimeQueue<Integer> q = Functionals.reduce(Arrays.stream(v), HMRealTimeQueue.empty(), (qp, e) -> qp.addLast(e));
+
+      Arrays.stream(v).forEach(i -> { assertTrue(q.contains(i)); });
+
+      final HMRealTimeQueue<Integer> qp = q.tail();
+      Arrays.stream(v).forEach(i -> {
+        if (i == v[0]) {
+          assertTrue(qp.notContains(i));
+        }
+        else {
+          assertTrue(qp.contains(i));
+        }
+      });
+    });
   }
 
   /**
@@ -295,6 +472,20 @@ public class HMRealTimeQueueTest {
   public void testNotContains() {
     System.out.println("notContains");
 
-    
+    final Random rng = new Random(12371);
+
+    final int iters = 10;
+    final int nItemsInQueue = 500;
+
+    IntStream.range(0, iters).forEach(n -> {
+      final int[] v = Numeric.randomPermutation(1, nItemsInQueue, nItemsInQueue, rng);
+      final HMRealTimeQueue<Integer> q = Functionals.reduce(Arrays.stream(v), HMRealTimeQueue.empty(), (qp, e) -> qp.addLast(e));
+
+      Arrays.stream(v).forEach(i -> { assertTrue(q.contains(i)); });
+
+      final HMRealTimeQueue<Integer> qp = q.nthTail(nItemsInQueue / 2);
+      Arrays.stream(v, 0, nItemsInQueue / 2).forEach(i -> { assertTrue(qp.notContains(i)); });
+      Arrays.stream(v, nItemsInQueue / 2, nItemsInQueue).forEach(i -> { assertTrue(qp.contains(i)); });
+    });
   }
 }
