@@ -13,21 +13,23 @@ import java.util.ArrayList;
  * @author Neo
  */
 public interface PersistentQueue<V, Q extends PersistentQueue<V, Q>> {
-  boolean isEmpty();
+  public boolean isEmpty();
 
-  V head();
+  public V head();
 
-  int length();
+  public int length();
 
-  Q tail();
+  public Q tail();
 
-  ArrayList<V> take(final int cnt);
+  public Q nthTail(final int n);
 
-  Q drop(final int cnt);
+  public ArrayList<V> take(final int cnt);
 
-  Q addLast(final V x);
+  public Q drop(final int cnt);
 
-  boolean contains(final V v);
+  public Q addLast(final V x);
 
-  boolean notContains(final V v);
+  public boolean contains(final V v);
+
+  public boolean notContains(final V v);
 }

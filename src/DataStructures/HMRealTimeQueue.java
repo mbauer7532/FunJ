@@ -309,6 +309,20 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
     return tailImpl(this);
   }
 
+  private static <V> HMRealTimeQueue<V> nthTailImpl(final HMRealTimeQueue<V> q, final int n) {
+    if (n < 0) {
+      throw new AssertionError("in function nthTail(), parameter n cannot be negative.");
+    }
+    else {
+      return Functionals.reduce(IntStream.range(0, n), q, (qp, i) -> qp.tail());
+    }
+  }
+
+  @Override
+  public HMRealTimeQueue<V> nthTail(final int n) {
+    return nthTailImpl(this, n);
+  }
+
   @Override
   public boolean contains(final V v) {
     return mf.contains(v) || mr.contains(v);
