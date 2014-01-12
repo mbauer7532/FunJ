@@ -21,6 +21,8 @@ import org.StructureGraphic.v1.DSTreeNode;
 public interface PersistentHeap<V extends Comparable<V>, H extends PersistentHeap<V, H>> extends Iterable<V>, DSTreeNode {
   public boolean isEmpty();
 
+  public boolean isNotEmpty();
+
   public V findMin();
 
   public H insert(final V val);
@@ -28,6 +30,10 @@ public interface PersistentHeap<V extends Comparable<V>, H extends PersistentHea
   public H deleteMin();
 
   public H deleteMin(final Ref<V> v);
+
+  public boolean contains(final V v);
+
+  public boolean notContains(final V v);
 
   public H merge(final H heap);
 

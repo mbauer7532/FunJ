@@ -68,6 +68,11 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     return isEmptyImpl(this);
   }
 
+  @Override
+  public boolean isNotEmpty() {
+    return ! isEmptyImpl(this);
+  }
+
   private static <V extends Comparable<V>> V findMinImpl(final LeftistHeap<V> h) {
     if (isEmptyImpl(h)) {
       throw new AssertionError("Attempted to get the min element of an empty heap.");
@@ -100,6 +105,34 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     return create(rank + 1, x, left, right);
   }
 
+  private static <V extends Comparable<V>> boolean containsImpl(final LeftistHeap<V> h, final V v) {
+    if (isEmptyImpl(h)) {
+      return false;
+    }
+    else {
+      final int res = v.compareTo(h.mVal);
+      if (res < 0) {
+        return false;
+      }
+      else if (res == 0) {
+        return true;
+      }
+      else {
+        return containsImpl(h.mLeft, v) || containsImpl(h.mRight, v);
+      }
+    }
+  }
+
+  @Override
+  public boolean contains(final V v) {
+    return containsImpl(this, v);
+  }
+
+  @Override
+  public boolean notContains(final V v) {
+    return ! containsImpl(this, v);
+  }
+
   private static <V extends Comparable<V>> LeftistHeap<V> mergeImpl(final LeftistHeap<V> h1, final LeftistHeap<V> h2) {
     if (isEmptyImpl(h1)) {
       return h2;
@@ -122,6 +155,7 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
         left  = h2.mLeft;
         right = mergeImpl(h1, h2.mRight);
       }
+
       return makeT(z, left, right);
     }
   }
@@ -249,8 +283,13 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     @Override
     public V next() {
       final LeftistHeap<V> h = mQueue.removeFirst(); // Remove first with throw an exception if queue is empty.
-      mQueue.addLast(h.mLeft);
-      mQueue.addLast(h.mRight);
+      if (! isEmptyImpl(h.mRight)) {
+        mQueue.addLast(h.mLeft);
+        mQueue.addLast(h.mRight);
+      }
+      else if (! isEmptyImpl(h.mLeft)) {
+        mQueue.addLast(h.mLeft);
+      }
 
       return h.mVal;
     }
@@ -266,8 +305,13 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
 
     private void performActionUpdatingQueue(final Consumer<? super V> action) {
       final LeftistHeap<V> h = mQueue.removeFirst();
-      mQueue.addLast(h.mLeft);
-      mQueue.addLast(h.mRight);
+      if (! isEmptyImpl(h.mRight)) {
+        mQueue.addLast(h.mLeft);
+        mQueue.addLast(h.mRight);
+      }
+      else if (! isEmptyImpl(h.mLeft)) {
+        mQueue.addLast(h.mLeft);
+      }
       action.accept(h.mVal);
 
       return;
