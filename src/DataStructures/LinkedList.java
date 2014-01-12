@@ -140,24 +140,32 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     return appendImpl(this, list);
   }
 
-  @Override
-  public A head() {
-    if (isNull()) {
+  private static <A> A headImpl(final LinkedList<A> list) {
+    if (list.isNull()) {
       throw buildExnEmptyList("head");
     }
     else {
-      return mCar;
+      return list.mCar;
+    }
+  }
+
+  @Override
+  public A head() {
+    return headImpl(this);
+  }
+
+  private static <A> LinkedList<A> tailImpl(final LinkedList<A> list) {
+    if (list.isNull()) {
+      throw buildExnEmptyList("tail");
+    }
+    else {
+      return list.mCdr;
     }
   }
 
   @Override
   public LinkedList<A> tail() {
-    if (isNull()) {
-      throw buildExnEmptyList("tail");
-    }
-    else {
-      return mCdr;
-    }
+    return tailImpl(this);
   }
 
   private static <A> A lastImpl(final LinkedList<A> list) {
@@ -894,6 +902,20 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   @Override
   public A nth(final int n) {
     return nthImpl(this, n);
+  }
+
+  private static <A> LinkedList<A> nthTailImpl(final LinkedList<A> list, final int n) {
+    if (n < 0) {
+      throw new AssertionError("In function nthTail(), parameter n cannot be negative.");
+    }
+    else {
+      return Functionals.reduce(IntStream.range(0, n), list, (l, i) -> tailImpl(l));
+    }
+  }
+
+  @Override
+  public LinkedList<A> nthTail(final int n) {
+    return nthTailImpl(this, n);
   }
 
   @Override

@@ -106,6 +106,7 @@ public interface List<A, L extends List<A, L>> extends Iterable<A> {
 
   // Indexing
   public A nth(final int n);
+  public L nthTail(final int n);
 
   public OptionalInt elemIndex(final A a);
   public List<Integer, ?> elemIndices(final A a);

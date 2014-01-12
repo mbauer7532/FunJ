@@ -1256,6 +1256,45 @@ public class LinkedListTest {
   }
 
   /**
+   * Test of nth method, of class LinkedList.
+   */
+  @Test
+  public void testNthTail() {
+    println("nthTail");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      boolean exceptionWasThrown = false;
+      try {
+        final LinkedList<Integer> ls = e.nthTail(-1);
+      }
+      catch (AssertionError ae) { exceptionWasThrown = true; }
+      assertTrue(exceptionWasThrown);
+    }
+    {
+      boolean exceptionWasThrown = false;
+      try {
+        final LinkedList<Integer> ls = e.nthTail(0);
+      }
+      catch (AssertionError ae) { exceptionWasThrown = true; }
+      assertFalse(exceptionWasThrown);
+    }
+    {
+      boolean exceptionWasThrown = false;
+      try {
+        final LinkedList<Integer> ls = e.nthTail(1);
+      }
+      catch (AssertionError ae) { exceptionWasThrown = true; }
+      assertTrue(exceptionWasThrown);
+    }
+    {
+      final int low = 0, high = 5;
+      final LinkedList<Integer> ls = makeList(low, high);
+      IntStream.rangeClosed(low, high).forEach(i -> { assertEquals(makeList(i, high), ls.nthTail(i)); });
+    }
+  }
+
+  /**
    * Test of elemIndex method, of class LinkedList.
    */
   @Test
