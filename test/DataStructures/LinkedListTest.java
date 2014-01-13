@@ -886,8 +886,6 @@ public class LinkedListTest {
       final LinkedList<Integer> ls = e.cons(1).cons(1).cons(2);
       final LinkedList<LinkedList<Integer>> lsRes = ls.group();
 
-      println(lsRes.toString());
-
       assertEquals(2, lsRes.length());
       assertEquals(LinkedList.of(2), lsRes.nth(0));
       assertEquals(LinkedList.of(1, 1), lsRes.nth(1));
@@ -895,8 +893,6 @@ public class LinkedListTest {
     {
       final LinkedList<Integer> ls = LinkedList.of(1, 2, 2, 3, 3, 3, 5, 6, 6, 2, 2, 1, 3, 3, 4, 5);
       final LinkedList<LinkedList<Integer>> lsRes = ls.group();
-
-      println(lsRes.toString());
 
       assertEquals(10, lsRes.length());
       assertEquals(LinkedList.of(1), lsRes.nth(0));
