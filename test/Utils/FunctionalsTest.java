@@ -9,6 +9,7 @@ package Utils;
 import DataStructures.TuplesModule;
 import DataStructures.TuplesModule.Pair;
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -45,11 +46,22 @@ public class FunctionalsTest {
   @Test
   public void testMapOptOrElse() {
     System.out.println("mapOptOrElse");
-//    Object expResult = null;
-//    Object result = Functionals.mapOptOrElse(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final Optional<Integer> i = Optional.empty();
+      final Boolean res = Functionals.mapOptOrElse(i, y -> false, () -> true);
+      assertEquals(Boolean.valueOf(true), res);
+    }
+    {
+      final Optional<Integer> i = Optional.of(3);
+      final Boolean res = Functionals.mapOptOrElse(i, y -> y > 2, () -> false);
+      assertEquals(Boolean.valueOf(true), res);
+    }
+    {
+      final Optional<Integer> i = Optional.of(1);
+      final Boolean res = Functionals.mapOptOrElse(i, y -> y > 2, () -> true);
+      assertEquals(Boolean.valueOf(false), res);
+    }
   }
 
   /**
@@ -58,13 +70,13 @@ public class FunctionalsTest {
   @Test
   public void testFunctionShouldNotBeCalled() {
     System.out.println("functionShouldNotBeCalled");
-//    Object a = null;
-//    Object b = null;
-//    Object expResult = null;
-//    Object result = Functionals.functionShouldNotBeCalled(a, b);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    boolean exceptionWasThrown = false;
+    try {
+      Functionals.functionShouldNotBeCalled(Integer.valueOf(1), Integer.valueOf(2));
+    }
+    catch (AssertionError ae) { exceptionWasThrown = true; }
+    assertTrue(exceptionWasThrown);
   }
 
   /**
