@@ -10,7 +10,9 @@ import DataStructures.TuplesModule.Pair;
 import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Spliterator;
 import java.util.function.BiFunction;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.BaseStream;
@@ -19,6 +21,7 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  *
@@ -426,7 +429,7 @@ public class Functionals {
     return s.reduce(identity, accumulator, Functionals::functionShouldNotBeCalled);
   }
 
-  public static <T, U> Stream<Pair<T, U>> zip(final Stream<T> ts, final Stream<U> us) {
+  public static <T, U> Stream<Pair<T, U>> zip2(final Stream<T> ts, final Stream<U> us) {
     @SuppressWarnings("unchecked")
     final T[] tsVec = (T[]) ts.toArray();
 
@@ -438,11 +441,70 @@ public class Functionals {
     return IntStream.range(0, siz).mapToObj(i -> Pair.create(tsVec[i], usVec[i]));
   }
 
-  public static <U> Stream<Pair<Integer, U>> zip(final IntStream ts, final Stream<U> us) {
-    return zip(ts.boxed(), us);
+  public static <U> Stream<Pair<Integer, U>> zip2(final IntStream ts, final Stream<U> us) {
+    return zip2(ts.boxed(), us);
   }
 
-  public static <T> Stream<Pair<T, Integer>> zip(final Stream<T> ts, final IntStream us) {
-    return zip(ts, us.boxed());
+  public static <T> Stream<Pair<T, Integer>> zip2(final Stream<T> ts, final IntStream us) {
+    return zip2(ts, us.boxed());
+  }
+
+  private static final class ZipSpliterator<T, U> implements Spliterator<Pair<T, U>> {
+    private final Spliterator<T> mLeftSpliter;
+    private final Spliterator<U> mRightSpliter;
+    private boolean mTryAdvanceStatus;
+
+    public static <T, U> ZipSpliterator<T, U> create(final Spliterator<T> leftSpliter,
+                                                     final Spliterator<U> rightSpliter) {
+      return new ZipSpliterator<>(leftSpliter, rightSpliter);
+    }
+
+    private ZipSpliterator(final Spliterator<T> leftSpliter, final Spliterator<U> rightSpliter) {
+      mLeftSpliter  = leftSpliter;
+      mRightSpliter = rightSpliter;
+    }
+
+    @Override
+    public boolean tryAdvance(final Consumer<? super Pair<T, U>> action) {
+      mTryAdvanceStatus = false;
+      mLeftSpliter.tryAdvance(leftElem -> {
+        mRightSpliter.tryAdvance(rightElem -> {
+          action.accept(Pair.create(leftElem, rightElem));
+          mTryAdvanceStatus = true;
+        });
+      });
+
+      return mTryAdvanceStatus;
+    }
+
+    @Override
+    public Spliterator<Pair<T, U>> trySplit() {
+      final Spliterator<T> leftSplit;
+      final Spliterator<U> rightSplit;
+
+      if ((leftSplit = mLeftSpliter.trySplit()) == null) {
+        return null;
+      }
+      else if ((rightSplit = mRightSpliter.trySplit()) == null) {
+        return null;
+      }
+      else {
+        return ZipSpliterator.create(leftSplit, rightSplit);
+      }
+    }
+
+    @Override
+    public long estimateSize() {
+      return Math.min(mLeftSpliter.estimateSize(), mRightSpliter.estimateSize());
+    }
+
+    @Override
+    public int characteristics() {
+      return mLeftSpliter.characteristics() & mRightSpliter.characteristics();
+    }
+  }
+
+  public static <T, U> Stream<Pair<T, U>> zip(final Stream<T> ts, final Stream<U> us) {
+    return StreamSupport.stream(ZipSpliterator.create(ts.spliterator(), us.spliterator()), false);
   }
 }

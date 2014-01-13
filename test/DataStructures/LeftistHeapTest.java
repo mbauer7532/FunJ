@@ -261,9 +261,10 @@ public class LeftistHeapTest {
 
         Arrays.stream(v).forEach(m -> { if (! vMin.contains(m)) { vMax.add(m); }});
         checkHeapProperties(delHeap, vMax.stream(), vMin.stream());
-        for (int i = 0; i < vMin.size(); ++i) {
-          assertEquals(sortedV.get(i), vMin.get(i));
-        }
+
+        final Ref<Integer> count = new Ref<>(Integer.valueOf(0));
+        Functionals.zip(sortedV.stream(), vMin.stream()).peek(p -> { ++count.r; }).forEach(p -> { assertEquals(p.mx1, p.mx2); });
+        assertEquals(Integer.valueOf(vMin.size()), count.r);
       });
     }
   }
