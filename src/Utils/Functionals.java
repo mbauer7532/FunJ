@@ -441,14 +441,6 @@ public class Functionals {
     return IntStream.range(0, siz).mapToObj(i -> Pair.create(tsVec[i], usVec[i]));
   }
 
-  public static <U> Stream<Pair<Integer, U>> zip2(final IntStream ts, final Stream<U> us) {
-    return zip2(ts.boxed(), us);
-  }
-
-  public static <T> Stream<Pair<T, Integer>> zip2(final Stream<T> ts, final IntStream us) {
-    return zip2(ts, us.boxed());
-  }
-
   private static final class ZipSpliterator<T, U> implements Spliterator<Pair<T, U>> {
     private final Spliterator<T> mLeftSpliter;
     private final Spliterator<U> mRightSpliter;
@@ -506,5 +498,13 @@ public class Functionals {
 
   public static <T, U> Stream<Pair<T, U>> zip(final Stream<T> ts, final Stream<U> us) {
     return StreamSupport.stream(ZipSpliterator.create(ts.spliterator(), us.spliterator()), false);
+  }
+
+  public static <U> Stream<Pair<Integer, U>> zip(final IntStream ts, final Stream<U> us) {
+    return zip(ts.boxed(), us);
+  }
+
+  public static <T> Stream<Pair<T, Integer>> zip(final Stream<T> ts, final IntStream us) {
+    return zip(ts, us.boxed());
   }
 }
