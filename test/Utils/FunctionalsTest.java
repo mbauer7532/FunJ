@@ -85,13 +85,14 @@ public class FunctionalsTest {
   @Test
   public void testComparator() {
     System.out.println("comparator");
-//    Object x = null;
-//    Object y = null;
-//    int expResult = 0;
-//    int result = Functionals.comparator(x, y);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final int res0 = Functionals.comparator(Integer.valueOf(1), Integer.valueOf(2));
+    final int res1 = Functionals.comparator(Integer.valueOf(2), Integer.valueOf(2));
+    final int res2 = Functionals.comparator(Integer.valueOf(2), Integer.valueOf(1));
+
+    assertTrue(res0 < 0);
+    assertTrue(res1 == 0);
+    assertTrue(res2 > 0);
   }
 
   /**
@@ -100,13 +101,15 @@ public class FunctionalsTest {
   @Test
   public void testMaxSelector() {
     System.out.println("maxSelector");
-//    Object x = null;
-//    Object y = null;
-//    Object expResult = null;
-//    Object result = Functionals.maxSelector(x, y);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final Integer res0 = Functionals.maxSelector(Integer.valueOf(1), Integer.valueOf(2));
+    final Integer res1 = Functionals.maxSelector(Integer.valueOf(2), Integer.valueOf(2));
+    final Integer res2 = Functionals.maxSelector(Integer.valueOf(2), Integer.valueOf(1));
+    
+    final Integer expected = Integer.valueOf(2);
+    assertEquals(expected, res0);
+    assertEquals(expected, res1);
+    assertEquals(expected, res2);
   }
 
   /**
@@ -115,13 +118,15 @@ public class FunctionalsTest {
   @Test
   public void testMinSelector() {
     System.out.println("minSelector");
-//    Object x = null;
-//    Object y = null;
-//    Object expResult = null;
-//    Object result = Functionals.minSelector(x, y);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final Integer res0 = Functionals.minSelector(Integer.valueOf(1), Integer.valueOf(2));
+    final Integer res1 = Functionals.minSelector(Integer.valueOf(1), Integer.valueOf(1));
+    final Integer res2 = Functionals.minSelector(Integer.valueOf(2), Integer.valueOf(1));
+
+    final Integer expected = Integer.valueOf(1);
+    assertEquals(expected, res0);
+    assertEquals(expected, res1);
+    assertEquals(expected, res2);
   }
 
   /**
