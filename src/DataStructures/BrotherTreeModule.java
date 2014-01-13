@@ -59,6 +59,7 @@ public final class BrotherTreeModule {
       return root_ins(ins(f, a, v));
     }
 
+    @SuppressWarnings("serial")
     private static final class ControlExnNoSuchElement extends Exception {};
 
     protected static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();
