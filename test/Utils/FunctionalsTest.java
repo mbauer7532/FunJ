@@ -195,4 +195,25 @@ public class FunctionalsTest {
       assertEquals("[(10, 0), (11, 1), (12, 2), (13, 3), (14, 4)]", v.toString());
     }
   }
+  
+  @Test
+  public void testZipWithIntStream() {
+    System.out.println("zipWithIntStream");
+
+    {
+      final ArrayList<Pair<Integer, Integer>> v = Functionals.zip(IntStream.range(0, 5), IntStream.range(10, 100).boxed()).collect(Collectors.toCollection(ArrayList::new));
+      assertEquals(5, v.size());
+      assertEquals("[(0, 10), (1, 11), (2, 12), (3, 13), (4, 14)]", v.toString());
+    }
+    {
+      final ArrayList<Pair<Integer, Integer>> v = Functionals.zip(IntStream.range(10, 100).boxed(), IntStream.range(0, 5)).collect(Collectors.toCollection(ArrayList::new));
+      assertEquals(5, v.size());
+      assertEquals("[(10, 0), (11, 1), (12, 2), (13, 3), (14, 4)]", v.toString());
+    }
+    {
+      final ArrayList<Pair<Integer, Integer>> v = Functionals.zip(IntStream.range(0, 5), IntStream.range(10, 100)).collect(Collectors.toCollection(ArrayList::new));
+      assertEquals(5, v.size());
+      assertEquals("[(0, 10), (1, 11), (2, 12), (3, 13), (4, 14)]", v.toString());
+    }
+  }
 }

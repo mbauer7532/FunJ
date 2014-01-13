@@ -505,4 +505,8 @@ public class Functionals {
   public static <T> Stream<Pair<T, Integer>> zip(final Stream<T> ts, final IntStream us) {
     return zip(ts, us.boxed());
   }
+
+  public static Stream<Pair<Integer, Integer>> zip(final IntStream ts, final IntStream us) {
+    return zip(ts.boxed(), us.boxed());
+  }
 }
