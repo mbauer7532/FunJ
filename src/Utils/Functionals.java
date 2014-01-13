@@ -14,7 +14,6 @@ import java.util.Spliterators;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.IntBinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.BaseStream;
 import java.util.stream.DoubleStream;
