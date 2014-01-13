@@ -9,7 +9,7 @@ package DataStructures;
 import DataStructures.TuplesModule.Pair;
 import Utils.Functionals;
 import Utils.Functionals.IntBiConsumer;
-import Utils.Functionals.IntBiFunction;
+import Utils.Functionals.Int1BiFunction;
 import Utils.Functionals.IntBiPredicate;
 import Utils.Functionals.IntTriFunction;
 import Utils.Numeric;
@@ -92,10 +92,10 @@ public final class IntMapModule {
     }
 
     @Override
-    public abstract <W> Tree<W> mapi(final IntBiFunction<V, W> f);
+    public abstract <W> Tree<W> mapi(final Int1BiFunction<V, W> f);
 
     @Override
-    public abstract <W> Tree<W> mapPartiali(final IntBiFunction<V, Optional<W>> f);
+    public abstract <W> Tree<W> mapPartiali(final Int1BiFunction<V, Optional<W>> f);
 
     @Override
     public abstract Tree<V> filteri(final IntBiPredicate<V> f);
@@ -272,12 +272,12 @@ public final class IntMapModule {
     }
 
     @Override
-    public <W> Tree<W> mapi(final IntBiFunction<V, W> f) {
+    public <W> Tree<W> mapi(final Int1BiFunction<V, W> f) {
       return create();
     }
 
     @Override
-    public <W> Tree<W> mapPartiali(final IntBiFunction<V, Optional<W>> f) {
+    public <W> Tree<W> mapPartiali(final Int1BiFunction<V, Optional<W>> f) {
       return create();
     }
 
@@ -393,12 +393,12 @@ public final class IntMapModule {
     }
 
     @Override
-    public <W> Tree<W> mapi(final IntBiFunction<V, W> f) {
+    public <W> Tree<W> mapi(final Int1BiFunction<V, W> f) {
       return create(mKey, f.apply(mKey, mValue));
     }
 
     @Override
-    public <W> Tree<W> mapPartiali(final IntBiFunction<V, Optional<W>> f) {
+    public <W> Tree<W> mapPartiali(final Int1BiFunction<V, Optional<W>> f) {
       return Functionals.mapOptOrElse(f.apply(mKey, mValue), w -> create(mKey, w), EmptyNode::create);
     }
 
@@ -562,12 +562,12 @@ public final class IntMapModule {
     }
 
     @Override
-    public <W> Tree<W> mapi(final IntBiFunction<V, W> f) {
+    public <W> Tree<W> mapi(final Int1BiFunction<V, W> f) {
       return create(mPrefix, mBranchingBit, mLeft.mapi(f), mRight.mapi(f));
     }
 
     @Override
-    public <W> Tree<W> mapPartiali(final IntBiFunction<V, Optional<W>> f) {
+    public <W> Tree<W> mapPartiali(final Int1BiFunction<V, Optional<W>> f) {
       final Tree<W> newL = mLeft.mapPartiali(f);
       final Tree<W> newR = mRight.mapPartiali(f);
 

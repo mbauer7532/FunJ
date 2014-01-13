@@ -10,9 +10,11 @@ import DataStructures.TuplesModule.Pair;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.IntBinaryOperator;
 import java.util.function.Supplier;
 import java.util.stream.BaseStream;
 import java.util.stream.DoubleStream;
@@ -108,7 +110,7 @@ public class Functionals {
    * @param <R>
    */
   @FunctionalInterface
-  public interface IntBiFunction<V, R> {
+  public interface Int1BiFunction<V, R> {
     /**
      * Applies this function to the given arguments.
      *
@@ -129,7 +131,7 @@ public class Functionals {
      * applies the {@code after} function
      * @throws NullPointerException if after is null
      */
-    default <W> IntBiFunction<V, W> andThen(final Function<? super R, ? extends W> after) {
+    default <W> Int1BiFunction<V, W> andThen(final Function<? super R, ? extends W> after) {
         Objects.requireNonNull(after);
         return (final int i, final V v) -> after.apply(apply(i, v));
     }
@@ -166,6 +168,39 @@ public class Functionals {
     default <W> Int2BiFunction<V, W> andThen(final Function<? super R, ? extends W> after) {
         Objects.requireNonNull(after);
         return (final V v, final int i) -> after.apply(apply(v, i));
+    }
+  }
+
+  /**
+   *
+   * @param <R>
+   */
+  @FunctionalInterface
+  public interface IntBiFunction<R> {
+    /**
+     * Applies this function to the given arguments.
+     *
+     * @param i0
+     * @param i1
+     * @return the function result
+     */
+    R apply(final int i0, final int i1);
+
+    /**
+     * Returns a composed function that first applies this function to
+     * its input, and then applies the {@code after} function to the result.
+     * If evaluation of either function throws an exception, it is relayed to
+     * the caller of the composed function.
+     *
+     * @param <W>
+     * @param after the function to apply after this function is applied
+     * @return a composed function that first applies this function and then
+     * applies the {@code after} function
+     * @throws NullPointerException if after is null
+     */
+    default <W> IntBiFunction<W> andThen(final Function<? super R, ? extends W> after) {
+        Objects.requireNonNull(after);
+        return (final int i0, final int i1) -> after.apply(apply(i0, i1));
     }
   }
   
@@ -439,74 +474,72 @@ public class Functionals {
     return IntStream.range(0, siz).mapToObj(i -> Pair.create(tsVec[i], usVec[i]));
   }
 
-  private static final class ZipSpliterator<T, U> implements Spliterator<Pair<T, U>> {
-    private final Spliterator<T> mLeftSpliter;
-    private final Spliterator<U> mRightSpliter;
-    private boolean mTryAdvanceStatus;
+  private static final class ZipperSpliterator<T, U, W> extends Spliterators.AbstractSpliterator<W> {
+    final Spliterator<T> mLeftSpliter;
+    final Spliterator<U> mRightSpliter;
+    final BiFunction<? super T, ? super U, ? extends W> mZipper;
+    boolean mTryAdvanceStatus;
 
-    public static <T, U> ZipSpliterator<T, U> create(final Spliterator<T> leftSpliter,
-                                                     final Spliterator<U> rightSpliter) {
-      return new ZipSpliterator<>(leftSpliter, rightSpliter);
-    }
-
-    private ZipSpliterator(final Spliterator<T> leftSpliter, final Spliterator<U> rightSpliter) {
-      mLeftSpliter  = leftSpliter;
-      mRightSpliter = rightSpliter;
+    ZipperSpliterator(final Spliterator<T> leftSpliter,
+                      final Spliterator<U> rightSpliter,
+                      final BiFunction<? super T, ? super U, ? extends W> zipper,
+                      final long sizeEst,
+                      final int additionalCharacteristics) {
+      super(sizeEst, additionalCharacteristics);
+      this.mLeftSpliter  = leftSpliter;
+      this.mRightSpliter = rightSpliter;
+      this.mZipper       = zipper;
     }
 
     @Override
-    public boolean tryAdvance(final Consumer<? super Pair<T, U>> action) {
+    public boolean tryAdvance(Consumer<? super W> action) {
       mTryAdvanceStatus = false;
       mLeftSpliter.tryAdvance(leftElem -> {
         mRightSpliter.tryAdvance(rightElem -> {
-          action.accept(Pair.create(leftElem, rightElem));
+          action.accept(mZipper.apply(leftElem, rightElem));
           mTryAdvanceStatus = true;
         });
       });
 
       return mTryAdvanceStatus;
     }
-
-    @Override
-    public Spliterator<Pair<T, U>> trySplit() {
-      final Spliterator<T> leftSplit;
-      final Spliterator<U> rightSplit;
-
-      if ((leftSplit = mLeftSpliter.trySplit()) == null) {
-        return null;
-      }
-      else if ((rightSplit = mRightSpliter.trySplit()) == null) {
-        return null;
-      }
-      else {
-        return ZipSpliterator.create(leftSplit, rightSplit);
-      }
-    }
-
-    @Override
-    public long estimateSize() {
-      return Math.min(mLeftSpliter.estimateSize(), mRightSpliter.estimateSize());
-    }
-
-    @Override
-    public int characteristics() {
-      return mLeftSpliter.characteristics() & mRightSpliter.characteristics();
-    }
   }
 
-  public static <T, U> Stream<Pair<T, U>> zip(final Stream<T> ts, final Stream<U> us) {
-    return StreamSupport.stream(ZipSpliterator.create(ts.spliterator(), us.spliterator()), false);
+  public static <T, U, W> Stream<W> zip(final Stream<? extends T> ts,
+                                        final Stream<? extends U> us,
+                                        final BiFunction<? super T, ? super U, ? extends W> zipper) {
+    Objects.requireNonNull(zipper);
+    @SuppressWarnings("unchecked")
+    final Spliterator<T> leftSpliter  = (Spliterator<T>) Objects.requireNonNull(ts).spliterator();
+    @SuppressWarnings("unchecked")
+    final Spliterator<U> rightSpliter = (Spliterator<U>) Objects.requireNonNull(us).spliterator();
+
+    // Combining loses DISTINCT and SORTED characteristics and for other
+    // characteristics the combined stream has a characteristic if both
+    // streams to combine have the characteristic
+    final int characteristics = leftSpliter.characteristics() & rightSpliter.characteristics() & ~(Spliterator.DISTINCT | Spliterator.SORTED);
+    final long size = Math.min(leftSpliter.estimateSize(), rightSpliter.estimateSize());
+
+    final Spliterator<W> cs = new ZipperSpliterator<>(leftSpliter, rightSpliter, zipper, size, characteristics);
+
+    return StreamSupport.stream(cs, ts.isParallel() || us.isParallel());
   }
 
-  public static <U> Stream<Pair<Integer, U>> zip(final IntStream ts, final Stream<U> us) {
-    return zip(ts.boxed(), us);
+  public static <U, W> Stream<W> zip(final IntStream ts,
+                                     final Stream<? extends U> us,
+                                     final Int1BiFunction<? super U, ? extends W> zipper) {
+    return zip(ts.boxed(), us, (i, u) -> zipper.apply(i.intValue(), u));
   }
 
-  public static <T> Stream<Pair<T, Integer>> zip(final Stream<T> ts, final IntStream us) {
-    return zip(ts, us.boxed());
+  public static <T, W> Stream<W> zip(final Stream<? extends T> ts,
+                                     final IntStream us,
+                                     final Int2BiFunction<? super T, ? extends W> zipper) {
+    return zip(ts, us.boxed(), (t, i) -> zipper.apply(t, i.intValue()));
   }
 
-  public static Stream<Pair<Integer, Integer>> zip(final IntStream ts, final IntStream us) {
-    return zip(ts.boxed(), us.boxed());
+  public static <W> Stream<W> zip(final IntStream ts,
+                                  final IntStream us,
+                                  final IntBiFunction<W> zipper) {
+    return zip(ts.boxed(), us.boxed(), (i0, i1) -> zipper.apply(i0.intValue(), i1.intValue()));
   }
 }

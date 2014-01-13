@@ -6,6 +6,7 @@
 
 package DataStructures;
 
+import DataStructures.TuplesModule.Pair;
 import Utils.Functionals;
 import Utils.Numeric;
 import Utils.Ref;
@@ -263,7 +264,7 @@ public class LeftistHeapTest {
         checkHeapProperties(delHeap, vMax.stream(), vMin.stream());
 
         final Ref<Integer> count = new Ref<>(Integer.valueOf(0));
-        Functionals.zip(sortedV.stream(), vMin.stream()).peek(p -> { ++count.r; }).forEach(p -> { assertEquals(p.mx1, p.mx2); });
+        Functionals.zip(sortedV.stream(), vMin.stream(), Pair::create).peek(p -> { ++count.r; }).forEach(p -> { assertEquals(p.mx1, p.mx2); });
         assertEquals(Integer.valueOf(vMin.size()), count.r);
       });
     }

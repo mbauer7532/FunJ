@@ -91,8 +91,6 @@ public class IntMapModuleTest {
   public void testPartitionAndPartitioni1() {
     System.out.printf("PartitionAndPartitioni\n");
 
-    final boolean xx = false;
-    
     final IntMapFactory<Integer> mapFactory = IntMapModule.makeFactory();
     {
       final int N = 3200000;
@@ -135,20 +133,19 @@ public class IntMapModuleTest {
 
     final IntMapFactory<Integer> mapFactory = IntMapModule.makeFactory();
     {
-      final int N = 10; //3200000;
+      final int N = 100;
 
       final IntMapModule.Tree<Integer> t0 = mapFactory.fromStream(
-              IntStream.range(0, N)
-                       .mapToObj(i -> AssocIntPair.create(i, i)));
+              IntStream.range(0, N).mapToObj(i -> AssocIntPair.create(i, i)));
 
       final Functionals.IntBiPredicate<Integer> pred = (k, v) -> k > N - 4;
 
       final Pair<IntMapModule.Tree<Integer>, IntMapModule.Tree<Integer>> p = t0.partitioni(pred);
 
       final IntMapModule.Tree<Integer> t1 = p.mx1, t2 = p.mx2;
-      
-      System.out.printf("size0 = %d\n", t1.size());
-      System.out.printf("size1 = %d\n", t2.size());
+
+      assertEquals(3, t1.size());
+      assertEquals(N - 3, t2.size());
     }
   }
 }

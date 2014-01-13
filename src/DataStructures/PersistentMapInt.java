@@ -8,7 +8,7 @@ package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
 import Utils.Functionals.IntBiConsumer;
-import Utils.Functionals.IntBiFunction;
+import Utils.Functionals.Int1BiFunction;
 import Utils.Functionals.IntBiPredicate;
 import Utils.Functionals.IntTriFunction;
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public interface PersistentMapInt<V, M extends PersistentMapInt<V, M>> extends D
    * @param f
    * @return
    */
-  public <W> PersistentMapInt<W, ?> mapi(final IntBiFunction<V, W> f);
+  public <W> PersistentMapInt<W, ?> mapi(final Int1BiFunction<V, W> f);
 
   /**
    *
@@ -172,7 +172,7 @@ public interface PersistentMapInt<V, M extends PersistentMapInt<V, M>> extends D
    * @param f
    * @return
    */
-  public <W> PersistentMapInt<W, ?> mapPartiali(final IntBiFunction<V, Optional<W>> f);
+  public <W> PersistentMapInt<W, ?> mapPartiali(final Int1BiFunction<V, Optional<W>> f);
 
   /**
    *
