@@ -11,7 +11,9 @@ import DataStructures.TuplesModule.Pair;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -135,11 +137,15 @@ public class FunctionalsTest {
   @Test
   public void testReduce_3args_1() {
     System.out.println("reduce");
-//    Object expResult = null;
-//    Object result = Functionals.reduce(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final Integer res = Functionals.reduce(IntStream.empty(), 47, (acc, i) -> acc + i);
+      assertEquals(Integer.valueOf(47), res);
+    }
+    {
+      final Integer res = Functionals.reduce(IntStream.of(1, 2, 3, 4), 0, (acc, i) -> acc + i);
+      assertEquals(Integer.valueOf(1 + 2 + 3 + 4), res);
+    }
   }
 
   /**
@@ -148,11 +154,15 @@ public class FunctionalsTest {
   @Test
   public void testReduce_3args_2() {
     System.out.println("reduce");
-//    Object expResult = null;
-//    Object result = Functionals.reduce(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final Double res = Functionals.reduce(DoubleStream.empty(), 47.0, (acc, d) -> acc + d);
+      assertEquals(Double.valueOf(47.0), res);
+    }
+    {
+      final Double res = Functionals.reduce(DoubleStream.of(1.0, 2.0, 3.0, 4.0), 0.0, (acc, d) -> acc + d);
+      assertEquals(Double.valueOf(1.0 + 2.0 + 3.0 + 4.0), res);
+    }
   }
 
   /**
@@ -161,11 +171,15 @@ public class FunctionalsTest {
   @Test
   public void testReduce_3args_3() {
     System.out.println("reduce");
-//    Object expResult = null;
-//    Object result = Functionals.reduce(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final Long res = Functionals.reduce(LongStream.empty(), 47l, (acc, l) -> acc + l);
+      assertEquals(Long.valueOf(47L), res);
+    }
+    {
+      final Long res = Functionals.reduce(LongStream.of(1l, 2l, 3l, 4l), 0l, (acc, l) -> acc + l);
+      assertEquals(Long.valueOf(1l + 2l + 3l + 4l), res);
+    }
   }
 
   /**
@@ -174,11 +188,15 @@ public class FunctionalsTest {
   @Test
   public void testReduce_3args_4() {
     System.out.println("reduce");
-//    Object expResult = null;
-//    Object result = Functionals.reduce(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final Integer res = Functionals.reduce(IntStream.empty().boxed(), 47, (acc, i) -> acc + i);
+      assertEquals(Integer.valueOf(47), res);
+    }
+    {
+      final Integer res = Functionals.reduce(IntStream.of(1, 2, 3, 4).boxed(), 0, (acc, i) -> acc + i);
+      assertEquals(Integer.valueOf(1 + 2 + 3 + 4), res);
+    }
   }
 
   /**
