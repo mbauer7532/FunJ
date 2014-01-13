@@ -473,11 +473,11 @@ public class Functionals {
     return IntStream.range(0, siz).mapToObj(i -> Pair.create(tsVec[i], usVec[i]));
   }
 
-  private static final class ZipperSpliterator<T, U, W> extends Spliterators.AbstractSpliterator<W> {
+  private static final class ZipperSpliterator<T, U, W> extends Spliterators.AbstractSpliterator<W> implements Consumer<Object> {
     final Spliterator<T> mLeftSpliter;
     final Spliterator<U> mRightSpliter;
     final BiFunction<? super T, ? super U, ? extends W> mZipper;
-    boolean mTryAdvanceStatus;
+    Object mCache;
 
     ZipperSpliterator(final Spliterator<T> leftSpliter,
                       final Spliterator<U> rightSpliter,
@@ -491,26 +491,33 @@ public class Functionals {
     }
 
     @Override
-    public boolean tryAdvance(Consumer<? super W> action) {
-      mTryAdvanceStatus = false;
-      mLeftSpliter.tryAdvance(leftElem -> {
-        mRightSpliter.tryAdvance(rightElem -> {
-          action.accept(mZipper.apply(leftElem, rightElem));
-          mTryAdvanceStatus = true;
-        });
-      });
+    public void accept(final Object x) {
+      mCache = x;
+    }
 
-      return mTryAdvanceStatus;
+    @Override
+    @SuppressWarnings("unchecked")
+    public boolean tryAdvance(Consumer<? super W> action) {
+      if (mLeftSpliter.tryAdvance(this)) {
+        final T leftElem = (T) mCache;
+
+        if (mRightSpliter.tryAdvance(this)) {
+          final U rightElem = (U) mCache;
+
+          action.accept(mZipper.apply(leftElem, rightElem));
+          return true;
+        }
+      }
+      return false;
     }
   }
 
+  @SuppressWarnings("unchecked")
   public static <T, U, W> Stream<W> zip(final Stream<? extends T> ts,
                                         final Stream<? extends U> us,
                                         final BiFunction<? super T, ? super U, ? extends W> zipper) {
     Objects.requireNonNull(zipper);
-    @SuppressWarnings("unchecked")
     final Spliterator<T> leftSpliter  = (Spliterator<T>) Objects.requireNonNull(ts).spliterator();
-    @SuppressWarnings("unchecked")
     final Spliterator<U> rightSpliter = (Spliterator<U>) Objects.requireNonNull(us).spliterator();
 
     // Combining loses DISTINCT and SORTED characteristics and for other
