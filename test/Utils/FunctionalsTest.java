@@ -173,12 +173,12 @@ public class FunctionalsTest {
     System.out.println("reduce");
 
     {
-      final Long res = Functionals.reduce(LongStream.empty(), 47l, (acc, l) -> acc + l);
+      final Long res = Functionals.reduce(LongStream.empty(), 47L, (acc, l) -> acc + l);
       assertEquals(Long.valueOf(47L), res);
     }
     {
-      final Long res = Functionals.reduce(LongStream.of(1l, 2l, 3l, 4l), 0l, (acc, l) -> acc + l);
-      assertEquals(Long.valueOf(1l + 2l + 3l + 4l), res);
+      final Long res = Functionals.reduce(LongStream.of(1L, 2L, 3L, 4L), 0L, (acc, l) -> acc + l);
+      assertEquals(Long.valueOf(1L + 2L + 3L + 4L), res);
     }
   }
 
