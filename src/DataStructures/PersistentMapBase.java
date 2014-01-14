@@ -231,9 +231,11 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
   }
 
   public abstract void appEntry(final Consumer<PersistentMapBase<K, V, M>> f);
+
   protected abstract K getKey();
+
   protected abstract V getValue();
-  
+
   public static final class EntryRef<K extends Comparable<K>, V, M extends PersistentMapBase<K, V, M>> extends PersistentMapEntry<K, V> {
     public EntryRef(final PersistentMapBase<K, V, M> node) {
       mNode = node;
