@@ -464,6 +464,7 @@ public class RedBlackTreeModule2 {
       return blackify(ins(f, key, value));
     }
 
+    @SuppressWarnings("serial")
     private static final class ControlExnNoSuchElement extends Exception {};
 
     private static final ControlExnNoSuchElement sNoSuchElement = new ControlExnNoSuchElement();

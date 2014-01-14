@@ -198,7 +198,7 @@ public abstract class PersistentMapBase<K extends Comparable<K>, V, M extends Pe
         kvs.add(new EntryRef<>(n));
       }
     });
-    
+
     return kvs;
   }
 

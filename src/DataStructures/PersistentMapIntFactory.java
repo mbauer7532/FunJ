@@ -18,19 +18,19 @@ import java.util.stream.Stream;
 public interface PersistentMapIntFactory<V, M extends PersistentMapInt<V, M>> {
   public String getMapName();
 
-  public PersistentMapInt<V, M> empty();
+  public M empty();
 
-  public PersistentMapInt<V, M> singleton(final int key, final V value);
+  public M singleton(final int key, final V value);
 
-  public PersistentMapInt<V, M> fromStream(final Stream<PersistentMapIntEntry<V>> stream);
+  public M fromStream(final Stream<PersistentMapIntEntry<V>> stream);
 
-  public PersistentMapInt<V, M> fromStrictlyIncreasingStream(final Stream<PersistentMapIntEntry<V>> stream);
+  public M fromStrictlyIncreasingStream(final Stream<PersistentMapIntEntry<V>> stream);
 
-  public PersistentMapInt<V, M> fromStrictlyDecreasingStream(final Stream<PersistentMapIntEntry<V>> stream);
+  public M fromStrictlyDecreasingStream(final Stream<PersistentMapIntEntry<V>> stream);
 
-  public PersistentMapInt<V, M> fromArray(final ArrayList<PersistentMapIntEntry<V>> v);
+  public M fromArray(final ArrayList<PersistentMapIntEntry<V>> v);
 
-  public PersistentMapInt<V, M> fromStrictlyIncreasingArray(final ArrayList<PersistentMapIntEntry<V>> v);
+  public M fromStrictlyIncreasingArray(final ArrayList<PersistentMapIntEntry<V>> v);
 
-  public PersistentMapInt<V, M> fromStrictlyDecreasingArray(final ArrayList<PersistentMapIntEntry<V>> v);
+  public M fromStrictlyDecreasingArray(final ArrayList<PersistentMapIntEntry<V>> v);
 }
