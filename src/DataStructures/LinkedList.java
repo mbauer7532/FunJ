@@ -1015,11 +1015,13 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     return deleteByImpl(this, a, pred);
   }
 
+  private static <A> LinkedList<A> deleteFirstByImpl(final LinkedList<A> list1, final LinkedList<A> list2, final BiPredicate<A, A> pred) {
+    return foldlImpl(list2, (acc, e) -> deleteByImpl(acc, e, pred), list1);
+  }
+
   @Override
   public LinkedList<A> deleteFirstBy(final LinkedList<A> list, final BiPredicate<A, A> pred) {
-    final Ref<LinkedList<A>> ref = new Ref<>(empty());
-    forEachImpl(list, elem -> { ref.r = deleteByImpl(ref.r, elem, pred); });
-    return ref.r;
+    return deleteFirstByImpl(this, list, pred);
   }
 
   @Override
