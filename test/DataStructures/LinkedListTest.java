@@ -2229,11 +2229,15 @@ public class LinkedListTest {
   @Test
   public void testUnfoldr() {
     println("unfoldr");
-//    LinkedList expResult = null;
-//    LinkedList result = LinkedList.unfoldr(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final LinkedList<Integer> expected = LinkedList.empty();
+      assertEquals(expected, LinkedList.unfoldr(b -> { if (b == 0) { return Optional.empty(); } else { return Optional.of(Pair.create(b, b - 1)); }}, 0));
+    }
+    {
+      final LinkedList<Integer> expected = LinkedList.of(5, 4, 3, 2, 1);
+      assertEquals(expected, LinkedList.unfoldr(b -> { if (b == 0) { return Optional.empty(); } else { return Optional.of(Pair.create(b, b - 1)); }}, 5));
+    }
   }
 
   /**
@@ -2463,13 +2467,27 @@ public class LinkedListTest {
   @Test
   public void testFromArray_3args() {
     println("fromArray");
-//    LinkedList expResult = null;
-//    LinkedList result = LinkedList.fromArray(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-  }
 
+    final ArrayList<Integer> v = new ArrayList<>();
+    v.add(1); v.add(2); v.add(3); v.add(4);
+
+    assertEquals(LinkedList.of(), LinkedList.fromArray(v, 0, -1));
+    assertEquals(LinkedList.of(1), LinkedList.fromArray(v, 0, 0));
+    assertEquals(LinkedList.of(2), LinkedList.fromArray(v, 1, 1));
+    assertEquals(LinkedList.of(3), LinkedList.fromArray(v, 2, 2));
+    assertEquals(LinkedList.of(4), LinkedList.fromArray(v, 3, 3));
+
+    assertEquals(LinkedList.of(1, 2), LinkedList.fromArray(v, 0, 1));
+    assertEquals(LinkedList.of(2, 3), LinkedList.fromArray(v, 1, 2));
+    assertEquals(LinkedList.of(3, 4), LinkedList.fromArray(v, 2, 3));
+    
+    boolean exceptionWasThrown = false;
+    try {
+      final LinkedList<Integer> ls = LinkedList.fromArray(v, 3, 1);
+    }
+    catch (AssertionError ae) { exceptionWasThrown = true; }
+    assertTrue(exceptionWasThrown);
+  }
 
   /**
    * Test of flatMap method, of class LinkedList.

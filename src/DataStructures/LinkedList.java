@@ -210,7 +210,14 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   public static <A> LinkedList<A> fromArray(final ArrayList<A> v, final int i, final int j) {
-    return Functionals.reduce(IntStream.rangeClosed(i, j).mapToObj(idx -> v.get(j - idx)), empty(), LinkedList::createInv);
+    if (i > j + 1) {
+      throw new AssertionError("i <= j + 1 must be true.");
+    }
+    else {
+      return Functionals.reduce(IntStream.rangeClosed(0, j - i).mapToObj(idx -> v.get(j - idx)),
+                                empty(),
+                                LinkedList::createInv);
+    }
   }
 
   public static <A> LinkedList<A> fromArray(final ArrayList<A> v) {
