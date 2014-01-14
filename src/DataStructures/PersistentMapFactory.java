@@ -19,19 +19,19 @@ import java.util.stream.Stream;
 public interface PersistentMapFactory<K extends Comparable<K>, V, M extends PersistentMap<K, V, M>> {
   public String getMapName();
 
-  public PersistentMap<K, V, M> empty();
+  public M empty();
 
-  public PersistentMap<K, V, M> singleton(final K key, final V value);
+  public M singleton(final K key, final V value);
 
-  public PersistentMap<K, V, M> fromStream(final Stream<PersistentMapEntry<K, V>> stream);
+  public M fromStream(final Stream<PersistentMapEntry<K, V>> stream);
 
-  public PersistentMap<K, V, M> fromStrictlyIncreasingStream(final Stream<PersistentMapEntry<K, V>> stream);
+  public M fromStrictlyIncreasingStream(final Stream<PersistentMapEntry<K, V>> stream);
 
-  public PersistentMap<K, V, M> fromStrictlyDecreasingStream(final Stream<PersistentMapEntry<K, V>> stream);
+  public M fromStrictlyDecreasingStream(final Stream<PersistentMapEntry<K, V>> stream);
 
-  public PersistentMap<K, V, M> fromArray(final ArrayList<PersistentMapEntry<K, V>> v);
+  public M fromArray(final ArrayList<PersistentMapEntry<K, V>> v);
 
-  public PersistentMap<K, V, M> fromStrictlyIncreasingArray(final ArrayList<PersistentMapEntry<K, V>> v);
+  public M fromStrictlyIncreasingArray(final ArrayList<PersistentMapEntry<K, V>> v);
 
-  public PersistentMap<K, V, M> fromStrictlyDecreasingArray(final ArrayList<PersistentMapEntry<K, V>> v);
+  public M fromStrictlyDecreasingArray(final ArrayList<PersistentMapEntry<K, V>> v);
 }
