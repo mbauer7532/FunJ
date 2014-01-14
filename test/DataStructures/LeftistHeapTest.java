@@ -197,14 +197,14 @@ public class LeftistHeapTest {
    * Test of deleteMin method, of class LeftistHeap.
    */
   @Test
-  public void testDeleteMin_0args() {
+  public void testDeleteMin() {
     System.out.println("deleteMin");
 
     {
       final LeftistHeap<Integer> h = LeftistHeap.empty();
       boolean exceptionWasThrown = false;
       try {
-        final Integer i = h.findMin();
+        final LeftistHeap<Integer> hp = h.deleteMin();
       }
       catch (AssertionError ae) { exceptionWasThrown = true; }
       assertTrue(exceptionWasThrown);
@@ -217,13 +217,13 @@ public class LeftistHeapTest {
       final LeftistHeap<Integer> h4 = LeftistHeap.of(3, 1, 2);
       final LeftistHeap<Integer> h5 = LeftistHeap.of(3, 2, 1);
 
-      final Integer one = Integer.valueOf(1);
-      assertEquals(one, h0.findMin());
-      assertEquals(one, h1.findMin());
-      assertEquals(one, h2.findMin());
-      assertEquals(one, h3.findMin());
-      assertEquals(one, h4.findMin());
-      assertEquals(one, h5.findMin());
+      final Integer two = Integer.valueOf(2);
+      assertEquals(two, h0.deleteMin().findMin());
+      assertEquals(two, h1.deleteMin().findMin());
+      assertEquals(two, h2.deleteMin().findMin());
+      assertEquals(two, h3.deleteMin().findMin());
+      assertEquals(two, h4.deleteMin().findMin());
+      assertEquals(two, h5.deleteMin().findMin());
     }
     {
       final Random rng = new Random(12371);
@@ -271,27 +271,24 @@ public class LeftistHeapTest {
   }
 
   /**
-   * Test of deleteMin method, of class LeftistHeap.
-   */
-  @Test
-  public void testDeleteMin_Ref() {
-    System.out.println("deleteMin");
-
-    
-  }
-
-  /**
    * Test of size method, of class LeftistHeap.
    */
   @Test
   public void testSize() {
     System.out.println("size");
-//    LeftistHeap instance = null;
-//    int expResult = 0;
-//    int result = instance.size();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final LeftistHeap<Integer> h0 = LeftistHeap.empty();
+      assertEquals(0, h0.size());
+      final LeftistHeap<Integer> h1 = h0.insert(1);
+      assertEquals(1, h1.size());
+      final LeftistHeap<Integer> h2 = h1.insert(2);
+      assertEquals(2, h2.size());
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.of(1, 2, 3, 4, 5).merge(LeftistHeap.of(6, 7, 8, 9, 10));
+      assertEquals(10, h.size());
+    }
   }
 
   /**
@@ -300,11 +297,16 @@ public class LeftistHeapTest {
   @Test
   public void testFromStream() {
     System.out.println("fromStream");
-//    LeftistHeap expResult = null;
-//    LeftistHeap result = LeftistHeap.fromStream(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.fromStream(IntStream.range(0, 0).boxed());
+      assertTrue(h.isEmpty());
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.fromStream(IntStream.range(0, 10).boxed());
+      assertFalse(h.isEmpty());
+      assertEquals(10, h.size());
+    }
   }
 
   /**
@@ -313,11 +315,18 @@ public class LeftistHeapTest {
   @Test
   public void testFromArray() {
     System.out.println("fromArray");
-//    LeftistHeap expResult = null;
-//    LeftistHeap result = LeftistHeap.fromArray(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    {
+      final ArrayList<Integer> v = new ArrayList<>();
+      final LeftistHeap<Integer> h = LeftistHeap.fromArray(v);
+      assertTrue(h.isEmpty());
+    }
+    {
+      final ArrayList<Integer> v = IntStream.range(0, 10).boxed().collect(Collectors.toCollection(ArrayList::new));
+      final LeftistHeap<Integer> h = LeftistHeap.fromArray(v);
+      assertFalse(h.isEmpty());
+      assertEquals(10, h.size());
+    }
   }
 
   /**
@@ -326,96 +335,26 @@ public class LeftistHeapTest {
   @Test
   public void testToArrayList() {
     System.out.println("toArrayList");
-//    LeftistHeap instance = null;
-//    ArrayList expResult = null;
-//    ArrayList result = instance.toArrayList();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-  }
 
-  /**
-   * Test of toAscArrayList method, of class LeftistHeap.
-   */
-  @Test
-  public void testToAscArrayList() {
-    System.out.println("toAscArrayList");
-//    LeftistHeap instance = null;
-//    ArrayList expResult = null;
-//    ArrayList result = instance.toAscArrayList();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of toDescArrayList method, of class LeftistHeap.
-   */
-  @Test
-  public void testToDescArrayList() {
-    System.out.println("toDescArrayList");
-//    LeftistHeap instance = null;
-//    ArrayList expResult = null;
-//    ArrayList result = instance.toDescArrayList();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of iterator method, of class LeftistHeap.
-   */
-  @Test
-  public void testIterator() {
-    System.out.println("iterator");
-//    LeftistHeap instance = null;
-//    Iterator expResult = null;
-//    Iterator result = instance.iterator();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of DSgetChildren method, of class LeftistHeap.
-   */
-  @Test
-  public void testDSgetChildren() {
-    System.out.println("DSgetChildren");
-//    LeftistHeap instance = null;
-//    DSTreeNode[] expResult = null;
-//    DSTreeNode[] result = instance.DSgetChildren();
-//    assertArrayEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of DSgetValue method, of class LeftistHeap.
-   */
-  @Test
-  public void testDSgetValue() {
-    System.out.println("DSgetValue");
-//    LeftistHeap instance = null;
-//    Object expResult = null;
-//    Object result = instance.DSgetValue();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-  }
-
-  /**
-   * Test of DSgetColor method, of class LeftistHeap.
-   */
-  @Test
-  public void testDSgetColor() {
-    System.out.println("DSgetColor");
-//    LeftistHeap instance = null;
-//    Color expResult = null;
-//    Color result = instance.DSgetColor();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.empty();
+      final ArrayList<Integer> v = h.toArrayList();
+      assertEquals(new ArrayList<>(), v);
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.of(1);
+      final ArrayList<Integer> v = h.toArrayList();
+      final ArrayList<Integer> expected = new ArrayList<>();
+      expected.add(1);
+      assertEquals(expected, v);
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.of(1, 2, 3, 4);
+      final ArrayList<Integer> v = h.toArrayList();
+      final ArrayList<Integer> expected = new ArrayList<>();
+      expected.add(1); expected.add(2); expected.add(3); expected.add(4);
+      assertEquals(expected, v);
+    }
   }
 
   /**
@@ -424,11 +363,131 @@ public class LeftistHeapTest {
   @Test
   public void testStream() {
     System.out.println("stream");
-//    LeftistHeap instance = null;
-//    Stream expResult = null;
-//    Stream result = instance.stream();
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
-  }  
+
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.empty();
+      final Stream<Integer> s = h.stream();
+      final ArrayList<Integer> v = s.collect(Collectors.toCollection(ArrayList::new));
+      assertTrue(v.isEmpty());
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.of(10);
+      final Stream<Integer> s = h.stream();
+      final ArrayList<Integer> v = s.collect(Collectors.toCollection(ArrayList::new));
+      assertFalse(v.isEmpty());
+      assertEquals(1, v.size());
+      assertEquals(Integer.valueOf(10), v.get(0));
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.of(10, 20, 30, 40);
+      final Stream<Integer> s = h.stream();
+      final ArrayList<Integer> v = s.collect(Collectors.toCollection(ArrayList::new));
+      assertFalse(v.isEmpty());
+      assertEquals(4, v.size());
+
+      assertEquals(Integer.valueOf(10), v.get(0));
+      assertEquals(Integer.valueOf(20), v.get(1));
+      assertEquals(Integer.valueOf(30), v.get(2));
+      assertEquals(Integer.valueOf(40), v.get(3));
+    }
+  }
+
+  /**
+   * Test of toAscArrayList method, of class LeftistHeap.
+   */
+  @Test
+  public void testToAscArrayList() {
+    System.out.println("toAscArrayList");
+
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.empty();
+      final ArrayList<Integer> v = h.toAscArrayList();
+      assertTrue(v.isEmpty());
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.of(10);
+      final ArrayList<Integer> v = h.toAscArrayList();
+      assertFalse(v.isEmpty());
+      assertEquals(1, v.size());
+      assertEquals(Integer.valueOf(10), v.get(0));
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.of(30, 10, 40, 20);
+      final ArrayList<Integer> v = h.toAscArrayList();
+      assertFalse(v.isEmpty());
+      assertEquals(4, v.size());
+
+      assertEquals(Integer.valueOf(10), v.get(0));
+      assertEquals(Integer.valueOf(20), v.get(1));
+      assertEquals(Integer.valueOf(30), v.get(2));
+      assertEquals(Integer.valueOf(40), v.get(3));
+    }
+  }
+
+  /**
+   * Test of toDescArrayList method, of class LeftistHeap.
+   */
+  @Test
+  public void testToDescArrayList() {
+    System.out.println("toDescArrayList");
+
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.empty();
+      final ArrayList<Integer> v = h.toDescArrayList();
+      assertTrue(v.isEmpty());
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.of(10);
+      final ArrayList<Integer> v = h.toDescArrayList();
+      assertFalse(v.isEmpty());
+      assertEquals(1, v.size());
+      assertEquals(Integer.valueOf(10), v.get(0));
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.of(30, 10, 40, 20);
+      final ArrayList<Integer> v = h.toDescArrayList();
+      assertFalse(v.isEmpty());
+      assertEquals(4, v.size());
+
+      assertEquals(Integer.valueOf(40), v.get(0));
+      assertEquals(Integer.valueOf(30), v.get(1));
+      assertEquals(Integer.valueOf(20), v.get(2));
+      assertEquals(Integer.valueOf(10), v.get(3));
+    }
+  }
+
+  /**
+   * Test of iterator method, of class LeftistHeap.
+   */
+  @Test
+  public void testIterator() {
+    System.out.println("iterator");
+
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.empty();
+      int s = 0;
+      for(Integer i : h) { s += i; }
+      assertEquals(0, s);
+
+      final Iterator<Integer> it = h.iterator();
+      assertFalse(it.hasNext());
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.of(10);
+      int s = 0;
+      for (Integer i : h) { s += i; }
+      assertEquals(10, s);
+
+      final Iterator<Integer> it = h.iterator();
+      assertTrue(it.hasNext());
+      assertEquals(Integer.valueOf(10), it.next());
+      assertFalse(it.hasNext());
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.of(30, 10, 40, 20);
+      int s = 0;
+      for (Integer i : h) { s += i; }
+      assertEquals(10 + 20 + 30 + 40, s);
+    }
+  }
 }
