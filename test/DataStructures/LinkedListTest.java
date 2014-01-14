@@ -1741,12 +1741,35 @@ public class LinkedListTest {
   @Test
   public void testIntersectBy() {
     println("intersectBy");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.intersectBy(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final LinkedList<Integer> e = LinkedList.empty();
+    {
+      assertEquals(e, e.intersectBy(e, LinkedListTest::cmp));
+      assertEquals(e.cons(1), e.cons(1).intersectBy(e.cons(1), LinkedListTest::cmp));
+      assertEquals(e.cons(1), e.cons(1).intersectBy(e.cons(1).cons(1), LinkedListTest::cmp));
+      assertEquals(e.cons(1).cons(1), e.cons(1).cons(1).intersectBy(e.cons(1).cons(1), LinkedListTest::cmp));
+      assertEquals(e.cons(1).cons(1), e.cons(1).cons(1).intersectBy(e.cons(1), LinkedListTest::cmp));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(2, 2, 3, 2, 3, 3);
+      assertEquals(e, LinkedList.of(1).intersectBy(ls, LinkedListTest::cmp));
+      assertEquals(ls, ls.intersectBy(LinkedList.of(2, 3, 3), LinkedListTest::cmp));
+      assertEquals(ls, ls.intersectBy(ls, LinkedListTest::cmp));
+      assertEquals(e, ls.intersectBy(LinkedList.of(4), LinkedListTest::cmp));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 2, 3, 2, 3, 3);
+      assertEquals(ls, ls.intersectBy(LinkedList.of(3, 2, 2, 3, 1, 2, 3, 1, 1), LinkedListTest::cmp));
+    }
+    {
+      assertEquals(LinkedList.of(3), LinkedList.of(1, 2, 3).intersectBy(LinkedList.of(3, 4, 5), LinkedListTest::cmp));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3);
+      assertEquals(ls, ls.intersectBy(LinkedList.of(2), (x, y) -> 0));
+      assertEquals(e, ls.intersectBy(LinkedList.of(2), (x, y) -> 1));
+      assertEquals(e, ls.intersectBy(LinkedList.of(2), (x, y) -> -1));
+    }
   }
 
   /**

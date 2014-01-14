@@ -432,7 +432,6 @@ public class HMRealTimeQueueTest {
       assertEquals(Integer.valueOf(10), qt.head());
       assertTrue(qt.tail().isEmpty());
     }
-
   }
 
   /**
