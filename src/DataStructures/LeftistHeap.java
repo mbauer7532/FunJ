@@ -174,9 +174,18 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     return insertImpl(this, val);
   }
 
+  private static <V extends Comparable<V>> LeftistHeap<V> deleteMinImpl(final LeftistHeap<V> h) {
+    if (isEmptyImpl(h)) {
+      throw new AssertionError("Attempted to delete the min element of an empty heap.");
+    }
+    else {
+      return mergeImpl(h.mLeft, h.mRight);
+    }
+  }
+
   @Override
   public LeftistHeap<V> deleteMin() {
-    return mergeImpl(mLeft, mRight);
+    return deleteMinImpl(this);
   }
 
   private static <V extends Comparable<V>> LeftistHeap<V> deleteMinImpl(final LeftistHeap<V> h, final Ref<V> v) {
@@ -272,7 +281,9 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
 
     public LeftistHeapIterator(final LeftistHeap<V> h) {
       mQueue = new ArrayDeque<>();
-      mQueue.addLast(h);
+      if (! isEmptyImpl(h)) {
+        mQueue.addLast(h);
+      }
     }
 
     @Override
@@ -300,7 +311,9 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
 
     public LeftistHeapSpliterator(final LeftistHeap<V> h) {
       mQueue = new ArrayDeque<>();
-      mQueue.addLast(h);
+      if (! isEmptyImpl(h)) {
+        mQueue.addLast(h);
+      }
     }
 
     private void performActionUpdatingQueue(final Consumer<? super V> action) {
