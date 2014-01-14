@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.OptionalInt;
+import java.util.function.BiPredicate;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -970,12 +971,12 @@ public class LinkedListTest {
       assertEquals(LinkedList.of(e, LinkedList.of(1)), ls.inits());
     }
     {
-      final LinkedList<Integer> ls = LinkedList.of(1,2);
-      assertEquals(LinkedList.of(e, LinkedList.of(1), LinkedList.of(1,2)), ls.inits());
+      final LinkedList<Integer> ls = LinkedList.of(1, 2);
+      assertEquals(LinkedList.of(e, LinkedList.of(1), LinkedList.of(1, 2)), ls.inits());
     }
     {
-      final LinkedList<Integer> ls = LinkedList.of(1,2,3);
-      assertEquals(LinkedList.of(e, LinkedList.of(1), LinkedList.of(1,2), LinkedList.of(1,2,3)), ls.inits());
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3);
+      assertEquals(LinkedList.of(e, LinkedList.of(1), LinkedList.of(1, 2), LinkedList.of(1, 2, 3)), ls.inits());
     }
   }
 
@@ -995,12 +996,12 @@ public class LinkedListTest {
       assertEquals(LinkedList.of(LinkedList.of(1), e), ls.tails());
     }
     {
-      final LinkedList<Integer> ls = LinkedList.of(1,2);
+      final LinkedList<Integer> ls = LinkedList.of(1, 2);
       assertEquals(LinkedList.of(LinkedList.of(1,2), LinkedList.of(2), e), ls.tails());
     }
     {
-      final LinkedList<Integer> ls = LinkedList.of(1,2,3);
-      assertEquals(LinkedList.of(LinkedList.of(1,2,3), LinkedList.of(2,3), LinkedList.of(3), e), ls.tails());
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3);
+      assertEquals(LinkedList.of(LinkedList.of(1, 2, 3), LinkedList.of(2, 3), LinkedList.of(3), e), ls.tails());
     }
   }
 
@@ -1016,15 +1017,15 @@ public class LinkedListTest {
     assertFalse(e.cons(1).isPrefixOf(e));
     assertTrue(e.isPrefixOf(e.cons(1)));
 
-    final LinkedList<Integer> ls = LinkedList.of(1,2,3);
+    final LinkedList<Integer> ls = LinkedList.of(1, 2, 3);
 
     assertTrue(LinkedList.of(1).isPrefixOf(ls));
     assertFalse(LinkedList.of(2).isPrefixOf(ls));
     assertFalse(LinkedList.of(3).isPrefixOf(ls));
 
-    assertTrue(LinkedList.of(1,2).isPrefixOf(ls));
-    assertTrue(LinkedList.of(1,2,3).isPrefixOf(ls));
-    assertFalse(LinkedList.of(1,2,3,4).isPrefixOf(ls));
+    assertTrue(LinkedList.of(1, 2).isPrefixOf(ls));
+    assertTrue(LinkedList.of(1, 2, 3).isPrefixOf(ls));
+    assertFalse(LinkedList.of(1, 2, 3, 4).isPrefixOf(ls));
   }
 
   /**
@@ -1039,15 +1040,15 @@ public class LinkedListTest {
     assertFalse(e.cons(1).isSuffixOf(e));
     assertTrue(e.isSuffixOf(e.cons(1)));
 
-    final LinkedList<Integer> ls = LinkedList.of(1,2,3);
+    final LinkedList<Integer> ls = LinkedList.of(1, 2, 3);
 
     assertTrue(LinkedList.of(3).isSuffixOf(ls));
     assertFalse(LinkedList.of(2).isSuffixOf(ls));
     assertFalse(LinkedList.of(1).isSuffixOf(ls));
 
-    assertTrue(LinkedList.of(2,3).isSuffixOf(ls));
-    assertTrue(LinkedList.of(1,2,3).isSuffixOf(ls));
-    assertFalse(LinkedList.of(1,2,3,4).isSuffixOf(ls));
+    assertTrue(LinkedList.of(2, 3).isSuffixOf(ls));
+    assertTrue(LinkedList.of(1, 2, 3).isSuffixOf(ls));
+    assertFalse(LinkedList.of(1, 2, 3, 4).isSuffixOf(ls));
   }
 
   /**
@@ -1062,24 +1063,24 @@ public class LinkedListTest {
     assertFalse(e.cons(1).isInfixOf(e));
     assertTrue(e.isInfixOf(e.cons(1)));
 
-    final LinkedList<Integer> ls = LinkedList.of(1,2,3,4);
+    final LinkedList<Integer> ls = LinkedList.of(1, 2, 3, 4);
 
     assertTrue(LinkedList.of(1).isInfixOf(ls));
     assertTrue(LinkedList.of(2).isInfixOf(ls));
     assertTrue(LinkedList.of(3).isInfixOf(ls));
     assertTrue(LinkedList.of(4).isInfixOf(ls));
 
-    assertTrue(LinkedList.of(1,2).isInfixOf(ls));
-    assertTrue(LinkedList.of(2,3).isInfixOf(ls));
-    assertTrue(LinkedList.of(3,4).isInfixOf(ls));
-    assertTrue(LinkedList.of(1,2,3).isInfixOf(ls));
-    assertTrue(LinkedList.of(2,3,4).isInfixOf(ls));
-    assertTrue(LinkedList.of(1,2,3,4).isInfixOf(ls));
+    assertTrue(LinkedList.of(1, 2).isInfixOf(ls));
+    assertTrue(LinkedList.of(2, 3).isInfixOf(ls));
+    assertTrue(LinkedList.of(3, 4).isInfixOf(ls));
+    assertTrue(LinkedList.of(1, 2, 3).isInfixOf(ls));
+    assertTrue(LinkedList.of(2, 3, 4).isInfixOf(ls));
+    assertTrue(LinkedList.of(1, 2, 3, 4).isInfixOf(ls));
 
-    assertFalse(LinkedList.of(1,3).isInfixOf(ls));
-    assertFalse(LinkedList.of(2,4).isInfixOf(ls));
-    assertFalse(LinkedList.of(3,4,5).isInfixOf(ls));
-    assertFalse(LinkedList.of(4,5).isInfixOf(ls));
+    assertFalse(LinkedList.of(1, 3).isInfixOf(ls));
+    assertFalse(LinkedList.of(2, 4).isInfixOf(ls));
+    assertFalse(LinkedList.of(3, 4, 5).isInfixOf(ls));
+    assertFalse(LinkedList.of(4, 5).isInfixOf(ls));
     assertFalse(LinkedList.of(5).isInfixOf(ls));
   }
 
@@ -1479,11 +1480,11 @@ public class LinkedListTest {
       final LinkedList<Integer> res4 = ls.delete(5);
       final LinkedList<Integer> res5 = ls.delete(2).delete(2);
 
-      final LinkedList<Integer> expected1 = LinkedList.of(2,3,2,5);
-      final LinkedList<Integer> expected2 = LinkedList.of(1,3,2,5);
-      final LinkedList<Integer> expected3 = LinkedList.of(1,2,2,5);
-      final LinkedList<Integer> expected4 = LinkedList.of(1,2,3,2);
-      final LinkedList<Integer> expected5 = LinkedList.of(1,3,5);
+      final LinkedList<Integer> expected1 = LinkedList.of(2, 3, 2, 5);
+      final LinkedList<Integer> expected2 = LinkedList.of(1, 3, 2, 5);
+      final LinkedList<Integer> expected3 = LinkedList.of(1, 2, 2, 5);
+      final LinkedList<Integer> expected4 = LinkedList.of(1, 2, 3, 2);
+      final LinkedList<Integer> expected5 = LinkedList.of(1, 3, 5);
 
       assertEquals(expected1, res1);
       assertEquals(expected2, res2);
@@ -1499,12 +1500,51 @@ public class LinkedListTest {
   @Test
   public void testDeleteBy() {
     println("deleteBy");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.deleteBy(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final BiPredicate<Integer, Integer> eq = (x, y) -> x.equals(y);
+
+    {
+      final LinkedList<Integer> e = LinkedList.empty();
+      final LinkedList<Integer> res = e.deleteBy(1, eq);
+      final LinkedList<Integer> expected = e;
+
+      assertEquals(expected, res);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.singleton(1);
+      final LinkedList<Integer> res1 = ls.deleteBy(1, eq);
+      final LinkedList<Integer> res2 = ls.deleteBy(2, eq);
+      final LinkedList<Integer> expected1 = LinkedList.empty();
+      final LinkedList<Integer> expected2 = LinkedList.singleton(1);
+
+      assertEquals(expected1, res1);
+      assertEquals(expected2, res2);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3, 2, 5);
+      final LinkedList<Integer> res1 = ls.deleteBy(1, eq);
+      final LinkedList<Integer> res2 = ls.deleteBy(2, eq);
+      final LinkedList<Integer> res3 = ls.deleteBy(3, eq);
+      final LinkedList<Integer> res4 = ls.deleteBy(5, eq);
+      final LinkedList<Integer> res5 = ls.deleteBy(2, eq).deleteBy(2, eq);
+
+      final LinkedList<Integer> expected1 = LinkedList.of(2, 3, 2, 5);
+      final LinkedList<Integer> expected2 = LinkedList.of(1, 3, 2, 5);
+      final LinkedList<Integer> expected3 = LinkedList.of(1, 2, 2, 5);
+      final LinkedList<Integer> expected4 = LinkedList.of(1, 2, 3, 2);
+      final LinkedList<Integer> expected5 = LinkedList.of(1, 3, 5);
+
+      assertEquals(expected1, res1);
+      assertEquals(expected2, res2);
+      assertEquals(expected3, res3);
+      assertEquals(expected4, res4);
+      assertEquals(expected5, res5);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3);
+      assertEquals(LinkedList.of(2, 3), ls.deleteBy(1, eq));
+      assertEquals(LinkedList.of(1, 2, 3), ls.deleteBy(1, (x, y) -> false));
+    }
   }
 
   /**
@@ -1513,12 +1553,38 @@ public class LinkedListTest {
   @Test
   public void testDeleteFirstBy() {
     println("deleteFirstBy");
-//    LinkedList instance = null;
-//    LinkedList expResult = null;
-//    LinkedList result = instance.deleteFirstBy(null);
-//    assertEquals(expResult, result);
-//    // TODO review the generated test code and remove the default call to fail.
-//    fail("The test case is a prototype.");
+
+    final BiPredicate<Integer, Integer> eq = (x, y) -> x.equals(y);
+
+    {
+      final LinkedList<Integer> e = LinkedList.empty();
+      final LinkedList<Integer> res = e.deleteFirstBy(e, eq);
+      final LinkedList<Integer> expected = e;
+
+      assertEquals(expected, res);
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(1, 2, 3);
+
+      assertEquals(LinkedList.of(1, 3), ls.deleteFirstBy(LinkedList.of(2), eq));
+      assertEquals(LinkedList.of(1, 2), ls.deleteFirstBy(LinkedList.of(3), eq));
+      assertEquals(LinkedList.of(2, 3), ls.deleteFirstBy(LinkedList.of(1), eq));
+    }
+    {
+      final LinkedList<Integer> ls = LinkedList.of(3, 1, 2, 1, 2, 3);
+
+      assertEquals(LinkedList.of(3, 1, 1, 2, 3), ls.deleteFirstBy(LinkedList.of(2), eq));
+      assertEquals(LinkedList.of(1, 2, 1, 2, 3), ls.deleteFirstBy(LinkedList.of(3), eq));
+      assertEquals(LinkedList.of(3, 2, 1, 2, 3), ls.deleteFirstBy(LinkedList.of(1), eq));
+
+      assertEquals(LinkedList.of(3, 1, 1, 3), ls.deleteFirstBy(LinkedList.of(2, 2), eq));
+      assertEquals(LinkedList.of(1, 2, 1, 2), ls.deleteFirstBy(LinkedList.of(3, 3), eq));
+      assertEquals(LinkedList.of(3, 2, 2, 3), ls.deleteFirstBy(LinkedList.of(1, 1), eq));
+
+      assertEquals(LinkedList.of(3, 1, 2, 3), ls.deleteFirstBy(LinkedList.of(1, 2), eq));
+      assertEquals(LinkedList.of(2, 1, 2, 3), ls.deleteFirstBy(LinkedList.of(1, 3), eq));
+      assertEquals(LinkedList.of(1, 1, 2, 3), ls.deleteFirstBy(LinkedList.of(2, 3), eq));
+    }
   }
   /**
    * Test of listDiff method, of class LinkedList.
