@@ -34,7 +34,7 @@ import org.StructureGraphic.v1.DSTreeNode;
 public final class IntMapModule {
   static final class EntryRef<V> extends PersistentMapIntEntry<V> {
     public EntryRef(final LeafNode<V> t) { mRef = t; }
-    private LeafNode<V> mRef;
+    private final LeafNode<V> mRef;
 
     @Override
     public int getKey() { return mRef.getKey(); }
