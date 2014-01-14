@@ -64,9 +64,9 @@ public final class TuplesModule {
       mx3 = x3;
     }
 
-    public T1 mx1;
-    public T2 mx2;
-    public T3 mx3;
+    public final T1 mx1;
+    public final T2 mx2;
+    public final T3 mx3;
 
     @Override
     public String toString() {
@@ -110,10 +110,10 @@ public final class TuplesModule {
       mx4 = x4;
     }
 
-    public T1 mx1;
-    public T2 mx2;
-    public T3 mx3;
-    public T4 mx4;
+    public final T1 mx1;
+    public final T2 mx2;
+    public final T3 mx3;
+    public final T4 mx4;
 
     @Override
     public String toString() {
