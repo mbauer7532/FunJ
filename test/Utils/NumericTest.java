@@ -143,34 +143,6 @@ public class NumericTest {
   }
 
   /**
-   * Test of swap method, of class Numeric.
-   */
-  @Test
-  public void testSwap() {
-    System.out.println("swap");
-
-    final int siz = 3;
-    final int[] arr = new int[siz];
-    IntStream.range(0, siz).forEach(i -> { arr[i] = i; });
-
-    IntStream.range(0, siz).forEach(i -> { assertEquals(arr[i], i); });
-
-    {
-      Numeric.swap(arr, 0, 1);
-      assertEquals(arr[0], 1);
-      assertEquals(arr[1], 0);
-      assertEquals(arr[2], 2);
-    }
-
-    {
-      Numeric.swap(arr, 1, 2);
-      assertEquals(arr[0], 1);
-      assertEquals(arr[1], 2);
-      assertEquals(arr[2], 0);
-   }
-  }
-
-  /**
    * Test of isEqWithinTolerance method, of class Numeric.
    */
   @Test

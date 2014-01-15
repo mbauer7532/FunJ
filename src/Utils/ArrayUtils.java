@@ -39,10 +39,14 @@ public class ArrayUtils {
     }
   }
 
-  public static <V> void swap(final ArrayList<V> arr, final int i, final int j) {
-    final V t = arr.get(i);
-    arr.set(i, arr.get(j));
-    arr.set(j, t);
+  public static void swap(final int[] arr, final int i, final int j) {
+    final int t = arr[i];
+    arr[i] = arr[j];
+    arr[j] = t;
+  }
+
+  public static <V> void swap(final ArrayList<V> v, final int i, final int j) {
+    v.set(j, v.set(i, v.get(j)));
   }
 
   public static <T extends Comparable<T>> boolean isIncreasing(final List<T> lst) {

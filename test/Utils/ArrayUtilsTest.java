@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -22,7 +23,7 @@ import static org.junit.Assert.*;
  * @author Neo
  */
 public class ArrayUtilsTest {
-  
+
   public ArrayUtilsTest() {}
 
   @BeforeClass
@@ -122,5 +123,54 @@ public class ArrayUtilsTest {
     assertFalse(ArrayUtils.isStrictlyDecreasing(toBoxedList(a8)));
     assertFalse(ArrayUtils.isStrictlyDecreasing(toBoxedList(a9)));
     assertFalse(ArrayUtils.isStrictlyDecreasing(toBoxedList(a10)));
+  }
+
+    /**
+   * Test of swap method, of class Numeric.
+   */
+  @Test
+  public void testSwap() {
+    System.out.println("swap");
+
+    {
+      final int siz = 3;
+      final int[] arr = new int[siz];
+      IntStream.range(0, siz).forEach(i -> { arr[i] = i; });
+
+      IntStream.range(0, siz).forEach(i -> { assertEquals(arr[i], i); });
+
+      {
+        ArrayUtils.swap(arr, 0, 1);
+        assertEquals(arr[0], 1);
+        assertEquals(arr[1], 0);
+        assertEquals(arr[2], 2);
+      }
+      {
+        ArrayUtils.swap(arr, 1, 2);
+        assertEquals(arr[0], 1);
+        assertEquals(arr[1], 2);
+        assertEquals(arr[2], 0);
+      }
+    }
+    {
+      final int siz = 3;
+      final ArrayList<Integer> arr = new ArrayList<>(siz);
+      IntStream.range(0, siz).forEach(i -> { arr.add(i); });
+
+      IntStream.range(0, siz).forEach(i -> { assertEquals(Integer.valueOf(i), arr.get(i)); });
+
+      {
+        ArrayUtils.swap(arr, 0, 1);
+        assertEquals(Integer.valueOf(1), arr.get(0));
+        assertEquals(Integer.valueOf(0), arr.get(1));
+        assertEquals(Integer.valueOf(2), arr.get(2));
+      }
+      {
+        ArrayUtils.swap(arr, 1, 2);
+        assertEquals(Integer.valueOf(1), arr.get(0));
+        assertEquals(Integer.valueOf(2), arr.get(1));
+        assertEquals(Integer.valueOf(0), arr.get(2));
+      }
+    }
   }
 }

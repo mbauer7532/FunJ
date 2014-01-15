@@ -6,6 +6,7 @@
 
 package Utils;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Random;
@@ -63,12 +64,6 @@ public class Numeric {
     return hset;
   }
 
-  public static void swap(final int[] arr, final int i, final int j) {
-    final int t = arr[i];
-    arr[i] = arr[j];
-    arr[j] = t;
-  }
-
   public static int[] randomPermutation(
           final int low,
           final int high,
@@ -102,7 +97,7 @@ public class Numeric {
       IntStream.range(0, size).forEach(i -> { array[i] = it.next(); });
     }
 
-    IntStream.range(0, lastIdx).forEach(i -> { swap(array, i, randomInt(i, lastIdx, rng)); });
+    IntStream.range(0, lastIdx).forEach(i -> { ArrayUtils.swap(array, i, randomInt(i, lastIdx, rng)); });
 
     return;
   }
