@@ -486,9 +486,9 @@ public class Functionals {
             final long sizeEst,
             final int additionalCharacteristics) {
       super(sizeEst, additionalCharacteristics);
-      this.mLeftSpliter  = leftSpliter;
-      this.mRightSpliter = rightSpliter;
-      this.mZipper       = zipper;
+      mLeftSpliter  = leftSpliter;
+      mRightSpliter = rightSpliter;
+      mZipper       = zipper;
     }
 
     public static <T, U, W> ZipperSpliterator<T, U, W> create(
