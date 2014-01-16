@@ -2521,10 +2521,10 @@ public class LinkedListTest {
   @Test
   public void testIterator() {
     println("iterator");
-    
+
     final int high = 5000;
     LinkedList<Integer> list = makeList(1, high);
-    
+
     int n = 1;
     for (Integer i : list) {
       assertEquals(n, i.intValue());
@@ -2542,7 +2542,7 @@ public class LinkedListTest {
     final int high = 5000;
     LinkedList<Integer> list = LinkedList.fromStream(IntStream.rangeClosed(1, high).mapToObj(n -> 1));
     ArrayList<Integer> v = list.stream().map(n -> n * n * n * n * n * n).map(n -> n + 1).map(n -> n - 1).map(n -> n).collect(Collectors.toCollection(ArrayList::new));
-    
+
     assertEquals(high, v.size());
   }
 }

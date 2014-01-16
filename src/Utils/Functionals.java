@@ -474,20 +474,30 @@ public class Functionals {
   }
 
   private static final class ZipperSpliterator<T, U, W> extends Spliterators.AbstractSpliterator<W> implements Consumer<Object> {
-    final Spliterator<T> mLeftSpliter;
-    final Spliterator<U> mRightSpliter;
-    final BiFunction<? super T, ? super U, ? extends W> mZipper;
-    Object mCache;
+    private final Spliterator<T> mLeftSpliter;
+    private final Spliterator<U> mRightSpliter;
+    private final BiFunction<? super T, ? super U, ? extends W> mZipper;
+    private Object mCache;
 
-    ZipperSpliterator(final Spliterator<T> leftSpliter,
-                      final Spliterator<U> rightSpliter,
-                      final BiFunction<? super T, ? super U, ? extends W> zipper,
-                      final long sizeEst,
-                      final int additionalCharacteristics) {
+    private ZipperSpliterator(
+            final Spliterator<T> leftSpliter,
+            final Spliterator<U> rightSpliter,
+            final BiFunction<? super T, ? super U, ? extends W> zipper,
+            final long sizeEst,
+            final int additionalCharacteristics) {
       super(sizeEst, additionalCharacteristics);
       this.mLeftSpliter  = leftSpliter;
       this.mRightSpliter = rightSpliter;
       this.mZipper       = zipper;
+    }
+
+    public static <T, U, W> ZipperSpliterator<T, U, W> create(
+            final Spliterator<T> leftSpliter,
+            final Spliterator<U> rightSpliter,
+            final BiFunction<? super T, ? super U, ? extends W> zipper,
+            final long sizeEst,
+            final int additionalCharacteristics) {
+      return new ZipperSpliterator<>(leftSpliter, rightSpliter, zipper, sizeEst, additionalCharacteristics);
     }
 
     @Override
@@ -526,7 +536,7 @@ public class Functionals {
     final int characteristics = leftSpliter.characteristics() & rightSpliter.characteristics() & ~(Spliterator.DISTINCT | Spliterator.SORTED);
     final long size = Math.min(leftSpliter.estimateSize(), rightSpliter.estimateSize());
 
-    final Spliterator<W> cs = new ZipperSpliterator<>(leftSpliter, rightSpliter, zipper, size, characteristics);
+    final Spliterator<W> cs = ZipperSpliterator.create(leftSpliter, rightSpliter, zipper, size, characteristics);
 
     return StreamSupport.stream(cs, ts.isParallel() || us.isParallel());
   }

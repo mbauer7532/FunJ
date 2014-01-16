@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -306,10 +307,11 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     }
   }
 
-  private static final class LeftistHeapSpliterator<V extends Comparable<V>> implements Spliterator<V> {
+  private static final class LeftistHeapSpliterator<V extends Comparable<V>> extends Spliterators.AbstractSpliterator<V> {
     private final ArrayDeque<LeftistHeap<V>> mQueue;
 
     public LeftistHeapSpliterator(final LeftistHeap<V> h) {
+      super(Long.MAX_VALUE, SIZED | NONNULL | IMMUTABLE | CONCURRENT);
       mQueue = new ArrayDeque<>();
       if (! isEmptyImpl(h)) {
         mQueue.addLast(h);
@@ -342,25 +344,10 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     }
 
     @Override
-    public Spliterator<V> trySplit() {
-      return null;
-    }
-
-    @Override
     public void forEachRemaining(Consumer<? super V> action) {
       while (! mQueue.isEmpty()) {
         performActionUpdatingQueue(action);
       }
-    }
-
-    @Override
-    public long estimateSize() {
-      return Long.MAX_VALUE;
-    }
-
-    @Override
-    public int characteristics() {
-      return SIZED | NONNULL | IMMUTABLE | CONCURRENT;
     }
   }
 

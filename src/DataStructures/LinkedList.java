@@ -16,6 +16,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.Spliterator;
+import java.util.Spliterators;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
@@ -1214,10 +1215,11 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     }
   }
 
-  private static final class ListSpliterator<A> implements Spliterator<A> {
+  private static final class ListSpliterator<A> extends Spliterators.AbstractSpliterator<A> {
     private LinkedList<A> mCurrentElem;
 
     public ListSpliterator(final LinkedList<A> list) {
+      super(Long.MAX_VALUE, ORDERED | SIZED | NONNULL | IMMUTABLE | CONCURRENT);
       mCurrentElem = list;
     }
 
@@ -1234,23 +1236,8 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     }
 
     @Override
-    public Spliterator<A> trySplit() {
-      return null;
-    }
-
-    @Override
     public void forEachRemaining(final Consumer<? super A> action) {
       forEachImpl(mCurrentElem, action);
-    }
-
-    @Override
-    public long estimateSize() {
-      return Long.MAX_VALUE;
-    }
-
-    @Override
-    public int characteristics() {
-      return ORDERED | SIZED | NONNULL | IMMUTABLE | CONCURRENT;
     }
   }
 
