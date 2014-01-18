@@ -85,8 +85,8 @@ public class HMRealTimeQueueTest {
    * Test of size method, of class HMRealTimeQueue.
    */
   @Test
-  public void testLength() {
-    System.out.println("length");
+  public void testSize() {
+    System.out.println("size");
 
     final Random rng = new Random(12371);
     final Ref<Integer> len = new Ref<>(Integer.valueOf(0));
@@ -95,7 +95,7 @@ public class HMRealTimeQueueTest {
     final int level = 5_000;
 
     final Ref<HMRealTimeQueue<Integer>> q = new Ref<>(HMRealTimeQueue.empty());
-    IntStream.range(0, cnt).forEach(n -> {{
+    IntStream.range(0, cnt).forEach(n -> {
       final int k = Numeric.randomInt(1, level, rng);
       if (k <= level / 2) {
         if (len.r > 0) {
@@ -117,6 +117,7 @@ public class HMRealTimeQueueTest {
   @Test
   public void testAddLast() {
     System.out.println("addLast");
+
     {
       final HMRealTimeQueue<Integer> q = HMRealTimeQueue.singleton(1);
       assertFalse(q.isEmpty());
