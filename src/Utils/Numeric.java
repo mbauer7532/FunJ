@@ -88,7 +88,7 @@ public class Numeric {
         throw new AssertionError("Array size must be greater than zero.");
       }
 
-      IntStream.range(0, size).forEach(i -> array[i] = low + i);
+      IntStream.range(0, size).forEach(i -> { array[i] = low + i; });
     }
     else {
       final Iterator<Integer> it = randomSet(low, high, size, rng).iterator();
