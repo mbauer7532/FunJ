@@ -33,7 +33,12 @@ import org.StructureGraphic.v1.DSTreeNode;
  */
 public final class IntMapModule {
   static final class EntryRef<V> extends PersistentMapIntEntry<V> {
-    public EntryRef(final LeafNode<V> t) { mRef = t; }
+    public static <V> EntryRef<V> create(final LeafNode<V> t) {
+      return new EntryRef<>(t);
+    }
+
+    private EntryRef(final LeafNode<V> t) { mRef = t; }
+
     private final LeafNode<V> mRef;
 
     @Override
@@ -152,7 +157,7 @@ public final class IntMapModule {
           m = spineDirection.apply((BranchNode<V>) m);
         }
         else {
-          return Optional.of(new EntryRef<>((LeafNode<V>) m));
+          return Optional.of(EntryRef.create((LeafNode<V>) m));
         }
       }
     }
@@ -171,7 +176,7 @@ public final class IntMapModule {
         }
       }
       else if (t instanceof LeafNode) {
-        return Optional.of(new EntryRef<>((LeafNode<V>) t));
+        return Optional.of(EntryRef.create((LeafNode<V>) t));
       }
       else {
         return Optional.empty();
@@ -217,7 +222,7 @@ public final class IntMapModule {
     @Override
     public ArrayList<PersistentMapIntEntry<V>> keyValuePairs() {
       final ArrayList<PersistentMapIntEntry<V>> vs = new ArrayList<>();
-      appEntry(n -> { vs.add(new EntryRef<>(n)); });
+      appEntry(n -> { vs.add(EntryRef.create(n)); });
 
       return vs;
     }
