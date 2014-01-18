@@ -11,6 +11,8 @@ import java.util.ArrayList;
 /**
  *
  * @author Neo
+ * @param <V>
+ * @param <Q>
  */
 public interface PersistentQueue<V, Q extends PersistentQueue<V, Q>> {
   public boolean isEmpty();
