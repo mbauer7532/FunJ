@@ -52,8 +52,9 @@ public class RedBlackTreeModule2 {
       if (isNull()) {
         throw new AssertionError("The empty tree has no key.");
       }
-
-      return mKey;
+      else {
+        return mKey;
+      }
     }
 
     @Override
@@ -61,8 +62,9 @@ public class RedBlackTreeModule2 {
       if (isNull()) {
         throw new AssertionError("The empty tree has no value.");
       }
-
-      return mValue;
+      else {
+        return mValue;
+      }
     }
 
     public static <K extends Comparable<K>, V> Tree<K, V> empty() {
