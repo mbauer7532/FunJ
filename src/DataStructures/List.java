@@ -141,7 +141,10 @@ public interface List<A, L extends List<A, L>> extends Iterable<A> {
   public List<L, ?> subsequences();
   public List<L, ?> permutations();
 
+  @Override
   public Iterator<A> iterator();
+
   public Stream<A> stream();
+
   public ArrayList<A> toArray();
 }
