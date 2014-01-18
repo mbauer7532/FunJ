@@ -238,7 +238,7 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
   }
 
   @Override
-  public int length() {
+  public int size() {
     return mlenf + mlenr;
   }
 

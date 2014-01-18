@@ -546,7 +546,7 @@ public final class BrotherTreeModule {
       }
       else {
         return Optional.of(mv1);
-      }      
+      }
     }
 
     @Override
@@ -564,7 +564,7 @@ public final class BrotherTreeModule {
       mt1.appi(f);
       f.accept(ma1, mv1);
       mt2.appi(f);
-      
+
       return;
     }
 

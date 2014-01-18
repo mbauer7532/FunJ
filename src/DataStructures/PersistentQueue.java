@@ -19,7 +19,7 @@ public interface PersistentQueue<V, Q extends PersistentQueue<V, Q>> {
 
   public V head();
 
-  public int length();
+  public int size();
 
   public Q tail();
 

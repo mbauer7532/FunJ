@@ -49,7 +49,7 @@ public class HMRealTimeQueueTest {
 
     final HMRealTimeQueue<Integer> q = HMRealTimeQueue.empty();
     assertTrue(q.isEmpty());
-    assertEquals(0, q.length());
+    assertEquals(0, q.size());
     assertFalse(q.addLast(1).isEmpty());
   }
 
@@ -62,7 +62,7 @@ public class HMRealTimeQueueTest {
 
     final HMRealTimeQueue<Integer> q = HMRealTimeQueue.empty();
     assertTrue(q.isEmpty());
-    assertEquals(0, q.length());
+    assertEquals(0, q.size());
     assertFalse(q.addLast(1).isEmpty());
     assertFalse(q.addLast(1).addLast(2).isEmpty());
     assertFalse(q.addLast(1).addLast(2).addLast(3).isEmpty());
@@ -77,12 +77,12 @@ public class HMRealTimeQueueTest {
     
     HMRealTimeQueue<Integer> q = HMRealTimeQueue.singleton(1);
     assertFalse(q.isEmpty());
-    assertEquals(1, q.length());
+    assertEquals(1, q.size());
     assertEquals(Integer.valueOf(1), q.head());
   }
 
   /**
-   * Test of length method, of class HMRealTimeQueue.
+   * Test of size method, of class HMRealTimeQueue.
    */
   @Test
   public void testLength() {
@@ -95,7 +95,7 @@ public class HMRealTimeQueueTest {
     final int level = 5_000;
 
     final Ref<HMRealTimeQueue<Integer>> q = new Ref<>(HMRealTimeQueue.empty());
-    IntStream.range(0, cnt).forEach(n -> {
+    IntStream.range(0, cnt).forEach(n -> {{
       final int k = Numeric.randomInt(1, level, rng);
       if (k <= level / 2) {
         if (len.r > 0) {
@@ -107,7 +107,7 @@ public class HMRealTimeQueueTest {
         ++len.r;
         q.r = q.r.addLast(k);
       }
-      assertEquals(len.r, Integer.valueOf(q.r.length()));
+      assertEquals(len.r, Integer.valueOf(q.r.size()));
     });
   }
 
@@ -120,13 +120,13 @@ public class HMRealTimeQueueTest {
     {
       final HMRealTimeQueue<Integer> q = HMRealTimeQueue.singleton(1);
       assertFalse(q.isEmpty());
-      assertEquals(1, q.length());
+      assertEquals(1, q.size());
       assertEquals(Integer.valueOf(1), q.head());
     }
     {
       final HMRealTimeQueue<Integer> q = HMRealTimeQueue.singleton(1).addLast(2);
       assertFalse(q.isEmpty());
-      assertEquals(2, q.length());
+      assertEquals(2, q.size());
       assertEquals(Integer.valueOf(1), q.head());
       assertEquals(Integer.valueOf(2), q.tail().head());
       assertTrue(q.tail().tail().isEmpty());
@@ -197,7 +197,7 @@ public class HMRealTimeQueueTest {
     {
       final HMRealTimeQueue<Integer> q = HMRealTimeQueue.singleton(1);
       assertFalse(q.isEmpty());
-      assertEquals(1, q.length());
+      assertEquals(1, q.size());
       boolean exceptionWasThrown = false;
       try {
         final ArrayList<Integer> list = q.take(2);
@@ -208,7 +208,7 @@ public class HMRealTimeQueueTest {
     {
       final HMRealTimeQueue<Integer> q = HMRealTimeQueue.singleton(1);
       assertFalse(q.isEmpty());
-      assertEquals(1, q.length());
+      assertEquals(1, q.size());
       boolean exceptionWasThrown = false;
       try {
         final ArrayList<Integer> list = q.take(1);
@@ -220,7 +220,7 @@ public class HMRealTimeQueueTest {
     {
       final HMRealTimeQueue<Integer> q = HMRealTimeQueue.of(1,2,3,4,5);
       assertFalse(q.isEmpty());
-      assertEquals(5, q.length());
+      assertEquals(5, q.size());
       boolean exceptionWasThrown = false;
       try {
         final ArrayList<Integer> list = q.take(5);
@@ -248,7 +248,7 @@ public class HMRealTimeQueueTest {
       v.add(1);
       final HMRealTimeQueue<Integer> q = HMRealTimeQueue.fromArray(v);
       assertFalse(q.isEmpty());
-      assertEquals(1, q.length());
+      assertEquals(1, q.size());
       assertEquals(Integer.valueOf(1), q.head());
     }
     {
@@ -256,7 +256,7 @@ public class HMRealTimeQueueTest {
       v.add(1); v.add(2); v.add(3); v.add(4);
       final HMRealTimeQueue<Integer> q = HMRealTimeQueue.fromArray(v);
       assertFalse(q.isEmpty());
-      assertEquals(4, q.length());
+      assertEquals(4, q.size());
       assertEquals(Integer.valueOf(1), q.head());
       assertEquals(Integer.valueOf(2), q.tail().head());
       assertEquals(Integer.valueOf(3), q.tail().tail().head());
@@ -284,7 +284,7 @@ public class HMRealTimeQueueTest {
       final Stream<Integer> s = v.stream();
       final HMRealTimeQueue<Integer> q = HMRealTimeQueue.fromStream(s);
       assertFalse(q.isEmpty());
-      assertEquals(1, q.length());
+      assertEquals(1, q.size());
       assertEquals(Integer.valueOf(1), q.head());
     }
     {
@@ -293,7 +293,7 @@ public class HMRealTimeQueueTest {
       final Stream<Integer> s = v.stream();
       final HMRealTimeQueue<Integer> q = HMRealTimeQueue.fromStream(s);
       assertFalse(q.isEmpty());
-      assertEquals(4, q.length());
+      assertEquals(4, q.size());
       assertEquals(Integer.valueOf(1), q.head());
       assertEquals(Integer.valueOf(2), q.tail().head());
       assertEquals(Integer.valueOf(3), q.tail().tail().head());
