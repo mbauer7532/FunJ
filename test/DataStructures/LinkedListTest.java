@@ -2545,4 +2545,13 @@ public class LinkedListTest {
 
     assertEquals(high, v.size());
   }
+
+//  @Test
+//  public void testParallelStream() {
+//    final int listSiz = 10_000_000;
+//    
+//    LinkedList<Integer> ls = makeList(1, listSiz);
+//    final Integer sum = ls.stream().map(n -> n + 1).map(m -> m * 3).reduce(0, (x, y) -> x + y);
+//    System.out.println("sum = " + sum);
+//  }
 }
