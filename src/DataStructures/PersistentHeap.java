@@ -18,7 +18,8 @@ import org.StructureGraphic.v1.DSTreeNode;
  * @param <V>
  * @param <H>
  */
-public interface PersistentHeap<V extends Comparable<V>, H extends PersistentHeap<V, H>> extends Iterable<V>, DSTreeNode {
+public interface PersistentHeap<V extends Comparable<V>, H extends PersistentHeap<V, H>>
+                                                           extends Iterable<V>, DSTreeNode {
   public boolean isEmpty();
 
   public boolean isNotEmpty();
