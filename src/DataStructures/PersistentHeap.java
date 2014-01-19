@@ -45,6 +45,8 @@ public interface PersistentHeap<V extends Comparable<V>, H extends PersistentHea
 
   public Stream<V> stream();
 
+  public Stream<V> orderedStream();
+
   public ArrayList<V> toAscArrayList();
 
   public ArrayList<V> toDescArrayList();

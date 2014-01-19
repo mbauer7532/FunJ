@@ -7,6 +7,7 @@
 package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
+import Utils.ArrayUtils;
 import Utils.Functionals;
 import Utils.Numeric;
 import Utils.Ref;
@@ -367,13 +368,13 @@ public class LeftistHeapTest {
     {
       final LeftistHeap<Integer> h = LeftistHeap.empty();
       final Stream<Integer> s = h.stream();
-      final ArrayList<Integer> v = s.collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<Integer> v = ArrayUtils.toArrayList(s);
       assertTrue(v.isEmpty());
     }
     {
       final LeftistHeap<Integer> h = LeftistHeap.of(10);
       final Stream<Integer> s = h.stream();
-      final ArrayList<Integer> v = s.collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<Integer> v = ArrayUtils.toArrayList(s);
       assertFalse(v.isEmpty());
       assertEquals(1, v.size());
       assertEquals(Integer.valueOf(10), v.get(0));
@@ -381,7 +382,7 @@ public class LeftistHeapTest {
     {
       final LeftistHeap<Integer> h = LeftistHeap.of(10, 20, 30, 40);
       final Stream<Integer> s = h.stream();
-      final ArrayList<Integer> v = s.collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<Integer> v = ArrayUtils.toArrayList(s);
       assertFalse(v.isEmpty());
       assertEquals(4, v.size());
 
@@ -389,6 +390,42 @@ public class LeftistHeapTest {
       assertEquals(Integer.valueOf(20), v.get(1));
       assertEquals(Integer.valueOf(30), v.get(2));
       assertEquals(Integer.valueOf(40), v.get(3));
+    }
+  }
+
+  /**
+   * Test of stream method, of class LeftistHeap.
+   */
+  @Test
+  public void testOrderedStream() {
+    System.out.println("orderedStream");
+
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.empty();
+      final Stream<Integer> s = h.orderedStream();
+      final ArrayList<Integer> v = ArrayUtils.toArrayList(s);
+      assertTrue(v.isEmpty());
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.of(10);
+      final Stream<Integer> s = h.orderedStream();
+      final ArrayList<Integer> v = ArrayUtils.toArrayList(s);
+      assertFalse(v.isEmpty());
+      assertEquals(1, v.size());
+      assertEquals(Integer.valueOf(10), v.get(0));
+    }
+    {
+      final LeftistHeap<Integer> h = LeftistHeap.of(20, 10, 0, -40, 30);
+      final Stream<Integer> s = h.orderedStream();
+      final ArrayList<Integer> v = ArrayUtils.toArrayList(s);
+      assertFalse(v.isEmpty());
+      assertEquals(5, v.size());
+
+      assertEquals(Integer.valueOf(-40), v.get(0));
+      assertEquals(Integer.valueOf(0), v.get(1));
+      assertEquals(Integer.valueOf(10), v.get(2));
+      assertEquals(Integer.valueOf(20), v.get(3));
+      assertEquals(Integer.valueOf(30), v.get(4));
     }
   }
 

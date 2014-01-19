@@ -311,7 +311,7 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     private final ArrayDeque<LeftistHeap<V>> mQueue;
 
     public LeftistHeapSpliterator(final LeftistHeap<V> h) {
-      super(Long.MAX_VALUE, SIZED | NONNULL | IMMUTABLE | CONCURRENT);
+      super(Long.MAX_VALUE, NONNULL | IMMUTABLE);
       mQueue = new ArrayDeque<>();
       if (! isEmptyImpl(h)) {
         mQueue.addLast(h);
@@ -351,6 +351,42 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     }
   }
 
+  private static final class LeftistHeapOrderedSpliterator<V extends Comparable<V>> extends Spliterators.AbstractSpliterator<V> {
+    private LeftistHeap<V> mHeap;
+    private final Ref<V> mv;
+
+    public LeftistHeapOrderedSpliterator(final LeftistHeap<V> h) {
+      super(Long.MAX_VALUE, NONNULL | IMMUTABLE);
+      mHeap = h;
+      mv = new Ref<>();
+    }
+
+    private void performActionUpdatingQueue(final Consumer<? super V> action) {
+      mHeap = mHeap.deleteMin(mv);
+      action.accept(mv.r);
+
+      return;
+    }
+
+    @Override
+    public boolean tryAdvance(final Consumer<? super V> action) {
+      if (mHeap.isEmpty()) {
+        return false;
+      }
+      else {
+        performActionUpdatingQueue(action);
+        return true;
+      }
+    }
+
+    @Override
+    public void forEachRemaining(Consumer<? super V> action) {
+      while (! mHeap.isEmpty()) {
+        performActionUpdatingQueue(action);
+      }
+    }
+  }
+
   @Override
   public Iterator<V> iterator() {
     return new LeftistHeapIterator<>(this);
@@ -376,6 +412,11 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
     return StreamSupport.stream(new LeftistHeapSpliterator<>(this), false);
   }
 
+  @Override
+  public Stream<V> orderedStream() {
+    return StreamSupport.stream(new LeftistHeapOrderedSpliterator<>(this), false);
+  }
+   
   @Override
   public boolean equals(final Object obj) {
     if (! (obj instanceof PersistentHeap)) {
