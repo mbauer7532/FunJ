@@ -15,7 +15,6 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.OptionalInt;
-import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.TreeSet;
 import java.util.function.BiFunction;
@@ -1219,7 +1218,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     private LinkedList<A> mCurrentElem;
 
     public ListSpliterator(final LinkedList<A> list) {
-      super(Long.MAX_VALUE, ORDERED | SIZED | NONNULL | IMMUTABLE | CONCURRENT);
+      super(Long.MAX_VALUE, ORDERED | NONNULL | IMMUTABLE);
       mCurrentElem = list;
     }
 

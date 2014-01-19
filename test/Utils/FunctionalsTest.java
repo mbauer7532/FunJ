@@ -200,6 +200,25 @@ public class FunctionalsTest {
   }
 
   /**
+   * Test of partition method, of class Functionals.
+   */
+  @Test
+  public void testPartition() {
+    System.out.println("partition");
+
+    {
+      final Pair<ArrayList<Integer>, ArrayList<Integer>> p = Functionals.partition(IntStream.range(0, 6).boxed(), n -> n % 2 == 0);
+      final ArrayList<Integer> v0 = p.mx1, v1 = p.mx2;
+      
+      final ArrayList<Integer> v0res = ArrayUtils.toArrayList(IntStream.range(0, 6).filter(n -> n % 2 == 0).boxed());
+      final ArrayList<Integer> v1res = ArrayUtils.toArrayList(IntStream.range(0, 6).filter(n -> n % 2 != 0).boxed());
+
+      assertEquals(v0res, v0);
+      assertEquals(v1res, v1);
+    }
+  }
+
+  /**
    * Test of zip method, of class Functionals.
    */
   @Test

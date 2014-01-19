@@ -23,6 +23,7 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
   private static final class Idle<V> extends RotationState<V> {
     @SuppressWarnings("unchecked")
     public static <V> Idle<V> create() { return (Idle<V>) sIdleRotationState; }
+
     private static final Idle<?> sIdleRotationState = new Idle<>();
 
     @Override

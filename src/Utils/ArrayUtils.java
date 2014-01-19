@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.IntPredicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -63,5 +65,9 @@ public class ArrayUtils {
 
   public static <T extends Comparable<T>> boolean isStrictlyDecreasing(final List<T> lst) {
     return consecutiveElemsHaveProperty(lst, res -> res > 0);
+  }
+
+  public static <T> ArrayList<T> toArrayList(final Stream<T> s) {
+    return s.collect(Collectors.toCollection(ArrayList::new));
   }
 }

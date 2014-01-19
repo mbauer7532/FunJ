@@ -7,6 +7,7 @@
 package Utils;
 
 import DataStructures.TuplesModule.Pair;
+import java.util.ArrayList;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Spliterator;
@@ -14,6 +15,7 @@ import java.util.Spliterators;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.BaseStream;
 import java.util.stream.DoubleStream;
@@ -459,6 +461,13 @@ public class Functionals {
    */
   public static <T, U> U reduce(final Stream<T> s, final U identity, final BiFunction<U, ? super T, U> accumulator) {
     return s.reduce(identity, accumulator, Functionals::functionShouldNotBeCalled);
+  }
+
+  public static <T> Pair<ArrayList<T>, ArrayList<T>> partition(final Stream<T> s, final Predicate<T> pred) {
+    ArrayList<T> v0 = new ArrayList<>(), v1 = new ArrayList<>();
+    s.forEach(n -> { (pred.test(n) ? v0 : v1).add(n); });
+
+    return Pair.create(v0, v1);
   }
 
   public static <T, U> Stream<Pair<T, U>> zip2(final Stream<T> ts, final Stream<U> us) {
