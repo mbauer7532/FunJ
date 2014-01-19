@@ -9,7 +9,6 @@ package Utils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -39,7 +38,7 @@ public class ArrayUtilsTest {
   public void tearDown() {}
 
   private static List<Integer> toBoxedList(final int[] a) {
-    return Arrays.stream(a).boxed().collect(Collectors.toCollection(ArrayList::new));
+    return ArrayUtils.toArrayList(Arrays.stream(a).boxed());
   }
 
   /**

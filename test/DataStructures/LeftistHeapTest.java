@@ -11,15 +11,12 @@ import Utils.ArrayUtils;
 import Utils.Functionals;
 import Utils.Numeric;
 import Utils.Ref;
-import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Random;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-import org.StructureGraphic.v1.DSTreeNode;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -244,7 +241,7 @@ public class LeftistHeapTest {
                             Arrays.stream(v).boxed(),
                             Stream.empty());
 
-        final ArrayList<Integer> sortedV = Arrays.stream(v).boxed().collect(Collectors.toCollection(ArrayList::new));
+        final ArrayList<Integer> sortedV = ArrayUtils.toArrayList(Arrays.stream(v).boxed());
         sortedV.sort(null);
 
         final int delUpTo = Numeric.randomInt(low, high + 1, rng);
@@ -323,7 +320,7 @@ public class LeftistHeapTest {
       assertTrue(h.isEmpty());
     }
     {
-      final ArrayList<Integer> v = IntStream.range(0, 10).boxed().collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<Integer> v = ArrayUtils.toArrayList(IntStream.range(0, 10).boxed());
       final LeftistHeap<Integer> h = LeftistHeap.fromArray(v);
       assertFalse(h.isEmpty());
       assertEquals(10, h.size());

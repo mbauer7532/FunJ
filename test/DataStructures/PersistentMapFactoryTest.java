@@ -7,11 +7,11 @@
 package DataStructures;
 
 import DataStructures.TuplesModule.AssocPair;
+import Utils.ArrayUtils;
 import Utils.Numeric;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.junit.After;
@@ -128,9 +128,9 @@ public class PersistentMapFactoryTest {
       final Stream<PersistentMapEntry<Integer, Integer>> streamDecreasing  = IntStream.rangeClosed(0, y).mapToObj(x -> AssocPair.create(y - x, y - x));
       final Stream<PersistentMapEntry<Integer, Integer>> streamPermutation = Arrays.stream(perm).mapToObj(x -> AssocPair.create(x, x));
 
-      final ArrayList<PersistentMapEntry<Integer, Integer>> arrayIncreasing  = IntStream.rangeClosed(0, y).mapToObj(x -> AssocPair.create(x, x)).collect(Collectors.toCollection(ArrayList::new));
-      final ArrayList<PersistentMapEntry<Integer, Integer>> arrayDecreasing  = IntStream.rangeClosed(0, y).mapToObj(x -> AssocPair.create(y - x, y - x)).collect(Collectors.toCollection(ArrayList::new));
-      final ArrayList<PersistentMapEntry<Integer, Integer>> arrayPermutation = Arrays.stream(perm).mapToObj(x -> AssocPair.create(x, x)).collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<PersistentMapEntry<Integer, Integer>> arrayIncreasing  = ArrayUtils.toArrayList(IntStream.rangeClosed(0, y).mapToObj(x -> AssocPair.create(x, x)));
+      final ArrayList<PersistentMapEntry<Integer, Integer>> arrayDecreasing  = ArrayUtils.toArrayList(IntStream.rangeClosed(0, y).mapToObj(x -> AssocPair.create(y - x, y - x)));
+      final ArrayList<PersistentMapEntry<Integer, Integer>> arrayPermutation = ArrayUtils.toArrayList(Arrays.stream(perm).mapToObj(x -> AssocPair.create(x, x)));
 
       final PersistentMap<Integer, Integer, ?> mapFromStreamIncreasing  = mapFactory.fromStream(streamIncreasing);
       final PersistentMap<Integer, Integer, ?> mapFromStreamDecreasing  = mapFactory.fromStream(streamDecreasing);
@@ -166,9 +166,8 @@ public class PersistentMapFactoryTest {
       final Stream<PersistentMapEntry<Integer, Integer>> stream = IntStream.rangeClosed(0, y).mapToObj(x -> AssocPair.create(x, x));
 
       final ArrayList<PersistentMapEntry<Integer, Integer>> v =
-              IntStream.rangeClosed(0, y)
-                       .mapToObj(x -> AssocPair.create(x, x))
-                       .collect(Collectors.toCollection(ArrayList::new));
+              ArrayUtils.toArrayList(IntStream.rangeClosed(0, y)
+                                              .mapToObj(x -> AssocPair.create(x, x)));
 
       final PersistentMap<Integer, Integer, ?> mapFromStream = mapFactory.fromStrictlyIncreasingStream(stream);
       final PersistentMap<Integer, Integer, ?> mapFromArray  = mapFactory.fromStrictlyIncreasingArray(v);
@@ -197,10 +196,9 @@ public class PersistentMapFactoryTest {
                        .mapToObj(x -> AssocPair.create(x, x));
 
       final ArrayList<PersistentMapEntry<Integer, Integer>> v =
-              IntStream.rangeClosed(0, y)
-                       .map(x -> y + 1 - x)
-                       .mapToObj(x -> AssocPair.create(x, x))
-                       .collect(Collectors.toCollection(ArrayList::new));
+              ArrayUtils.toArrayList(IntStream.rangeClosed(0, y)
+                                              .map(x -> y + 1 - x)
+                                              .mapToObj(x -> AssocPair.create(x, x)));
 
       final PersistentMap<Integer, Integer, ?> mapFromStream = mapFactory.fromStrictlyDecreasingStream(stream);
       final PersistentMap<Integer, Integer, ?> mapFromArray  = mapFactory.fromStrictlyDecreasingArray(v);

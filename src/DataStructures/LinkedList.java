@@ -7,6 +7,7 @@
 package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
+import Utils.ArrayUtils;
 import Utils.Functionals;
 import Utils.Ref;
 import java.util.ArrayList;
@@ -22,7 +23,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -206,7 +206,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   public static <A> LinkedList<A> fromStream(final Stream<A> s) {
-    return fromArray(s.collect(Collectors.toCollection(ArrayList::new)));
+    return fromArray(ArrayUtils.toArrayList(s));
   }
 
   public static <A> LinkedList<A> fromArray(final ArrayList<A> v, final int i, final int j) {

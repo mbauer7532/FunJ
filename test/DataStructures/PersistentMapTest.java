@@ -8,6 +8,7 @@ package DataStructures;
 
 import DataStructures.TuplesModule.AssocPair;
 import DataStructures.TuplesModule.Pair;
+import Utils.ArrayUtils;
 import Utils.Functionals;
 import Utils.Numeric;
 import Utils.Ref;
@@ -19,7 +20,6 @@ import java.util.Random;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -657,9 +657,8 @@ public class PersistentMapTest {
       final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
       final ArrayList<PersistentMapEntry<Integer, Integer>> v =
-              Arrays.stream(perm)
-                    .mapToObj(i -> AssocPair.create(i, i))
-                    .collect(Collectors.toCollection(ArrayList::new));
+              ArrayUtils.toArrayList(Arrays.stream(perm)
+                                           .mapToObj(i -> AssocPair.create(i, i)));
 
       final PersistentMap<Integer, Integer, ?> pm = mapFactory.fromArray(v);
       final TreeMap<Integer, Integer> tm = new TreeMap<>();
@@ -891,14 +890,12 @@ public class PersistentMapTest {
       final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
       final ArrayList<PersistentMapEntry<Integer, Integer>> vRes =
-            Arrays.stream(perm)
-                  .mapToObj(i -> AssocPair.create(i, 2 * i))
-                  .collect(Collectors.toCollection(ArrayList::new));
+            ArrayUtils.toArrayList(Arrays.stream(perm)
+                                         .mapToObj(i -> AssocPair.create(i, 2 * i)));
 
       final ArrayList<PersistentMapEntry<Integer, Integer>> v =
-            Arrays.stream(perm)
-                  .mapToObj(i -> AssocPair.create(i, i))
-                  .collect(Collectors.toCollection(ArrayList::new));
+            ArrayUtils.toArrayList(Arrays.stream(perm)
+                                         .mapToObj(i -> AssocPair.create(i, i)));
 
       final PersistentMap<Integer, Integer, ?> mRes = mapFactory.fromArray(vRes);
       final PersistentMap<Integer, Integer, ?> m = mapFactory.fromArray(v);
@@ -912,14 +909,10 @@ public class PersistentMapTest {
       final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
       final ArrayList<PersistentMapEntry<Integer, Integer>> vRes =
-            Arrays.stream(perm)
-                  .mapToObj(i -> AssocPair.create(i, 5 * i))
-                  .collect(Collectors.toCollection(ArrayList::new));
+            ArrayUtils.toArrayList(Arrays.stream(perm).mapToObj(i -> AssocPair.create(i, 5 * i)));
 
       final ArrayList<PersistentMapEntry<Integer, Integer>> v =
-            Arrays.stream(perm)
-                  .mapToObj(i -> AssocPair.create(i, 2 * i))
-                  .collect(Collectors.toCollection(ArrayList::new));
+              ArrayUtils.toArrayList(Arrays.stream(perm).mapToObj(i -> AssocPair.create(i, 2 * i)));
 
       final PersistentMap<Integer, Integer, ?> mRes = mapFactory.fromArray(vRes);
       final PersistentMap<Integer, Integer, ?> m = mapFactory.fromArray(v);
@@ -1059,9 +1052,8 @@ public class PersistentMapTest {
     final int low = 1, high = 64 * 1024;
     final int size = high - low + 1;
     final ArrayList<PersistentMapEntry<Integer, Integer>> v =
-            Arrays.stream(Numeric.randomPermutation(low, high, size, rng))
-                  .mapToObj(i -> AssocPair.create(i, i))
-                  .collect(Collectors.toCollection(ArrayList::new));
+            ArrayUtils.toArrayList(Arrays.stream(Numeric.randomPermutation(low, high, size, rng))
+                                         .mapToObj(i -> AssocPair.create(i, i)));
 
     // Test empty maps
     final PersistentMap<Integer, Integer, RedBlackTreeModule.Tree<Integer, Integer>> m0 = RedBlackTreeModule.<Integer, Integer> makeFactory().fromArray(v);

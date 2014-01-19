@@ -6,11 +6,9 @@
 
 package Utils;
 
-import DataStructures.TuplesModule;
 import DataStructures.TuplesModule.Pair;
 import java.util.ArrayList;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
@@ -229,14 +227,14 @@ public class FunctionalsTest {
       final Stream<Integer> s0 = IntStream.range(0, 0).boxed();
       final Stream<Integer> s1 = IntStream.range(0, 5).boxed();
 
-      final ArrayList<Pair<Integer, Integer>> v = Functionals.zip(s0, s1, Pair::create).collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<Pair<Integer, Integer>> v = ArrayUtils.<Pair<Integer, Integer>> toArrayList(Functionals.zip(s0, s1, Pair::create));
       assertEquals(0, v.size());
     }
     {
       final Stream<Integer> s0 = IntStream.range(0, 5).boxed();
       final Stream<Integer> s1 = IntStream.range(10, 100).boxed();
 
-      final ArrayList<Pair<Integer, Integer>> v = Functionals.zip(s0, s1, Pair::create).collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<Pair<Integer, Integer>> v = ArrayUtils.<Pair<Integer, Integer>> toArrayList(Functionals.zip(s0, s1, Pair::create));
       assertEquals(5, v.size());
       assertEquals("[(0, 10), (1, 11), (2, 12), (3, 13), (4, 14)]", v.toString());
     }
@@ -244,7 +242,7 @@ public class FunctionalsTest {
       final Stream<Integer> s1 = IntStream.range(0, 5).boxed();
       final Stream<Integer> s0 = IntStream.range(10, 100).boxed();
 
-      final ArrayList<Pair<Integer, Integer>> v = Functionals.zip(s0, s1, Pair::create).collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<Pair<Integer, Integer>> v = ArrayUtils.<Pair<Integer, Integer>> toArrayList(Functionals.zip(s0, s1, Pair::create));
       assertEquals(5, v.size());
       assertEquals("[(10, 0), (11, 1), (12, 2), (13, 3), (14, 4)]", v.toString());
     }
@@ -255,17 +253,17 @@ public class FunctionalsTest {
     System.out.println("zipWithIntStream");
 
     {
-      final ArrayList<Pair<Integer, Integer>> v = Functionals.zip(IntStream.range(0, 5), IntStream.range(10, 100).boxed(), Pair::create).collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<Pair<Integer, Integer>> v = ArrayUtils.<Pair<Integer, Integer>> toArrayList(Functionals.zip(IntStream.range(0, 5), IntStream.range(10, 100).boxed(), Pair::create));
       assertEquals(5, v.size());
       assertEquals("[(0, 10), (1, 11), (2, 12), (3, 13), (4, 14)]", v.toString());
     }
     {
-      final ArrayList<Pair<Integer, Integer>> v = Functionals.zip(IntStream.range(10, 100).boxed(), IntStream.range(0, 5), Pair::create).collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<Pair<Integer, Integer>> v = ArrayUtils.<Pair<Integer, Integer>> toArrayList(Functionals.zip(IntStream.range(10, 100).boxed(), IntStream.range(0, 5), Pair::create));
       assertEquals(5, v.size());
       assertEquals("[(10, 0), (11, 1), (12, 2), (13, 3), (14, 4)]", v.toString());
     }
     {
-      final ArrayList<Pair<Integer, Integer>> v = Functionals.zip(IntStream.range(0, 5), IntStream.range(10, 100), Pair::create).collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<Pair<Integer, Integer>> v = ArrayUtils.<Pair<Integer, Integer>> toArrayList(Functionals.zip(IntStream.range(0, 5), IntStream.range(10, 100), Pair::create));
       assertEquals(5, v.size());
       assertEquals("[(0, 10), (1, 11), (2, 12), (3, 13), (4, 14)]", v.toString());
     }

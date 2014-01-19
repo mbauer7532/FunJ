@@ -24,7 +24,6 @@ import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.StructureGraphic.v1.DSTreeNode;
 
@@ -77,11 +76,11 @@ public class RedBlackTreeModule2 {
     }
 
     public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
-      return fromStrictlyIncreasingArray(stream.collect(Collectors.toCollection(ArrayList::new)));
+      return fromStrictlyIncreasingArray(ArrayUtils.toArrayList(stream));
     }
 
     public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyDecreasingStream(final Stream<PersistentMapEntry<K, V>> stream) {
-      return fromStrictlyDecreasingArray(stream.collect(Collectors.toCollection(ArrayList::new)));
+      return fromStrictlyDecreasingArray(ArrayUtils.toArrayList(stream));
     }
 
     public static <K extends Comparable<K>, V> Tree<K, V> fromStrictlyIncreasingArray(final ArrayList<PersistentMapEntry<K, V>> v) {

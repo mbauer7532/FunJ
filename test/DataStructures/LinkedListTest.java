@@ -7,13 +7,13 @@
 package DataStructures;
 
 import DataStructures.TuplesModule.Pair;
+import Utils.ArrayUtils;
 import Utils.Ref;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.function.BiPredicate;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.junit.After;
@@ -2421,10 +2421,7 @@ public class LinkedListTest {
       assertEquals(new ArrayList<>(), e.toArray());
     }
     {
-      final ArrayList<Integer> v =
-              Arrays.stream(new int[] {1,2,3})
-                    .boxed()
-                    .collect(Collectors.toCollection(ArrayList::new));
+      final ArrayList<Integer> v = ArrayUtils.toArrayList(Arrays.stream(new int[] {1,2,3}).boxed());
 
       assertEquals(v, e.cons(3).cons(2).cons(1).toArray());
     }
@@ -2540,8 +2537,8 @@ public class LinkedListTest {
     println("stream");
 
     final int high = 5000;
-    LinkedList<Integer> list = LinkedList.fromStream(IntStream.rangeClosed(1, high).mapToObj(n -> 1));
-    ArrayList<Integer> v = list.stream().map(n -> n * n * n * n * n * n).map(n -> n + 1).map(n -> n - 1).map(n -> n).collect(Collectors.toCollection(ArrayList::new));
+    final LinkedList<Integer> list = LinkedList.fromStream(IntStream.rangeClosed(1, high).mapToObj(n -> 1));
+    final ArrayList<Integer> v = ArrayUtils.toArrayList(list.stream().map(n -> n * n * n * n * n * n).map(n -> n + 1).map(n -> n - 1).map(n -> n));
 
     assertEquals(high, v.size());
   }

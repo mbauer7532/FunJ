@@ -13,7 +13,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
-import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
@@ -391,7 +390,7 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
   public Iterator<V> iterator() {
     return new LeftistHeapIterator<>(this);
   }
-  
+
   @Override
   public DSTreeNode[] DSgetChildren() {
     return isEmptyImpl(this) ? new DSTreeNode[0] : new DSTreeNode[] { mLeft, mRight };
@@ -416,7 +415,7 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
   public Stream<V> orderedStream() {
     return StreamSupport.stream(new LeftistHeapOrderedSpliterator<>(this), false);
   }
-   
+
   @Override
   public boolean equals(final Object obj) {
     if (! (obj instanceof PersistentHeap)) {
