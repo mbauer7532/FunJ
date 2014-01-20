@@ -60,7 +60,7 @@ public final class LeftistHeap<V extends Comparable<V>> implements PersistentHea
   }
 
   private static <V extends Comparable<V>> boolean isEmptyImpl(final LeftistHeap<V> h) {
-    return h.mRank == 0;
+    return h == sEmptyLeftistHeap;
   }
 
   @Override

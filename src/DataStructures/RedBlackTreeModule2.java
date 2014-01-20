@@ -128,7 +128,7 @@ public class RedBlackTreeModule2 {
     private final Tree<K, V> mRight;
     private final int mTag;
 
-    private boolean isNull()  { return mTag == sEmptyTag; }
+    private boolean isNull()  { return this == sEmptyNode; }  // This is faster than checking the tag!
     private boolean isRed()   { return mTag == sRedTag; }
     private boolean isBlack() { return mTag == sBlackTag; }
 

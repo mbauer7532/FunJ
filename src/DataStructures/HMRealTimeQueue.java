@@ -227,7 +227,9 @@ public class HMRealTimeQueue<V> implements PersistentQueue<V, HMRealTimeQueue<V>
     return (HMRealTimeQueue<V>) sEmptyHMRealTimeQueue;
   }
 
-  private static <V> boolean isEmptyImpl(final HMRealTimeQueue<V> q) { return q.mlenf == 0; }
+  private static <V> boolean isEmptyImpl(final HMRealTimeQueue<V> q) {
+    return q.mlenf == 0;
+  }
 
   @Override
   public boolean isEmpty() {
