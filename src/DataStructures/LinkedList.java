@@ -46,8 +46,6 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     return new LinkedList<>(a, list);
   }
 
-  private LinkedList() { mCar = null; mCdr = null; }
-
   private LinkedList(final A a, final LinkedList<A> list) {
     mCar = a;
     mCdr = list;
@@ -56,7 +54,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   private final A mCar;
   private final LinkedList<A> mCdr;
 
-  private static final LinkedList<?> sEmptyList = new LinkedList<>();
+  private static final LinkedList<?> sEmptyList = create(null, null);
 
   private boolean isNull()    { return this == sEmptyList; }
   private boolean isNotNull() { return this != sEmptyList; }
