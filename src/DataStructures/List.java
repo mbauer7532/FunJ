@@ -67,8 +67,8 @@ public interface List<A, L extends List<A, L>> extends Iterable<A> {
   public <B> List<B, ?> scanr(final BiFunction<A, B, B> f, final B b);
   public L scanr1(final BiFunction<A, A, A> f);
 
-  public <ACC, B> Pair<ACC, List<B, ?>> mapAccumL(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc);
-  public <ACC, B> Pair<ACC, List<B, ?>> mapAccumR(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc);
+  public <ACC, B> Pair<ACC, ? extends List<B, ?>> mapAccumL(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc);
+  public <ACC, B> Pair<ACC, ? extends List<B, ?>> mapAccumR(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc);
 
   // Sublists
   public L take(final int n);

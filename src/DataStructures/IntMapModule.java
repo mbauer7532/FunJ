@@ -623,20 +623,32 @@ public final class IntMapModule {
           return create(p, m, s0.merge(f, t0), s1.merge(f, t1));
         }
         else if (m < n && matchPrefix(q, p, m)) {
+          final Tree<V> left, right;
+
           if (zeroBit(q, m)) {
-            return create(p, m, s0.merge(f, t), s1);
+            left  = s0.merge(f, t);
+            right = s1;
           }
           else {
-            return create(p, m, s0, s1.merge(f, t));
+            left  = s0;
+            right = s1.merge(f, t);
           }
+
+          return create(p, m, left, right);
         }
         else if (m > n && matchPrefix(p, q, n)) {
+          final Tree<V> left, right;
+
           if (zeroBit(p, n)) {
-            return create(q, n, s.merge(f, t0), t1);
+            left  = s.merge(f, t0);
+            right = t1;
           }
           else {
-            return create(q, n, t0, s.merge(f, t1));
+            left  = t0;
+            right = s.merge(f, t1);
           }
+
+          return create(q, n, left, right);
         }
         else {
           return join(p, s, q, t);
