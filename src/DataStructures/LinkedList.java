@@ -254,9 +254,13 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     return isNull();
   }
 
+  private static <A> boolean isSingletonImpl(final LinkedList<A> list) {
+    return list.isNotNull() && list.mCdr.isNull();
+  }
+
   @Override
   public boolean isSingleton() {
-    return isNotNull() && mCdr.isNull();
+    return isSingletonImpl(this);
   }
 
   private static <A> int lengthImpl(final LinkedList<A> list) {
@@ -498,7 +502,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
     return scanr1Impl(this, f);
   }
 
-  private static <A, ACC, B> Pair<ACC, List<B, ?>> mapAccumLImpl(
+  private static <A, ACC, B> Pair<ACC, PersistentSequence<B, ?>> mapAccumLImpl(
           final LinkedList<A> list,
           final BiFunction<ACC, A, Pair<ACC, B>> f,
           final ACC acc) {
@@ -515,11 +519,11 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-  public <ACC, B> Pair<ACC, List<B, ?>> mapAccumL(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc) {
+  public <ACC, B> Pair<ACC, PersistentSequence<B, ?>> mapAccumL(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc) {
     return mapAccumLImpl(this, f, acc);
   }
 
-  private static <A, ACC, B> Pair<ACC, List<B, ?>> mapAccumRImpl(
+  private static <A, ACC, B> Pair<ACC, PersistentSequence<B, ?>> mapAccumRImpl(
           final LinkedList<A> list,
           final BiFunction<ACC, A, Pair<ACC, B>> f,
           final ACC acc) {
@@ -534,7 +538,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-  public <ACC, B> Pair<ACC, List<B, ?>> mapAccumR(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc) {
+  public <ACC, B> Pair<ACC, PersistentSequence<B, ?>> mapAccumR(final BiFunction<ACC, A, Pair<ACC, B>> f, final ACC acc) {
     return mapAccumRImpl(this, f, acc);
   }
 
@@ -1030,7 +1034,7 @@ public final class LinkedList<A> implements List<A, LinkedList<A>> {
   }
 
   @Override
-  public LinkedList<A> listDiff(LinkedList<A> list) {
+  public LinkedList<A> seqDiff(LinkedList<A> list) {
     return foldlImpl(list, (xs, x) -> xs.delete(x), this);
   }
 
