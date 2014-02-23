@@ -26,7 +26,6 @@ import static org.junit.Assert.*;
  * @author Neo
  */
 public class PersistentMapFactoryTest {
-  
   public PersistentMapFactoryTest() {}
   
   @BeforeClass
