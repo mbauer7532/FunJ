@@ -694,7 +694,7 @@ public class PersistentMapTest {
     final int N = 40;
     final int low = -50, high = 600;
     final int size = 180;
-    
+
     IntStream.range(0, N).forEach(x -> {
       final int[] perm = Numeric.randomPermutation(low, high, size, rng);
 
