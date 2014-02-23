@@ -10,7 +10,6 @@ import DataStructures.IntMapModule.IntMapFactory;
 import DataStructures.TuplesModule.AssocIntPair;
 import DataStructures.TuplesModule.Pair;
 import Utils.Functionals;
-import Utils.Ref;
 import java.util.Optional;
 import java.util.stream.IntStream;
 import org.junit.After;
@@ -71,7 +70,7 @@ public class IntMapModuleTest {
     assertTrue(res0.isPresent());
     assertFalse(res1.isPresent());
 
-    assertEquals(500, (int)res0.get());
+    assertEquals(Integer.valueOf(500), res0.get());
   }
 
   @Test
